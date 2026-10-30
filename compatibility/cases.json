@@ -490,7 +490,7 @@
       ],
       "location": "external: circuit-clienttest/orbs.js",
       "status": "passing",
-      "description": "Experience orbs summoned around a player who stands still: those within 8 blocks come and are taken, one 12 blocks away stays, five at the feet are taken one by one, an orb of three is taken three times, and a large one gives 38 levels; Circuit and both official servers give the same pickups and set_experience values (progress bars equal as floats)"
+      "description": "Experience orbs summoned around a player who stands still: those within 8 blocks come and are taken, one 12 blocks away stays, five at the feet are taken one by one, an orb of three is taken three times, and a large one gives 38 levels; Circuit and both official servers give the same pickups and set_experience values, the one sent on joining included (progress bars equal as floats)"
     },
     {
       "id": "client/brewing",
@@ -590,6 +590,83 @@
       "location": "external: circuit-clienttest/crafter-special.js",
       "status": "passing",
       "description": "8 steps: four crafters filled with a patterned and a blank banner, two damaged enchanted swords, a leather helmet and a red dye, and a shield and a patterned banner, then powered; Circuit and both official servers give the same grids and window results and throw out the same items (the copy and the patterned banner, the repaired sword, the dyed helmet, the decorated shield)"
+    },
+    {
+      "id": "client/fireworks",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/fireworks-a.js, fireworks-b.js",
+      "status": "passing",
+      "description": "31 steps of firework stars at a crafting table (gunpowder with each of the 16 dyes, dyes in either order and twice, each shape item and the seven mob heads, a diamond, glowstone dust, both with a feather, and ten stacks that make nothing; a star taken) and 31 steps of rockets and fades (one to four gunpowder, two paper, stars made and taken, rockets with them in both orders and with plain stars, fades of one and two dyes, of a plain star and of a faded star, stacks that make nothing; rockets taken); Circuit and both official servers give identical windows"
+    },
+    {
+      "id": "client/crafter_fireworks",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/crafter-fireworks.js",
+      "status": "passing",
+      "description": "8 steps: four crafters filled with paper and two gunpowder, gunpowder with a red dye and a feather, a red star with a lime dye, and paper and gunpowder with a blue star with a trail, then powered; Circuit and both official servers give the same grids and window results and throw out the same items (three rockets flying 2, a burst star, the faded star, three rockets with the blue explosion)"
+    },
+    {
+      "id": "client/rocket_order",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/rocket-order.js",
+      "status": "passing",
+      "description": "15 steps of rockets from paper and gunpowder, which both the special firework_rocket and the data pack's firework_rocket_simple take: every recipe taken with doLimitedCrafting off and on, at a crafting table and in the own window, two gunpowder, the same window again, the simple recipe given and then taken with the rule off; the rockets are made each time and no recipe is added to the book by taking them (the special recipe, first in id order); Circuit and both official servers give identical windows and recipe book packets"
+    },
+    {
+      "id": "client/join_order",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/join-order.js",
+      "status": "passing",
+      "description": "Which of the inventory, the position, health and experience a joining client reads before its spawn event (raised by the first health packet) and which in the two seconds after, and how many recipe book entries come before and after it; Circuit and both official servers send the inventory, the position and health before it and experience after it, and the first tick's unlocked recipe (the crafting table) before it (Circuit's other join packets come in an order of its own)"
+    },
+    {
+      "id": "client/ns_crafting",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ns-crafting.js",
+      "status": "passing",
+      "description": "With a test pack of shapeless recipes in the namespaces aaa, zzz, bbb, example and test that take the same grids as each other or as the special firework_rocket, seven grids at a crafting table and in the own window: the recipe first by the id's path, then its namespace makes the result (zzz:aaa_mix before aaa:zzz_mix, aaa:same_mix before bbb:same_mix, the special minecraft:firework_rocket before example:rocket, test:a_rocket before it); Circuit and both official servers give identical results"
+    },
+    {
+      "id": "client/ns_book",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ns-book.js",
+      "status": "passing",
+      "description": "With the same test pack and two smelting recipes of dirt in two namespaces: the display ids, groups and categories of the pack's eight recipes in the recipe book entries every recipe given adds, the number of entries, and what a furnace makes of dirt; recipes are numbered by the id's path, then its namespace, and the furnace takes the first in that order; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/ns_place",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ns-place.js",
+      "status": "failing",
+      "description": "With the same test pack, a player who knows only bbb:same_mix (aaa:same_mix comes first and takes the same grid) places it from the recipe book at a crafting table and in the own window, once and as many as fit, with doLimitedCrafting off and on, and takes the results; both official servers show the placed recipe's birch log at the table until the grid changes, and the first recipe's oak log in the own window; Circuit shows the first recipe's result at the table too"
     },
     {
       "id": "client/own_grid_counts",

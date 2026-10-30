@@ -325,8 +325,13 @@ RecipeBook compile_recipe_book(const data::DataPacks& packs, const contracts::Ve
     RecipeBook book;
     const Reader reader(packs, bundle);
     if (const auto* all = packs.resources("recipe")) {
+        // In the official order of ids (display ids and groups follow it).
+        std::vector<const std::pair<const std::string, std::string>*> ordered;
+        for (const auto& entry : *all) ordered.push_back(&entry);
+        std::ranges::stable_sort(ordered, [](const auto* a, const auto* b) { return gameplay::recipes::id_before(a->first, b->first); });
         std::map<std::string, std::int32_t> groups;
-        for (const auto& [id, text] : *all) {
+        for (const auto* entry : ordered) {
+            const auto& [id, text] = *entry;
             const auto j = Json::parse(text);
             if (!j) continue;
             try {

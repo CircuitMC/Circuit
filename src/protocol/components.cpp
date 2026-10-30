@@ -1019,6 +1019,83 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_compo
     return replaced(base, protocol(), gone, std::nullopt);
 }
 
+namespace {
+// A firework explosion: its shape, colors, fade colors, trail and twinkle.
+void write_explosion(Writer& w, std::int32_t shape, std::span<const std::int32_t> colors, std::span<const std::int32_t> fades, bool trail,
+                     bool twinkle) {
+    w.varint(shape).varint(static_cast<std::int32_t>(colors.size()));
+    for (const auto c : colors) w.i32(c);
+    w.varint(static_cast<std::int32_t>(fades.size()));
+    for (const auto c : fades) w.i32(c);
+    w.boolean(trail).boolean(twinkle);
+}
+} // namespace
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::firework_star(std::int32_t shape, std::span<const std::int32_t> colors,
+                                                                                    bool trail, bool twinkle,
+                                                                                    const ComponentContext& ctx) const {
+    const auto type = type_id("firework_explosion");
+    if (!type) return std::unexpected("no firework_explosion component");
+    Writer w;
+    write_explosion(w, shape, colors, {}, trail, twinkle);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_fade_colors(const contracts::ComponentPatch& base,
+                                                                                       std::span<const std::int32_t> fades,
+                                                                                       const ComponentContext& ctx) const {
+    const auto type = type_id("firework_explosion");
+    if (!type) return std::unexpected("no firework_explosion component");
+    std::int32_t shape = 0;
+    std::vector<std::int32_t> colors;
+    bool trail = false, twinkle = false;
+    for (const auto& a : base.added()) {
+        if (a.type != *type) continue;
+        Reader r(a.value);
+        const auto s = r.varint();
+        const auto n = r.length(max_entries, 4);
+        if (!s || !n) return std::unexpected("firework_explosion: unreadable");
+        shape = *s;
+        for (std::size_t k = 0; k < *n; ++k) {
+            const auto c = r.i32();
+            if (!c) return std::unexpected("firework_explosion: unreadable");
+            colors.push_back(*c);
+        }
+        const auto m = r.length(max_entries, 4);
+        if (!m || !r.raw(*m * 4)) return std::unexpected("firework_explosion: unreadable");
+        const auto has_trail = r.boolean();
+        const auto has_twinkle = r.boolean();
+        if (!has_trail || !has_twinkle) return std::unexpected("firework_explosion: unreadable");
+        trail = *has_trail;
+        twinkle = *has_twinkle;
+    }
+    Writer w;
+    write_explosion(w, shape, colors, fades, trail, twinkle);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    return replaced(base, protocol(), {}, contracts::ComponentPatch::Added{*type, std::move(*value)});
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::firework_rocket(std::int32_t flight,
+                                                                                      std::span<const contracts::ComponentPatch> stars,
+                                                                                      const ComponentContext& ctx) const {
+    const auto type = type_id("fireworks");
+    const auto explosion = type_id("firework_explosion");
+    if (!type || !explosion) return std::unexpected("no fireworks components");
+    std::vector<std::span<const std::byte>> explosions;
+    for (const auto& star : stars)
+        for (const auto& a : star.added())
+            if (a.type == *explosion && star.protocol() == protocol()) explosions.emplace_back(a.value);
+    Writer w;
+    w.varint(flight).varint(static_cast<std::int32_t>(explosions.size()));
+    for (const auto e : explosions) w.raw(e);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
+}
+
 std::optional<std::vector<std::string>> ComponentCodec::recipes_of(const contracts::ComponentPatch& patch) const {
     const auto type = type_id("recipes");
     if (!type || patch.empty() || patch.protocol() != protocol()) return std::nullopt;

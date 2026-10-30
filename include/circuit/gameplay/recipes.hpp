@@ -5,6 +5,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 // Crafting recipes the rules match, compiled from data packs
@@ -16,10 +17,16 @@
 //   keeps the input's components; an input that already is the result item
 //   does not match.
 // Ingredients test the item alone. The special recipes, which need code of
-// their own, are listed by kind (Special below); those not made yet (map and
-// book cloning, map extending, fireworks, tipped arrows, decorated pots) are
-// not compiled.
+// their own, are listed by kind (Special below) and match in id order with
+// the others (client/rocket_order); those not made yet (map and book
+// cloning, map extending, tipped arrows, decorated pots) are not compiled.
 namespace circuit::gameplay::recipes {
+
+// Whether recipe id `a` comes before `b` in the order both official servers
+// keep recipes in: by the path, then the namespace (client/ns_crafting,
+// client/ns_book; the stonecutter's list). The compiled lists are in this
+// order, and a grid makes the first recipe in it that takes the grid.
+[[nodiscard]] bool id_before(std::string_view a, std::string_view b) noexcept;
 
 // The items an ingredient accepts, ascending; none for an empty pattern cell.
 struct Ingredient {
@@ -93,12 +100,22 @@ struct Smithing {
 // - banner_duplicate: a banner with patterns and one without, of one color:
 //   a copy, the patterned one left in its slot when it is taken;
 // - shield_decoration: a shield without patterns and a banner: the shield
-//   with the banner's patterns and color (a base color of its own replaced).
+//   with the banner's patterns and color (a base color of its own replaced);
+// - firework_star (client/fireworks): one gunpowder, dyes and at most one
+//   each of a shape item (a fire charge, a gold nugget, a feather or a mob
+//   head), a diamond (a trail) and glowstone dust (a twinkle): a star with
+//   the dyes' firework colors in grid order;
+// - firework_rocket: one paper, one to three gunpowder and any stars: three
+//   rockets that fly as long as the gunpowder and hold the stars' explosions
+//   in grid order (none from a star without one);
+// - firework_star_fade: one star and dyes: the star with the dyes as its
+//   fade colors (earlier ones replaced; a star without an explosion gets a
+//   small ball without colors).
 // In a crafter (client/crafter_special) the kept banner is a remainder: it
 // is thrown out after the copy. Repairing takes damaged and undamaged items
 // alike, and drops their other components (a dyed color, say).
 struct Special {
-    enum class Kind : std::uint8_t { repair_item, armor_dye, banner_duplicate, shield_decoration };
+    enum class Kind : std::uint8_t { repair_item, armor_dye, banner_duplicate, shield_decoration, firework_rocket, firework_star, firework_star_fade };
     Kind kind{};
     std::string id;
     bool operator==(const Special&) const = default;

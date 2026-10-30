@@ -431,6 +431,22 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 auto patch = codec->with_component_from(base, from, name);
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
+            game->firework_star = [codec, ctx = component_context(bundle, out.registries)](
+                                      std::int32_t shape, std::span<const std::int32_t> colors, bool trail,
+                                      bool twinkle) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->firework_star(shape, colors, trail, twinkle, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+            game->with_fade_colors = [codec, ctx = component_context(bundle, out.registries)](
+                                         const contracts::ComponentPatch& base, std::span<const std::int32_t> fades) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_fade_colors(base, fades, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+            game->firework_rocket = [codec, ctx = component_context(bundle, out.registries)](
+                                        std::int32_t flight, std::span<const contracts::ComponentPatch> stars) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->firework_rocket(flight, stars, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
             game->with_book_pages = [codec, ctx = component_context(bundle, out.registries)](
                                         const contracts::ComponentPatch& base, std::span<const std::string> pages) -> std::optional<contracts::ComponentPatch> {
                 auto patch = codec->with_book_pages(base, pages, ctx);

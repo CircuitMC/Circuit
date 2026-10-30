@@ -2915,6 +2915,64 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
+    suite.run("recipes of several namespaces in the official order: by path, then namespace", [&] {
+        const auto dir = temporary_directory();
+        make_pack(dir / "pack", "");
+        const auto recipe = [&](std::string_view id, std::string_view json) {
+            const auto colon = id.find(':');
+            const auto rel = std::filesystem::path("data") / id.substr(0, colon) / "recipe" / std::format("{}.json", id.substr(colon + 1));
+            std::filesystem::create_directories((dir / "pack" / rel).parent_path());
+            std::ofstream(dir / "pack" / rel) << json;
+        };
+        // The test pack of client/ns_crafting and client/ns_book, with two special recipes.
+        const auto shapeless = [](std::string_view a, std::string_view b, std::string_view result) {
+            return std::format(R"({{"type": "minecraft:crafting_shapeless", "ingredients": ["minecraft:{}", "minecraft:{}"], "result": {{"id": "minecraft:{}"}}}})",
+                               a, b, result);
+        };
+        const auto smelt = [](std::string_view result) {
+            return std::format(R"({{"type": "minecraft:smelting", "ingredient": "minecraft:dirt", "result": {{"id": "minecraft:{}"}}, "cookingtime": 40}})", result);
+        };
+        recipe("aaa:zzz_mix", shapeless("stick", "dirt", "oak_planks"));
+        recipe("zzz:aaa_mix", shapeless("stick", "dirt", "cobblestone"));
+        recipe("bbb:same_mix", shapeless("stick", "cobblestone", "birch_log"));
+        recipe("aaa:same_mix", shapeless("stick", "cobblestone", "oak_log"));
+        recipe("example:rocket", shapeless("paper", "gunpowder", "stick"));
+        recipe("test:a_rocket", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["minecraft:paper", "minecraft:gunpowder", "minecraft:gunpowder"], "result": {"id": "minecraft:bone"}})");
+        recipe("aaa:zzz_smelt", smelt("oak_planks"));
+        recipe("zzz:aaa_smelt", smelt("cobblestone"));
+        recipe("minecraft:firework_rocket", R"({"type": "minecraft:crafting_special_firework_rocket"})");
+        recipe("aaa:repair", R"({"type": "minecraft:crafting_special_repairitem"})");
+        const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
+        const auto d = server::load_server_data(bundle, {{}, {dir / "pack"}});
+        require(d.has_value() && d->recipe_book, d ? "" : d.error());
+        const auto ids = [](const auto& list) {
+            std::vector<std::string> out;
+            for (const auto& r : list) out.push_back(r.id);
+            return out;
+        };
+        require(ids(d->game->crafting) == std::vector<std::string>{"test:a_rocket", "zzz:aaa_mix", "example:rocket", "aaa:same_mix", "bbb:same_mix", "aaa:zzz_mix"},
+                "crafting recipes by path, then namespace");
+        require(ids(d->game->cooking) == std::vector<std::string>{"zzz:aaa_smelt", "aaa:zzz_smelt"}, "cooking recipes too");
+        require(ids(d->game->special) == std::vector<std::string>{"minecraft:firework_rocket", "aaa:repair"}, "special recipes too");
+        auto book = ids(d->recipe_book->recipes);
+        std::erase_if(book, [](const std::string& id) { return id == "minecraft:firework_rocket" || id == "aaa:repair"; });
+        require(book == std::vector<std::string>{"test:a_rocket", "zzz:aaa_mix", "zzz:aaa_smelt", "example:rocket", "aaa:same_mix", "bbb:same_mix", "aaa:zzz_mix", "aaa:zzz_smelt"},
+                "the recipe book numbers them in that order (client/ns_book)");
+        // The grids make the first in that order (client/ns_crafting).
+        std::array<contracts::ItemStack, 4> grid{};
+        grid[0] = {gameplay::items::stick, 1};
+        grid[1] = {gameplay::items::dirt, 1};
+        require(gameplay::crafted(*d->game, {2, 2, grid}) == contracts::ItemStack{gameplay::items::cobblestone, 1}, "zzz:aaa_mix before aaa:zzz_mix");
+        grid[0] = {*gameplay::items::by_name("minecraft:paper"), 1};
+        grid[1] = {*gameplay::items::by_name("minecraft:gunpowder"), 1};
+        const auto rockets = gameplay::crafted(*d->game, {2, 2, grid});
+        require(rockets.item == *gameplay::items::by_name("minecraft:firework_rocket") && rockets.count == 3, "minecraft:firework_rocket before example:rocket");
+        grid[2] = grid[1];
+        require(gameplay::crafted(*d->game, {2, 2, grid}) == contracts::ItemStack{*gameplay::items::by_name("minecraft:bone"), 1},
+                "test:a_rocket before minecraft:firework_rocket");
+        std::filesystem::remove_all(dir);
+    });
+
     suite.run("data packs give block loot tables and recipes", [&] {
         const auto dir = temporary_directory();
         make_pack(dir / "pack", "");

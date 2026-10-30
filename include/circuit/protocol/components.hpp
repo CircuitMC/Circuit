@@ -130,6 +130,21 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_component_from(const contracts::ComponentPatch& base,
                                                                                             const contracts::ComponentPatch& from,
                                                                                             std::string_view name) const;
+    // A firework star's components: its explosion (shape 0 small ball, 1
+    // large ball, 2 star, 3 creeper, 4 burst; colors as RGB, no fade colors).
+    // A star's `base` with its explosion's fade colors set (a small ball
+    // without colors when it has no explosion), its other components kept.
+    // And a rocket's components: fireworks flying `flight` with the
+    // explosions of `stars` in order (those without one skipped).
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> firework_star(std::int32_t shape, std::span<const std::int32_t> colors,
+                                                                                      bool trail, bool twinkle,
+                                                                                      const ComponentContext& ctx) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_fade_colors(const contracts::ComponentPatch& base,
+                                                                                         std::span<const std::int32_t> fades,
+                                                                                         const ComponentContext& ctx) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> firework_rocket(std::int32_t flight,
+                                                                                        std::span<const contracts::ComponentPatch> stars,
+                                                                                        const ComponentContext& ctx) const;
     // The recipe ids of the patch's recipes component (a knowledge book's;
     // none without one).
     [[nodiscard]] std::optional<std::vector<std::string>> recipes_of(const contracts::ComponentPatch& patch) const;

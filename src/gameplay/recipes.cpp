@@ -3,10 +3,18 @@
 #include <circuit/gameplay/recipes.hpp>
 #include <algorithm>
 #include <array>
+#include <utility>
 
 namespace circuit::gameplay::recipes {
 namespace {
 using contracts::ItemStack;
+
+// An id's path and namespace ("minecraft" when it names none).
+std::pair<std::string_view, std::string_view> split(std::string_view id) {
+    const auto colon = id.find(':');
+    if (colon == std::string_view::npos) return {id, "minecraft"};
+    return {id.substr(colon + 1), id.substr(0, colon)};
+}
 
 // The non-empty part of a grid.
 struct Box {
@@ -74,6 +82,8 @@ std::vector<const Stonecutting*> cuttings(std::span<const Stonecutting> recipes,
         if (r.ingredient.test(item)) out.push_back(&r);
     return out;
 }
+
+bool id_before(std::string_view a, std::string_view b) noexcept { return split(a) < split(b); }
 
 std::optional<Match> match(std::span<const Recipe> recipes, const Grid& grid) {
     const auto box = bounds(grid);

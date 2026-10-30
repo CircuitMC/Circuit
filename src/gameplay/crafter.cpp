@@ -78,9 +78,9 @@ void tick_crafter(RuleContext& ctx, BlockPos pos, BlockState s) {
     std::array<ItemStack, 9> grid{};
     for (std::size_t k = 0; k < grid.size(); ++k)
         if (!disabled(*be, k)) grid[k] = be->slots[k];
-    const auto made = recipes::match(data->crafting, {3, 3, grid});
-    // Else a special recipe; a stack it keeps (a banner copied) goes out with the result.
-    const auto special = made ? std::nullopt : special_crafting(*data, grid);
+    // The first recipe in id order, a special one too; a stack a special
+    // recipe keeps (a banner copied) goes out with the result.
+    const auto [made, special] = grid_recipe(*data, {3, 3, grid});
     const auto result = made ? made->result : special ? special->result : ItemStack{};
     if (result.empty()) return; // it fails
     be->crafting_ticks = crafting_ticks;

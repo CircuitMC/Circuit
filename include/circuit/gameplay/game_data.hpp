@@ -180,15 +180,24 @@ struct GameData {
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::int32_t)> with_dyed_color;
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, const contracts::ComponentPatch& from, std::string_view)>
         with_component_from;
+    // For firework recipes: a star's components (its explosion: shape 0
+    // small ball, 1 large ball, 2 star, 3 creeper, 4 burst; colors as RGB), a
+    // star's components with its fade colors set, and a rocket's flying
+    // `flight` with the explosions of `stars`; set by the server.
+    std::function<std::optional<contracts::ComponentPatch>(std::int32_t shape, std::span<const std::int32_t> colors, bool trail, bool twinkle)>
+        firework_star;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::span<const std::int32_t> fades)> with_fade_colors;
+    std::function<std::optional<contracts::ComponentPatch>(std::int32_t flight, std::span<const contracts::ComponentPatch> stars)> firework_rocket;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.
     std::function<std::string(const contracts::ItemStack&)> display_name;
 };
 
-// What a crafting grid makes with the data packs: the first matching
-// recipe's result, else a special recipe's (recipes::Special); empty when
-// nothing matches. A crafter's window shows it.
+// What a crafting grid makes with the data packs: the result of the first
+// matching recipe in id order (recipes::id_before), a special one
+// (recipes::Special) or another; empty when nothing matches. A crafter's
+// window shows it.
 contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid);
 
 } // namespace circuit::gameplay

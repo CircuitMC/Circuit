@@ -516,6 +516,37 @@ int main() {
             const auto rebrewed = infested ? c.with_potion(*infested, 3, pctx) : infested;
             require(rebrewed.has_value() && c.potion_of(*rebrewed) == 3u && rebrewed->added().size() == 3 && !c.potion_of(*trimmed),
                     std::format("{}: the potion replaced, the other components kept", protocol));
+            // Fireworks: a star's explosion (shape, colors, fade colors, trail,
+            // twinkle), its fade colors set, and a rocket holding the stars'
+            // explosions in order (a plain star's none).
+            const auto b = [](std::initializer_list<int> v) {
+                std::vector<std::byte> out;
+                for (const auto x : v) out.push_back(static_cast<std::byte>(x));
+                return out;
+            };
+            const std::vector<std::int32_t> red{0xB3312C}, lime{0x41CD34};
+            const auto star = c.firework_star(1, red, true, false, pctx);
+            const auto explosion_type = *c.type_id("firework_explosion");
+            const auto ball = b({1, 1, 0x00, 0xB3, 0x31, 0x2C, 0, 1, 0});
+            require(star.has_value() && star->added().size() == 1 && star->added()[0].type == explosion_type && star->added()[0].value == ball,
+                    std::format("{}: a star", protocol));
+            const auto faded = c.with_fade_colors(*star, lime, pctx);
+            const auto faded_ball = b({1, 1, 0x00, 0xB3, 0x31, 0x2C, 1, 0x00, 0x41, 0xCD, 0x34, 1, 0});
+            require(faded.has_value() && faded->added().size() == 1 && faded->added()[0].value == faded_ball, std::format("{}: its fade", protocol));
+            const auto refaded = c.with_fade_colors(*faded, red, pctx);
+            require(refaded.has_value() && refaded->added()[0].value == b({1, 1, 0x00, 0xB3, 0x31, 0x2C, 1, 0x00, 0xB3, 0x31, 0x2C, 1, 0}),
+                    std::format("{}: the fade replaced", protocol));
+            const auto plain = c.with_fade_colors(contracts::ComponentPatch{}, lime, pctx);
+            require(plain.has_value() && plain->added().size() == 1 && plain->added()[0].value == b({0, 0, 1, 0x00, 0x41, 0xCD, 0x34, 0, 0}),
+                    std::format("{}: a plain star's fade", protocol));
+            const std::vector stars{*star, contracts::ComponentPatch{}, *faded};
+            const auto rocket = c.firework_rocket(2, stars, pctx);
+            auto expected_rocket = b({2, 2});
+            expected_rocket.insert(expected_rocket.end(), ball.begin(), ball.end());
+            expected_rocket.insert(expected_rocket.end(), faded_ball.begin(), faded_ball.end());
+            require(rocket.has_value() && rocket->added().size() == 1 && rocket->added()[0].type == *c.type_id("fireworks") &&
+                        rocket->added()[0].value == expected_rocket,
+                    std::format("{}: a rocket with two explosions", protocol));
         }
     });
 

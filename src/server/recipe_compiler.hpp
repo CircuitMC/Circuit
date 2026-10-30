@@ -13,12 +13,12 @@
 namespace circuit::server {
 
 struct RecipeCompilation {
-    std::vector<gameplay::recipes::Recipe> crafting; // the crafting recipes the rules match, by id
-    std::vector<gameplay::recipes::Cooking> cooking; // the cooking recipes, by id
-    // The stonecutting recipes, by id path and then namespace (the official order).
+    // Each list in the official order of ids (gameplay::recipes::id_before).
+    std::vector<gameplay::recipes::Recipe> crafting; // the crafting recipes the rules match
+    std::vector<gameplay::recipes::Cooking> cooking; // the cooking recipes
     std::vector<gameplay::recipes::Stonecutting> stonecutting;
-    std::vector<gameplay::recipes::Smithing> smithing; // the smithing recipes, by id
-    std::vector<gameplay::recipes::Special> special;   // the special crafting recipes the rules make, by id
+    std::vector<gameplay::recipes::Smithing> smithing;
+    std::vector<gameplay::recipes::Special> special; // the special crafting recipes the rules make
     // The items smithing recipes take as templates, bases and additions, ascending
     // (clients receive them as property sets).
     std::vector<std::uint16_t> smithing_template, smithing_base, smithing_addition;

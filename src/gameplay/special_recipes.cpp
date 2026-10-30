@@ -12,13 +12,34 @@
 // it: the sums of the red, green and blue of the item's color (if any) and
 // of each dye, and of the largest channel of each, all divided by how many;
 // the averages then scaled by the average largest channel over the largest
-// average, in integer channels. The dyes' colors are minecraft.wiki's.
+// average, in integer channels. The dyes' colors are minecraft.wiki's; their
+// firework colors are the ones both official servers give stars
+// (client/fireworks), also minecraft.wiki's.
 namespace circuit::gameplay::detail {
 namespace {
 constexpr std::array<std::string_view, 16> colors{"white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
                                                   "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"};
 constexpr std::array<std::uint32_t, 16> dye_rgb{0xF9FFFE, 0xF9801D, 0xC74EBD, 0x3AB3DA, 0xFED83D, 0x80C71F, 0xF38BAA, 0x474F52,
                                                 0x9D9D97, 0x169C9C, 0x8932B8, 0x3C44AA, 0x835432, 0x5E7C16, 0xB02E26, 0x1D1D21};
+constexpr std::array<std::int32_t, 16> firework_rgb{0xF0F0F0, 0xEB8844, 0xC354CD, 0x6689D3, 0xDECF2A, 0x41CD34, 0xD88198, 0x434343,
+                                                    0xABABAB, 0x287697, 0x7B2FBE, 0x253192, 0x51301A, 0x3B511A, 0xB3312C, 0x1E1B1B};
+// A star's shape item: a fire charge a large ball (1), a gold nugget a star
+// (2), a mob head a creeper (3), a feather a burst (4).
+std::optional<std::int32_t> shape_of(std::uint16_t item) {
+    switch (item) {
+    case items::fire_charge: return 1;
+    case items::gold_nugget: return 2;
+    case items::skeleton_skull:
+    case items::wither_skeleton_skull:
+    case items::zombie_head:
+    case items::player_head:
+    case items::creeper_head:
+    case items::dragon_head:
+    case items::piglin_head: return 3;
+    case items::feather: return 4;
+    default: return std::nullopt;
+    }
+}
 
 std::string_view name_of(std::uint16_t item) {
     const auto* info = items::info(item);
@@ -86,7 +107,7 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
                     made.components = *patch;
                 }
             }
-            return SpecialMade{special.kind, made, std::nullopt};
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
         }
         case Kind::armor_dye: {
             if (!data.dyed_color_of || !data.with_dyed_color) break;
@@ -104,7 +125,7 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
             auto made = *item;
             made.count = 1;
             made.components = *patch;
-            return SpecialMade{special.kind, made, std::nullopt};
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
         }
         case Kind::banner_duplicate: {
             if (used.size() != 2 || !data.banner_layers) break;
@@ -115,7 +136,7 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
             if (a_patterned == b_patterned) break;
             auto made = a_patterned ? a : b;
             made.count = 1;
-            return SpecialMade{special.kind, made, a_patterned ? used[0] : used[1]};
+            return SpecialMade{special.kind, special.id, made, a_patterned ? used[0] : used[1]};
         }
         case Kind::shield_decoration: {
             if (used.size() != 2 || !data.banner_layers || !data.with_component_from || !data.with_int_component) break;
@@ -133,7 +154,65 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
             auto made = *shield;
             made.count = 1;
             made.components = *patch;
-            return SpecialMade{special.kind, made, std::nullopt};
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
+        }
+        case Kind::firework_star: {
+            if (!data.firework_star) break;
+            int gunpowder = 0, shapes = 0, diamonds = 0, glowstone = 0;
+            std::int32_t shape = 0;
+            std::vector<std::int32_t> dyes;
+            bool other = false;
+            for (const auto k : used) {
+                const auto item = grid[k].item;
+                if (const auto dye = color_of(item, "_dye")) dyes.push_back(firework_rgb[*dye]);
+                else if (const auto s = shape_of(item)) shape = *s, ++shapes;
+                else if (item == items::gunpowder) ++gunpowder;
+                else if (item == items::diamond) ++diamonds;
+                else if (item == items::glowstone_dust) ++glowstone;
+                else other = true;
+            }
+            if (other || gunpowder != 1 || dyes.empty() || shapes > 1 || diamonds > 1 || glowstone > 1) break;
+            const auto patch = data.firework_star(shape, dyes, diamonds == 1, glowstone == 1);
+            if (!patch) break;
+            return SpecialMade{special.kind, special.id, ItemStack{items::firework_star, 1, 0, *patch}, std::nullopt};
+        }
+        case Kind::firework_rocket: {
+            if (!data.firework_rocket) break;
+            int paper = 0, gunpowder = 0;
+            std::vector<contracts::ComponentPatch> stars;
+            bool other = false;
+            for (const auto k : used) {
+                const auto item = grid[k].item;
+                if (item == items::paper) ++paper;
+                else if (item == items::gunpowder) ++gunpowder;
+                else if (item == items::firework_star) stars.push_back(grid[k].components);
+                else other = true;
+            }
+            if (other || paper != 1 || gunpowder < 1 || gunpowder > 3) break;
+            const auto patch = data.firework_rocket(gunpowder, stars);
+            if (!patch) break;
+            ItemStack made{items::firework_rocket, 3};
+            // One gunpowder and no explosions is the rocket's default: no components.
+            if (gunpowder != 1 || patch != data.firework_rocket(1, {})) made.components = *patch;
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
+        }
+        case Kind::firework_star_fade: {
+            if (!data.with_fade_colors) break;
+            const ItemStack* star = nullptr;
+            std::vector<std::int32_t> dyes;
+            bool other = false;
+            for (const auto k : used) {
+                if (const auto dye = color_of(grid[k].item, "_dye")) dyes.push_back(firework_rgb[*dye]);
+                else if (grid[k].item == items::firework_star && !star) star = &grid[k];
+                else other = true;
+            }
+            if (other || !star || dyes.empty()) break;
+            const auto patch = data.with_fade_colors(star->components, dyes);
+            if (!patch) break;
+            auto made = *star;
+            made.count = 1;
+            made.components = *patch;
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
         }
         }
     }
@@ -143,9 +222,21 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
 } // namespace circuit::gameplay::detail
 
 namespace circuit::gameplay {
+namespace detail {
+GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid) {
+    auto made = recipes::match(data.crafting, grid);
+    auto special = special_crafting(data, grid.slots);
+    if (made && special) {
+        // Both lists are in id order; the earlier id makes it.
+        if (recipes::id_before(special->id, made->recipe->id)) made.reset();
+        else special.reset();
+    }
+    return {std::move(made), std::move(special)};
+}
+} // namespace detail
+
 contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid) {
-    if (const auto made = recipes::match(data.crafting, grid)) return made->result;
-    const auto special = detail::special_crafting(data, grid.slots);
-    return special ? special->result : contracts::ItemStack{};
+    const auto r = detail::grid_recipe(data, grid);
+    return r.made ? r.made->result : r.special ? r.special->result : contracts::ItemStack{};
 }
 } // namespace circuit::gameplay

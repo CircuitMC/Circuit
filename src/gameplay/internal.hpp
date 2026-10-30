@@ -124,10 +124,20 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv);
 // stays when it is taken (a banner copied), if any.
 struct SpecialMade {
     recipes::Special::Kind kind{};
+    std::string_view id;
     ItemStack result;
     std::optional<std::size_t> kept;
 };
 std::optional<SpecialMade> special_crafting(const GameData& data, std::span<const ItemStack> grid);
+// A crafting grid's recipe: the first in id order among the data packs'
+// recipes and the special ones (at most one of the two set). Both official
+// servers make the special firework_rocket, not firework_rocket_simple, from
+// paper and gunpowder (client/rocket_order).
+struct GridRecipe {
+    std::optional<recipes::Match> made;
+    std::optional<SpecialMade> special;
+};
+GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid);
 
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);

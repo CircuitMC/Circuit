@@ -95,10 +95,13 @@ public:
         if (std::ranges::find(special_types, type) != special_types.end()) {
             category(j, crafting_categories);
             using Kind = gameplay::recipes::Special::Kind;
-            static constexpr std::array<std::pair<std::string_view, Kind>, 4> made{{
+            static constexpr std::array<std::pair<std::string_view, Kind>, 7> made{{
                 {"minecraft:crafting_special_repairitem", Kind::repair_item}, {"minecraft:crafting_special_armordye", Kind::armor_dye},
                 {"minecraft:crafting_special_bannerduplicate", Kind::banner_duplicate},
-                {"minecraft:crafting_special_shielddecoration", Kind::shield_decoration}}};
+                {"minecraft:crafting_special_shielddecoration", Kind::shield_decoration},
+                {"minecraft:crafting_special_firework_rocket", Kind::firework_rocket},
+                {"minecraft:crafting_special_firework_star", Kind::firework_star},
+                {"minecraft:crafting_special_firework_star_fade", Kind::firework_star_fade}}};
             const auto it = std::ranges::find(made, type, &std::pair<std::string_view, Kind>::first);
             if (it == made.end()) throw NotCrafted{"special recipe"};
             if (special_) special_->push_back({it->second, std::string(id)});
@@ -394,13 +397,16 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
             ++out.not_crafted[e.reason];
         }
     }
-    // Both official servers list stonecutting recipes by the id's path,
-    // then its namespace (observed with recipes in three namespaces).
-    const auto split = [](const std::string& id) {
-        const auto colon = id.find(':');
-        return std::pair{std::string_view(id).substr(colon + 1), std::string_view(id).substr(0, colon)};
-    };
-    std::ranges::stable_sort(out.stonecutting, [&](const auto& a, const auto& b) { return split(a.id) < split(b.id); });
+    // Both official servers keep recipes by the id's path, then its
+    // namespace (recipes::id_before): every list is in that order, so that
+    // grids and furnaces take the first recipe in it and the stonecutter
+    // lists its recipes in it.
+    const auto by_id = [](const auto& a, const auto& b) { return recipes::id_before(a.id, b.id); };
+    std::ranges::stable_sort(out.crafting, by_id);
+    std::ranges::stable_sort(out.special, by_id);
+    std::ranges::stable_sort(out.cooking, by_id);
+    std::ranges::stable_sort(out.stonecutting, by_id);
+    std::ranges::stable_sort(out.smithing, by_id);
     for (auto* items : {&out.smithing_template, &out.smithing_base, &out.smithing_addition}) {
         std::ranges::sort(*items);
         const auto [first, last] = std::ranges::unique(*items);

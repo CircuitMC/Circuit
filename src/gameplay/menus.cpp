@@ -778,8 +778,7 @@ void use_grid(RuleContext& ctx, PlayerInventory& inv, CraftingGrid grid, const c
     if (const auto* data = ctx.data()) {
         std::vector<ItemStack> stacks;
         for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
-        if (!recipes::match(data->crafting, {grid.width, grid.width, stacks}))
-            if (const auto special = special_crafting(*data, stacks)) kept = special->kept;
+        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}); r.special) kept = r.special->kept;
     }
     for (std::size_t k = 1; k <= grid.size(); ++k) {
         const auto slot = grid.record(k);
@@ -932,8 +931,9 @@ void record_recipe_used(RuleContext& ctx, const Menu& menu, PlayerInventory& inv
         const auto grid = menu.grid();
         std::vector<ItemStack> stacks;
         for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
-        if (const auto made = recipes::match(data->crafting, {grid.width, grid.width, stacks}); made && made->recipe)
-            record(0, static_cast<std::size_t>(made->recipe - data->crafting.data()));
+        // A special recipe (one that comes first in id order too) is not recorded.
+        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}); r.made && r.made->recipe)
+            record(0, static_cast<std::size_t>(r.made->recipe - data->crafting.data()));
     }
 }
 
@@ -1016,10 +1016,9 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
     const auto craft = [&](std::span<ItemStack> slots, std::uint8_t width, std::uint8_t first) {
         const auto grid = slots.subspan(1);
         const bool empty = std::ranges::all_of(grid, [](const ItemStack& s) { return s.empty(); });
-        const auto made = empty ? std::nullopt : recipes::match(data->crafting, {width, width, grid});
+        const auto r = empty ? GridRecipe{} : grid_recipe(*data, {width, width, grid});
         // Special recipes are not limited.
-        const auto special = empty || made ? std::nullopt : special_crafting(*data, grid);
-        const auto result = made && (!limited || known(made->recipe)) ? made->result : special ? special->result : ItemStack{};
+        const auto result = r.made && (!limited || known(r.made->recipe)) ? r.made->result : r.special ? r.special->result : ItemStack{};
         if (slots[0] == result) return;
         slots[0] = result;
         record_slot(ctx, inv, first);

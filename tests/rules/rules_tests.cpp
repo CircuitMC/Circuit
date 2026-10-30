@@ -4330,6 +4330,183 @@ int main() {
         require(result().empty(), "patterns without a base color: nothing");
     });
 
+    suite.run("special recipes make firework stars, rockets and fades", [] {
+        using Kind = recipes::Special::Kind;
+        using Colors = std::vector<std::int32_t>;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        // Stand-ins for the server's encoding: type 5 a star's explosion (its
+        // shape, trail, twinkle, then its colors and fade colors, each a count
+        // and four bytes per color), type 6 a rocket's fireworks (its flight,
+        // the explosions' count, then each explosion's bytes).
+        const auto explosion = [](std::int32_t shape, const Colors& colors, const Colors& fades, bool trail, bool twinkle) {
+            std::vector<std::byte> b{static_cast<std::byte>(shape), static_cast<std::byte>(trail), static_cast<std::byte>(twinkle)};
+            for (const auto* list : {&colors, &fades}) {
+                b.push_back(static_cast<std::byte>(list->size()));
+                for (const auto c : *list)
+                    for (int k = 3; k >= 0; --k) b.push_back(static_cast<std::byte>(static_cast<std::uint32_t>(c) >> (8 * k) & 0xFF));
+            }
+            return b;
+        };
+        const auto one = [](std::uint16_t type, std::vector<std::byte> value) { return ComponentPatch::make(772, {{type, std::move(value)}}, {}, {}); };
+        const auto star = [&](std::int32_t shape, const Colors& colors, const Colors& fades = {}, bool trail = false, bool twinkle = false) {
+            return one(5, explosion(shape, colors, fades, trail, twinkle));
+        };
+        const auto rocket = [&](std::int32_t flight, const std::vector<std::vector<std::byte>>& explosions) {
+            std::vector<std::byte> b{static_cast<std::byte>(flight), static_cast<std::byte>(explosions.size())};
+            for (const auto& e : explosions) b.insert(b.end(), e.begin(), e.end());
+            return one(6, b);
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::firework_rocket, "minecraft:firework_rocket"}, {Kind::firework_star, "minecraft:firework_star"},
+                         {Kind::firework_star_fade, "minecraft:firework_star_fade"}};
+        data->firework_star = [&](std::int32_t shape, std::span<const std::int32_t> colors, bool trail, bool twinkle) {
+            return std::optional(star(shape, Colors(colors.begin(), colors.end()), {}, trail, twinkle));
+        };
+        data->with_fade_colors = [&](const ComponentPatch& base, std::span<const std::int32_t> fades) {
+            // The explosion's shape, trail, twinkle and colors kept (a plain star: a small ball without colors).
+            std::vector<std::byte> b{std::byte{0}, std::byte{0}, std::byte{0}, std::byte{0}};
+            for (const auto& a : base.added())
+                if (a.type == 5) b.assign(a.value.begin(), a.value.begin() + 4 + 4 * static_cast<std::ptrdiff_t>(a.value[3]));
+            b.push_back(static_cast<std::byte>(fades.size()));
+            for (const auto c : fades)
+                for (int k = 3; k >= 0; --k) b.push_back(static_cast<std::byte>(static_cast<std::uint32_t>(c) >> (8 * k) & 0xFF));
+            return std::optional(one(5, b));
+        };
+        data->firework_rocket = [&](std::int32_t flight, std::span<const ComponentPatch> stars) {
+            std::vector<std::vector<std::byte>> explosions;
+            for (const auto& s : stars)
+                for (const auto& a : s.added())
+                    if (a.type == 5) explosions.push_back(a.value);
+            return std::optional(rocket(flight, explosions));
+        };
+        const auto paper = item("minecraft:paper"), gunpowder = item("minecraft:gunpowder"), stars = item("minecraft:firework_star");
+        const auto rockets = item("minecraft:firework_rocket");
+        const auto dye = [&](std::string_view color) { return ItemStack{item(std::string("minecraft:") + std::string(color) + "_dye"), 1}; };
+        const ItemStack powder{gunpowder, 1}, sheet{paper, 1};
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table"))});
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(table), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto fill = [&](std::vector<ItemStack> stacks) {
+            std::vector<CommandBody> give, clicks;
+            for (std::uint8_t k = 0; k < stacks.size(); ++k) {
+                give.push_back(SetPlayerSlot{alex, static_cast<std::uint8_t>(36 + k), stacks[k]});
+                const auto from = static_cast<std::int16_t>(37 + k);
+                for (const auto& c : {click(from, 0, 0), click(static_cast<std::int16_t>(1 + k), 1, 0), click(from, 0, 0)}) clicks.push_back(c);
+            }
+            s.tick(give);
+            s.tick(clicks);
+        };
+        const auto clear = [&] {
+            s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, false, table}});
+            std::vector<CommandBody> c;
+            for (std::uint8_t k = 9; k < 45; ++k) c.push_back(SetPlayerSlot{alex, k, {}});
+            s.tick(c);
+        };
+        const auto result = [&] { return player().table[0]; };
+        constexpr std::int32_t red = 0xB3312C, blue = 0x253192, lime = 0x41CD34;
+        // Stars: the dyes' firework colors in grid order; a shape, a trail, a twinkle (client/fireworks).
+        fill({powder, dye("red")});
+        require(result() == ItemStack{stars, 1, 0, star(0, {red})}, "a red small ball");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{stars, 1, 0, star(0, {red})} && player().table[1].empty() && player().table[2].empty(), "taken: both used");
+        const auto red_star = player().slots[44];
+        clear();
+        fill({powder, dye("blue"), {item("minecraft:fire_charge"), 1}, {items::diamond, 1}});
+        require(result() == ItemStack{stars, 1, 0, star(1, {blue}, {}, true)}, "a blue large ball with a trail");
+        const auto blue_star = result();
+        clear();
+        fill({{item("minecraft:feather"), 1}, {item("minecraft:glowstone_dust"), 1}, {items::diamond, 1}, powder, dye("blue"), dye("red")});
+        require(result() == ItemStack{stars, 1, 0, star(4, {blue, red}, {}, true, true)}, "a burst: trail, twinkle and both colors in order");
+        clear();
+        fill({powder, dye("white"), dye("white"), {item("minecraft:gold_nugget"), 1}});
+        require(result() == ItemStack{stars, 1, 0, star(2, {0xF0F0F0, 0xF0F0F0})}, "a star shape; a color twice");
+        clear();
+        fill({powder, dye("black"), {item("minecraft:dragon_head"), 1}});
+        require(result() == ItemStack{stars, 1, 0, star(3, {0x1E1B1B})}, "a mob head: a creeper");
+        clear();
+        for (const auto& stacks : std::vector<std::vector<ItemStack>>{
+                 {powder},
+                 {dye("red")},
+                 {powder, powder, dye("red")},
+                 {powder, dye("red"), {item("minecraft:fire_charge"), 1}, {item("minecraft:feather"), 1}},
+                 {powder, dye("red"), {items::diamond, 1}, {items::diamond, 1}},
+                 {powder, dye("red"), {item("minecraft:stick"), 1}},
+                 {powder, {item("minecraft:fire_charge"), 1}, {items::diamond, 1}}}) {
+            fill(stacks);
+            require(result().empty(), "not a star: nothing");
+            clear();
+        }
+        // Rockets: three, flying as long as the gunpowder, with the stars' explosions in grid order.
+        fill({sheet, powder});
+        require(result() == ItemStack{rockets, 3}, "one gunpowder and no stars: the rocket's default, no components");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{rockets, 3} && player().table[1].empty() && player().table[2].empty(), "taken: three rockets");
+        clear();
+        fill({powder, sheet, powder, powder});
+        require(result() == ItemStack{rockets, 3, 0, rocket(3, {})}, "three gunpowder");
+        clear();
+        fill({sheet, powder, red_star, blue_star});
+        require(result() == ItemStack{rockets, 3, 0, rocket(1, {explosion(0, {red}, {}, false, false), explosion(1, {blue}, {}, true, false)})},
+                "two stars in order");
+        clear();
+        fill({blue_star, red_star, powder, powder, sheet});
+        require(result() == ItemStack{rockets, 3, 0, rocket(2, {explosion(1, {blue}, {}, true, false), explosion(0, {red}, {}, false, false)})},
+                "the other order");
+        clear();
+        fill({sheet, powder, {stars, 1}});
+        require(result() == ItemStack{rockets, 3}, "a plain star adds no explosion");
+        clear();
+        fill({sheet, powder, {stars, 1}, red_star});
+        require(result() == ItemStack{rockets, 3, 0, rocket(1, {explosion(0, {red}, {}, false, false)})}, "a plain star and the red one");
+        clear();
+        for (const auto& stacks : std::vector<std::vector<ItemStack>>{
+                 {sheet},
+                 {sheet, red_star},
+                 {sheet, powder, powder, powder, powder},
+                 {sheet, sheet, powder},
+                 {sheet, powder, dye("red")}}) {
+            fill(stacks);
+            require(result().empty(), "not a rocket: nothing");
+            clear();
+        }
+        // Fades: the dyes in grid order, replacing earlier ones; a plain star a small ball without colors.
+        fill({red_star, dye("lime")});
+        require(result() == ItemStack{stars, 1, 0, star(0, {red}, {lime})}, "a lime fade");
+        s.tick({click(0, 0, 1)});
+        const auto faded = player().slots[44];
+        require(faded == ItemStack{stars, 1, 0, star(0, {red}, {lime})} && player().table[1].empty() && player().table[2].empty(), "taken: both used");
+        clear();
+        fill({dye("lime"), red_star, dye("blue")});
+        require(result() == ItemStack{stars, 1, 0, star(0, {red}, {lime, blue})}, "two fades in order");
+        clear();
+        fill({faded, dye("blue")});
+        require(result() == ItemStack{stars, 1, 0, star(0, {red}, {blue})}, "the fade replaced");
+        clear();
+        fill({{stars, 1}, dye("lime")});
+        require(result() == ItemStack{stars, 1, 0, star(0, {}, {lime})}, "a plain star");
+        clear();
+        fill({sheet, powder, faded});
+        require(result() == ItemStack{rockets, 3, 0, rocket(1, {explosion(0, {red}, {lime}, false, false)})}, "a faded star in a rocket");
+        clear();
+        for (const auto& stacks : std::vector<std::vector<ItemStack>>{
+                 {red_star},
+                 {red_star, blue_star, dye("lime")},
+                 {red_star, dye("lime"), powder},
+                 {red_star, dye("lime"), {item("minecraft:stick"), 1}}}) {
+            fill(stacks);
+            require(result().empty(), "not a fade: nothing");
+            clear();
+        }
+    });
+
     suite.run("crafters copy banners: the copy and the patterned banner are thrown out", [] {
         using circuit::contracts::ComponentPatch;
         using circuit::contracts::InsertItem;
@@ -4355,6 +4532,90 @@ int main() {
         require(d.overworld().entities.size() == before + 2 && d.overworld().entities[before].stack == ItemStack{white, 1, 0, patterned} &&
                     d.overworld().entities[before + 1].stack == ItemStack{white, 1, 0, patterned} && be.slots[0].empty() && be.slots[1].empty(),
                 "the copy, then the patterned banner as a remainder");
+    });
+
+    suite.run("a special recipe earlier in id order makes the result: not limited, not recorded", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetGameRule;
+        using circuit::contracts::SetPlayerSlot;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        const auto paper = item("minecraft:paper"), gunpowder = item("minecraft:gunpowder"), rockets = item("minecraft:firework_rocket");
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        // The data packs' simple rocket and the special one take the same grid; the special id comes first.
+        data->crafting = {{Recipe::Kind::shapeless, "minecraft:firework_rocket_simple", 0, 0, {Ingredient{{paper}}, Ingredient{{gunpowder}}}, {rockets, 3}}};
+        data->special = {{recipes::Special::Kind::firework_rocket, "minecraft:firework_rocket"}};
+        data->firework_rocket = [](std::int32_t flight, std::span<const ComponentPatch>) {
+            return std::optional(ComponentPatch::make(772, {{6, {static_cast<std::byte>(flight)}}}, {}, {}));
+        };
+        const PlayerKey alex{4, 2};
+        Sim s(bundle(), 7, 2, data);
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        const auto used = [&] {
+            std::vector<std::uint64_t> out;
+            for (const auto& r : of_kind(s.last, TraceKind::recipe_used))
+                if (r.a == alex.hi && r.b == alex.lo) out.push_back(r.c);
+            return out;
+        };
+        s.tick({SetGameRule{"doLimitedCrafting", 1}, SetPlayerSlot{alex, 1, {paper, 1}}, SetPlayerSlot{alex, 2, {gunpowder, 1}}});
+        require(player().slots[0] == ItemStack{rockets, 3} && player().known_crafting.empty(),
+                "no recipe known: the special rockets, without components (client/rocket_order)");
+        s.tick({ContainerClick{alex, std::nullopt, 0, 0, 1, false, at_block(0.5, 2, 0.5), {}}});
+        require(player().slots[44] == ItemStack{rockets, 3} && player().slots[1].empty() && player().slots[2].empty() && used().empty(),
+                "taken: no recipe recorded for the recipe book");
+        // A data-pack recipe earlier in id order than the special one makes it instead.
+        data->crafting[0].id = "minecraft:a_rocket";
+        s.tick({SetGameRule{"doLimitedCrafting", 0}, SetPlayerSlot{alex, 1, {paper, 1}}, SetPlayerSlot{alex, 2, {gunpowder, 1}}});
+        s.tick({ContainerClick{alex, std::nullopt, 0, 0, 1, false, at_block(0.5, 2, 0.5), {}}});
+        require(used() == std::vector<std::uint64_t>{0}, "the earlier data-pack recipe recorded");
+        // Ids order by the path, then the namespace (client/ns_crafting).
+        require(recipes::id_before("zzz:aaa_mix", "aaa:zzz_mix") && recipes::id_before("aaa:same_mix", "bbb:same_mix")
+                    && recipes::id_before("minecraft:firework_rocket", "example:rocket") && recipes::id_before("test:a_rocket", "minecraft:firework_rocket")
+                    && !recipes::id_before("minecraft:firework_rocket", "minecraft:firework_rocket"),
+                "ids by path, then namespace");
+        data->crafting[0].id = "example:rocket";
+        s.tick({SetPlayerSlot{alex, 1, {paper, 1}}, SetPlayerSlot{alex, 2, {gunpowder, 1}}});
+        s.tick({ContainerClick{alex, std::nullopt, 0, 0, 1, false, at_block(0.5, 2, 0.5), {}}});
+        require(used().empty(), "another namespace, a later path: the special recipe, nothing recorded");
+        data->crafting[0].id = "test:a_rocket";
+        s.tick({SetPlayerSlot{alex, 1, {paper, 1}}, SetPlayerSlot{alex, 2, {gunpowder, 1}}});
+        s.tick({ContainerClick{alex, std::nullopt, 0, 0, 1, false, at_block(0.5, 2, 0.5), {}}});
+        require(used() == std::vector<std::uint64_t>{0}, "another namespace, an earlier path: the data-pack recipe recorded");
+    });
+
+    suite.run("crafters make firework rockets: three thrown out", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::InsertItem;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{circuit::gameplay::recipes::Special::Kind::firework_rocket, "minecraft:firework_rocket"}};
+        // A stand-in: one byte of type 6, the flight.
+        data->firework_rocket = [](std::int32_t flight, std::span<const ComponentPatch>) {
+            return std::optional(ComponentPatch::make(772, {{6, {static_cast<std::byte>(flight)}}}, {}, {}));
+        };
+        const auto rockets = item("minecraft:firework_rocket");
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 4, -1, 2));
+        s.tick({place({0, 0, 0}, blocks::crafter(Direction::east)), InsertItem{{0, 0, 0}, 0, {item("minecraft:paper"), 1}},
+                InsertItem{{0, 0, 0}, 1, {item("minecraft:gunpowder"), 1}}, InsertItem{{0, 0, 0}, 2, {item("minecraft:gunpowder"), 1}}});
+        const auto before = s.oracle.dump().overworld().entities.size();
+        s.tick({place({0, 0, 1}, blocks::redstone_block())});
+        s.until(s.oracle.time() + 4);
+        const auto d = s.oracle.dump();
+        const auto& be = *block_entity_at(d, {0, 0, 0});
+        require(d.overworld().entities.size() == before + 1 &&
+                    d.overworld().entities[before].stack == ItemStack{rockets, 3, 0, ComponentPatch::make(772, {{6, {std::byte{2}}}}, {}, {})} &&
+                    be.slots[0].empty() && be.slots[1].empty() && be.slots[2].empty(),
+                "three rockets flying 2, the grid used (client/crafter_fireworks)");
     });
 
     suite.run("smithing tables upgrade and trim by the data packs' recipes", [] {

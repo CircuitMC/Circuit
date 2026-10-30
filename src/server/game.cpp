@@ -152,6 +152,8 @@ struct Player {
     float sent_health{-1.0f};
     std::int32_t sent_food{-1};
     bool sent_saturation_zero{};
+    // Health and experience wait for the end of the joining tick (on_join).
+    bool vitals_pending{};
     // The maps the client was sent, with the markers it last got for each.
     // The player's recipe book, and their inventory (armor, main, hotbar,
     // off hand) as its triggers last saw it.
@@ -755,7 +757,6 @@ struct Game::Impl final : GameServices {
         peer.send(wire.join_game(j));
         peer.send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
         peer.send(wire.set_held_slot(p.held));
-        send_vitals(p);
         peer.send(wire.empty_commands());
         peer.send(recipes_packet());
         // The recipe book: its settings, then every recipe the player knows.
@@ -782,10 +783,13 @@ struct Game::Impl final : GameServices {
         peer.send(wire.player_info_add(all));
         broadcast(wire.player_info_add({entry(p)}));
         sync_inventory(p);
-        sync_experience(p);
         peer.send(wire.game_event(13, 0.0f)); // start waiting for level chunks
         peer.send(wire.chunk_center(p.center.x, p.center.z));
         teleport(p, p.pos);
+        // Health, then experience, follow at the end of the tick, after the
+        // inventory, the position and the tick's recipe book triggers
+        // (send_joining_vitals).
+        p.vitals_pending = true;
         log_info(std::format("{} joined ({}, {})", p.name, p.uuid.text(), p.verified ? "verified" : "offline"));
         players.emplace(peer_id, std::move(p));
         player_count = players.size();
@@ -1632,7 +1636,7 @@ struct Game::Impl final : GameServices {
                 if (p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
                 hunger(p); // in every mode (only survival actions tire), also in the tick of a death
             }
-            send_vitals(p, true);
+            if (!p.vitals_pending) send_vitals(p, true);
         }
         for (const auto id : kicked) players.at(id).peer->kick("translate:multiplayer.disconnect.flying");
     }
@@ -2969,10 +2973,23 @@ struct Game::Impl final : GameServices {
             send_put_back(p);
             send_ghosts(p);
             sync_inventory(p);
-            sync_experience(p);
+            if (!p.vitals_pending) sync_experience(p);
             sync_maps(p);
             update_recipe_book(p, engine->view());
+            send_joining_vitals(p);
         }
+    }
+
+    // A joining player's health, then experience: after the inventory, the
+    // position and the first tick's recipe book unlocks, as both official
+    // servers send them in the player's first tick (client/join_order).
+    // Clients that count from the first health packet have read the
+    // inventory and the first tick's recipes.
+    void send_joining_vitals(Player& p) {
+        if (!p.vitals_pending) return;
+        p.vitals_pending = false;
+        send_vitals(p);
+        sync_experience(p);
     }
 
     // The filled maps a player's inventory holds (not the cursor), by id.
@@ -3272,6 +3289,9 @@ struct Game::Impl final : GameServices {
             if ((engine->time() + 1) % 20 == 0) broadcast(time_packet());
             advance();
         }
+        // A frozen world has no triggers: those who joined get them now (a
+        // paused one resumes when a player joins).
+        for (auto& [id, p] : players) send_joining_vitals(p);
         publish_light();
         publish_chunks();
         publish_players();

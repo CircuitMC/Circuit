@@ -2239,9 +2239,10 @@
           "impl": "implemented",
           "evidence": "compared",
           "cases": [
-            "client/vitals"
+            "client/vitals",
+            "client/join_order"
           ],
-          "note": "Eating is not modeled"
+          "note": "Eating is not modeled; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers"
         },
         {
           "id": "damage_sources",
@@ -2420,7 +2421,8 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "the special recipes of map and book cloning, map extending, fireworks, tipped arrows and decorated pots, and recipes whose results carry components (suspicious stew), make nothing",
+            "the special recipes of map and book cloning, map extending, tipped arrows and decorated pots, and recipes whose results carry components (suspicious stew), make nothing",
+            "a recipe placed from the recipe book at a crafting table shows the first recipe in id order that takes the grid, and taking it records that one; both official servers show the placed recipe's result until the grid changes (client/ns_place; only where recipes take the same grid, as in the official pack the special and the simple rocket recipes do, with the same rockets, and the special and the simple decorated pot recipes, of which only the simple one is made)",
             "among several kinds of items for one ingredient, placing a recipe from the book takes them in the order the inventory first holds them; the official servers' choice varies from run to run",
             "the recipes unlocked in one tick come in advancement id order (the official servers' order varies); advancement packets are not sent",
             "placing a recipe from the book sends the grid's result once when it changed; the official servers send it again for each grid change the placement makes (the same window either way)",
@@ -2434,9 +2436,15 @@
             "client/recipes_limited",
             "client/special_a",
             "client/crafter_special",
-            "client/own_grid_counts"
+            "client/own_grid_counts",
+            "client/fireworks",
+            "client/crafter_fireworks",
+            "client/rocket_order",
+            "client/ns_crafting",
+            "client/ns_book",
+            "client/ns_place"
           ],
-          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers. The recipe book shows every recipe's display, and the data packs' recipe advancements unlock recipes as both official servers do (items in the inventory, filled slots, the first tick, water, crafting, /recipe), with seen recipes and the books' settings kept; recipes placed from the book fill the own grid, crafting tables and furnaces, with ghosts for missing items, as both official servers place them; with doLimitedCrafting on, the grids make only known recipes. Repairing, armor dye, banner copying and shield decoration are made at crafting tables and in crafters as on both official servers, and each change a click makes to a grid's slot sends its result again as they do"
+          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers. The recipe book shows every recipe's display, and the data packs' recipe advancements unlock recipes as both official servers do (items in the inventory, filled slots, the first tick, water, crafting, /recipe), with seen recipes and the books' settings kept; recipes placed from the book fill the own grid, crafting tables and furnaces, with ghosts for missing items, as both official servers place them; with doLimitedCrafting on, the grids make only known recipes. Repairing, armor dye, banner copying, shield decoration, firework stars, rockets and star fades are made at crafting tables and in crafters as on both official servers, special recipes matching in id order with the others; recipes match and the book numbers them by the id's path, then its namespace, as both official servers order recipes of several namespaces; and each change a click makes to a grid's slot sends its result again as they do"
         },
         {
           "id": "smelting",
@@ -2444,7 +2452,7 @@
           "milestone": "C5",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Furnaces, smokers and blast furnaces burn their fuel and cook by the official data packs' recipes, light and go out, fill and empty through hoppers by their faces and drive comparators, as both official servers do tick by tick; every item's burn time as both report it",
+          "note": "Furnaces, smokers and blast furnaces burn their fuel and cook by the official data packs' recipes (the first by the id's path, then its namespace), light and go out, fill and empty through hoppers by their faces and drive comparators, as both official servers do tick by tick; every item's burn time as both report it",
           "cases": [
             "trace/furnaces",
             "trace/furnaces_more",
@@ -2452,7 +2460,8 @@
             "trace/xp_explosion",
             "collision/fuel",
             "client/furnace_menus",
-            "client/furnace_xp"
+            "client/furnace_xp",
+            "client/ns_book"
           ],
           "deviations": [
             "an experience's rest below 1 comes by a random of Circuit's own, where the official servers draw from an unseeded random",
