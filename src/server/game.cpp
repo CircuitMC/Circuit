@@ -123,6 +123,9 @@ struct Player {
     // A CloseContainer of this player not yet applied: the stacks it puts
     // back into the inventory are sent as the official servers send them.
     std::optional<std::uint64_t> closing;
+    // The ContainerClicks of this player not yet seen applied: each change
+    // of a crafting grid's slot they make sends the result again.
+    std::vector<std::uint64_t> clicks;
     std::int32_t inventory_state{};
     std::vector<std::int32_t> acks;
     bool moved{};
@@ -1014,6 +1017,28 @@ struct Game::Impl final : GameServices {
             if (at(p.window->pos).is(BlockType::crafter)) slots.push_back(wire_stack(crafter_result(p.window->pos)));
         }
         const auto id = p.window ? p.window->id : 0;
+        // Each change of a crafting grid's slot by a click (the own window's,
+        // or an open crafting table's) sends the window's result again,
+        // changed or not, as both official servers do (client/special_a,
+        // client/own_grid_counts); other changes (closing, the recipe book)
+        // send it only when it differs.
+        std::size_t resends = 0;
+        if (!p.clicks.empty()) {
+            const auto key = key_of(p);
+            const bool table = p.window && gameplay::is_crafting_table(at(p.window->pos));
+            const std::uint64_t first = table ? contracts::table_first + 1 : 1, last = table ? contracts::table_first + 9 : 4;
+            bool in_click = false;
+            for (const auto& r : engine->trace()) {
+                if (r.kind == contracts::TraceKind::command_applied || r.kind == contracts::TraceKind::command_rejected) {
+                    const auto it = std::ranges::find(p.clicks, r.a);
+                    in_click = it != p.clicks.end() && r.kind == contracts::TraceKind::command_applied;
+                    if (it != p.clicks.end()) p.clicks.erase(it);
+                    continue;
+                }
+                if (!in_click || (p.window && !table) || r.kind != contracts::TraceKind::player_slot_changed || r.a != key.hi || r.b != key.lo) continue;
+                if (const auto slot = r.c >> 48; slot >= first && slot <= last) ++resends;
+            }
+        }
         // An open window's player slots are the client's own window's too.
         const auto mirror = [&] {
             if (p.window && p.own.size() == inventory_slots && p.remote.size() >= p.window->container_slots + 36)
@@ -1026,6 +1051,10 @@ struct Game::Impl final : GameServices {
             p.remote_carried = carried;
             mirror();
             return;
+        }
+        for (; resends > 0; --resends) {
+            p.peer->send(wire.container_slot(id, ++p.inventory_state, 0, slots[0]));
+            p.remote[0] = slots[0];
         }
         for (std::size_t i = 0; i < slots.size(); ++i)
             if (p.remote[i] != slots[i]) {
@@ -1124,8 +1153,7 @@ struct Game::Impl final : GameServices {
         std::array<contracts::ItemStack, 9> grid{};
         for (std::size_t k = 0; k < 9; ++k)
             if (((*be)->disabled >> k & 1) == 0) grid[k] = (*be)->slots[k];
-        const auto made = gameplay::recipes::match(data.game->crafting, {3, 3, grid});
-        return made ? made->result : contracts::ItemStack{};
+        return gameplay::crafted(*data.game, {3, 3, grid});
     }
 
     // The parts of the container at `pos` in the menu's slot order: the right
@@ -1952,8 +1980,12 @@ struct Game::Impl final : GameServices {
         std::optional<BlockPos> container;
         if (p.window) container = p.window->pos;
         const auto [position, velocity] = throw_from(p);
-        admit(contracts::ContainerClick{key_of(p), container, c.slot, static_cast<std::uint8_t>(c.button), static_cast<std::uint8_t>(c.mode),
-                                        p.game_mode == creative, position, velocity});
+        if (const auto admitted = queue.admit(contracts::ContainerClick{key_of(p), container, c.slot, static_cast<std::uint8_t>(c.button),
+                                                                         static_cast<std::uint8_t>(c.mode), p.game_mode == creative, position, velocity},
+                                              overworld))
+            p.clicks.push_back(*admitted);
+        else
+            log_warn("game: command queue full; input dropped");
     }
 
     void handle(Player& p, intent::ContainerClose& c) {
@@ -2916,6 +2948,14 @@ struct Game::Impl final : GameServices {
         for (const auto& r : engine->trace())
             if (r.kind == contracts::TraceKind::container_opened && r.dimension == overworld) opened.push_back({{r.a, r.b}, r.pos});
         for (auto& [id, p] : players) {
+            // A window closed in the tick another opens: what the close put
+            // back and the own window's differences go first, as they do a
+            // tick apart.
+            const bool opens = p.game_mode != spectator && std::ranges::any_of(opened, [&](const auto& o) { return o.first == key_of(p); });
+            if (opens && !p.window && p.closing) {
+                send_put_back(p);
+                sync_inventory(p);
+            }
             for (const auto& [key, pos] : opened)
                 if (key == key_of(p) && p.game_mode != spectator) open_window(p, pos);
             if (p.window) {

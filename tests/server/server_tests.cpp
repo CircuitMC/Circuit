@@ -1457,6 +1457,53 @@ int main() {
         require(packets.size() == 2 && std::get<0>(packets[0]) == "inventory" && std::get<1>(packets[0]) == (returned >= 36 ? returned - 36 : returned)
                     && has(packets, "slot", 0, returned),
                 "the put-back stack, then its slot");
+        // In the own window, each change of the crafting grid by a click
+        // sends the result again, though nothing changed it, and a slot
+        // emptied by a pickup changes twice (client/own_grid_counts): the
+        // clicks predict every slot right, so nothing else is sent.
+        {
+            const auto redstone = content().item_id("minecraft:redstone").value();
+            const auto predicted = [&](std::int16_t slot, std::int8_t button, std::vector<std::pair<std::int16_t, std::optional<server::WireStack>>> changed,
+                                       std::int32_t carried) {
+                auto click = window_click(0, slot, button, 0, state);
+                auto& c = std::get<server::intent::ContainerClick>(click);
+                c.changed = std::move(changed);
+                c.carried = carried ? server::WireStack{redstone, carried, 0, {}} : server::WireStack{};
+                return click;
+            };
+            f.game->submit(1, predicted(static_cast<std::int16_t>(returned), 0, {{static_cast<std::int16_t>(returned), server::WireStack{}}}, 32));
+            f.game->tick();
+            require(inventory().cursor.count == 32 && window_packets().empty(), "picked up: nothing sent");
+            f.game->submit(1, predicted(1, 1, {{1, server::WireStack{redstone, 1, 0, {}}}}, 31));
+            f.game->tick();
+            packets = window_packets();
+            require(inventory().slots[1].count == 1 && packets.size() == 1 && has(packets, "slot", 0, 0), "one into the grid: the result sent");
+            f.game->submit(1, predicted(1, 0, {{1, server::WireStack{redstone, 32, 0, {}}}}, 0));
+            f.game->tick();
+            packets = window_packets();
+            require(inventory().slots[1].count == 32 && packets.size() == 1 && has(packets, "slot", 0, 0), "the rest: the result sent again");
+            f.game->submit(1, predicted(1, 0, {{1, server::WireStack{}}}, 32));
+            f.game->tick();
+            packets = window_packets();
+            require(inventory().slots[1].empty() && packets.size() == 2 && has(packets, "slot", 0, 0), "picked up, the slot emptied: the result sent twice");
+            f.game->submit(1, predicted(2, 1, {{2, server::WireStack{redstone, 1, 0, {}}}}, 31));
+            f.game->tick();
+            packets = window_packets();
+            require(packets.size() == 1 && has(packets, "slot", 0, 0), "one into slot 2: once");
+            f.game->submit(1, predicted(static_cast<std::int16_t>(returned), 0, {{static_cast<std::int16_t>(returned), server::WireStack{redstone, 31, 0, {}}}}, 0));
+            f.game->tick();
+            require(window_packets().empty(), "the rest put back, out of the grid: nothing sent");
+            // Closing gives the grid back without sending the result again
+            // (it did not change: no recipes here).
+            f.game->submit(1, I{server::intent::ContainerClose{0}});
+            f.game->tick();
+            packets = window_packets();
+            require(inventory().slots[2].empty() && !has(packets, "slot", 0, 0), "closed: the grid given back, the result not sent");
+            returned = -1;
+            for (std::size_t n = 0; n < inventory().slots.size(); ++n)
+                if (inventory().slots[n].item == gameplay::items::redstone) returned = static_cast<std::int32_t>(n);
+            require(returned >= 9 && inventory().slots[static_cast<std::size_t>(returned)].count == 32, "all 32 together again");
+        }
         // A dropper opens a generic_3x3 window: 9 slots, then the 36 inventory slots.
         require(f.at({2, -60, 3}).starts_with("minecraft:dropper"), "dropper placed");
         f.game->submit(1, GameFixture::click({2, -60, 3}, 3));
@@ -1475,6 +1522,25 @@ int main() {
         f.game->tick();
         f.game->tick();
         require(has(window_packets(), "close", 3, 0), "closed out of reach");
+        // A window closed in the tick it opens again: the stack the close puts
+        // back is sent before the new window, as a tick apart.
+        f.game->submit(1, I{server::intent::Command{"tp 2.5 -60 -0.5"}});
+        f.game->tick();
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 5));
+        f.game->tick();
+        require(has(window_packets(), "open", 4, 2), "the chest opened again");
+        f.game->submit(1, window_click(4, 0, 0, 0, state));
+        f.game->tick();
+        (void)window_packets();
+        require(inventory().cursor.item == gameplay::items::redstone, "a stack carried");
+        f.game->submit(1, I{server::intent::ContainerClose{4}});
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 6));
+        f.game->tick();
+        packets = window_packets();
+        const auto first = [&](std::string_view name) {
+            return std::ranges::find_if(packets, [&](const auto& t) { return std::get<0>(t) == name; }) - packets.begin();
+        };
+        require(inventory().cursor.empty() && has(packets, "open", 5, 2) && first("inventory") < first("open"), "put back, then the new window");
     });
 
     suite.run("chests send their lids' block events and trapped chests power by their viewers", [] {
@@ -2906,7 +2972,8 @@ int main() {
         std::vector<std::string> crafted;
         for (const auto& r : d->game->crafting) crafted.push_back(r.id);
         require(crafted == std::vector<std::string>{"test:box", "test:planks", "test:shears"}, "crafting recipes in id order");
-        require(d->recipes.not_crafted == std::map<std::string, std::size_t>{{"result components", 1}, {"special recipe", 1}}, "valid, not crafted");
+        require(d->recipes.not_crafted == std::map<std::string, std::size_t>{{"result components", 1}}, "valid, not crafted");
+        require((d->game->special == std::vector<gameplay::recipes::Special>{{gameplay::recipes::Special::Kind::repair_item, "test:repair"}}), "the special recipe");
         require(d->recipes.invalid == std::map<std::string, std::size_t>{{"air", 1}, {"key symbol not in the pattern", 1}, {"no trim pattern", 1},
                                                                          {"pattern rows of different widths", 1}, {"result count above the item's stack size", 1},
                                                                          {"unknown item", 1}, {"unknown item tag", 1}, {"unknown type minecraft:crafting_magic", 1}},

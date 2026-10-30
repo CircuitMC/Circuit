@@ -79,7 +79,10 @@ void tick_crafter(RuleContext& ctx, BlockPos pos, BlockState s) {
     for (std::size_t k = 0; k < grid.size(); ++k)
         if (!disabled(*be, k)) grid[k] = be->slots[k];
     const auto made = recipes::match(data->crafting, {3, 3, grid});
-    if (!made || made->result.empty()) return; // it fails
+    // Else a special recipe; a stack it keeps (a banner copied) goes out with the result.
+    const auto special = made ? std::nullopt : special_crafting(*data, grid);
+    const auto result = made ? made->result : special ? special->result : ItemStack{};
+    if (result.empty()) return; // it fails
     be->crafting_ticks = crafting_ticks;
     set_crafter(ctx, pos, s.with_extra(1));
     std::vector<ItemStack> remainders;
@@ -90,10 +93,16 @@ void tick_crafter(RuleContext& ctx, BlockPos pos, BlockState s) {
         if (next.count == 0) next = {};
         ctx.record(TraceKind::inventory_changed, pos, k, contracts::pack_stack(be->slots[k]), contracts::pack_stack(next));
         be->slots[k] = next;
-        if (const auto left = recipes::remainder(grid[k].item); !left.empty()) remainders.push_back(left);
+        if (special && special->kept == k) {
+            auto kept = grid[k];
+            kept.count = 1;
+            remainders.push_back(kept);
+        } else if (const auto left = recipes::remainder(grid[k].item); !left.empty()) {
+            remainders.push_back(left);
+        }
     }
     container_changed(ctx, pos);
-    deliver(ctx, pos, s.facing(), made->result);
+    deliver(ctx, pos, s.facing(), result);
     for (const auto& r : remainders) deliver(ctx, pos, s.facing(), r);
 }
 

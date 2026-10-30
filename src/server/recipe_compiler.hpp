@@ -18,6 +18,7 @@ struct RecipeCompilation {
     // The stonecutting recipes, by id path and then namespace (the official order).
     std::vector<gameplay::recipes::Stonecutting> stonecutting;
     std::vector<gameplay::recipes::Smithing> smithing; // the smithing recipes, by id
+    std::vector<gameplay::recipes::Special> special;   // the special crafting recipes the rules make, by id
     // The items smithing recipes take as templates, bases and additions, ascending
     // (clients receive them as property sets).
     std::vector<std::uint16_t> smithing_template, smithing_base, smithing_addition;

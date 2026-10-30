@@ -963,6 +963,62 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::signed_boo
     return replaced(base, protocol(), gone, contracts::ComponentPatch::Added{*written, std::move(*value)});
 }
 
+std::int32_t ComponentCodec::banner_layers(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("banner_patterns");
+    if (!type || patch.empty() || patch.protocol() != protocol()) return 0;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // The layers' count first.
+        Reader r(a.value);
+        const auto n = r.varint();
+        return n && *n > 0 ? *n : 0;
+    }
+    return 0;
+}
+
+std::optional<std::int32_t> ComponentCodec::dyed_color_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("dyed_color");
+    if (!type || patch.empty() || patch.protocol() != protocol()) return std::nullopt;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // The color first (1.21.4's tooltip flag after it).
+        Reader r(a.value);
+        const auto rgb = r.i32();
+        if (!rgb) return std::nullopt;
+        return *rgb;
+    }
+    return std::nullopt;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_dyed_color(const contracts::ComponentPatch& base, std::int32_t rgb,
+                                                                                      const ComponentContext& ctx) const {
+    const auto type = type_id("dyed_color");
+    if (!type) return std::unexpected("no dyed_color component");
+    std::optional<bool> flag;
+    for (const auto& a : base.added())
+        if (a.type == *type && a.value.size() == 5) flag = a.value.back() != std::byte{0};
+    Writer w;
+    w.i32(rgb);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) {
+        w.boolean(flag.value_or(true));
+        value = canonical_value(*type, w.bytes(), ctx);
+    }
+    if (!value) return std::unexpected(value.error());
+    return replaced(base, protocol(), {}, contracts::ComponentPatch::Added{*type, std::move(*value)});
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_component_from(const contracts::ComponentPatch& base,
+                                                                                          const contracts::ComponentPatch& from,
+                                                                                          std::string_view name) const {
+    const auto type = type_id(name);
+    if (!type) return std::unexpected(std::format("no {} component", name));
+    for (const auto& a : from.added())
+        if (a.type == *type) return replaced(base, protocol(), {}, a);
+    const std::array gone{*type};
+    return replaced(base, protocol(), gone, std::nullopt);
+}
+
 std::optional<std::vector<std::string>> ComponentCodec::recipes_of(const contracts::ComponentPatch& patch) const {
     const auto type = type_id("recipes");
     if (!type || patch.empty() || patch.protocol() != protocol()) return std::nullopt;

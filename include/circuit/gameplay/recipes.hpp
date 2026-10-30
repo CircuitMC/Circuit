@@ -16,7 +16,8 @@
 //   keeps the input's components; an input that already is the result item
 //   does not match.
 // Ingredients test the item alone. The special recipes, which need code of
-// their own (repairing, map and book cloning, fireworks, dyeing armor), are
+// their own, are listed by kind (Special below); those not made yet (map and
+// book cloning, map extending, fireworks, tipped arrows, decorated pots) are
 // not compiled.
 namespace circuit::gameplay::recipes {
 
@@ -80,6 +81,27 @@ struct Smithing {
     contracts::ItemStack result; // transform
     std::string pattern;         // trim; empty: the template item's
     bool operator==(const Smithing&) const = default;
+};
+
+// The special crafting recipes the rules make (their data pack files name
+// only their type; client/special_a, both official servers):
+// - repair_item: two stacks of one damageable item, alone: one of it with
+//   both durabilities and 5 % of the most (at most whole), and the curses of
+//   both, each at its higher level; nothing else of theirs;
+// - armor_dye: one dyeable item (the item tag dyeable) and dyes: the item
+//   with its color and theirs mixed;
+// - banner_duplicate: a banner with patterns and one without, of one color:
+//   a copy, the patterned one left in its slot when it is taken;
+// - shield_decoration: a shield without patterns and a banner: the shield
+//   with the banner's patterns and color (a base color of its own replaced).
+// In a crafter (client/crafter_special) the kept banner is a remainder: it
+// is thrown out after the copy. Repairing takes damaged and undamaged items
+// alike, and drops their other components (a dyed color, say).
+struct Special {
+    enum class Kind : std::uint8_t { repair_item, armor_dye, banner_duplicate, shield_decoration };
+    Kind kind{};
+    std::string id;
+    bool operator==(const Special&) const = default;
 };
 
 // A crafting grid's slots, row by row.

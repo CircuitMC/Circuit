@@ -119,6 +119,15 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
 // Sets the crafting result (slot 0) from the player's 2x2 grid (slots 1-4)
 // and the data packs' recipes. Without data packs crafting is not modeled.
 void update_crafting(RuleContext& ctx, PlayerInventory& inv);
+// What a special recipe of the data packs makes of a grid's stacks (row by
+// row; special_recipes.cpp): its kind, the stack, and the slot whose stack
+// stays when it is taken (a banner copied), if any.
+struct SpecialMade {
+    recipes::Special::Kind kind{};
+    ItemStack result;
+    std::optional<std::size_t> kept;
+};
+std::optional<SpecialMade> special_crafting(const GameData& data, std::span<const ItemStack> grid);
 
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);

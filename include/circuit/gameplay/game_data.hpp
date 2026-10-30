@@ -35,6 +35,10 @@ struct GameData {
     std::unordered_map<std::uint32_t, loot::Table> block_loot;
     // The crafting recipes the rules match, in recipe id order.
     std::vector<recipes::Recipe> crafting;
+    // The special crafting recipes of the data packs the rules make, in recipe
+    // id order, and the items armor dye takes (the item tag dyeable, ascending).
+    std::vector<recipes::Special> special;
+    std::vector<std::uint16_t> dyeable;
     // The cooking recipes, in recipe id order.
     std::vector<recipes::Cooking> cooking;
     // The stonecutting recipes, ordered by id path and then namespace, as
@@ -167,10 +171,24 @@ struct GameData {
     std::function<std::optional<std::int32_t>(const contracts::ComponentPatch&, std::string_view)> int_component;
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::string_view, std::optional<std::int32_t>)>
         with_int_component;
+    // For special recipes: a banner's pattern layers (0 without), a stack's
+    // dyed color (nullopt without), components with the dyed color set, and
+    // components with one named component as another stack's (removed when
+    // that has none); set by the server.
+    std::function<std::int32_t(const contracts::ComponentPatch&)> banner_layers;
+    std::function<std::optional<std::int32_t>(const contracts::ComponentPatch&)> dyed_color_of;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::int32_t)> with_dyed_color;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, const contracts::ComponentPatch& from, std::string_view)>
+        with_component_from;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.
     std::function<std::string(const contracts::ItemStack&)> display_name;
 };
+
+// What a crafting grid makes with the data packs: the first matching
+// recipe's result, else a special recipe's (recipes::Special); empty when
+// nothing matches. A crafter's window shows it.
+contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid);
 
 } // namespace circuit::gameplay

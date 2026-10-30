@@ -179,7 +179,8 @@
           "note": "Every component type of both protocols is read, checked against its registries and kept losslessly in canonical form (schema compiled from minecraft-data); 29 components have a save form for Anvil interchange",
           "deviations": [
             "components that refer to registries the server does not synchronize (enchantments, trim materials and patterns, banner patterns, instruments, jukebox songs, data component predicates) are refused",
-            "the rules use only damage, max stack size and max damage"
+            "the rules use only damage, max stack size and max damage",
+            "a stack's components are written in type order; the official servers write a patch in the order its components were set (clients read it as a map; client/special_a)"
           ]
         },
         {
@@ -2419,9 +2420,10 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing",
+            "the special recipes of map and book cloning, map extending, fireworks, tipped arrows and decorated pots, and recipes whose results carry components (suspicious stew), make nothing",
             "among several kinds of items for one ingredient, placing a recipe from the book takes them in the order the inventory first holds them; the official servers' choice varies from run to run",
             "the recipes unlocked in one tick come in advancement id order (the official servers' order varies); advancement packets are not sent",
+            "placing a recipe from the book sends the grid's result once when it changed; the official servers send it again for each grid change the placement makes (the same window either way)",
             "without the official data pack there are no recipes"
           ],
           "cases": [
@@ -2429,9 +2431,12 @@
             "client/crafting_table",
             "client/recipes",
             "client/recipes_place",
-            "client/recipes_limited"
+            "client/recipes_limited",
+            "client/special_a",
+            "client/crafter_special",
+            "client/own_grid_counts"
           ],
-          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers. The recipe book shows every recipe's display, and the data packs' recipe advancements unlock recipes as both official servers do (items in the inventory, filled slots, the first tick, water, crafting, /recipe), with seen recipes and the books' settings kept; recipes placed from the book fill the own grid, crafting tables and furnaces, with ghosts for missing items, as both official servers place them; with doLimitedCrafting on, the grids make only known recipes"
+          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers. The recipe book shows every recipe's display, and the data packs' recipe advancements unlock recipes as both official servers do (items in the inventory, filled slots, the first tick, water, crafting, /recipe), with seen recipes and the books' settings kept; recipes placed from the book fill the own grid, crafting tables and furnaces, with ghosts for missing items, as both official servers place them; with doLimitedCrafting on, the grids make only known recipes. Repairing, armor dye, banner copying and shield decoration are made at crafting tables and in crafters as on both official servers, and each change a click makes to a grid's slot sends its result again as they do"
         },
         {
           "id": "smelting",

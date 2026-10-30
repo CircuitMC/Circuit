@@ -683,7 +683,15 @@ public:
         taken.count = static_cast<std::uint8_t>(n);
         existing.count = static_cast<std::uint8_t>(existing.count - n);
         set(i, existing);
+        // A crafting grid's slot emptied by a pickup or a throw changes twice,
+        // as both official servers count it (each change sends the result
+        // again; client/own_grid_counts).
+        if (existing.count == 0 && crafting_grid_slot(i)) record_slot(ctx_, inv_, slots_[i].index);
         return taken;
+    }
+    [[nodiscard]] bool crafting_grid_slot(std::size_t i) const {
+        const auto& s = slots_[i];
+        return !s.container && ((s.index >= 1 && s.index <= 4) || (s.index > contracts::table_first && s.index <= contracts::table_first + 9));
     }
 
     // Window slot of an own-inventory slot (hotbar 0-8, off hand 40) in this menu.
@@ -762,22 +770,36 @@ void pickup(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c, st
 // The result was taken: one of each grid item is used up. An item with a
 // remainder leaves it in its slot; when the slot still holds other items,
 // the remainder goes into the inventory, or drops when it does not fit.
+// The slot changes twice then, as both official servers count it (each
+// change sends the result again; client/special_a, client/own_grid_counts).
 void use_grid(RuleContext& ctx, PlayerInventory& inv, CraftingGrid grid, const contracts::ContainerClick& c) {
+    // A special recipe's kept stack (a banner copied) is its remainder.
+    std::optional<std::size_t> kept;
+    if (const auto* data = ctx.data()) {
+        std::vector<ItemStack> stacks;
+        for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
+        if (!recipes::match(data->crafting, {grid.width, grid.width, stacks}))
+            if (const auto special = special_crafting(*data, stacks)) kept = special->kept;
+    }
     for (std::size_t k = 1; k <= grid.size(); ++k) {
         const auto slot = grid.record(k);
         auto s = player_slot(inv, slot);
         if (s.empty()) continue;
-        const auto left = recipes::remainder(s.item);
+        auto left = recipes::remainder(s.item);
+        if (kept == k - 1) {
+            left = s;
+            left.count = 1;
+        }
         s.count = static_cast<std::uint8_t>(s.count - 1);
         if (s.count == 0) s = {};
         if (!left.empty()) {
+            player_slot(inv, slot) = s;
+            record_slot(ctx, inv, slot);
             if (s.empty()) {
                 s = left;
             } else if (s.same_kind(left)) {
                 s.count = static_cast<std::uint8_t>(s.count + left.count);
             } else {
-                player_slot(inv, slot) = s;
-                record_slot(ctx, inv, slot);
                 throw_item(ctx, c.drop_position, c.drop_velocity, add_to_player(ctx, inv, left, contracts::hotbar_first));
                 continue;
             }
@@ -995,7 +1017,9 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
         const auto grid = slots.subspan(1);
         const bool empty = std::ranges::all_of(grid, [](const ItemStack& s) { return s.empty(); });
         const auto made = empty ? std::nullopt : recipes::match(data->crafting, {width, width, grid});
-        const auto result = made && (!limited || known(made->recipe)) ? made->result : ItemStack{};
+        // Special recipes are not limited.
+        const auto special = empty || made ? std::nullopt : special_crafting(*data, grid);
+        const auto result = made && (!limited || known(made->recipe)) ? made->result : special ? special->result : ItemStack{};
         if (slots[0] == result) return;
         slots[0] = result;
         record_slot(ctx, inv, first);

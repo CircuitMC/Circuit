@@ -119,6 +119,17 @@ public:
 
     // A writable book's content of pages "1" to "n" (fixtures' books).
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> writable_book(std::int32_t pages, const ComponentContext& ctx) const;
+    // A banner's pattern layers (0 without the component), a dyed color (none
+    // without one), the patch with its dyed color set (1.21.4's tooltip flag
+    // kept, else shown), and `base` with the component `name` as `from` has it
+    // (removed when `from` has none).
+    [[nodiscard]] std::int32_t banner_layers(const contracts::ComponentPatch& patch) const;
+    [[nodiscard]] std::optional<std::int32_t> dyed_color_of(const contracts::ComponentPatch& patch) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_dyed_color(const contracts::ComponentPatch& base, std::int32_t rgb,
+                                                                                        const ComponentContext& ctx) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_component_from(const contracts::ComponentPatch& base,
+                                                                                            const contracts::ComponentPatch& from,
+                                                                                            std::string_view name) const;
     // The recipe ids of the patch's recipes component (a knowledge book's;
     // none without one).
     [[nodiscard]] std::optional<std::vector<std::string>> recipes_of(const contracts::ComponentPatch& patch) const;

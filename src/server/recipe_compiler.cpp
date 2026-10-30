@@ -94,7 +94,15 @@ public:
         }
         if (std::ranges::find(special_types, type) != special_types.end()) {
             category(j, crafting_categories);
-            throw NotCrafted{"special recipe"};
+            using Kind = gameplay::recipes::Special::Kind;
+            static constexpr std::array<std::pair<std::string_view, Kind>, 4> made{{
+                {"minecraft:crafting_special_repairitem", Kind::repair_item}, {"minecraft:crafting_special_armordye", Kind::armor_dye},
+                {"minecraft:crafting_special_bannerduplicate", Kind::banner_duplicate},
+                {"minecraft:crafting_special_shielddecoration", Kind::shield_decoration}}};
+            const auto it = std::ranges::find(made, type, &std::pair<std::string_view, Kind>::first);
+            if (it == made.end()) throw NotCrafted{"special recipe"};
+            if (special_) special_->push_back({it->second, std::string(id)});
+            return std::nullopt;
         }
         if (type == "minecraft:smelting" || type == "minecraft:blasting" || type == "minecraft:smoking" || type == "minecraft:campfire_cooking") {
             category(j, cooking_categories);
@@ -292,6 +300,7 @@ public:
     std::vector<gameplay::recipes::Cooking>* cooking_ = nullptr;
     std::vector<gameplay::recipes::Stonecutting>* stonecutting_ = nullptr;
     std::vector<gameplay::recipes::Smithing>* smithing_ = nullptr;
+    std::vector<gameplay::recipes::Special>* special_ = nullptr;
     std::vector<std::uint16_t>* smithing_template_ = nullptr;
     std::vector<std::uint16_t>* smithing_base_ = nullptr;
     std::vector<std::uint16_t>* smithing_addition_ = nullptr;
@@ -359,6 +368,7 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
     compiler.cooking_ = &out.cooking;
     compiler.stonecutting_ = &out.stonecutting;
     compiler.smithing_ = &out.smithing;
+    compiler.special_ = &out.special;
     compiler.smithing_template_ = &out.smithing_template;
     compiler.smithing_base_ = &out.smithing_base;
     compiler.smithing_addition_ = &out.smithing_addition;

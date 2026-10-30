@@ -4131,6 +4131,232 @@ int main() {
         require(player().known_crafting.empty(), "none known");
     });
 
+    suite.run("special recipes repair, dye armor, copy banners and decorate shields", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        using Kind = recipes::Special::Kind;
+        using Levels = std::vector<std::pair<std::uint32_t, std::int32_t>>;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        // Stand-ins for the server's encoding: type 1 the enchantments (a
+        // byte per id and level), 2 the dyed color (four bytes), 3 the banner
+        // patterns (their count), 4 the base color.
+        using Parts = std::map<std::uint16_t, std::vector<std::byte>>;
+        const auto parts = [](const ComponentPatch& p) {
+            Parts out;
+            for (const auto& a : p.added()) out[a.type] = a.value;
+            return out;
+        };
+        const auto patch = [](const Parts& parts) {
+            std::vector<ComponentPatch::Added> added;
+            for (const auto& [type, value] : parts) added.push_back({type, value});
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto number = [](const Parts& p, std::uint16_t type) -> std::optional<std::int32_t> {
+            const auto it = p.find(type);
+            if (it == p.end()) return std::nullopt;
+            std::uint32_t v = 0;
+            for (const auto b : it->second) v = v << 8 | static_cast<std::uint32_t>(b);
+            return static_cast<std::int32_t>(v);
+        };
+        const auto bytes = [](std::int32_t v, std::size_t n) {
+            std::vector<std::byte> out;
+            for (std::size_t k = n; k-- > 0;) out.push_back(static_cast<std::byte>(static_cast<std::uint32_t>(v) >> (8 * k) & 0xFF));
+            return out;
+        };
+        const auto enchanted = [&](const Levels& levels) {
+            std::vector<std::byte> b;
+            for (const auto& [id, level] : levels) {
+                b.push_back(static_cast<std::byte>(id));
+                b.push_back(static_cast<std::byte>(level));
+            }
+            return patch(levels.empty() ? Parts{} : Parts{{1, b}});
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::armor_dye, "minecraft:armor_dye"}, {Kind::banner_duplicate, "minecraft:banner_duplicate"},
+                         {Kind::repair_item, "minecraft:repair_item"}, {Kind::shield_decoration, "minecraft:shield_decoration"}};
+        data->dyeable = {item("minecraft:leather_helmet"), item("minecraft:leather_horse_armor")};
+        std::ranges::sort(data->dyeable);
+        data->curses = {2, 40};
+        data->enchantments_of = [&](const ComponentPatch& p, bool stored) {
+            Levels out;
+            const auto all = parts(p);
+            if (const auto it = all.find(1); !stored && it != all.end())
+                for (std::size_t k = 0; k + 1 < it->second.size(); k += 2)
+                    out.emplace_back(static_cast<std::uint32_t>(it->second[k]), static_cast<std::int32_t>(it->second[k + 1]));
+            return out;
+        };
+        data->with_enchantments = [&](const ComponentPatch& base, bool, const Levels& levels, bool, std::int32_t) {
+            auto all = parts(base);
+            all.erase(1);
+            if (const auto e = parts(enchanted(levels)); !e.empty()) all[1] = e.at(1);
+            return std::optional(patch(all));
+        };
+        data->dyed_color_of = [&](const ComponentPatch& p) { return number(parts(p), 2); };
+        data->with_dyed_color = [&](const ComponentPatch& base, std::int32_t rgb) {
+            auto all = parts(base);
+            all[2] = bytes(rgb, 4);
+            return std::optional(patch(all));
+        };
+        data->banner_layers = [&](const ComponentPatch& p) { return number(parts(p), 3).value_or(0); };
+        data->int_component = [&](const ComponentPatch& p, std::string_view name) {
+            return name == "base_color" ? number(parts(p), 4) : std::nullopt;
+        };
+        data->with_int_component = [&](const ComponentPatch& base, std::string_view name, std::optional<std::int32_t> v) {
+            auto all = parts(base);
+            if (name != "base_color") return std::optional<ComponentPatch>{};
+            if (v) all[4] = bytes(*v, 1);
+            else all.erase(4);
+            return std::optional(patch(all));
+        };
+        data->with_component_from = [&](const ComponentPatch& base, const ComponentPatch& from, std::string_view name) {
+            auto all = parts(base);
+            const auto source = parts(from);
+            if (name != "banner_patterns") return std::optional<ComponentPatch>{};
+            if (const auto it = source.find(3); it != source.end()) all[3] = it->second;
+            else all.erase(3);
+            return std::optional(patch(all));
+        };
+        const auto sword = item("minecraft:wooden_sword"), pickaxe = item("minecraft:wooden_pickaxe"), helmet = item("minecraft:leather_helmet");
+        const auto white = item("minecraft:white_banner"), red = item("minecraft:red_banner");
+        const auto patterned = patch({{3, bytes(1, 1)}});
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table"))});
+        // Crafting table window: 0 the result, 1-9 the grid, 10-36 the main inventory, 37-45 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(table), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        // Each stack given to the hotbar, one item of each into the next grid cell.
+        const auto fill = [&](std::vector<ItemStack> stacks) {
+            std::vector<CommandBody> give, clicks;
+            for (std::uint8_t k = 0; k < stacks.size(); ++k) {
+                give.push_back(SetPlayerSlot{alex, static_cast<std::uint8_t>(36 + k), stacks[k]});
+                const auto from = static_cast<std::int16_t>(37 + k);
+                for (const auto& c : {click(from, 0, 0), click(static_cast<std::int16_t>(1 + k), 1, 0), click(from, 0, 0)}) clicks.push_back(c);
+            }
+            s.tick(give);
+            s.tick(clicks);
+        };
+        // Closed (the grid and the cursor go back) and emptied.
+        const auto clear = [&] {
+            s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, false, table}});
+            std::vector<CommandBody> c;
+            for (std::uint8_t k = 9; k < 45; ++k) c.push_back(SetPlayerSlot{alex, k, {}});
+            s.tick(c);
+        };
+        const auto result = [&] { return player().table[0]; };
+        // Repairing: the durabilities left and 5% of the most; only curses, each at its higher level.
+        fill({{sword, 1, 50, enchanted({{32, 2}, {40, 1}})}, {sword, 1, 30, enchanted({{39, 1}, {2, 1}})}});
+        require(result() == ItemStack{sword, 1, 19, enchanted({{40, 1}, {2, 1}})}, "59 - (9 + 29 + 2): the curses kept");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{sword, 1, 19, enchanted({{40, 1}, {2, 1}})} && result().empty() && player().table[1].empty() &&
+                    player().table[2].empty(),
+                "shift-clicked out: both swords used");
+        clear();
+        fill({{sword, 1, 10, enchanted({{2, 1}})}, {sword, 1, 20, enchanted({{2, 3}})}});
+        require(result() == ItemStack{sword, 1, 0, enchanted({{2, 3}})}, "more than whole: no damage; the higher level");
+        clear();
+        fill({{sword, 1, 10}, {pickaxe, 1, 10}});
+        require(result().empty(), "different items: nothing");
+        clear();
+        fill({{sword, 1, 10}, {sword, 1, 10}, {sword, 1, 10}});
+        require(result().empty(), "three: nothing");
+        clear();
+        // Armor dye: the colors mixed.
+        fill({{helmet, 1}, {item("minecraft:red_dye"), 1}});
+        require(result() == ItemStack{helmet, 1, 0, patch({{2, bytes(0xB02E26, 4)}})}, "red");
+        s.tick({click(0, 0, 1)});
+        clear();
+        fill({{helmet, 1, 0, patch({{2, bytes(0xB02E26, 4)}})}, {item("minecraft:blue_dye"), 1}, {item("minecraft:yellow_dye"), 1}});
+        require(result() == ItemStack{helmet, 1, 0, patch({{2, bytes(0xC8866D, 4)}})}, "red, blue and yellow");
+        clear();
+        fill({{item("minecraft:leather_horse_armor"), 1}, {item("minecraft:lime_dye"), 1}, {item("minecraft:magenta_dye"), 1}});
+        require(result().components == patch({{2, bytes(13084806, 4)}}), "horse armor");
+        clear();
+        fill({{item("minecraft:iron_helmet"), 1}, {item("minecraft:red_dye"), 1}});
+        require(result().empty(), "not dyeable: nothing");
+        clear();
+        fill({{helmet, 1}, {item("minecraft:red_dye"), 1}, {item("minecraft:stick"), 1}});
+        require(result().empty(), "something else: nothing");
+        clear();
+        fill({{helmet, 1}, {helmet, 1}, {item("minecraft:red_dye"), 1}});
+        require(result().empty(), "two helmets: nothing");
+        clear();
+        // Banner copying: the patterned banner stays.
+        fill({{white, 1, 0, patterned}, {white, 1}});
+        require(result() == ItemStack{white, 1, 0, patterned}, "a copy");
+        s.tick({click(0, 0, 1)});
+        require(player().table[1] == ItemStack{white, 1, 0, patterned} && player().table[2].empty() && player().slots[44] == ItemStack{white, 1, 0, patterned} &&
+                    result().empty(),
+                "taken: the patterned banner kept, the blank one used");
+        clear();
+        fill({{white, 1}, {white, 1, 0, patterned}});
+        s.tick({click(0, 0, 0)});
+        require(player().cursor == ItemStack{white, 1, 0, patterned} && player().table[1].empty() && player().table[2] == ItemStack{white, 1, 0, patterned},
+                "in either order");
+        clear();
+        fill({{white, 1, 0, patterned}, {red, 1}});
+        require(result().empty(), "another color: nothing");
+        clear();
+        fill({{white, 1}, {white, 1}});
+        require(result().empty(), "two blank banners: nothing");
+        clear();
+        // Shield decoration: a shield without patterns takes the banner's patterns and color; the banner used.
+        fill({{items::shield, 1, 5}, {red, 1, 0, patterned}});
+        require(result() == ItemStack{items::shield, 1, 5, patch({{3, bytes(1, 1)}, {4, bytes(14, 1)}})}, "a red decorated shield");
+        s.tick({click(0, 0, 1)});
+        require(player().table[1].empty() && player().table[2].empty(), "both used");
+        const auto decorated = player().slots[44];
+        clear();
+        fill({{items::shield, 1}, {white, 1}});
+        require(result() == ItemStack{items::shield, 1, 0, patch({{4, bytes(0, 1)}})}, "a blank banner: its color alone");
+        clear();
+        fill({decorated, {white, 1, 0, patterned}});
+        require(result().empty(), "decorated already: nothing");
+        clear();
+        // Patterns refuse a shield, a base color alone does not (client/special_a).
+        fill({{items::shield, 1, 0, patch({{4, bytes(14, 1)}})}, {white, 1, 0, patterned}});
+        require(result() == ItemStack{items::shield, 1, 0, patch({{3, bytes(1, 1)}, {4, bytes(0, 1)}})}, "a base color alone: the banner's instead");
+        clear();
+        fill({{items::shield, 1, 0, patterned}, {white, 1, 0, patterned}});
+        require(result().empty(), "patterns without a base color: nothing");
+    });
+
+    suite.run("crafters copy banners: the copy and the patterned banner are thrown out", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::InsertItem;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{circuit::gameplay::recipes::Special::Kind::banner_duplicate, "minecraft:banner_duplicate"}};
+        // A stand-in: one byte of type 3, the pattern count.
+        data->banner_layers = [](const ComponentPatch& p) {
+            for (const auto& a : p.added())
+                if (a.type == 3) return static_cast<std::int32_t>(a.value.at(0));
+            return 0;
+        };
+        const auto patterned = ComponentPatch::make(772, {{3, {std::byte{1}}}}, {}, {});
+        const auto white = item("minecraft:white_banner");
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 4, -1, 2));
+        s.tick({place({0, 0, 0}, blocks::crafter(Direction::east)), InsertItem{{0, 0, 0}, 0, {white, 1, 0, patterned}}, InsertItem{{0, 0, 0}, 1, {white, 1}}});
+        const auto before = s.oracle.dump().overworld().entities.size();
+        s.tick({place({0, 0, 1}, blocks::redstone_block())});
+        s.until(s.oracle.time() + 4);
+        const auto d = s.oracle.dump();
+        const auto& be = *block_entity_at(d, {0, 0, 0});
+        require(d.overworld().entities.size() == before + 2 && d.overworld().entities[before].stack == ItemStack{white, 1, 0, patterned} &&
+                    d.overworld().entities[before + 1].stack == ItemStack{white, 1, 0, patterned} && be.slots[0].empty() && be.slots[1].empty(),
+                "the copy, then the patterned banner as a remainder");
+    });
+
     suite.run("smithing tables upgrade and trim by the data packs' recipes", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

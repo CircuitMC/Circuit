@@ -144,6 +144,7 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         game->crafting = std::move(out.recipes.crafting);
         out.recipes.crafting.clear();
         game->cooking = std::move(out.recipes.cooking);
+        game->special = std::move(out.recipes.special);
         out.recipes.cooking.clear();
         game->stonecutting = std::move(out.recipes.stonecutting);
         out.recipes.stonecutting.clear();
@@ -336,6 +337,11 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             std::ranges::sort(blocks);
             return blocks;
         };
+        // Armor dye: the items it takes.
+        if (const auto* dyeable = packs->tag("item", "minecraft:dyeable"))
+            for (const auto& member : *dyeable)
+                if (const auto id = gameplay::items::by_name(member)) game->dyeable.push_back(*id);
+        std::ranges::sort(game->dyeable);
         // Lecterns: the books they take, and a book's pages.
         if (const auto* books = packs->tag("item", "minecraft:lectern_books"))
             for (const auto& member : *books)
@@ -413,6 +419,18 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
             game->custom_name_of = [codec](const contracts::ComponentPatch& patch) { return codec->custom_name_of(patch); };
+            game->banner_layers = [codec](const contracts::ComponentPatch& patch) { return codec->banner_layers(patch); };
+            game->dyed_color_of = [codec](const contracts::ComponentPatch& patch) { return codec->dyed_color_of(patch); };
+            game->with_dyed_color = [codec, ctx = component_context(bundle, out.registries)](
+                                        const contracts::ComponentPatch& base, std::int32_t rgb) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_dyed_color(base, rgb, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+            game->with_component_from = [codec](const contracts::ComponentPatch& base, const contracts::ComponentPatch& from,
+                                                std::string_view name) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_component_from(base, from, name);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
             game->with_book_pages = [codec, ctx = component_context(bundle, out.registries)](
                                         const contracts::ComponentPatch& base, std::span<const std::string> pages) -> std::optional<contracts::ComponentPatch> {
                 auto patch = codec->with_book_pages(base, pages, ctx);

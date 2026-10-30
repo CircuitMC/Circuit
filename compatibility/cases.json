@@ -570,6 +570,39 @@
       "description": "14 steps with doLimitedCrafting on: a known recipe's result in the own grid, the recipe taken and given while the grid holds it (the result follows at the next change), creative mode, the rule turned off and on, a crafting table, and a stonecutter's and a smithing table's results with no recipe known; Circuit and both official servers give identical windows"
     },
     {
+      "id": "client/special_a",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/special-a.js, special-a-counts.js, special-b.js",
+      "status": "passing",
+      "description": "35 steps of special recipes at a crafting table: enchanted damaged swords and boots repaired (curses kept, more than whole), a sword with a pickaxe, leather helmets dyed with each of the 16 dyes, dyes mixed on a dyed helmet and on horse armor, iron armor and a stray item, a patterned banner copied (the original kept) and refused with another color or two blank banners, shields decorated with a patterned and a blank banner and a decorated one refused; Circuit and both official servers give identical windows, and the slot packets of each step (special-a-counts.js) are the same. Ten more steps (special-b.js, components compared by type): undamaged swords repaired, dyed helmets repaired (the color goes), a curse at two levels (the higher kept), eight dyes mixed, a patterned banner with two blank ones or another patterned one, a shield with a base color alone decorated and one with patterns alone refused"
+    },
+    {
+      "id": "client/crafter_special",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/crafter-special.js",
+      "status": "passing",
+      "description": "8 steps: four crafters filled with a patterned and a blank banner, two damaged enchanted swords, a leather helmet and a red dye, and a shield and a patterned banner, then powered; Circuit and both official servers give the same grids and window results and throw out the same items (the copy and the patterned banner, the repaired sword, the dyed helmet, the decorated shield)"
+    },
+    {
+      "id": "client/own_grid_counts",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/own-grid-counts.js, own-grid-counts2.js, own-grid-counts3.js, table-grid-counts.js",
+      "status": "passing",
+      "description": "40 steps counting the slot packets of clicks in the own window's 2x2 grid and a crafting table's grid: items put in, whole stacks and single items picked up by either button, halves, merges, shift-clicks, number keys both ways, throws of one and of all, a cursor swap, a remainder left by a honey bottle, and the window closed with the grid full; Circuit and both official servers send the same packets"
+    },
+    {
       "id": "client/fire_items",
       "kind": "black_box",
       "versions": [
