@@ -4255,6 +4255,331 @@ int main() {
         require(count(items::oak_log) == 64 && player().slots[1].empty() && used() == std::vector<std::uint64_t>(64, 0), "64 oak logs");
     });
 
+    suite.run("special recipes copy books and maps, tip arrows and decorate pots", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetGameRule;
+        using circuit::contracts::SetPlayerSlot;
+        using Kind = recipes::Special::Kind;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        // Stand-ins for the server's encoding: type 7 a written book's content
+        // (its generation, then a byte of text), 8 potion contents, 9 a pot's
+        // decorations (two bytes per item).
+        const auto patch = [](std::map<std::uint16_t, std::vector<std::byte>> parts) {
+            std::vector<ComponentPatch::Added> added;
+            for (auto& [type, value] : parts) added.push_back({type, std::move(value)});
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto part = [](const ComponentPatch& p, std::uint16_t type) -> std::optional<std::vector<std::byte>> {
+            for (const auto& a : p.added())
+                if (a.type == type) return a.value;
+            return std::nullopt;
+        };
+        const auto book = [&](int generation) { return patch({{7, {static_cast<std::byte>(generation), std::byte{'x'}}}}); };
+        const auto potion = [&](int id) { return patch({{8, {std::byte{1}, static_cast<std::byte>(id)}}}); };
+        const auto decorated = [&](std::array<std::uint16_t, 4> sides) {
+            std::vector<std::byte> b;
+            for (const auto i : sides) b.insert(b.end(), {static_cast<std::byte>(i >> 8), static_cast<std::byte>(i & 0xFF)});
+            return patch({{9, b}});
+        };
+        const auto brick = item("minecraft:brick"), angler = item("minecraft:angler_pottery_sherd"), archer = item("minecraft:archer_pottery_sherd"),
+                   arms_up = item("minecraft:arms_up_pottery_sherd"), blade = item("minecraft:blade_pottery_sherd");
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::book_cloning, "minecraft:book_cloning"}, {Kind::decorated_pot, "minecraft:decorated_pot"},
+                         {Kind::map_cloning, "minecraft:map_cloning"}, {Kind::tipped_arrow, "minecraft:tipped_arrow"}};
+        // The data packs' simple pot takes four bricks too; the special id comes first.
+        const Ingredient b{{brick}};
+        data->crafting = {{Recipe::Kind::shaped, "minecraft:decorated_pot_simple", 3, 3, {{}, b, {}, b, {}, b, {}, b, {}}, {items::decorated_pot, 1}}};
+        data->pot_ingredients = {brick, angler, archer, arms_up, blade};
+        std::ranges::sort(data->pot_ingredients);
+        data->book_generation = [&](const ComponentPatch& p) -> std::optional<std::int32_t> {
+            const auto v = part(p, 7);
+            return v ? std::optional(static_cast<std::int32_t>(v->at(0))) : std::nullopt;
+        };
+        data->with_book_generation = [&](const ComponentPatch& p, std::int32_t generation) {
+            auto v = *part(p, 7);
+            v[0] = static_cast<std::byte>(generation);
+            return std::optional(patch({{7, v}}));
+        };
+        data->with_component_from = [&](const ComponentPatch&, const ComponentPatch& from, std::string_view name) {
+            if (name != "potion_contents") return std::optional<ComponentPatch>{};
+            const auto v = part(from, 8);
+            return std::optional(v ? patch({{8, *v}}) : ComponentPatch{});
+        };
+        data->pot_decorations = [&](std::span<const std::uint16_t, 4> sides) {
+            return std::optional(decorated({sides[0], sides[1], sides[2], sides[3]}));
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table"))});
+        // Crafting table window: 0 the result, 1-9 the grid, 10-36 the main inventory, 37-45 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(table), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto used = [&] {
+            std::vector<std::uint64_t> out;
+            for (const auto& r : of_kind(s.last, TraceKind::recipe_used))
+                if (r.a == alex.hi && r.b == alex.lo) out.push_back(r.c);
+            return out;
+        };
+        // Each stack given to the main inventory, one item of it into its grid cell (1-9, row by row).
+        const auto fill = [&](std::vector<std::pair<std::int16_t, ItemStack>> cells) {
+            std::vector<CommandBody> give, clicks;
+            for (std::uint8_t k = 0; k < cells.size(); ++k) {
+                give.push_back(SetPlayerSlot{alex, static_cast<std::uint8_t>(9 + k), cells[k].second});
+                const auto from = static_cast<std::int16_t>(10 + k);
+                for (const auto& c : {click(from, 0, 0), click(cells[k].first, 1, 0), click(from, 0, 0)}) clicks.push_back(c);
+            }
+            s.tick(give);
+            s.tick(clicks);
+        };
+        // Closed (the grid and the cursor go back) and emptied.
+        const auto clear = [&] {
+            s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, false, table}});
+            std::vector<CommandBody> c;
+            for (std::uint8_t k = 9; k < 45; ++k) c.push_back(SetPlayerSlot{alex, k, {}});
+            s.tick(c);
+        };
+        const auto result = [&] { return player().table[0]; };
+        const auto grid = [&](std::size_t cell) { return player().table[cell]; };
+        const ItemStack quill{items::writable_book, 1};
+        // Books: copies a generation later, the written book kept (client/special_c).
+        fill({{1, {items::written_book, 1, 0, book(0)}}, {2, quill}});
+        require(result() == ItemStack{items::written_book, 1, 0, book(1)}, "a copy of generation 1");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{items::written_book, 1, 0, book(1)} && grid(1) == ItemStack{items::written_book, 1, 0, book(0)} &&
+                    grid(2).empty() && result().empty() && used().empty(),
+                "taken: the original kept, the book and quill used, nothing recorded");
+        clear();
+        {
+            std::vector<std::pair<std::int16_t, ItemStack>> cells{{1, {items::written_book, 1, 0, book(0)}}};
+            for (std::int16_t k = 2; k <= 9; ++k) cells.push_back({k, quill});
+            fill(cells);
+        }
+        require(result() == ItemStack{items::written_book, 8, 0, book(1)}, "eight books and quills: eight copies");
+        clear();
+        fill({{1, {items::written_book, 1, 0, book(1)}}, {2, quill}});
+        require(result() == ItemStack{items::written_book, 1, 0, book(2)}, "a copy's copy: generation 2");
+        clear();
+        fill({{1, {items::written_book, 1, 0, book(2)}}, {2, quill}});
+        require(result().empty(), "a copy of a copy: nothing");
+        clear();
+        fill({{1, {items::written_book, 1, 0, book(0)}}, {2, quill}, {3, {items::stone, 1}}});
+        require(result().empty(), "stone too: nothing");
+        clear();
+        fill({{1, {items::written_book, 1, 0, book(0)}}, {2, {items::written_book, 1, 0, book(1)}}, {3, quill}});
+        require(result().empty(), "two written books: nothing");
+        clear();
+        fill({{5, {items::written_book, 1, 0, book(0)}}});
+        require(result().empty(), "alone: nothing");
+        clear();
+        fill({{1, {items::written_book, 1, 0, book(0)}}, {2, {items::writable_book, 1, 0, patch({{5, {std::byte{1}}}})}}});
+        require(result() == ItemStack{items::written_book, 1, 0, book(1)}, "a book and quill with pages");
+        clear();
+        // Maps: one more of the filled map, whose data need not exist.
+        const auto map_id = patch({{3, {std::byte{9}}}});
+        fill({{1, {items::filled_map, 1, 0, map_id}}, {2, {items::map, 1}}});
+        require(result() == ItemStack{items::filled_map, 2, 0, map_id}, "a filled map and an empty map: two");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{items::filled_map, 2, 0, map_id} && grid(1).empty() && grid(2).empty(), "taken: both used");
+        clear();
+        fill({{1, {items::filled_map, 1, 0, map_id}}, {2, {items::map, 1}}, {3, {items::map, 1}}, {4, {items::map, 1}}});
+        require(result() == ItemStack{items::filled_map, 4, 0, map_id}, "three empty maps: four");
+        clear();
+        fill({{1, {items::filled_map, 1, 0, map_id}}, {2, {items::map, 1}}, {3, {items::stone, 1}}});
+        require(result().empty(), "stone too: nothing");
+        clear();
+        fill({{1, {items::filled_map, 1, 0, map_id}}, {2, {items::filled_map, 1, 0, map_id}}, {3, {items::map, 1}}});
+        require(result().empty(), "two filled maps: nothing");
+        clear();
+        // Tipped arrows: the potion's contents as they are (client/special_d).
+        const auto around = [&](ItemStack middle, std::uint16_t arrow = items::arrow, std::int16_t at = 5, int arrows = 8) {
+            std::vector<std::pair<std::int16_t, ItemStack>> cells{{at, middle}};
+            for (std::int16_t k = 1; k <= 9 && static_cast<int>(cells.size()) <= arrows; ++k)
+                if (k != at) cells.push_back({k, {arrow, 1}});
+            fill(cells);
+        };
+        around({items::lingering_potion, 1, 0, potion(15)});
+        require(result() == ItemStack{items::tipped_arrow, 8, 0, potion(15)}, "eight tipped arrows");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{items::tipped_arrow, 8, 0, potion(15)} && grid(5).empty() && grid(1).empty(), "taken: all used");
+        clear();
+        around({items::lingering_potion, 1});
+        require(result() == ItemStack{items::tipped_arrow, 8}, "no contents: none");
+        clear();
+        around({items::splash_potion, 1, 0, potion(15)});
+        require(result().empty(), "a splash potion: nothing");
+        clear();
+        around({items::lingering_potion, 1, 0, potion(15)}, items::arrow, 5, 7);
+        require(result().empty(), "seven arrows: nothing");
+        clear();
+        around({items::lingering_potion, 1, 0, potion(15)}, items::arrow, 1);
+        require(result().empty(), "the potion in a corner: nothing");
+        clear();
+        around({items::lingering_potion, 1, 0, potion(15)}, items::tipped_arrow);
+        require(result().empty(), "tipped arrows around it: nothing");
+        clear();
+        // Decorated pots: the back, left, right and front cells.
+        fill({{2, {brick, 1}}, {4, {brick, 1}}, {6, {brick, 1}}, {8, {brick, 1}}});
+        require(result() == ItemStack{items::decorated_pot, 1}, "four bricks: no decorations");
+        s.tick({click(0, 0, 1)});
+        require(player().slots[44] == ItemStack{items::decorated_pot, 1} && used().empty(), "the special recipe: nothing recorded");
+        clear();
+        fill({{2, {angler, 1}}, {4, {archer, 1}}, {6, {arms_up, 1}}, {8, {blade, 1}}});
+        require(result() == ItemStack{items::decorated_pot, 1, 0, decorated({angler, archer, arms_up, blade})}, "four sherds, in that order");
+        clear();
+        fill({{2, {brick, 1}}, {4, {angler, 1}}, {6, {brick, 1}}, {8, {archer, 1}}});
+        require(result() == ItemStack{items::decorated_pot, 1, 0, decorated({brick, angler, brick, archer})}, "bricks and sherds");
+        clear();
+        fill({{2, {brick, 1}}, {4, {brick, 1}}, {6, {brick, 1}}, {8, {brick, 1}}, {1, {items::stone, 1}}});
+        require(result().empty(), "stone in a corner: nothing");
+        clear();
+        fill({{2, {angler, 1}}, {4, {archer, 1}}, {6, {arms_up, 1}}, {8, {blade, 1}}, {5, {brick, 1}}});
+        require(result().empty(), "a brick in the middle: nothing");
+        clear();
+        fill({{2, {items::stone, 1}}, {4, {items::stone, 1}}, {6, {items::stone, 1}}, {8, {items::stone, 1}}});
+        require(result().empty(), "stone in the shape: nothing");
+        clear();
+        // Special recipes are not limited.
+        s.tick({SetGameRule{"doLimitedCrafting", 1}});
+        fill({{2, {brick, 1}}, {4, {brick, 1}}, {6, {brick, 1}}, {8, {brick, 1}}});
+        require(result() == ItemStack{items::decorated_pot, 1} && player().known_crafting.empty(), "rule on: the pot, no recipe known");
+        clear();
+        around({items::lingering_potion, 1, 0, potion(15)});
+        require(result() == ItemStack{items::tipped_arrow, 8, 0, potion(15)}, "rule on: the tipped arrows");
+    });
+
+    suite.run("crafters copy written books and tip arrows: the original thrown out after the copy", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::InsertItem;
+        using Kind = circuit::gameplay::recipes::Special::Kind;
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::book_cloning, "minecraft:book_cloning"}, {Kind::tipped_arrow, "minecraft:tipped_arrow"}};
+        // A stand-in: type 7 a written book's content, its generation first.
+        data->book_generation = [](const ComponentPatch& p) -> std::optional<std::int32_t> {
+            for (const auto& a : p.added())
+                if (a.type == 7) return static_cast<std::int32_t>(a.value.at(0));
+            return std::nullopt;
+        };
+        data->with_book_generation = [](const ComponentPatch&, std::int32_t g) {
+            return std::optional(ComponentPatch::make(772, {{7, {static_cast<std::byte>(g)}}}, {}, {}));
+        };
+        data->with_component_from = [](const ComponentPatch&, const ComponentPatch& from, std::string_view) { return std::optional(from); };
+        const auto original = ComponentPatch::make(772, {{7, {std::byte{0}}}}, {}, {});
+        const auto copy = ComponentPatch::make(772, {{7, {std::byte{1}}}}, {}, {});
+        const auto swift = ComponentPatch::make(772, {{8, {std::byte{1}, std::byte{15}}}}, {}, {});
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 4, -1, 4));
+        s.tick({place({0, 0, 0}, blocks::crafter(Direction::east)), InsertItem{{0, 0, 0}, 0, {items::written_book, 1, 0, original}},
+                InsertItem{{0, 0, 0}, 1, {items::writable_book, 1}}, place({0, 0, 3}, blocks::crafter(Direction::east))});
+        {
+            std::vector<CommandBody> fill;
+            for (std::uint8_t k = 0; k < 9; ++k)
+                fill.push_back(InsertItem{{0, 0, 3}, k, k == 4 ? ItemStack{items::lingering_potion, 1, 0, swift} : ItemStack{items::arrow, 1}});
+            s.tick(fill);
+        }
+        const auto before = s.oracle.dump().overworld().entities.size();
+        s.tick({place({0, 0, 1}, blocks::redstone_block()), place({0, 0, 4}, blocks::redstone_block())});
+        s.until(s.oracle.time() + 4);
+        const auto d = s.oracle.dump();
+        std::vector<ItemStack> thrown;
+        for (std::size_t k = before; k < d.overworld().entities.size(); ++k) thrown.push_back(d.overworld().entities[k].stack);
+        require(std::ranges::count(thrown, ItemStack{items::written_book, 1, 0, copy}) == 1 && std::ranges::count(thrown, ItemStack{items::written_book, 1, 0, original}) == 1
+                    && std::ranges::count(thrown, ItemStack{items::tipped_arrow, 8, 0, swift}) == 1 && thrown.size() == 3,
+                "the copy and the original; eight tipped arrows");
+        const auto copied = std::ranges::find(thrown, ItemStack{items::written_book, 1, 0, copy});
+        require(copied + 1 != thrown.end() && copied[1] == ItemStack{items::written_book, 1, 0, original}, "the original after the copy");
+        require(block_entity_at(d, {0, 0, 0})->slots[0].empty() && block_entity_at(d, {0, 0, 3})->slots[4].empty(), "the grids used");
+    });
+
+    suite.run("a crafting grid's result follows the recipes known only once the grid changes", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::KnowRecipes;
+        using circuit::contracts::SetGameRule;
+        using circuit::contracts::SetPlayerSlot;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const auto planks = *circuit::gameplay::items::by_name("minecraft:oak_planks");
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->crafting = {{Recipe::Kind::shapeless, "minecraft:oak_planks", 0, 0, {Ingredient{{items::oak_log}}}, {planks, 4}}};
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table")), SetGameRule{"doLimitedCrafting", 1}, KnowRecipes{alex, {0}},
+                SetPlayerSlot{alex, 36, {items::oak_log, 8}}});
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto count = [&](std::uint16_t item) {
+            int n = 0;
+            for (const auto& t : player().slots)
+                if (t.item == item) n += t.count;
+            return n;
+        };
+        // Both grids: the table's (window slots 1-9, the hotbar 37-45) and the
+        // own one (1-4, the hotbar 36-44).
+        for (const bool own : {false, true}) {
+            const std::optional<BlockPos> at = own ? std::nullopt : std::optional(table);
+            const auto click = [&](std::int16_t slot, std::uint8_t button = 0, std::uint8_t mode = 0) {
+                return ContainerClick{alex, at, slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+            };
+            const std::int16_t logs = own ? 36 : 37, empty = own ? 40 : 41, sixth = own ? 41 : 42;
+            const auto result = [&] { return own ? player().slots[0] : player().table[0]; };
+            const auto log = [&] { s.tick({click(logs), click(1, 1), click(logs)}); };
+            const std::string where = own ? "own grid: " : "table: ";
+            const int before = count(planks);
+            log();
+            require(result() == ItemStack{planks, 4}, where + "a log by hand");
+            s.tick({KnowRecipes{alex, {0}, false}});
+            require(result() == ItemStack{planks, 4}, where + "the recipe taken away: the result stays");
+            s.tick({click(empty)});
+            require(result() == ItemStack{planks, 4}, where + "an empty slot clicked: it still stays");
+            // The logs to the fifth hotbar slot, swapped into the sixth, and back.
+            s.tick({click(logs), click(empty), click(empty, 5, 2), click(sixth), click(logs)});
+            require(result() == ItemStack{planks, 4} && player().slots[36].item == items::oak_log,
+                    where + "the logs moved and swapped by a number key: it still stays");
+            s.tick({click(0, 0, 1)});
+            require(count(planks) == before + 4 && result().empty(), where + "and it is taken");
+            log();
+            require(result().empty(), where + "another log: nothing (the server gives the recipe back as it is taken)");
+            s.tick({KnowRecipes{alex, {0}}});
+            require(result().empty(), where + "the recipe given: nothing yet");
+            s.tick({click(empty)});
+            require(result().empty(), where + "an empty slot clicked: nothing yet");
+            s.tick({click(1), click(1)});
+            require(result() == ItemStack{planks, 4}, where + "the log picked up and put back: the planks");
+            s.tick({click(1, 0, 1)});
+            if (!own) s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, false, table}});
+        }
+        // The rule turned on and off while the table shows a result.
+        const auto click = [&](std::int16_t slot, std::uint8_t button = 0, std::uint8_t mode = 0) {
+            return ContainerClick{alex, table, slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto result = [&] { return player().table[0]; };
+        s.tick({SetGameRule{"doLimitedCrafting", 0}, KnowRecipes{alex, {0}, false}});
+        s.tick({click(37), click(1, 1), click(37)});
+        require(result() == ItemStack{planks, 4}, "rule off, the recipe unknown: the planks");
+        s.tick({SetGameRule{"doLimitedCrafting", 1}});
+        s.tick({click(41)});
+        require(result() == ItemStack{planks, 4}, "the rule turned on, an empty slot clicked: they stay");
+        s.tick({click(1), click(1)});
+        require(result().empty(), "the log picked up and put back: nothing");
+        s.tick({SetGameRule{"doLimitedCrafting", 0}});
+        require(result().empty(), "the rule turned off: still nothing");
+    });
+
     suite.run("special recipes repair, dye armor, copy banners and decorate shields", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

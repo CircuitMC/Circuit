@@ -95,13 +95,15 @@ public:
         if (std::ranges::find(special_types, type) != special_types.end()) {
             category(j, crafting_categories);
             using Kind = gameplay::recipes::Special::Kind;
-            static constexpr std::array<std::pair<std::string_view, Kind>, 7> made{{
+            static constexpr std::array<std::pair<std::string_view, Kind>, 11> made{{
                 {"minecraft:crafting_special_repairitem", Kind::repair_item}, {"minecraft:crafting_special_armordye", Kind::armor_dye},
                 {"minecraft:crafting_special_bannerduplicate", Kind::banner_duplicate},
                 {"minecraft:crafting_special_shielddecoration", Kind::shield_decoration},
                 {"minecraft:crafting_special_firework_rocket", Kind::firework_rocket},
                 {"minecraft:crafting_special_firework_star", Kind::firework_star},
-                {"minecraft:crafting_special_firework_star_fade", Kind::firework_star_fade}}};
+                {"minecraft:crafting_special_firework_star_fade", Kind::firework_star_fade},
+                {"minecraft:crafting_special_bookcloning", Kind::book_cloning}, {"minecraft:crafting_special_mapcloning", Kind::map_cloning},
+                {"minecraft:crafting_special_tippedarrow", Kind::tipped_arrow}, {"minecraft:crafting_decorated_pot", Kind::decorated_pot}}};
             const auto it = std::ranges::find(made, type, &std::pair<std::string_view, Kind>::first);
             if (it == made.end()) throw NotCrafted{"special recipe"};
             if (special_) special_->push_back({it->second, std::string(id)});

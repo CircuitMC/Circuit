@@ -18,8 +18,8 @@
 //   does not match.
 // Ingredients test the item alone. The special recipes, which need code of
 // their own, are listed by kind (Special below) and match in id order with
-// the others (client/rocket_order); those not made yet (map and book
-// cloning, map extending, tipped arrows, decorated pots) are not compiled.
+// the others (client/rocket_order); the one not made yet (map extending)
+// is not compiled.
 namespace circuit::gameplay::recipes {
 
 // Whether recipe id `a` comes before `b` in the order both official servers
@@ -110,12 +110,38 @@ struct Smithing {
 //   in grid order (none from a star without one);
 // - firework_star_fade: one star and dyes: the star with the dyes as its
 //   fade colors (earlier ones replaced; a star without an explosion gets a
-//   small ball without colors).
-// In a crafter (client/crafter_special) the kept banner is a remainder: it
-// is thrown out after the copy. Repairing takes damaged and undamaged items
-// alike, and drops their other components (a dyed color, say).
+//   small ball without colors);
+// - book_cloning (client/special_c): one written book of generation 0 or 1
+//   (an original or a copy) and books and quills, with pages or not: as
+//   many copies as books and quills, a generation later, the written book
+//   left in its slot when they are taken;
+// - map_cloning: one filled map and empty maps: that many and one more of
+//   the filled map (its data need not exist);
+// - tipped_arrow (client/special_d): in a 3 by 3 grid, a lingering potion in
+//   the middle and arrows around it: eight tipped arrows with the potion's
+//   contents as they are (none without);
+// - decorated_pot: in a 3 by 3 grid, bricks or sherds (the item tag
+//   decorated_pot_ingredients) in the middle cells of the top row, the
+//   sides and the bottom row, nothing else: a pot decorated with them in
+//   that order (none when all are bricks, its default).
+// In a crafter (client/crafter_special, client/crafter_special2) a kept
+// banner or written book is a remainder: it is thrown out after the
+// result. Repairing takes damaged and undamaged items alike, and drops
+// their other components (a dyed color, say).
 struct Special {
-    enum class Kind : std::uint8_t { repair_item, armor_dye, banner_duplicate, shield_decoration, firework_rocket, firework_star, firework_star_fade };
+    enum class Kind : std::uint8_t {
+        repair_item,
+        armor_dye,
+        banner_duplicate,
+        shield_decoration,
+        firework_rocket,
+        firework_star,
+        firework_star_fade,
+        book_cloning,
+        map_cloning,
+        tipped_arrow,
+        decorated_pot
+    };
     Kind kind{};
     std::string id;
     bool operator==(const Special&) const = default;

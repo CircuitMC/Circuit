@@ -160,6 +160,17 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> signed_book(const contracts::ComponentPatch& base,
                                                                                     std::span<const std::string> pages, std::string_view title,
                                                                                     std::string_view author, const ComponentContext& ctx) const;
+    // A written book's generation (none without its content), and `base` with
+    // it set, the rest of the content as it is.
+    [[nodiscard]] std::optional<std::int32_t> book_generation(const contracts::ComponentPatch& patch) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_book_generation(const contracts::ComponentPatch& base,
+                                                                                             std::int32_t generation,
+                                                                                             const ComponentContext& ctx) const;
+    // A decorated pot's components: its decorations, the back, left, right
+    // and front items (bricks included), mapped by `wire_of`.
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> pot_decorations(
+        std::span<const std::uint16_t, 4> items, const ComponentContext& ctx,
+        const std::function<std::optional<std::int32_t>(std::uint16_t)>& wire_of) const;
     // The stacks of a patch's container component (a shulker box item's
     // contents, slot by slot up to its last stack; none without one), their
     // protocol item ids mapped by `item_of`; and the patch with its container

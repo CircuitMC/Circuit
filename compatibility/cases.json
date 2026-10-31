@@ -625,6 +625,72 @@
       "description": "15 steps of rockets from paper and gunpowder, which both the special firework_rocket and the data pack's firework_rocket_simple take: every recipe taken with doLimitedCrafting off and on, at a crafting table and in the own window, two gunpowder, the same window again, the simple recipe given and then taken with the rule off; the rockets are made each time and no recipe is added to the book by taking them (the special recipe, first in id order); Circuit and both official servers give identical windows and recipe book packets"
     },
     {
+      "id": "client/special_c",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/special-c.js",
+      "status": "passing",
+      "description": "19 steps of book and map cloning at a crafting table: a signed book copied with one and with eight books and quills (the original kept), a copy copied, a copy of a copy, stone, two written books or the book alone refused, a book and quill with pages used; a filled map copied with one and three empty maps, refused with stone or two filled maps, and a map without data copied; Circuit and both official servers give identical windows, components and map packets"
+    },
+    {
+      "id": "client/special_d",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/special-d.js",
+      "status": "passing",
+      "description": "33 steps at a crafting table: eight arrows around lingering potions of a potion, water, none and a custom color, refused around a splash potion, with seven arrows, in a corner or with tipped arrows; decorated pots of bricks, sherds and both, refused with stone in a corner, a brick in the middle, stone in the shape (four bricks in a square make bricks); decorated_pot_simple placed from the book; doLimitedCrafting on: the pot and the arrows by hand, a recipe taken away while its result shows, a click elsewhere, the result taken; Circuit and both official servers give identical windows, components and recipe book additions (compared as sets)"
+    },
+    {
+      "id": "client/crafter_special2",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/crafter-special2.js",
+      "status": "passing",
+      "description": "Four crafters facing up making a copy of a written book (the original thrown out after it), two of a filled map, eight tipped arrows and a decorated pot of four sherds; Circuit and both official servers give identical windows, thrown items (in the order they appear) and grids"
+    },
+    {
+      "id": "client/recipe_take",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/recipe-take.js",
+      "status": "passing",
+      "description": "27 steps with doLimitedCrafting on, at a crafting table and in the own window: oak_planks taken away while a log's planks show, an empty slot clicked, the logs moved and swapped by a number key (the result stays), the result shift-clicked out (taken; the recipe given back), another log; taken away again, a log (nothing), the recipe given and a click elsewhere (still nothing), the log picked up and put back (the planks); then at the table with the recipe unknown, planks with the rule off, the rule turned on and a click elsewhere (they stay), the log picked up and put back (nothing), the rule turned off (still nothing); Circuit and both official servers give identical windows and recipe book packets"
+    },
+    {
+      "id": "client/map_extend",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/map-extend.js",
+      "status": "failing",
+      "description": "12 steps of map extending at a crafting table: a filled map amid eight paper shows itself marked for scaling and becomes a new map a scale larger as it is taken, up to scale 4; seven paper, the map in a corner and a map without data are refused; Circuit makes nothing from them (C5.13e)"
+    },
+    {
+      "id": "client/map_ids",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/map-ids.js",
+      "status": "failing",
+      "description": "Maps extended at a crafting table taken by a shift-click (two map ids used, the first for the map), a click, a number key and a throw (one each), and a copy (none), each followed by a new map from an empty one; Circuit makes nothing from a map amid paper (C5.13e)"
+    },
+    {
       "id": "client/join_order",
       "kind": "black_box",
       "versions": [

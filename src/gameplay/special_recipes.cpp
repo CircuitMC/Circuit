@@ -214,6 +214,71 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
             made.components = *patch;
             return SpecialMade{special.kind, special.id, made, std::nullopt};
         }
+        case Kind::book_cloning: {
+            if (!data.book_generation || !data.with_book_generation) break;
+            std::optional<std::size_t> original;
+            int copies = 0;
+            bool other = false;
+            for (const auto k : used) {
+                if (grid[k].item == items::written_book && !original) original = k;
+                else if (grid[k].item == items::writable_book) ++copies;
+                else other = true;
+            }
+            if (other || !original || copies == 0) break;
+            // An original or a copy, not a copy of a copy.
+            const auto& book = grid[*original];
+            const auto generation = data.book_generation(book.components);
+            if (!generation || *generation < 0 || *generation > 1) break;
+            const auto patch = data.with_book_generation(book.components, *generation + 1);
+            if (!patch) break;
+            auto made = book;
+            made.count = static_cast<std::uint8_t>(copies);
+            made.components = *patch;
+            return SpecialMade{special.kind, special.id, made, original};
+        }
+        case Kind::map_cloning: {
+            const ItemStack* map = nullptr;
+            int empty = 0;
+            bool other = false;
+            for (const auto k : used) {
+                if (grid[k].item == items::filled_map && !map) map = &grid[k];
+                else if (grid[k].item == items::map) ++empty;
+                else other = true;
+            }
+            if (other || !map || empty == 0) break;
+            auto made = *map;
+            made.count = static_cast<std::uint8_t>(empty + 1);
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
+        }
+        case Kind::tipped_arrow: {
+            // A 3 by 3 grid: the potion in the middle, arrows around it.
+            if (grid.size() != 9 || used.size() != 9 || grid[4].item != items::lingering_potion || !data.with_component_from) break;
+            if (!std::ranges::all_of(used, [&](std::size_t k) { return k == 4 || grid[k].item == items::arrow; })) break;
+            const auto patch = data.with_component_from(contracts::ComponentPatch{}, grid[4].components, "potion_contents");
+            if (!patch) break;
+            return SpecialMade{special.kind, special.id, ItemStack{items::tipped_arrow, 8, 0, *patch}, std::nullopt};
+        }
+        case Kind::decorated_pot: {
+            // A 3 by 3 grid: the back, left, right and front in the middle
+            // cells of the top row, the sides and the bottom row, alone.
+            static constexpr std::array<std::size_t, 4> cells{1, 3, 5, 7};
+            if (grid.size() != 9 || used.size() != cells.size()) break;
+            std::array<std::uint16_t, 4> sides{};
+            bool fits = true;
+            for (std::size_t i = 0; i < cells.size(); ++i) {
+                sides[i] = grid[cells[i]].item;
+                fits = fits && !grid[cells[i]].empty() && std::ranges::binary_search(data.pot_ingredients, sides[i]);
+            }
+            if (!fits) break;
+            ItemStack made{items::decorated_pot, 1};
+            // Four bricks are the pot's default decorations.
+            if (!std::ranges::all_of(sides, [](std::uint16_t item) { return item == items::brick; })) {
+                const auto patch = data.pot_decorations ? data.pot_decorations(sides) : std::nullopt;
+                if (!patch) break;
+                made.components = *patch;
+            }
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
+        }
         }
     }
     return std::nullopt;

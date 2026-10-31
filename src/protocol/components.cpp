@@ -963,6 +963,73 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::signed_boo
     return replaced(base, protocol(), gone, contracts::ComponentPatch::Added{*written, std::move(*value)});
 }
 
+namespace {
+// A written book content's generation and where its bytes start and end:
+// the title (and its filtered form) and the author come first.
+struct Generation {
+    std::size_t start{}, end{};
+    std::int32_t value{};
+};
+std::optional<Generation> generation_at(std::span<const std::byte> value) {
+    Reader r(value);
+    const auto title = r.string();
+    const auto filtered = r.boolean();
+    if (!title || !filtered || (*filtered && !r.string()) || !r.string()) return std::nullopt;
+    const auto start = r.position_in_input();
+    const auto generation = r.varint();
+    if (!generation) return std::nullopt;
+    return Generation{start, r.position_in_input(), *generation};
+}
+} // namespace
+
+std::optional<std::int32_t> ComponentCodec::book_generation(const contracts::ComponentPatch& patch) const {
+    const auto written = type_id("written_book_content");
+    if (!written || patch.empty() || patch.protocol() != protocol()) return std::nullopt;
+    for (const auto& a : patch.added())
+        if (a.type == *written) {
+            const auto found = generation_at(a.value);
+            return found ? std::optional(found->value) : std::nullopt;
+        }
+    return std::nullopt;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_book_generation(const contracts::ComponentPatch& base,
+                                                                                           std::int32_t generation,
+                                                                                           const ComponentContext& ctx) const {
+    const auto written = type_id("written_book_content");
+    if (!written || base.protocol() != protocol()) return std::unexpected("no written book content");
+    for (const auto& a : base.added()) {
+        if (a.type != *written) continue;
+        const auto found = generation_at(a.value);
+        if (!found) return std::unexpected("invalid written book content");
+        const auto value = std::span<const std::byte>(a.value);
+        Writer w;
+        w.raw(value.first(found->start)).varint(generation).raw(value.subspan(found->end));
+        auto canonical = canonical_value(*written, w.bytes(), ctx);
+        if (!canonical) return std::unexpected(canonical.error());
+        return replaced(base, protocol(), {}, contracts::ComponentPatch::Added{*written, std::move(*canonical)});
+    }
+    return std::unexpected("no written book content");
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::pot_decorations(
+    std::span<const std::uint16_t, 4> items, const ComponentContext& ctx,
+    const std::function<std::optional<std::int32_t>(std::uint16_t)>& wire_of) const {
+    const auto type = type_id("pot_decorations");
+    if (!type) return std::unexpected("no pot_decorations component");
+    // The four items as plain ids (client/special_d: both versions).
+    Writer w;
+    w.varint(static_cast<std::int32_t>(items.size()));
+    for (const auto item : items) {
+        const auto wire = wire_of(item);
+        if (!wire) return std::unexpected(std::format("pot_decorations: item {} has no id in this protocol", item));
+        w.varint(*wire);
+    }
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
+}
+
 std::int32_t ComponentCodec::banner_layers(const contracts::ComponentPatch& patch) const {
     const auto type = type_id("banner_patterns");
     if (!type || patch.empty() || patch.protocol() != protocol()) return 0;

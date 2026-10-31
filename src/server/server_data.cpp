@@ -342,6 +342,11 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             for (const auto& member : *dyeable)
                 if (const auto id = gameplay::items::by_name(member)) game->dyeable.push_back(*id);
         std::ranges::sort(game->dyeable);
+        // Decorated pots: the items they take.
+        if (const auto* ingredients = packs->tag("item", "minecraft:decorated_pot_ingredients"))
+            for (const auto& member : *ingredients)
+                if (const auto id = gameplay::items::by_name(member)) game->pot_ingredients.push_back(*id);
+        std::ranges::sort(game->pot_ingredients);
         // Lecterns: the books they take, and a book's pages.
         if (const auto* books = packs->tag("item", "minecraft:lectern_books"))
             for (const auto& member : *books)
@@ -375,6 +380,12 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             game->with_container = [codec, wire_of, ctx = component_context(bundle, out.registries)](
                                        const contracts::ComponentPatch& base, std::span<const contracts::ItemStack> stacks) -> std::optional<contracts::ComponentPatch> {
                 auto patch = codec->with_container(base, stacks, ctx, wire_of);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+            // Decorated pots' decorations: the version's item ids too.
+            game->pot_decorations = [codec, wire_of, ctx = component_context(bundle, out.registries)](
+                                        std::span<const std::uint16_t, 4> items) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->pot_decorations(items, ctx, wire_of);
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
         }
@@ -450,6 +461,12 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             game->with_book_pages = [codec, ctx = component_context(bundle, out.registries)](
                                         const contracts::ComponentPatch& base, std::span<const std::string> pages) -> std::optional<contracts::ComponentPatch> {
                 auto patch = codec->with_book_pages(base, pages, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+            game->book_generation = [codec](const contracts::ComponentPatch& patch) { return codec->book_generation(patch); };
+            game->with_book_generation = [codec, ctx = component_context(bundle, out.registries)](
+                                             const contracts::ComponentPatch& base, std::int32_t generation) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_book_generation(base, generation, ctx);
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
             game->signed_book = [codec, ctx = component_context(bundle, out.registries)](

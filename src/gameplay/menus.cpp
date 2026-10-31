@@ -392,7 +392,9 @@ public:
             slot = stack;
             record_slot(ctx_, inv_, s.index);
             // Any change of a crafting table's grid ends its placed recipe.
-            if (s.index > contracts::table_first && s.index < contracts::table_first + contracts::table_slots) inv_.table_recipe = -1;
+            const bool table_cell = s.index > contracts::table_first && s.index < contracts::table_first + contracts::table_slots;
+            if (table_cell) inv_.table_recipe = -1;
+            if (table_cell || (s.index > own_grid.first && s.index <= own_grid.first + own_grid.size())) grid_changed_ = true;
             if (s.index == contracts::cutter_first) cutter_input_changed(ctx_, inv_, before);
             if (s.index >= contracts::smith_first && s.index < contracts::smith_first + 3) set_smith_result(ctx_, inv_);
             if (s.index >= contracts::grind_first && s.index < contracts::grind_first + 2) set_grind_result(ctx_, inv_);
@@ -714,6 +716,8 @@ public:
     [[nodiscard]] bool cartography() const { return cartography_; }
     [[nodiscard]] bool creative() const { return creative_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
+    // Whether a crafting grid's cell changed through this menu.
+    [[nodiscard]] bool grid_changed() const { return grid_changed_; }
     // The window slots of the main inventory and the hotbar.
     [[nodiscard]] std::size_t inventory_first() const {
         return smith_ || loom_ ? 4 : grind_ || anvil_ || cartography_ ? 3 : cutter_ || enchant_ ? 2 : table_ ? 10 : 9;
@@ -737,6 +741,7 @@ private:
     bool furnace_{};
     bool crafter_{};
     bool table_{};
+    bool grid_changed_{};
     bool cutter_{};
     bool smith_{};
     bool grind_{};
@@ -1123,15 +1128,17 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
         auto& inv = ctx.player(c.player);
         Menu menu(ctx, inv, parts, c.creative);
         if (c.slot != outside && !menu.valid(c.slot) && !(c.mode == 5 && (c.button & 3) != 1)) return;
-        // The grid's result follows whatever the click changed.
+        // The grid's result follows a click that changed the grid, and only
+        // such a click: a recipe the player no longer knows makes it until
+        // then, and it can be taken (both official servers; client/recipe_take).
         struct Recraft {
             RuleContext& ctx;
             PlayerInventory& inv;
-            bool crafts;
+            const Menu& menu;
             ~Recraft() {
-                if (crafts) update_crafting(ctx, inv);
+                if (menu.grid_changed()) update_crafting(ctx, inv);
             }
-        } recraft{ctx, inv, menu.own() || menu.table()};
+        } recraft{ctx, inv, menu};
         // Drags collect slots over several clicks; any other click ends one.
         if (c.mode == 5) {
             const auto previous = inv.drag_stage;

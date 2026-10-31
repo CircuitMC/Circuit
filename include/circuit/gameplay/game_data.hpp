@@ -36,9 +36,11 @@ struct GameData {
     // The crafting recipes the rules match, in recipe id order.
     std::vector<recipes::Recipe> crafting;
     // The special crafting recipes of the data packs the rules make, in recipe
-    // id order, and the items armor dye takes (the item tag dyeable, ascending).
+    // id order, the items armor dye takes (the item tag dyeable, ascending)
+    // and those a decorated pot takes (decorated_pot_ingredients, ascending).
     std::vector<recipes::Special> special;
     std::vector<std::uint16_t> dyeable;
+    std::vector<std::uint16_t> pot_ingredients;
     // The cooking recipes, in recipe id order.
     std::vector<recipes::Cooking> cooking;
     // The stonecutting recipes, ordered by id path and then namespace, as
@@ -188,6 +190,14 @@ struct GameData {
         firework_star;
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::span<const std::int32_t> fades)> with_fade_colors;
     std::function<std::optional<contracts::ComponentPatch>(std::int32_t flight, std::span<const contracts::ComponentPatch> stars)> firework_rocket;
+    // For book cloning: a written book's generation (nullopt without its
+    // content) and components with it set; for decorated pots: a pot's
+    // components with its four decorations, the back, left, right and front
+    // ones, bricks included (the rules leave them out for four bricks, the
+    // default); set by the server.
+    std::function<std::optional<std::int32_t>(const contracts::ComponentPatch&)> book_generation;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::int32_t)> with_book_generation;
+    std::function<std::optional<contracts::ComponentPatch>(std::span<const std::uint16_t, 4>)> pot_decorations;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.

@@ -547,6 +547,45 @@ int main() {
             require(rocket.has_value() && rocket->added().size() == 1 && rocket->added()[0].type == *c.type_id("fireworks") &&
                         rocket->added()[0].value == expected_rocket,
                     std::format("{}: a rocket with two explosions", protocol));
+            // Book cloning: a signed book's generation read and set, its title,
+            // author, pages and other components kept.
+            const std::vector<std::string> pages{"the original"};
+            const auto signed_book = c.signed_book(*trimmed, pages, "Copied", "alice", pctx);
+            require(signed_book.has_value() && c.book_generation(*signed_book) == 0 && !c.book_generation(*trimmed),
+                    std::format("{}: a signed book's generation", protocol));
+            const auto copied = c.with_book_generation(*signed_book, 1, pctx);
+            require(copied.has_value() && c.book_generation(*copied) == 1 && copied->added().size() == signed_book->added().size()
+                        && c.book_pages_of(*copied) == 1 && c.with_book_generation(*copied, 0, pctx) == signed_book,
+                    std::format("{}: a copy's generation", protocol));
+            require(!c.with_book_generation(*trimmed, 1, pctx), std::format("{}: no written book content", protocol));
+            // A filtered title (as a client's filtering may give it): kept with
+            // the rest of the content.
+            const auto filtered_book = [&](std::int32_t generation) {
+                Writer w;
+                w.string("Copied").boolean(true).string("C*pied").string("alice").varint(generation).varint(1);
+                nbt::write_network(w, nbt::Tag::string("the original"));
+                w.boolean(false).boolean(true);
+                return w.take();
+            };
+            const auto written_type = *c.type_id("written_book_content");
+            const auto filtered = contracts::ComponentPatch::make(protocol, {{written_type, filtered_book(0)}}, {}, {});
+            const auto filtered_copy = c.with_book_generation(filtered, 1, pctx);
+            require(c.book_generation(filtered) == 0 && filtered_copy.has_value() && filtered_copy->added().size() == 1
+                        && filtered_copy->added()[0].value == filtered_book(1),
+                    std::format("{}: a filtered title kept", protocol));
+            // A decorated pot's decorations: four plain item ids; tipped
+            // arrows: a potion's contents copied, none without.
+            const auto pot = c.pot_decorations(std::array<std::uint16_t, 4>{10, 20, 10, 30}, pctx,
+                                               [](std::uint16_t item) { return std::optional<std::int32_t>(item + 1000); });
+            require(pot.has_value() && pot->added().size() == 1 && pot->added()[0].type == *c.type_id("pot_decorations")
+                        && pot->added()[0].value == b({4, 0xF2, 0x07, 0xFC, 0x07, 0xF2, 0x07, 0x86, 0x08}),
+                    std::format("{}: a pot's decorations", protocol));
+            require(!c.pot_decorations(std::array<std::uint16_t, 4>{1, 2, 3, 4}, pctx, [](std::uint16_t) { return std::optional<std::int32_t>{}; }),
+                    std::format("{}: an item without an id", protocol));
+            const auto tipped = c.with_component_from(contracts::ComponentPatch{}, *rebrewed, "potion_contents");
+            require(tipped.has_value() && tipped->added().size() == 1 && c.potion_of(*tipped) == 3u, std::format("{}: the potion's contents", protocol));
+            const auto none = c.with_component_from(contracts::ComponentPatch{}, *trimmed, "potion_contents");
+            require(none.has_value() && none->empty(), std::format("{}: no contents", protocol));
         }
     });
 
