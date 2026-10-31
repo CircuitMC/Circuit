@@ -144,6 +144,9 @@ private:
     std::array<std::optional<gameplay::LevelRandom>, contracts::dimension_count> random_snapshots_;
     std::array<std::optional<std::uint32_t>, contracts::dimension_count> random_tick_snapshots_;
     std::array<std::optional<std::map<std::string, gameplay::RandomSequence>>, contracts::dimension_count> sequence_snapshots_;
+    // The world's last map id before this attempt first added a map.
+    std::optional<std::int32_t> map_snapshot_;
+    void use_maps();
     // Each level's light as this context first read it outside the phases
     // that publish it (WorldStore::light_now).
     std::array<const gameplay::LightField*, contracts::dimension_count> light_seen_{};

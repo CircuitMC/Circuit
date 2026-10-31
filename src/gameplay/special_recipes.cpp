@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 #include <circuit/gameplay/game_data.hpp>
+#include <circuit/gameplay/maps.hpp>
 #include <algorithm>
 #include <array>
 #include <string>
@@ -75,7 +76,7 @@ std::int32_t mixed(std::optional<std::int32_t> base, std::span<const std::uint32
 }
 } // namespace
 
-std::optional<SpecialMade> special_crafting(const GameData& data, std::span<const ItemStack> grid) {
+std::optional<SpecialMade> special_crafting(const GameData& data, std::span<const ItemStack> grid, const MapLookup& maps) {
     std::vector<std::size_t> used;
     for (std::size_t k = 0; k < grid.size(); ++k)
         if (!grid[k].empty()) used.push_back(k);
@@ -250,6 +251,22 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
             made.count = static_cast<std::uint8_t>(empty + 1);
             return SpecialMade{special.kind, special.id, made, std::nullopt};
         }
+        case Kind::map_extending: {
+            // A 3 by 3 grid: the map in the middle, paper around it; its
+            // data below the largest scale, locked or not (client/map_extend2).
+            if (grid.size() != 9 || used.size() != 9 || grid[4].item != items::filled_map || !maps || !data.int_component || !data.with_int_component)
+                break;
+            if (!std::ranges::all_of(used, [&](std::size_t k) { return k == 4 || grid[k].item == items::paper; })) break;
+            const auto id = data.int_component(grid[4].components, "map_id");
+            const auto* map = id ? maps(*id) : nullptr;
+            if (!map || map->scale >= max_map_scale) break;
+            const auto patch = data.with_int_component(grid[4].components, "map_post_processing", map_zooms);
+            if (!patch) break;
+            auto made = grid[4];
+            made.count = 1;
+            made.components = *patch;
+            return SpecialMade{special.kind, special.id, made, std::nullopt};
+        }
         case Kind::tipped_arrow: {
             // A 3 by 3 grid: the potion in the middle, arrows around it.
             if (grid.size() != 9 || used.size() != 9 || grid[4].item != items::lingering_potion || !data.with_component_from) break;
@@ -288,11 +305,11 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
 
 namespace circuit::gameplay {
 namespace detail {
-GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int32_t placed) {
+GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int32_t placed, const MapLookup& maps) {
     if (placed >= 0 && static_cast<std::size_t>(placed) < data.crafting.size())
         if (auto made = recipes::match(std::span(&data.crafting[static_cast<std::size_t>(placed)], 1), grid)) return {std::move(made), std::nullopt};
     auto made = recipes::match(data.crafting, grid);
-    auto special = special_crafting(data, grid.slots);
+    auto special = special_crafting(data, grid.slots, maps);
     if (made && special) {
         // Both lists are in id order; the earlier id makes it.
         if (recipes::id_before(special->id, made->recipe->id)) made.reset();
@@ -302,8 +319,8 @@ GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int
 }
 } // namespace detail
 
-contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid) {
-    const auto r = detail::grid_recipe(data, grid);
+contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid, const MapLookup& maps) {
+    const auto r = detail::grid_recipe(data, grid, -1, maps);
     return r.made ? r.made->result : r.special ? r.special->result : contracts::ItemStack{};
 }
 } // namespace circuit::gameplay

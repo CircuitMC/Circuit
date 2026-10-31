@@ -128,7 +128,7 @@ struct SpecialMade {
     ItemStack result;
     std::optional<std::size_t> kept;
 };
-std::optional<SpecialMade> special_crafting(const GameData& data, std::span<const ItemStack> grid);
+std::optional<SpecialMade> special_crafting(const GameData& data, std::span<const ItemStack> grid, const MapLookup& maps = {});
 // A crafting grid's recipe: the first in id order among the data packs'
 // recipes and the special ones (at most one of the two set). Both official
 // servers make the special firework_rocket, not firework_rocket_simple, from
@@ -139,7 +139,12 @@ struct GridRecipe {
     std::optional<recipes::Match> made;
     std::optional<SpecialMade> special;
 };
-GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int32_t placed = -1);
+GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int32_t placed = -1, const MapLookup& maps = {});
+// The context's maps as a lookup, for map extending (in a level's phases
+// only for the region holding its random; see RuleContext::peek_map).
+inline MapLookup map_lookup(RuleContext& ctx) {
+    return [&ctx](std::int32_t id) { return ctx.peek_map(id); };
+}
 
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);
@@ -694,6 +699,16 @@ std::optional<std::uint16_t> take_fluid(RuleContext& ctx, BlockPos pos);
 contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const contracts::PlayerUseItem& c);
 // An empty map used: a new map and its filled map (cartography.cpp).
 contracts::Result<std::function<void()>> plan_use_empty_map(RuleContext& ctx, const contracts::PlayerUseItem& c);
+// A filled map marked to become a new map as it is taken
+// (map_post_processing): locked (a cartography table) or zoomed (a
+// cartography table, map extending). taken_marked_map gives a marked stack
+// the next map's id and no mark (any other stack stays as it is);
+// add_marked_map then adds that map, made of the data of the map the mark
+// is on, as the next map (nothing for a stack without a mark or a map
+// without data; cartography.cpp).
+constexpr std::int32_t map_locks = 0, map_zooms = 1;
+ItemStack taken_marked_map(RuleContext& ctx, const ItemStack& marked);
+void add_marked_map(RuleContext& ctx, const ItemStack& marked);
 // Lava's fluid tick, and a change of it or beside it (hardening or a fluid
 // tick; nature.cpp).
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);

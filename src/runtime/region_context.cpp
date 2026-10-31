@@ -33,6 +33,10 @@ void RegionContext::rollback() {
         if (random_tick_snapshots_[level]) world_.levels[level].random_tick = *std::exchange(random_tick_snapshots_[level], std::nullopt);
     for (std::size_t level = 0; level < sequence_snapshots_.size(); ++level)
         if (sequence_snapshots_[level]) world_.levels[level].sequences = *std::exchange(sequence_snapshots_[level], std::nullopt);
+    if (map_snapshot_) {
+        world_.last_map_id = *std::exchange(map_snapshot_, std::nullopt);
+        world_.maps.erase(world_.maps.upper_bound(world_.last_map_id), world_.maps.end());
+    }
     trace.clear();
     entity_moves.clear();
     interactions.clear();
@@ -395,8 +399,20 @@ gameplay::PlayerInventory& RegionContext::player(contracts::PlayerKey player) {
     return it->second;
 }
 
+// Maps are the world's. Outside the serial phases a root reads and adds
+// them only while its region holds the level's random pseudo column, so
+// that one region at a time does, in root order (a crafter extending a map;
+// client/crafter_map); levels run one after another. An attempt rolled back
+// takes back the maps it added.
+void RegionContext::use_maps() {
+    if (region_ == all_regions) return;
+    const auto k = random_key(dimension());
+    if (!unchecked_ && regions_.owner.at(k) != region_) throw ForeignAccess{k};
+    interactions.insert(std::minmax(key(home_), k));
+}
+
 const gameplay::MapData* RegionContext::peek_map(std::int32_t id) {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    use_maps();
     const auto it = world_.maps.find(id);
     return it == world_.maps.end() ? nullptr : &it->second;
 }
@@ -415,15 +431,16 @@ std::vector<std::int32_t> RegionContext::map_ids() {
 }
 
 std::int32_t RegionContext::add_map(gameplay::MapData data) {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    use_maps();
     if (world_.last_map_id == INT32_MAX) throw std::overflow_error("runtime: map ids exhausted");
-    data.id = ++world_.last_map_id; // Serial command phase.
+    if (region_ != all_regions && !map_snapshot_) map_snapshot_ = world_.last_map_id;
+    data.id = ++world_.last_map_id;
     world_.maps.insert_or_assign(data.id, std::move(data));
     return world_.last_map_id;
 }
 
 std::int32_t RegionContext::last_map_id() {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    use_maps();
     return world_.last_map_id;
 }
 

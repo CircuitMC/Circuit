@@ -163,9 +163,11 @@ public:
     // reference stays valid until the current root finishes.
     virtual const PlayerInventory* peek_player(contracts::PlayerKey player) = 0;
     virtual PlayerInventory& player(contracts::PlayerKey player) = 0; // created empty when absent
-    // Maps, in the command phase only, as player inventories: a map's data,
-    // a map to change (explore_held_maps), every map's id in order, and a new
-    // map's id, the world's next, given to `data` as it is added.
+    // Maps: a map's data, a map to change (explore_held_maps), every map's
+    // id in order, and a new map's id, the world's next, given to `data` as
+    // it is added. The command phase uses them all; a level's other phases
+    // only peek_map, add_map and last_map_id, for a root whose region holds
+    // the level's random (as level_random; a crafter extending a map).
     virtual const MapData* peek_map(std::int32_t id) = 0;
     virtual MapData* map(std::int32_t id) = 0;
     virtual std::vector<std::int32_t> map_ids() = 0;

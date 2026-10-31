@@ -266,7 +266,6 @@ bool cartography_takes(std::size_t slot, std::uint16_t item) {
 // largest scale, one of it marked to be zoomed; with a glass pane, while
 // unlocked, one marked to be locked (map_post_processing 1 and 0). The
 // marked map becomes a new map as it is taken.
-constexpr std::int32_t map_locks = 0, map_zooms = 1;
 void set_cartography_result(RuleContext& ctx, PlayerInventory& inv) {
     const auto* data = ctx.data();
     const auto& map = inv.cartography[0];
@@ -294,19 +293,6 @@ void set_cartography_result(RuleContext& ctx, PlayerInventory& inv) {
     if (inv.cartography[2] == result) return;
     inv.cartography[2] = result;
     record_slot(ctx, inv, contracts::cartography_first + 2);
-}
-
-// The map a marked result becomes as it is taken: the next map's id (which
-// use_cartography then adds) and no mark.
-ItemStack taken_cartography_result(RuleContext& ctx, const ItemStack& result) {
-    const auto* data = ctx.data();
-    if (!data || !data->int_component || !data->with_int_component || !data->int_component(result.components, "map_post_processing"))
-        return result;
-    auto out = result;
-    auto components = data->with_int_component(result.components, "map_post_processing", std::nullopt);
-    if (components) components = data->with_int_component(*components, "map_id", ctx.last_map_id() + 1);
-    if (components) out.components = *components;
-    return out;
 }
 
 // One menu: a list of slots, each a container slot or a player slot.
@@ -781,12 +767,16 @@ void pickup(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c, st
 // change sends the result again; client/special_a, client/own_grid_counts).
 void use_grid(RuleContext& ctx, PlayerInventory& inv, CraftingGrid grid, const contracts::ContainerClick& c) {
     const bool table = grid.first == table_grid.first;
-    // A special recipe's kept stack (a banner copied) is its remainder.
+    // A special recipe's kept stack (a banner copied) is its remainder; an
+    // extended map's new map is added (the id taken_marked_map gave it).
     std::optional<std::size_t> kept;
     if (const auto* data = ctx.data()) {
         std::vector<ItemStack> stacks;
         for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
-        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, table ? inv.table_recipe : -1); r.special) kept = r.special->kept;
+        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, table ? inv.table_recipe : -1, map_lookup(ctx)); r.special) {
+            kept = r.special->kept;
+            if (r.special->kind == recipes::Special::Kind::map_extending) add_marked_map(ctx, r.special->result);
+        }
     }
     // The grid changes: a crafting table's next result is the first recipe's
     // (a shift-click then stops when that is another item; client/ns_place2).
@@ -883,14 +873,9 @@ void use_grind(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> a
 // A loom's result was taken: the banner and the dye each give one item
 // (the pattern item stays), and the result follows what is left.
 // A cartography table's result was taken: a marked map's new map is added
-// (the id taken_cartography_result gave it), and one of each input is used.
+// (the id taken_marked_map gave it), and one of each input is used.
 void use_cartography(RuleContext& ctx, PlayerInventory& inv) {
-    const auto* data = ctx.data();
-    if (data && data->int_component) {
-        const auto how = data->int_component(inv.cartography[2].components, "map_post_processing");
-        const auto id = data->int_component(inv.cartography[0].components, "map_id");
-        if (const auto* map = how && id ? ctx.peek_map(*id) : nullptr) ctx.add_map(*how == map_zooms ? zoomed_map(*map) : locked_map(*map));
-    }
+    add_marked_map(ctx, inv.cartography[2]);
     for (std::size_t k = 0; k < 2; ++k) {
         auto& slot = inv.cartography[k];
         if (slot.empty()) continue;
@@ -945,9 +930,21 @@ void record_recipe_used(RuleContext& ctx, const Menu& menu, PlayerInventory& inv
         // A special recipe (one that comes first in id order too) is not
         // recorded; a crafting table's placed recipe is (not observed: the
         // player who placed it knows it already).
-        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, menu.table() ? inv.table_recipe : -1); r.made && r.made->recipe)
+        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, menu.table() ? inv.table_recipe : -1, map_lookup(ctx));
+            r.made && r.made->recipe)
             record(0, static_cast<std::size_t>(r.made->recipe - data->crafting.data()));
     }
+}
+
+// Whether a crafting grid's result is an extended map (map_extending).
+bool extends_map(RuleContext& ctx, const Menu& menu, PlayerInventory& inv) {
+    const auto* data = ctx.data();
+    if (!data || !(menu.own() || menu.table())) return false;
+    const auto grid = menu.grid();
+    std::vector<ItemStack> stacks;
+    for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
+    const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, menu.table() ? inv.table_recipe : -1, map_lookup(ctx));
+    return r.special && r.special->kind == recipes::Special::Kind::map_extending;
 }
 
 void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c) {
@@ -964,18 +961,22 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         else if (menu.cutter()) use_cutter(ctx, inv);
         else use_grid(ctx, inv, menu.grid(), c);
     };
-    // A cartography table's marked map becomes the new map it makes.
-    const auto taken = [&](const ItemStack& s) { return menu.cartography() ? taken_cartography_result(ctx, s) : s; };
+    // A marked map becomes the new map it makes as it is taken: a cartography
+    // table's, and in a crafting grid an extended map (a marked map another
+    // recipe makes, which only creative players can give, is taken as it is).
+    const auto marked = [&] { return menu.cartography() || extends_map(ctx, menu, inv); };
+    const auto taken = [&](const ItemStack& s, bool mark) { return mark ? taken_marked_map(ctx, s) : s; };
     const auto result = made_now();
     if (result.empty()) return;
     switch (c.mode) {
     case 0: { // onto the cursor, when all of it fits there
         if (c.button > 1) return;
         auto carried = menu.cursor();
+        const auto made = taken(result, marked());
         if (carried.empty()) {
-            carried = taken(result);
-        } else if (carried.same_kind(result) && carried.count + result.count <= items::max_stack(carried)) {
-            carried.count = static_cast<std::uint8_t>(carried.count + result.count);
+            carried = made;
+        } else if (carried.same_kind(made) && carried.count + made.count <= items::max_stack(carried)) {
+            carried.count = static_cast<std::uint8_t>(carried.count + made.count);
         } else {
             return;
         }
@@ -986,9 +987,13 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
     case 1: { // into the inventory, hotbar first from its end, as long as the result stays the same item
         if (c.button > 1) return;
         for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
-            auto stack = taken(made);
+            const bool mark = marked();
+            auto stack = taken(made, mark);
             if (!menu.move_into(stack, menu.inventory_first(), menu.inventory_end(), true)) return;
             use();
+            // An extended map shift-clicked out makes a second new map, which
+            // nothing holds (both official servers; client/map_extend2).
+            if (mark && !menu.cartography()) add_marked_map(ctx, made);
             // What did not fit drops.
             throw_item(ctx, c.drop_position, c.drop_velocity, stack);
         }
@@ -998,7 +1003,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         if (!(c.button < 9 || c.button == 40)) return;
         const std::uint8_t slot = c.button == 40 ? contracts::offhand_slot : static_cast<std::uint8_t>(contracts::hotbar_first + c.button);
         if (!inv.slots[slot].empty()) return;
-        inv.slots[slot] = taken(result);
+        inv.slots[slot] = taken(result, marked());
         record_slot(ctx, inv, slot);
         use();
         return;
@@ -1006,7 +1011,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
     case 4: { // thrown; with button 1, again while the result stays the same item
         if (!menu.cursor().empty()) return;
         for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
-            throw_item(ctx, c.drop_position, c.drop_velocity, taken(made));
+            throw_item(ctx, c.drop_position, c.drop_velocity, taken(made, marked()));
             use();
             if (c.button != 1) return;
         }
@@ -1029,7 +1034,7 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
     const auto craft = [&](std::span<ItemStack> slots, std::uint8_t width, std::uint8_t first, std::int32_t placed) {
         const auto grid = slots.subspan(1);
         const bool empty = std::ranges::all_of(grid, [](const ItemStack& s) { return s.empty(); });
-        const auto r = empty ? GridRecipe{} : grid_recipe(*data, {width, width, grid}, placed);
+        const auto r = empty ? GridRecipe{} : grid_recipe(*data, {width, width, grid}, placed, map_lookup(ctx));
         // Special recipes are not limited.
         const auto result = r.made && (!limited || known(r.made->recipe)) ? r.made->result : r.special ? r.special->result : ItemStack{};
         if (slots[0] == result) return;

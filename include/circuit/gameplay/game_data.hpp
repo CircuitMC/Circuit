@@ -204,10 +204,15 @@ struct GameData {
     std::function<std::string(const contracts::ItemStack&)> display_name;
 };
 
+// A map's data by its id (null for an id no map has), for map extending:
+// without a lookup a map amid paper makes nothing.
+struct MapData;
+using MapLookup = std::function<const MapData*(std::int32_t)>;
+
 // What a crafting grid makes with the data packs: the result of the first
 // matching recipe in id order (recipes::id_before), a special one
 // (recipes::Special) or another; empty when nothing matches. A crafter's
 // window shows it.
-contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid);
+contracts::ItemStack crafted(const GameData& data, const recipes::Grid& grid, const MapLookup& maps = {});
 
 } // namespace circuit::gameplay

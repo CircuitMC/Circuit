@@ -4501,6 +4501,273 @@ int main() {
         require(block_entity_at(d, {0, 0, 0})->slots[0].empty() && block_entity_at(d, {0, 0, 3})->slots[4].empty(), "the grids used");
     });
 
+    suite.run("map extending makes maps of the next scale with the ids both official servers give", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::MapData;
+        using Kind = recipes::Special::Kind;
+        // Stand-ins for the server's encoding: type 1 a map's id, type 2 its
+        // post-processing, a byte each.
+        const auto marks = [](std::optional<std::int32_t> id, std::optional<std::int32_t> post) {
+            std::vector<ComponentPatch::Added> added;
+            if (id) added.push_back({1, {static_cast<std::byte>(*id)}});
+            if (post) added.push_back({2, {static_cast<std::byte>(*post)}});
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto value = [](const ComponentPatch& p, std::uint16_t type) -> std::optional<std::int32_t> {
+            for (const auto& a : p.added())
+                if (a.type == type) return static_cast<std::int32_t>(a.value.at(0));
+            return std::nullopt;
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::map_cloning, "minecraft:map_cloning"}, {Kind::map_extending, "minecraft:map_extending"}};
+        data->int_component = [=](const ComponentPatch& p, std::string_view name) {
+            return value(p, name == "map_id" ? 1 : name == "map_post_processing" ? 2 : 0);
+        };
+        data->with_int_component = [=](const ComponentPatch& base, std::string_view name, std::optional<std::int32_t> v) -> std::optional<ComponentPatch> {
+            auto id = value(base, 1), post = value(base, 2);
+            if (name == "map_id") id = v;
+            else if (name == "map_post_processing") post = v;
+            else return std::nullopt;
+            return marks(id, post);
+        };
+        const auto filled = [&](std::int32_t id, std::uint8_t count = 1) { return ItemStack{items::filled_map, count, 0, marks(id, std::nullopt)}; };
+        const auto marked = [&](std::int32_t id) { return ItemStack{items::filled_map, 1, 0, marks(id, 1)}; };
+
+        // What a grid makes by the maps a lookup gives.
+        {
+            MapData small, large;
+            small.scale = 3;
+            large.scale = 4;
+            const circuit::gameplay::MapLookup lookup = [&](std::int32_t id) -> const MapData* { return id == 1 ? &small : id == 2 ? &large : nullptr; };
+            const auto stone = *circuit::gameplay::items::by_name("minecraft:stone");
+            // The map in cell `at`, `other` in the rest but cell `skip`.
+            const auto amid = [&](ItemStack map, std::size_t at = 4, std::uint16_t other = items::paper, std::size_t skip = 9) {
+                std::array<ItemStack, 9> g{};
+                for (std::size_t k = 0; k < g.size(); ++k) g[k] = k == at ? map : k == skip ? ItemStack{} : ItemStack{other, 1};
+                return g;
+            };
+            const auto made = [&](const std::array<ItemStack, 9>& g, const circuit::gameplay::MapLookup& maps) {
+                return circuit::gameplay::crafted(*data, {3, 3, g}, maps);
+            };
+            require(made(amid(filled(1)), lookup) == marked(1) && made(amid(filled(1, 2)), lookup) == marked(1), "scale 3: the map marked, one of two too");
+            require(made(amid(filled(2)), lookup).empty(), "scale 4: nothing");
+            large.locked = true;
+            require(made(amid(filled(2)), lookup).empty(), "locked at scale 4: nothing");
+            small.locked = true;
+            require(made(amid(filled(1)), lookup) == marked(1), "a locked map is extended");
+            require(made(amid(filled(3)), lookup).empty() && made(amid(filled(1)), {}).empty(), "no data, or no maps: nothing");
+            require(made(amid(filled(1), 4, items::paper, 0), lookup).empty() && made(amid(filled(1), 0), lookup).empty(),
+                    "seven paper, or the map in a corner: nothing");
+            require(made(amid(filled(1), 4, stone), lookup).empty() && made(amid({items::map, 1}), lookup).empty(), "stone around, an empty map: nothing");
+        }
+
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0}, cartography{2, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table")), place(cartography, registry_block("cartography_table")),
+                PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 0}, SetPlayerSlot{alex, 36, {items::map, 16}},
+                SetPlayerSlot{alex, 9, {items::paper, 64}}});
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto maps = [&] { return s.oracle.dump().maps; };
+        const auto last = [&] { return s.oracle.dump().last_map_id; };
+        // An empty map used from the first hotbar slot: the next map, into the inventory.
+        const auto make = [&] { s.tick({PlayerUseItem{alex, 36, {0.5, 2.62, 0.5}, 0.0f, 90.0f, 4.5, true, {}}}); };
+        const auto click = [&](BlockPos at, std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(at), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        // The player slot holding a map, else -1; the table window's slot of an empty main inventory slot.
+        const auto slot_of = [&](std::int32_t id) {
+            const auto inv = player();
+            for (std::size_t k = 9; k < 45; ++k)
+                if (inv.slots[k].item == items::filled_map && value(inv.slots[k].components, 1) == id) return static_cast<std::int16_t>(k);
+            return std::int16_t{-1};
+        };
+        const auto free = [&] {
+            const auto inv = player();
+            for (std::size_t k = 9; k < 36; ++k)
+                if (inv.slots[k].empty()) return static_cast<std::int16_t>(k + 1);
+            return std::int16_t{-1};
+        };
+        // Crafting table window: 0 the result, 1-9 the grid, 10-36 the main inventory, 37-45 the hotbar.
+        // A map's stack into the middle cell, `paper` paper (from window slot 10) into each other cell.
+        const auto extend = [&](std::int32_t id, std::uint8_t paper = 1) {
+            const auto from = static_cast<std::int16_t>(slot_of(id) + 1);
+            std::vector<CommandBody> c{click(table, from, 0, 0), click(table, 5, 0, 0)};
+            for (const std::int16_t cell : {1, 2, 3, 4, 6, 7, 8, 9}) {
+                c.push_back(click(table, 10, 0, 0));
+                for (std::uint8_t k = 0; k < paper; ++k) c.push_back(click(table, cell, 1, 0));
+                c.push_back(click(table, 10, 0, 0));
+            }
+            s.tick(c);
+        };
+        make();
+        make();
+        require(last() == 1 && slot_of(0) >= 0 && slot_of(1) >= 0, "maps 0 and 1 made");
+        extend(1);
+        require(player().table[0] == marked(1), "map 1 amid paper: itself marked to be zoomed");
+        // A shift-click: the map takes the first of two new maps, both of the next scale.
+        s.tick({click(table, 0, 0, 1)});
+        {
+            const auto m = maps();
+            auto zoomed = circuit::gameplay::zoomed_map(m.at(1));
+            zoomed.id = 2;
+            auto again = zoomed;
+            again.id = 3;
+            require(last() == 3 && m.size() == 4 && m[2] == zoomed && m[3] == again && m[2].scale == 1, "maps 2 and 3: map 1 zoomed");
+        }
+        require(slot_of(2) >= 0 && slot_of(1) < 0 && slot_of(3) < 0 && player().table[5].empty() && player().table[1].empty() &&
+                    player().table[0].empty(),
+                "map 2 in the inventory; the grid used");
+        // A click, a number key and a throw: one id each.
+        make();
+        extend(4);
+        s.tick({click(table, 0, 0, 0)});
+        require(player().cursor == filled(5) && last() == 5 && maps().back().scale == 1 && player().table[0].empty(), "onto the cursor: map 5");
+        s.tick({click(table, free(), 0, 0)});
+        make();
+        extend(6);
+        const auto key = [&] {
+            const auto inv = player();
+            for (std::uint8_t b = 0; b < 9; ++b)
+                if (inv.slots[36 + b].empty()) return b;
+            return std::uint8_t{9};
+        }();
+        s.tick({click(table, 0, key, 2)});
+        require(key < 9 && player().slots[36 + key] == filled(7) && last() == 7, "a number key: map 7");
+        make();
+        extend(8);
+        {
+            const auto before = s.oracle.dump().overworld().entities.size();
+            s.tick({click(table, 0, 0, 4)});
+            const auto d = s.oracle.dump();
+            require(d.overworld().entities.size() == before + 1 && d.overworld().entities.back().stack == filled(9) && d.last_map_id == 9,
+                    "thrown: map 9");
+        }
+        // A locked map (locked at the cartography table: 0 the map, 1 the pane, 2 the result, 3-38 the inventory) is extended.
+        make();
+        s.tick({SetPlayerSlot{alex, 10, {*circuit::gameplay::items::by_name("minecraft:glass_pane"), 1}}});
+        {
+            const auto from = static_cast<std::int16_t>(slot_of(10) - 6);
+            s.tick({click(cartography, from, 0, 0), click(cartography, 0, 0, 0), click(cartography, 4, 0, 0), click(cartography, 1, 0, 0),
+                    click(cartography, 2, 0, 0), click(cartography, from, 0, 0)});
+            s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, false, cartography}});
+        }
+        require(last() == 11 && maps().back().locked && slot_of(11) >= 0, "map 11 locked");
+        extend(11);
+        require(player().table[0] == marked(11), "the locked map amid paper: marked too");
+        s.tick({click(table, 0, 0, 0)});
+        require(player().cursor == filled(12) && last() == 12 && !maps().back().locked && maps().back().scale == 1, "map 12, not locked");
+        s.tick({click(table, free(), 0, 0)});
+        // Two maps amid two paper each: a shift-click crafts twice, two ids each.
+        s.tick({SetPlayerSlot{alex, static_cast<std::uint8_t>(slot_of(0)), filled(0, 2)}, SetPlayerSlot{alex, 9, {items::paper, 64}}});
+        extend(0, 2);
+        require(player().table[0] == marked(0), "one map marked");
+        s.tick({click(table, 0, 0, 1)});
+        require(slot_of(13) >= 0 && slot_of(15) >= 0 && slot_of(14) < 0 && slot_of(16) < 0 && last() == 16 && maps().size() == 17 &&
+                    player().table[5].empty() && player().table[1].empty(),
+                "maps 13 and 15 kept, 14 and 16 made too");
+        // Taken by clicks one at a time: the result again while a map is left.
+        s.tick({SetPlayerSlot{alex, static_cast<std::uint8_t>(slot_of(13)), filled(13, 2)}, SetPlayerSlot{alex, 9, {items::paper, 64}}});
+        extend(13, 2);
+        s.tick({click(table, 0, 0, 0)});
+        require(player().cursor == filled(17) && player().table[0] == marked(13) && player().table[5] == filled(13) && last() == 17,
+                "a click: map 17, the result again");
+        s.tick({click(table, free(), 0, 0), click(table, 0, 0, 0)});
+        require(player().cursor == filled(18) && player().table[0].empty() && player().table[5].empty() && last() == 18, "again: map 18");
+        // A marked map that another recipe makes (only creative players can give one) is taken as it is, by any click.
+        s.tick({click(table, free(), 0, 0)});
+        for (const std::uint8_t mode : {0, 1}) {
+            const auto from = free();
+            s.tick({SetPlayerSlot{alex, static_cast<std::uint8_t>(from - 1), marked(0)}, SetPlayerSlot{alex, 44, {items::map, 1}}});
+            s.tick({click(table, from, 0, 0), click(table, 1, 0, 0), click(table, 45, 0, 0), click(table, 2, 0, 0)});
+            const auto copies = ItemStack{items::filled_map, 2, 0, marks(0, 1)};
+            require(player().table[0] == copies, "a marked map copied: two of it");
+            s.tick({click(table, 0, 0, mode)});
+            const auto inv = player();
+            require((mode == 0 ? inv.cursor == copies : std::ranges::count(inv.slots, copies) == 1) && last() == 18 && maps().size() == 19,
+                    mode == 0 ? "onto the cursor as it is, no id used" : "shift-clicked out as it is, no id used");
+            if (mode == 0) {
+                const auto at = free();
+                s.tick({click(table, at, 0, 0)});
+                s.tick({SetPlayerSlot{alex, static_cast<std::uint8_t>(at - 1), {}}});
+            }
+        }
+    });
+
+    suite.run("crafters extend maps into new maps, one id each in tick order", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::InsertItem;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        using Kind = recipes::Special::Kind;
+        // Stand-ins: type 1 a map's id, type 2 its post-processing.
+        const auto marks = [](std::optional<std::int32_t> id, std::optional<std::int32_t> post) {
+            std::vector<ComponentPatch::Added> added;
+            if (id) added.push_back({1, {static_cast<std::byte>(*id)}});
+            if (post) added.push_back({2, {static_cast<std::byte>(*post)}});
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto value = [](const ComponentPatch& p, std::uint16_t type) -> std::optional<std::int32_t> {
+            for (const auto& a : p.added())
+                if (a.type == type) return static_cast<std::int32_t>(a.value.at(0));
+            return std::nullopt;
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::map_extending, "minecraft:map_extending"}};
+        data->int_component = [=](const ComponentPatch& p, std::string_view name) {
+            return value(p, name == "map_id" ? 1 : name == "map_post_processing" ? 2 : 0);
+        };
+        data->with_int_component = [=](const ComponentPatch& base, std::string_view name, std::optional<std::int32_t> v) -> std::optional<ComponentPatch> {
+            auto id = value(base, 1), post = value(base, 2);
+            if (name == "map_id") id = v;
+            else if (name == "map_post_processing") post = v;
+            else return std::nullopt;
+            return marks(id, post);
+        };
+        const auto filled = [&](std::int32_t id) { return ItemStack{items::filled_map, 1, 0, marks(id, std::nullopt)}; };
+        const PlayerKey alex{4, 2};
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 4, -1, 7));
+        s.tick({PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 0}, SetPlayerSlot{alex, 36, {items::map, 4}}});
+        for (int k = 0; k < 2; ++k) s.tick({PlayerUseItem{alex, 36, {0.5, 2.62, 0.5}, 0.0f, 90.0f, 4.5, true, {}}});
+        require(s.oracle.dump().last_map_id == 1, "maps 0 and 1 made");
+        // Crafters facing east: A map 1, B map 9 (no data), C map 0, each amid paper.
+        const std::array<std::pair<BlockPos, std::int32_t>, 3> crafters{{{{0, 0, 0}, 1}, {{0, 0, 3}, 9}, {{0, 0, 6}, 0}}};
+        {
+            std::vector<CommandBody> fill;
+            for (const auto& [at, id] : crafters) {
+                fill.push_back(place(at, blocks::crafter(Direction::east)));
+                for (std::uint8_t k = 0; k < 9; ++k) fill.push_back(InsertItem{at, k, k == 4 ? filled(id) : ItemStack{items::paper, 1}});
+            }
+            s.tick(fill);
+        }
+        const auto before = s.oracle.dump().overworld().entities.size();
+        s.tick({place({0, 0, 1}, blocks::redstone_block()), place({0, 0, 4}, blocks::redstone_block()), place({0, 0, 7}, blocks::redstone_block())});
+        s.until(s.oracle.time() + 4);
+        const auto d = s.oracle.dump();
+        std::vector<ItemStack> thrown;
+        for (std::size_t k = before; k < d.overworld().entities.size(); ++k) thrown.push_back(d.overworld().entities[k].stack);
+        // Powered in order A, B, C: A's tick first.
+        require((thrown == std::vector<ItemStack>{filled(2), filled(3)}), "A threw map 2, C map 3; B nothing");
+        auto zoomed = circuit::gameplay::zoomed_map(d.maps.at(1));
+        zoomed.id = 2;
+        require(d.last_map_id == 3 && d.maps.size() == 4 && d.maps[2] == zoomed && d.maps[3].scale == 1, "maps 2 and 3 of scale 1");
+        require(block_entity_at(d, {0, 0, 0})->slots[4].empty() && block_entity_at(d, {0, 0, 3})->slots[4] == filled(9) &&
+                    block_entity_at(d, {0, 0, 3})->slots[0] == ItemStack{items::paper, 1},
+                "A's grid used, B's kept");
+    });
+
     suite.run("a crafting grid's result follows the recipes known only once the grid changes", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

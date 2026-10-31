@@ -144,7 +144,6 @@ public:
         return it->second;
     }
     const MapData* peek_map(std::int32_t id) override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
         const auto it = o_.maps_.find(id);
         return it == o_.maps_.end() ? nullptr : &it->second;
     }
@@ -174,13 +173,11 @@ public:
         return top;
     }
     std::int32_t add_map(MapData data) override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
         data.id = ++o_.last_map_id_;
         o_.maps_.insert_or_assign(data.id, std::move(data));
         return o_.last_map_id_;
     }
     std::int32_t last_map_id() override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
         return o_.last_map_id_;
     }
 

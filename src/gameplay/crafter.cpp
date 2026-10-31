@@ -11,7 +11,9 @@
 // then each remainder (an empty bucket of a milk bucket) in slot order, goes
 // into the container in front, slot by slot, or what it does not take is
 // thrown out through the front whole, as dispensers throw items. Without a
-// recipe it only fails (a sound).
+// recipe it only fails (a sound). An extended map goes out as its new map,
+// a map of the next scale with the next id; the tick then uses the world's
+// maps (RuleContext::peek_map).
 //
 // Hoppers and droppers put an item into the first enabled slot that is
 // empty, or holds its kind with room while no other enabled slot is empty
@@ -80,9 +82,15 @@ void tick_crafter(RuleContext& ctx, BlockPos pos, BlockState s) {
         if (!disabled(*be, k)) grid[k] = be->slots[k];
     // The first recipe in id order, a special one too; a stack a special
     // recipe keeps (a banner copied) goes out with the result.
-    const auto [made, special] = grid_recipe(*data, {3, 3, grid});
-    const auto result = made ? made->result : special ? special->result : ItemStack{};
+    const auto [made, special] = grid_recipe(*data, {3, 3, grid}, -1, map_lookup(ctx));
+    auto result = made ? made->result : special ? special->result : ItemStack{};
     if (result.empty()) return; // it fails
+    // An extended map goes out as its new map, one id each (client/crafter_map).
+    if (special && special->kind == recipes::Special::Kind::map_extending) {
+        const auto marked = result;
+        result = taken_marked_map(ctx, marked);
+        add_marked_map(ctx, marked);
+    }
     be->crafting_ticks = crafting_ticks;
     set_crafter(ctx, pos, s.with_extra(1));
     std::vector<ItemStack> remainders;

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Empty maps as both official servers fill them (client/maps, both versions
-// identical; minecraft.wiki "Map"). The cartography table's window is in
-// menus.cpp, the areas and markers in maps.cpp.
+// identical; minecraft.wiki "Map"), and the new maps of marked results. The
+// cartography table's window is in menus.cpp, the areas and markers in
+// maps.cpp.
 #include "internal.hpp"
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/items.hpp>
@@ -40,6 +41,25 @@ contracts::Result<std::function<void()>> plan_use_empty_map(RuleContext& ctx, co
             spawn_dropped(ctx, contracts::block_of(at), at, {}, rest, 40);
         }
     };
+}
+
+ItemStack taken_marked_map(RuleContext& ctx, const ItemStack& marked) {
+    const auto* data = ctx.data();
+    if (!data || !data->int_component || !data->with_int_component || !data->int_component(marked.components, "map_post_processing"))
+        return marked;
+    auto out = marked;
+    auto components = data->with_int_component(marked.components, "map_post_processing", std::nullopt);
+    if (components) components = data->with_int_component(*components, "map_id", ctx.last_map_id() + 1);
+    if (components) out.components = *components;
+    return out;
+}
+
+void add_marked_map(RuleContext& ctx, const ItemStack& marked) {
+    const auto* data = ctx.data();
+    if (!data || !data->int_component) return;
+    const auto how = data->int_component(marked.components, "map_post_processing");
+    const auto id = data->int_component(marked.components, "map_id");
+    if (const auto* map = how && id ? ctx.peek_map(*id) : nullptr) ctx.add_map(*how == map_zooms ? zoomed_map(*map) : locked_map(*map));
 }
 
 } // namespace circuit::gameplay::detail

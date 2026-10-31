@@ -142,7 +142,7 @@ struct WorldStore {
     gameplay::TicketSet tickets;
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players; // changed in the command phase only
     std::int32_t last_map_id{-1};                                       // see WorldDump::last_map_id
-    std::map<std::int32_t, gameplay::MapData> maps;                      // changed in the command phase only
+    std::map<std::int32_t, gameplay::MapData> maps;                      // see RegionContext::use_maps
 
     [[nodiscard]] ChunkData* find_loaded(ChunkKey c) const {
         const auto it = loaded.find(c);

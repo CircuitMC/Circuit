@@ -11,9 +11,11 @@
 #include <circuit/contracts/replay.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/runtime/engine.hpp>
+#include <algorithm>
 #include <chrono>
 #include <format>
 #include <map>
+#include <ranges>
 
 using namespace circuit::test;
 using circuit::oracle::Oracle;
@@ -1190,6 +1192,110 @@ int main() {
                 }
             }
             require(compared > 5, std::format("{}: {} columns compared", s.name, compared));
+        }
+    });
+
+    suite.run("crafters in separate regions extend maps in tick order", [&] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::InsertItem;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        using Kind = circuit::gameplay::recipes::Special::Kind;
+        // Stand-ins for the server's encoding: type 1 a map's id, type 2 its
+        // post-processing, a byte each.
+        const auto marks = [](std::optional<std::int32_t> id, std::optional<std::int32_t> post) {
+            std::vector<ComponentPatch::Added> added;
+            if (id) added.push_back({1, {static_cast<std::byte>(*id)}});
+            if (post) added.push_back({2, {static_cast<std::byte>(*post)}});
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto value = [](const ComponentPatch& p, std::uint16_t type) -> std::optional<std::int32_t> {
+            for (const auto& a : p.added())
+                if (a.type == type) return static_cast<std::int32_t>(a.value.at(0));
+            return std::nullopt;
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->special = {{Kind::map_extending, "minecraft:map_extending"}};
+        data->int_component = [=](const ComponentPatch& p, std::string_view name) {
+            return value(p, name == "map_id" ? 1 : name == "map_post_processing" ? 2 : 0);
+        };
+        data->with_int_component = [=](const ComponentPatch& base, std::string_view name, std::optional<std::int32_t> v) -> std::optional<ComponentPatch> {
+            auto id = value(base, 1), post = value(base, 2);
+            if (name == "map_id") id = v;
+            else if (name == "map_post_processing") post = v;
+            else return std::nullopt;
+            return marks(id, post);
+        };
+        const PlayerKey alex{4, 2};
+        // Two maps made; four crafters facing up, two 128 blocks apart in
+        // separate regions, each with a map amid paper, all powered at once.
+        // At the chunk edges they update and throw into other columns too:
+        // the maps a region adds are taken back as it conflicts and merges.
+        // Inside their columns with chests above, the maps are all they
+        // share: the regions conflict over them alone.
+        struct Variant {
+            const char* name;
+            std::array<BlockPos, 4> crafters;
+            bool chests;
+        };
+        for (const auto& v : {Variant{"at chunk edges", {{{0, 0, 0}, {128, 0, 0}, {0, 0, 4}, {128, 0, 4}}}, false},
+                              Variant{"inside their columns", {{{8, 0, 8}, {136, 0, 8}, {8, 0, 12}, {136, 0, 12}}}, true}}) {
+            const auto& crafters = v.crafters;
+            std::vector<std::vector<CommandBody>> ticks{{ticket(1, {0, 0}, 1), ticket(2, {8, 0}, 1), SetGameRule{"randomTickSpeed", 0},
+                                                         PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 0}, SetPlayerSlot{alex, 36, {items::map, 4}}},
+                                                        {PlayerUseItem{alex, 36, {0.5, 2.62, 0.5}, 0.0f, 90.0f, 4.5, true, {}}},
+                                                        {PlayerUseItem{alex, 36, {0.5, 2.62, 0.5}, 0.0f, 90.0f, 4.5, true, {}}}};
+            {
+                auto& fill = ticks.emplace_back();
+                for (std::size_t c = 0; c < crafters.size(); ++c) {
+                    fill.push_back(place(crafters[c], blocks::crafter(D::up, D::north)));
+                    if (v.chests) fill.push_back(place({crafters[c].x, crafters[c].y + 1, crafters[c].z}, blocks::chest()));
+                    for (std::uint8_t k = 0; k < 9; ++k)
+                        fill.push_back(InsertItem{crafters[c], k, k == 4 ? ItemStack{items::filled_map, 1, 0, marks(static_cast<std::int32_t>(c % 2), std::nullopt)}
+                                                                         : ItemStack{items::paper, 1}});
+                }
+            }
+            {
+                auto& power = ticks.emplace_back();
+                for (const auto at : {crafters[1], crafters[0], crafters[3], crafters[2]}) power.push_back(place({at.x, at.y, at.z - 1}, blocks::redstone_block()));
+            }
+            ticks.resize(ticks.size() + 8);
+            // Commands observe the previous tick: power placed in tick 5 has the crafters tick in tick 8.
+            const std::size_t crafted = 8;
+            for (auto options : {pool(4), pool(4, LayoutPolicy::single_region), seeded({.seed = 3}, LayoutPolicy::perturbed, 3)}) {
+                const bool separate = options.layout == LayoutPolicy::adaptive;
+                options.data = data;
+                Engine engine(bundle(), 7, std::move(options));
+                Oracle oracle(bundle(), 7, data);
+                Admissions admit;
+                std::uint64_t aborts = 0;
+                for (std::size_t t = 0; t < ticks.size(); ++t) {
+                    if (t + 1 == crafted) aborts = engine.stats().conflict_aborts;
+                    const auto commands = admit(ticks[t]);
+                    engine.advance(commands);
+                    oracle.advance(commands);
+                    require(!first_divergence(engine.trace(), oracle.trace()) && first_difference(engine.dump(), oracle.dump()).empty(),
+                            std::format("{}: tick {} matches the oracle", v.name, t + 1));
+                    // Each region's crafters need the level's random pseudo column for the maps: the regions merge.
+                    if (t + 1 == crafted && separate && v.chests)
+                        require(engine.stats().conflict_aborts > aborts, "the crafters' regions conflict over the maps");
+                }
+                const auto d = engine.dump();
+                require(d.last_map_id == 5 && d.maps.size() == 6 && std::ranges::all_of(d.maps | std::views::drop(2), [](const auto& m) { return m.scale == 1; }),
+                        std::format("{}: four new maps of scale 1", v.name));
+                // Each new map's id and where it went (x / 64: 0 or 2), thrown out or in the chest above.
+                std::vector<std::int32_t> made;
+                for (const auto& e : d.overworld().entities)
+                    if (e.stack.item == items::filled_map) made.push_back(value(e.stack.components, 1).value_or(-1) * 1000 + static_cast<std::int32_t>(e.position.x) / 64);
+                if (v.chests)
+                    for (const auto at : crafters)
+                        if (const auto* chest = block_entity_at(d, {at.x, at.y + 1, at.z}); chest && !chest->slots[0].empty())
+                            made.push_back(value(chest->slots[0].components, 1).value_or(-1) * 1000 + at.x / 64);
+                std::ranges::sort(made);
+                // Powered in the order 1, 0, 3, 2: each crafter at x 128 or 136 ticks before the one at x 0 or 8 beside it.
+                require((made == std::vector<std::int32_t>{2002, 3000, 4002, 5000}), std::format("{}: maps 2 and 4 east, 3 and 5 west", v.name));
+            }
         }
     });
 

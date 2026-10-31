@@ -1149,7 +1149,8 @@ struct Game::Impl final : GameServices {
     }
 
     // What a crafter's grid would make (the result its window shows):
-    // disabled slots count as empty.
+    // disabled slots count as empty; a map amid paper is shown marked when
+    // its data exists (client/crafter_map).
     contracts::ItemStack crafter_result(BlockPos pos) const {
         const auto view = engine->view();
         const auto be = view.block_entity(overworld, pos);
@@ -1157,7 +1158,11 @@ struct Game::Impl final : GameServices {
         std::array<contracts::ItemStack, 9> grid{};
         for (std::size_t k = 0; k < 9; ++k)
             if (((*be)->disabled >> k & 1) == 0) grid[k] = (*be)->slots[k];
-        return gameplay::crafted(*data.game, {3, 3, grid});
+        const auto maps = [&view](std::int32_t id) -> const gameplay::MapData* {
+            const auto map = view.map(id);
+            return map ? *map : nullptr;
+        };
+        return gameplay::crafted(*data.game, {3, 3, grid}, maps);
     }
 
     // The parts of the container at `pos` in the menu's slot order: the right

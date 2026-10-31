@@ -676,8 +676,8 @@
         "java-1.21.8"
       ],
       "location": "external: circuit-clienttest/map-extend.js",
-      "status": "failing",
-      "description": "12 steps of map extending at a crafting table: a filled map amid eight paper shows itself marked for scaling and becomes a new map a scale larger as it is taken, up to scale 4; seven paper, the map in a corner and a map without data are refused; Circuit makes nothing from them (C5.13e)"
+      "status": "passing",
+      "description": "12 steps of map extending at a crafting table: a filled map amid eight paper shows itself marked for scaling and becomes a new map a scale larger as it is taken, up to scale 4; seven paper, the map in a corner and a map without data are refused; Circuit and both official servers give identical windows, inventories and map data packets"
     },
     {
       "id": "client/map_ids",
@@ -687,8 +687,30 @@
         "java-1.21.8"
       ],
       "location": "external: circuit-clienttest/map-ids.js",
-      "status": "failing",
-      "description": "Maps extended at a crafting table taken by a shift-click (two map ids used, the first for the map), a click, a number key and a throw (one each), and a copy (none), each followed by a new map from an empty one; Circuit makes nothing from a map amid paper (C5.13e)"
+      "status": "passing",
+      "description": "Maps extended at a crafting table taken by a shift-click (two map ids used, the first for the map), a click, a number key and a throw (one each), and a copy (none), each followed by a new map from an empty one; Circuit and both official servers give identical inventories, thrown items and map data packets"
+    },
+    {
+      "id": "client/map_extend2",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/map-extend2.js",
+      "status": "passing",
+      "description": "20 steps of map extending at a crafting table: the id a shift-click passes over has a map of the next scale too, an id never used none; a map locked at a cartography table is extended into an unlocked map; two maps amid two paper each shift-clicked (two crafts, four ids) and taken by clicks one at a time (the result shown again); Circuit and both official servers give identical windows, inventories and map data packets"
+    },
+    {
+      "id": "client/crafter_map",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/crafter-map.js",
+      "status": "passing",
+      "description": "Three crafters facing up with a map amid eight paper: a map, a map without data and a locked map; their windows' results, the new maps they throw out (one id each), the refused one keeping its grid, the thrown map's data when picked up and the next map's id; Circuit and both official servers give identical windows, thrown items, inventories and map data packets"
     },
     {
       "id": "client/join_order",

@@ -18,8 +18,7 @@
 //   does not match.
 // Ingredients test the item alone. The special recipes, which need code of
 // their own, are listed by kind (Special below) and match in id order with
-// the others (client/rocket_order); the one not made yet (map extending)
-// is not compiled.
+// the others (client/rocket_order).
 namespace circuit::gameplay::recipes {
 
 // Whether recipe id `a` comes before `b` in the order both official servers
@@ -117,6 +116,11 @@ struct Smithing {
 //   left in its slot when they are taken;
 // - map_cloning: one filled map and empty maps: that many and one more of
 //   the filled map (its data need not exist);
+// - map_extending (client/map_extend, client/map_extend2): in a 3 by 3
+//   grid, a filled map whose data exists and whose scale is below the
+//   largest in the middle, paper around it: the map marked to be zoomed
+//   (map_post_processing 1), a locked map too; taking it makes a new map
+//   of the next scale (see menus.cpp and crafter.cpp);
 // - tipped_arrow (client/special_d): in a 3 by 3 grid, a lingering potion in
 //   the middle and arrows around it: eight tipped arrows with the potion's
 //   contents as they are (none without);
@@ -139,6 +143,7 @@ struct Special {
         firework_star_fade,
         book_cloning,
         map_cloning,
+        map_extending,
         tipped_arrow,
         decorated_pot
     };
