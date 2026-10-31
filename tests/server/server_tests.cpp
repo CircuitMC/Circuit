@@ -261,7 +261,8 @@ std::vector<std::string> feedback(Recorder& r, const server::Wire& wire) {
             for (const auto& a : with->items())
                 text += " " + (a.type() == protocol::nbt::TagType::string ? a.text()
                                : a.type() == protocol::nbt::TagType::int_ ? std::to_string(a.integer())
-                                                                         : a.find("text")->text());
+                               : a.find("text")                           ? a.find("text")->text()
+                                                                         : a.find("translate")->text());
         out.push_back(std::move(text));
     }
     return out;
@@ -1674,6 +1675,169 @@ int main() {
                 "the own window's id goes on");
     });
 
+    suite.run("players get status effects by /effect with both official servers' replies, packets and entity data", [] {
+        // circuit-clienttest/effects2.js, effects3.js and effect-colors.js:
+        // both versions alike, but for orders that vary from run to run there
+        // (here effects come in id order).
+        using I = server::Intent;
+        GameFixture f;
+        auto alice = f.join(1, "Alice");
+        auto bob = f.join(2, "Bob");
+        for (int i = 0; i < 8; ++i) f.game->tick();
+        // Effect packets and entity data since the last call, as text: an
+        // effect "effect <entity> <id> <amplifier> <duration> <flags>",
+        // "removed <entity> <id>", data "data <entity> <index>=<value> ...",
+        // health "health".
+        std::map<std::uint64_t, std::size_t> seen;
+        const auto packets = [&](Recorder& r) {
+            const auto update = f.wire.ids().id(State::play, Bound::clientbound, "update_mob_effect");
+            const auto remove = f.wire.ids().id(State::play, Bound::clientbound, "remove_mob_effect");
+            const auto data = f.wire.ids().id(State::play, Bound::clientbound, "set_entity_data");
+            const auto health = f.wire.ids().id(State::play, Bound::clientbound, "set_health");
+            std::vector<std::string> out;
+            std::lock_guard lock(r.mutex);
+            for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                auto pk = protocol::open_packet(r.packets[at]);
+                if (!pk) continue;
+                auto& in = pk->fields;
+                if (pk->id == update) {
+                    const auto entity = in.varint().value(), id = in.varint().value(), amplifier = in.varint().value(), duration = in.varint().value();
+                    out.push_back(std::format("effect {} {} {} {} {}", entity, id, amplifier, duration, in.u8().value()));
+                } else if (pk->id == remove) {
+                    const auto entity = in.varint().value();
+                    out.push_back(std::format("removed {} {}", entity, in.varint().value()));
+                } else if (pk->id == data) {
+                    std::string text = std::format("data {}", in.varint().value());
+                    for (auto index = in.u8().value(); index != 0xFF; index = in.u8().value()) {
+                        const auto type = in.varint().value();
+                        text += std::format(" {}=", index);
+                        if (type == 0) text += std::to_string(in.u8().value());
+                        else if (type == 8) text += in.boolean().value() ? "true" : "false";
+                        else if (type == 18) {
+                            const auto n = in.varint().value();
+                            text += "[";
+                            for (std::int32_t k = 0; k < n; ++k) {
+                                const auto particle = in.varint().value();
+                                text += (k ? "," : "") + std::to_string(particle);
+                                if (particle == 20) text += std::format(":{:08X}", static_cast<std::uint32_t>(in.i32().value()));
+                            }
+                            text += "]";
+                        } else {
+                            text += "?";
+                            break;
+                        }
+                    }
+                    out.push_back(std::move(text));
+                } else if (pk->id == health) {
+                    out.push_back("health");
+                }
+            }
+            return out;
+        };
+        // A command in one tick: its effect packets at once, the entity data
+        // they decide at the start of the next tick (client/effect_edges).
+        const auto command = [&](std::string text) {
+            f.game->submit(1, I{server::intent::Command{std::move(text)}});
+            f.game->tick();
+        };
+        const auto then = [&] { f.game->tick(); };
+        (void)packets(*alice);
+        (void)packets(*bob);
+        // Alice's entity id, from the first effect packet.
+        command("effect give Alice minecraft:speed 100 1");
+        auto a = packets(*alice);
+        require(a.size() == 1 && a[0].starts_with("effect ") && a[0].ends_with(" 0 1 2000 14"), "a new speed: " + (a.empty() ? "" : a[0]));
+        const auto entity = a[0].substr(7, a[0].find(' ', 7) - 7);
+        require(packets(*bob).empty(), "nothing for bob yet");
+        then();
+        require(packets(*alice) == std::vector<std::string>{std::format("data {} 10=[20:FF33EBFF]", entity)}, "its particle, a tick later");
+        require(packets(*bob) == std::vector<std::string>{std::format("data {} 10=[20:FF33EBFF]", entity)}, "bob sees the particle");
+        require(feedback(*alice, f.wire).back() == "commands.effect.give.success.single effect.minecraft.speed Alice", "applied");
+        command("effect give Alice speed 50 1");
+        then();
+        require(packets(*alice).empty() && feedback(*alice, f.wire).back() == "commands.effect.give.failed", "the same amplifier, shorter: refused");
+        // Glowing for both, its particles hidden: the shared flag, Alice's
+        // particles sent again, Bob's ambience (his only effect shows none).
+        command("effect give @a minecraft:glowing 30 0 true");
+        then();
+        a = packets(*alice);
+        require(a.size() == 3 && a[0] == std::format("effect {} 23 0 600 8", entity) && a[1] == std::format("data {} 0=64 10=[20:FF33EBFF]", entity),
+                "glowing: " + (a.size() > 1 ? a[1] : ""));
+        const auto b = packets(*bob);
+        const auto bob_data = std::ranges::find_if(b, [](const auto& t) { return t.ends_with(" 0=64 11=true"); });
+        require(bob_data != b.end() && std::ranges::count(b, *bob_data) == 1, "bob glows, his effects ambient");
+        const auto bob_seen = *bob_data;
+        require(feedback(*alice, f.wire).back() == "commands.effect.give.success.multiple effect.minecraft.glowing 2", "two targets");
+        command("effect clear Alice minecraft:speed");
+        then();
+        a = packets(*alice);
+        require(a == std::vector<std::string>{std::format("removed {} 0", entity), std::format("data {} 10=[] 11=true", entity)}, "speed cleared");
+        require(feedback(*alice, f.wire).back() == "commands.effect.clear.specific.success.single effect.minecraft.speed Alice", "removed");
+        command("effect clear Alice minecraft:speed");
+        require(feedback(*alice, f.wire).back() == "commands.effect.clear.specific.failed", "nothing to remove");
+        // Errors.
+        command("effect give Alice minecraft:no_such_effect 5 0");
+        require(feedback(*alice, f.wire).back() == "argument.resource.not_found minecraft:no_such_effect minecraft:mob_effect", "an unknown effect");
+        command("effect give Alice speed 0");
+        require(feedback(*alice, f.wire).back() == "argument.integer.low 1 0", "seconds below 1");
+        command("effect give Alice speed 5 256");
+        require(feedback(*alice, f.wire).back() == "argument.integer.big 255 256", "an amplifier above 255");
+        command("effect give Nobody speed 5 0");
+        require(feedback(*alice, f.wire).back() == "argument.entity.notfound.entity", "no such player");
+        // A stronger effect for 3 seconds over a weaker one: the weaker comes
+        // back in the 60th tick, counting the one that gave it.
+        command("effect give Alice haste infinite 0");
+        then();
+        (void)packets(*alice);
+        command("effect give Alice haste 3 1");
+        a = packets(*alice);
+        require(a == std::vector<std::string>{std::format("effect {} 2 1 60 6", entity)}, "the stronger haste");
+        for (int i = 0; i < 58; ++i) f.game->tick();
+        a = packets(*alice);
+        require(std::ranges::none_of(a, [](const auto& t) { return t.starts_with("effect") || t.starts_with("removed"); }), "the stronger still shown");
+        f.game->tick();
+        require(packets(*alice) == std::vector<std::string>{std::format("effect {} 2 0 -1 6", entity)}, "the infinite haste back");
+        // An effect ends after its duration; its data follows a tick later.
+        then();
+        (void)packets(*alice);
+        command("effect give Alice minecraft:invisibility 2");
+        then();
+        a = packets(*alice);
+        require(a.size() == 2 && a[0] == std::format("effect {} 13 0 40 14", entity) && a[1] == std::format("data {} 0=96 10=[20:FFD9C043,20:FFF6F6F6]", entity),
+                "invisible: " + (a.size() > 1 ? a[1] : ""));
+        for (int i = 0; i < 37; ++i) f.game->tick();
+        require(packets(*alice).empty(), "still invisible");
+        f.game->tick();
+        require(packets(*alice) == std::vector<std::string>{std::format("removed {} 13", entity)}, "invisibility ended");
+        then();
+        require(packets(*alice) == std::vector<std::string>{std::format("data {} 0=64 10=[20:FFD9C043]", entity)}, "its data a tick later");
+        // A rejoin: the effects again (no longer new), before the health,
+        // then the entity data a tick later.
+        command("effect give Alice minecraft:water_breathing 100 0 true");
+        f.game->leave(1);
+        f.game->tick();
+        alice = f.join(1, "Alice");
+        seen[1] = 0;
+        a = packets(*alice);
+        // Bob appears with his data as last told (glowing, his effects ambient).
+        require(std::erase(a, bob_seen) == 1, "bob appears glowing");
+        const auto health = std::ranges::find(a, std::string("health"));
+        require(health != a.end() && health - a.begin() == 3 && health + 1 == a.end(), "three effects, then the health");
+        // Water breathing went down in the tick that gave it (none while
+        // away, none in the joining tick); glowing in each tick since its own.
+        require(a[0].ends_with(" 2 0 -1 6") && a[1].ends_with(" 12 0 1999 0") && a[2].ends_with(" 23 0 486 0"),
+                "haste, water breathing, glowing: " + a[0] + " | " + a[1] + " | " + a[2]);
+        then();
+        require(packets(*alice) == std::vector<std::string>{std::format("data {} 0=64 10=[20:FFD9C043]", a[0].substr(7, a[0].find(' ', 7) - 7))},
+                "then the data");
+        // Death takes them.
+        command("kill");
+        f.game->submit(1, I{server::intent::ClientCommand{0}});
+        f.game->tick();
+        command("effect clear Alice");
+        require(feedback(*alice, f.wire).back() == "commands.effect.clear.everything.failed", "a respawned player has no effects");
+    });
+
     suite.run("chests send their lids' block events and trapped chests power by their viewers", [] {
         using I = server::Intent;
         GameFixture f;
@@ -2740,6 +2904,56 @@ int main() {
             const auto first = b.varint().value();
             require(n == 1 && first == 262 && book->fields.back() == std::byte{1} && book->fields[book->fields.size() - 2] == std::byte{2},
                     "the crafting table, still highlighted, replacing the book");
+            s.stop();
+        }
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("status effects are saved with the players", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Brewer");
+            confirm_spawn(c);
+            c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:speed 210 0"));
+            c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:speed 3 2 true"));
+            c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:night_vision infinite 0"));
+            // The third effect's packet: all three were given.
+            for (int k = 0; k < 3; ++k) require(c.until(State::play, "update_mob_effect").has_value(), "given");
+            s.stop();
+        }
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Brewer");
+            // Speed 2 with its particles hidden, then night vision; the
+            // weaker speed was kept underneath and comes back.
+            const auto first = c.until(State::play, "update_mob_effect");
+            require(first.has_value(), "effects sent again");
+            auto r = first->reader();
+            (void)r.varint();
+            const auto id = r.varint().value(), amplifier = r.varint().value(), duration = r.varint().value();
+            const auto flags = r.u8().value();
+            require(id == 0 && amplifier == 2 && duration > 0 && duration < 60 && flags == 0, std::format("speed 2: {} {} {} {}", id, amplifier, duration, flags));
+            const auto second = c.until(State::play, "update_mob_effect");
+            require(second.has_value(), "night vision too");
+            auto n = second->reader();
+            (void)n.varint();
+            const auto nv = n.varint().value(), nv_amplifier = n.varint().value(), nv_duration = n.varint().value();
+            require(nv == 15 && nv_amplifier == 0 && nv_duration == -1 && n.u8().value() == 6, "night vision, infinite");
+            // The stronger speed ends: the weaker one comes back from underneath.
+            const auto back = c.until(State::play, "update_mob_effect");
+            require(back.has_value(), "the weaker speed back");
+            auto w = back->reader();
+            (void)w.varint();
+            const auto back_id = w.varint().value(), back_amplifier = w.varint().value(), back_duration = w.varint().value();
+            require(back_id == 0 && back_amplifier == 0 && back_duration > 4000 && back_duration < 4200 && w.u8().value() == 6,
+                    std::format("speed 1 underneath: {} {} {}", back_id, back_amplifier, back_duration));
             s.stop();
         }
         std::filesystem::remove_all(dir);

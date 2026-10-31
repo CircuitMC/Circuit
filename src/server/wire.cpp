@@ -24,7 +24,8 @@ struct Wire::Ids {
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
-        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book;
+        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
+        update_mob_effect, remove_mob_effect;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -114,6 +115,8 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->recipe_book_settings = cb(State::play, "recipe_book_settings");
     ids->place_ghost_recipe = cb(State::play, "place_ghost_recipe");
     ids->open_book = cb(State::play, "open_book");
+    ids->update_mob_effect = cb(State::play, "update_mob_effect");
+    ids->remove_mob_effect = cb(State::play, "remove_mob_effect");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -553,6 +556,43 @@ Bytes Wire::open_book(std::int32_t hand) const {
     Writer w;
     w.varint(hand);
     return packet(id_->open_book, w);
+}
+
+Bytes Wire::update_mob_effect(std::int32_t entity, std::int32_t effect, std::int32_t amplifier, std::int32_t duration,
+                              std::uint8_t flags) const {
+    return packet(id_->update_mob_effect, Writer().varint(entity).varint(effect).varint(amplifier).varint(duration).u8(flags));
+}
+Bytes Wire::remove_mob_effect(std::int32_t entity, std::int32_t effect) const {
+    return packet(id_->remove_mob_effect, Writer().varint(entity).varint(effect));
+}
+Bytes Wire::effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
+                            const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient) const {
+    // Particle type ids (PrismarineJS minecraft-data particles.json, MIT):
+    // the same on both protocols up to infested, the items' and omens' one
+    // higher on 772.
+    const auto type_id = [&](std::string_view type) -> std::int32_t {
+        const bool later = protocol_ >= 772;
+        if (type == "small_gust") return 24;
+        if (type == "infested") return 32;
+        if (type == "item_slime") return later ? 49 : 48;
+        if (type == "item_cobweb") return later ? 50 : 49;
+        if (type == "raid_omen") return later ? 110 : 109;
+        if (type == "trial_omen") return later ? 111 : 110;
+        return 20; // entity_effect
+    };
+    Writer w;
+    w.varint(id);
+    if (flags) w.u8(0).varint(0).u8(*flags); // index 0 (shared flags), type Byte
+    if (particles) {
+        w.u8(10).varint(18).varint(static_cast<std::int32_t>(particles->size())); // index 10 (effect particles), type Particles
+        for (const auto& p : *particles) {
+            w.varint(type_id(p.type));
+            if (p.type == "entity_effect") w.i32(static_cast<std::int32_t>(p.color));
+        }
+    }
+    if (ambient) w.u8(11).varint(8).boolean(*ambient); // index 11 (ambient effects), type Boolean
+    w.u8(0xFF);
+    return packet(id_->set_entity_data, w);
 }
 
 Bytes Wire::place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const {

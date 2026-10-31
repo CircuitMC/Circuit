@@ -724,6 +724,72 @@
       "description": "54 steps, each one action of a player, listing the inventory packets that follow it with their state ids: held slot changes, empty maps (a stack and the last one), empty buckets on water and at the sky, water buckets poured, a knowledge book, a stick, a filled map and an empty hand used, dirt placed, an item and a stack dropped and picked up again, hands swapped, a map and a bucket used from the off hand, a crafting table with dirt in its grid and a chest opened and closed, a map used and dropped and a bucket filled and poured with the chest open, and a map, a bucket and a knowledge book used in creative mode; Circuit and both official servers send the same packets"
     },
     {
+      "id": "client/effects",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/effects2.js",
+      "status": "passing",
+      "description": "48 steps of /effect given and cleared by alice for herself and for bob: defaults, seconds, amplifiers and hidden particles, the parser's errors, an unknown effect and target, @s and @a, a stronger effect over a weaker one coming back after it, refusals, invisibility, glowing, an instant effect, a rejoin with three effects and a death; per step each client's effect packets, both players' shared flags, effect particles and ambience, the health and the replies; Circuit and both official servers give the same, with sorted orders: those the official servers vary from run to run, and players' entity data within a step (the official servers' order is their own, Circuit's the players')"
+    },
+    {
+      "id": "client/effect_rules",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/effects3.js",
+      "status": "passing",
+      "description": "51 steps of an effect given again, each case from no effects: the same amplifier shorter and longer, weaker and stronger levels shorter and longer, three levels shown in turn, an infinite level underneath a stronger one, a level cleared with one underneath, particles hidden and shown, only hidden particles, and one effect of two ending; Circuit and both official servers send the same effect packets, entity data and replies"
+    },
+    {
+      "id": "client/effect_particles",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/effect-colors.js",
+      "status": "passing",
+      "description": "Each of the 39 effects given to a creative player and cleared: its effect packet, its particle (an entity_effect color, or the particle of its own of the omens, wind charged, weaving, oozing and infested), the invisibility and glowing flags and the replies; Circuit and both official servers send the same"
+    },
+    {
+      "id": "client/effect_time",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/effects4.js",
+      "status": "passing",
+      "description": "17 steps: effects of 620 and 1220 ticks sent again 20 ticks later, none for 600 ticks or an infinite time, an instant effect's default of one tick, its seconds counted as ticks and an infinite one, and saturation ending; Circuit and both official servers send the same"
+    },
+    {
+      "id": "client/effect_edges",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/effects5.js",
+      "status": "passing",
+      "description": "23 steps: a level underneath that runs out before the one above it ends (shown with no time left, then removed at once), the same under an infinite level across a rejoin (the infinite level kept) and over a third level (removed with it), an effect sent again at 1800 ticks left, the entity data of effects given and ending 25 ms or more after their packets, and levitation in survival (not kicked for flying, and where the player lands; the health after the fall is left out, a deviation); Circuit and both official servers give the same"
+    },
+    {
+      "id": "client/join_message",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/join-message.js",
+      "status": "passing",
+      "description": "alice joins, bob joins, leaves and joins again: alice is told each time, bob never of his own joining; Circuit and both official servers show the same messages"
+    },
+    {
       "id": "client/join_order",
       "kind": "black_box",
       "versions": [

@@ -17,8 +17,12 @@
       "evidence": "none"
     },
     "effect": {
-      "impl": "missing",
-      "evidence": "none"
+      "impl": "partial",
+      "evidence": "compared",
+      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers; no consequence yet",
+      "cases": [
+        "client/effect_particles"
+      ]
     },
     "enchantment": {
       "impl": "missing",

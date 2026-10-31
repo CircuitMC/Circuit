@@ -2,6 +2,7 @@
 #pragma once
 #include "recipe_book.hpp"
 #include "registries.hpp"
+#include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/maps.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/components.hpp>
@@ -311,6 +312,16 @@ public:
     Bytes recipe_book_remove(std::span<const std::int32_t> ids) const;
     // A written book opened for reading (hand 0 the main hand, 1 the off hand).
     Bytes open_book(std::int32_t hand) const;
+    // A status effect of the player's own entity added or changed (flags: 1
+    // ambient, 2 particles, 4 icon, 8 a new effect blending in), or removed.
+    Bytes update_mob_effect(std::int32_t entity, std::int32_t effect, std::int32_t amplifier, std::int32_t duration,
+                            std::uint8_t flags) const;
+    Bytes remove_mob_effect(std::int32_t entity, std::int32_t effect) const;
+    // The data of a living entity that its status effects decide, each entry
+    // when given: its shared flags (index 0), its effect particles (10) and
+    // whether they are ambient (11).
+    Bytes effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
+                          const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient) const;
     // The ghost of a recipe that could not be placed, shown in a window's grid.
     Bytes place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const;
     // What item components may refer to on this protocol.

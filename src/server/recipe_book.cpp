@@ -3,6 +3,7 @@
 // "Recipe book", "Recipe" and "Advancement/JSON format").
 #include "recipe_book.hpp"
 #include <circuit/auth/json.hpp>
+#include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/recipes.hpp>
 #include <circuit/protocol/codec.hpp>
@@ -35,16 +36,6 @@ enum Category : std::int32_t {
     crafting_building_blocks, crafting_redstone, crafting_equipment, crafting_misc, furnace_food, furnace_blocks, furnace_misc,
     blast_furnace_blocks, blast_furnace_misc, smoker_food, stonecutter, smithing, campfire
 };
-
-// The status effects in registry order, the same on both versions
-// (minecraft.wiki "Effect", data values; PrismarineJS minecraft-data
-// effects.json): suspicious stews' results name them.
-constexpr std::array<std::string_view, 39> effects{
-    "speed", "slowness", "haste", "mining_fatigue", "strength", "instant_health", "instant_damage", "jump_boost", "nausea",
-    "regeneration", "resistance", "fire_resistance", "water_breathing", "invisibility", "blindness", "night_vision", "hunger",
-    "weakness", "poison", "wither", "health_boost", "absorption", "saturation", "glowing", "levitation", "luck", "unluck",
-    "slow_falling", "conduit_power", "dolphins_grace", "bad_omen", "hero_of_the_village", "darkness", "trial_omen", "raid_omen",
-    "wind_charged", "weaving", "oozing", "infested"};
 
 struct Bad {};
 
@@ -117,10 +108,11 @@ public:
                 w.varint(static_cast<std::int32_t>(value.items().size()));
                 for (const auto& e : value.items()) {
                     const auto* id = e.string("id");
-                    const auto it = id ? std::ranges::find(effects, with_namespace(*id).substr(10)) : effects.end();
-                    if (it == effects.end()) throw Bad{};
+                    // Suspicious stews' results name effects by their registry id.
+                    const auto effect = id ? gameplay::effects::id(with_namespace(*id)) : std::nullopt;
+                    if (!effect) throw Bad{};
                     const auto* duration = e.find("duration");
-                    w.varint(static_cast<std::int32_t>(it - effects.begin()))
+                    w.varint(*effect)
                         .varint(duration && duration->kind() == Json::Kind::number ? static_cast<std::int32_t>(duration->as_number()) : 160);
                 }
                 const auto bytes = w.take();

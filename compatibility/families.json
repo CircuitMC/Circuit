@@ -2287,8 +2287,24 @@
           "id": "effects",
           "name": "Status effects",
           "milestone": "C6",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "deviations": [
+            "effects have no consequence: no attribute modifiers are sent or applied, and the effects that heal, hurt or feed change nothing",
+            "only players have effects; /effect takes players by name, @s, @p, @a and @e",
+            "of the shared flags only the effects' (invisibility and glowing) are sent, not sneaking or sprinting",
+            "the fall after levitating hurts as Circuit's other falls do, by the height the client reports (2 or 3 points after rising about 5.2 blocks), where the official 1.21.8 server took 2 and 1.21.4 3 in every run; the health regenerated after it differed",
+            "a player's effects come in id order and players' entity data of one tick in the order they connected; the official servers' orders are their own (for effects one that varies from run to run)",
+            "the entity data of a command's effects comes in the next tick, 50 ms after the effect packet, where the official 1.21.8 server took 80 ms (25 ms or more on both official servers)"
+          ],
+          "cases": [
+            "client/effects",
+            "client/effect_rules",
+            "client/effect_particles",
+            "client/effect_time",
+            "client/effect_edges"
+          ],
+          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none"
         },
         {
           "id": "enchantment_effects",
@@ -2995,7 +3011,10 @@
           "milestone": "C10",
           "impl": "implemented",
           "evidence": "none",
-          "note": "Checked with protocol clients and the real client against Circuit"
+          "cases": [
+            "client/join_message"
+          ],
+          "note": "Checked with protocol clients and the real client against Circuit; the message that a player joined goes to everyone but the newcomer, as on both official servers"
         },
         {
           "id": "configuration",

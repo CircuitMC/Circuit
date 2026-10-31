@@ -50,7 +50,8 @@ struct Player {
         auto pos = client.until(State::play, "player_position");
         require(pos.has_value(), "spawn");
         client.send(State::play, "accept_teleportation", Writer().varint(pos->reader().varint().value()));
-        expect("joined the game");
+        // In once a command is answered (no one tells the newcomer it joined).
+        command("help", "Commands");
     }
     // Sends a command and returns the first system message containing `want`
     // (or any message when `want` is empty).

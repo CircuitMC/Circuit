@@ -10,6 +10,7 @@
 #include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/potions.hpp>
@@ -6454,6 +6455,88 @@ int main() {
         // The main hand is one of the nine hotbar slots.
         s.tick({PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 9}});
         require(of_kind(s.last, TraceKind::command_rejected).size() == 1, "hotbar slot 9 refused");
+    });
+
+    suite.run("status effects combine and count down as both official servers show them", [] {
+        // circuit-clienttest/effects3.js and effect-colors.js, both versions identical.
+        namespace fx = circuit::gameplay::effects;
+        require(fx::names().size() == 39 && fx::id("minecraft:speed") == 0 && fx::id("infested") == 38 && !fx::id("no_such_effect")
+                    && !fx::id("other:speed"),
+                "the registry");
+        require(fx::instant(5) && fx::instant(6) && fx::instant(22) && !fx::instant(0), "instant health, instant damage and saturation");
+        require(fx::particle(0) == fx::Particle{"entity_effect", 0xFF33EBFF} && fx::particle(33) == fx::Particle{"trial_omen", 0}
+                    && fx::particle(38) == fx::Particle{"infested", 0},
+                "particles");
+        require(fx::shared_flag(13) == 0x20 && fx::shared_flag(23) == 0x40 && fx::shared_flag(0) == 0, "invisibility and glowing flags");
+        const auto level = [](std::int32_t amplifier, std::int32_t duration, bool shown = true) {
+            return fx::Level{amplifier, duration, false, shown, shown};
+        };
+        // Ticks; the last tick's result as kept, next or ended.
+        const auto run = [](fx::Effect& e, int ticks) {
+            fx::Ticked last;
+            for (int i = 0; i < ticks; ++i) last = fx::tick(e);
+            return last.ended ? std::string("ended") : last.next ? std::string("next") : std::string("kept");
+        };
+        fx::Effect e{0, {}};
+        require(fx::give(e, level(1, 2000)), "a new effect");
+        require(!fx::give(e, level(1, 1000)) && e.levels == std::vector{level(1, 2000)}, "the same amplifier, shorter: refused");
+        require(fx::give(e, level(1, 4000)) && e.levels == std::vector{level(1, 4000)}, "the same amplifier, longer: lengthened");
+        require(!fx::give(e, level(0, 1000)) && e.levels.size() == 1, "weaker, shorter: refused");
+        // Weaker and longer: kept underneath, counting down, shown when the stronger ends.
+        e = {0, {level(1, 60)}};
+        require(!fx::give(e, level(0, 4200)) && e.levels == std::vector{level(1, 60), level(0, 4200)}, "weaker, longer: underneath");
+        require(run(e, 59) == "kept" && run(e, 1) == "next" && e.levels == std::vector{level(0, 4140)},
+                "shown when the stronger ends, 60 ticks shorter");
+        // Stronger and shorter: the weaker stays underneath; stronger and longer: it does not.
+        e = {0, {level(0, 4200)}};
+        require(fx::give(e, level(2, 60)) && e.levels == std::vector{level(2, 60), level(0, 4200)}, "stronger, shorter");
+        e = {0, {level(0, 80)}};
+        require(fx::give(e, level(2, 2000)) && e.levels == std::vector{level(2, 2000)}, "stronger, longer");
+        // Three levels, each shown in turn.
+        e = {0, {level(0, 4200)}};
+        fx::give(e, level(1, 180));
+        fx::give(e, level(2, 60));
+        require(e.levels == std::vector{level(2, 60), level(1, 180), level(0, 4200)}, "three levels");
+        require(run(e, 60) == "next" && e.levels.front() == level(1, 120), "the second");
+        require(run(e, 120) == "next" && e.levels == std::vector{level(0, 4020)}, "the third");
+        // An infinite effect underneath a stronger one comes back.
+        e = {0, {level(0, fx::infinite)}};
+        require(fx::give(e, level(1, 60)) && run(e, 60) == "next" && e.levels == std::vector{level(0, fx::infinite)}, "infinite");
+        require(run(e, 1000) == "kept" && !fx::tick(e).again, "never ends, never sent again");
+        // Particles shown or hidden change the level whatever its strength.
+        e = {0, {level(1, 2000, false)}};
+        require(fx::give(e, level(1, 1000)) && e.levels == std::vector{level(1, 2000)}, "particles shown: the level kept");
+        require(fx::give(e, level(0, 600, false)) && e.levels == std::vector{level(1, 2000, false)}, "hidden by a weaker one");
+        // An effect ends in the tick its duration runs out.
+        e = {2, {level(0, 40)}};
+        require(run(e, 39) == "kept" && run(e, 1) == "ended", "40 ticks");
+        e = {5, {level(0, 1)}};
+        require(fx::tick(e).ended, "an instant effect of one tick");
+        // A level underneath that runs out while it waits is shown when the
+        // level above ends, and the effect ends with it.
+        e = {0, {level(0, 200)}};
+        fx::give(e, level(1, 100));
+        fx::give(e, level(1, 400));
+        require(e.levels == std::vector{level(1, 400), level(0, 200)}, "lengthened over a level underneath");
+        require(run(e, 399) == "kept" && e.levels.back().duration == 0, "the one underneath ran out");
+        const auto last = fx::tick(e);
+        require(last.next && last.ended && !last.again, "shown with no time left, and ended");
+        // Under an infinite level it stays, run out.
+        e = {0, {level(0, 200)}};
+        fx::give(e, level(1, 100));
+        fx::give(e, level(1, fx::infinite));
+        require(run(e, 1000) == "kept" && e.levels == std::vector{level(1, fx::infinite), level(0, 0)}, "infinite over one run out");
+        // Sent again whenever the time left is a multiple of 600 ticks.
+        e = {0, {level(0, 1220)}};
+        int again = 0;
+        for (int i = 0; i < 1219; ++i) again += fx::tick(e).again ? 1 : 0;
+        require(again == 2 && e.levels.front().duration == 1, "at 1200 and 600");
+        e = {0, {level(0, 1820)}};
+        again = 0;
+        for (int i = 0; i < 20; ++i) again += fx::tick(e).again ? 1 : 0;
+        require(again == 1 && e.levels.front().duration == 1800, "at 1800");
+        e = {0, {level(0, 600)}};
+        require(!fx::tick(e).again, "not when given for 600");
     });
 
     return suite.finish();

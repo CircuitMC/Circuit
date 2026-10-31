@@ -46,7 +46,7 @@ Feature counts per implementation state, then the number of features with compar
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 5 / 5 | 0 / 0 | 0 / 0 | 0 / 0 | 7 / 7 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 17 / 17 | 38 / 56 | 33 / 35 | 21 / 1 | 8 / 8 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
-| V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
+| V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 46 / 46 | 91 / 91 | 78 / 81 | 3 / 0 | 46 / 46 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 22 / 22 | 116 / 118 | 3 / 3 | 2 / 0 | 8 / 9 |
 | V25 Menus, recipes and production | C5 | 194 | 4 / 4 | 17 / 17 | 170 / 170 | 3 / 3 | 0 / 0 | 19 / 20 |
 | V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 2 / 2 | 12 / 14 | 77 / 78 | 3 / 0 | 2 / 2 |
@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 8 / 8 | 16 / 20 | 84 / 89 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 11 / 11 | 63 / 63 | 0 / 0 | 206 / 212 | 7 / 1 | 19 / 19 |
+| V32 Client-visible world state | C10 | 287 | 11 / 11 | 65 / 65 | 0 / 0 | 204 / 210 | 7 / 1 | 19 / 19 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -70,14 +70,14 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 513 / 518 | 578 / 583 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 154 / 154 | 1230 / 1261 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 18 / 18 | 0 / 0 | 131 / 133 |
-| effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
+| effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 39 / 39 | 0 / 0 | 0 / 0 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
 | attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
 | damage_type | src/server/registries.cpp (minecraft.wiki "Damage type") / src/server/registries.cpp (minecraft.wiki "Damage type") | 49 / 49 | 0 / 0 | 3 / 3 | 46 / 46 | 0 / 0 |
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 5 / 5 | 0 / 0 | 78 / 83 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 26 / 26 | 77 / 77 | 0 / 0 | 131 / 141 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 26 / 26 | 79 / 79 | 0 / 0 | 129 / 139 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 103 |
+| black_box | passing | 109 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 231 |
@@ -398,7 +398,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Death, drops and respawning | C6 | partial, compared | partial, compared | `client/vitals`, `realclient/survival`; death drops spread in a fixed pattern |
 | Melee attacks, attack cooldown, critical hits, sweeping and knockback | C6 | missing, none | missing, none |  |
 | Armor protection, toughness and shields | C6 | missing, none | missing, none |  |
-| Status effects | C6 | missing, none | missing, none |  |
+| Status effects | C6 | partial, compared | partial, compared | `client/effect_edges`, `client/effect_particles`, `client/effect_rules`, `client/effect_time`, `client/effects`; a player's effects come in id order and players' entity data of one tick in the order they connected; the official servers' orders are their own (for effects one that varies from run to run); effects have no consequence: no attribute modifiers are sent or applied, and the effects that heal, hurt or feed change nothing; of the shared flags only the effects' (invisibility and glowing) are sent, not sneaking or sprinting; only players have effects; /effect takes players by name, @s, @p, @a and @e; the entity data of a command's effects comes in the next tick, 50 ms after the effect packet, where the official 1.21.8 server took 80 ms (25 ms or more on both official servers); the fall after levitating hurts as Circuit's other falls do, by the height the client reports (2 or 3 points after rising about 5.2 blocks), where the official 1.21.8 server took 2 and 1.21.4 3 in every run; the health regenerated after it differed; /effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none |
 | Enchantment effects | C6 | missing, none | missing, none |  |
 | Attributes and modifiers | C6 | missing, none | missing, none |  |
 
@@ -506,7 +506,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Handshake, status, login, compression, encryption and session verification | C10 | implemented, none | implemented, none | Checked with protocol clients and the real client against Circuit |
+| Handshake, status, login, compression, encryption and session verification | C10 | implemented, none | implemented, none | `client/join_message`; Checked with protocol clients and the real client against Circuit; the message that a player joined goes to everyone but the newcomer, as on both official servers |
 | Configuration phase and reconfiguration | C10 | partial, none | partial, none | no reconfiguration |
 | Signed chat and chat sessions | C10 | missing, none | missing, none | chat relayed as system messages |
 | Cookies, transfers, server links and custom payloads | C10 | missing, none | missing, none |  |
