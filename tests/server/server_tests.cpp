@@ -1543,6 +1543,137 @@ int main() {
         require(inventory().cursor.empty() && has(packets, "open", 5, 2) && first("inventory") < first("open"), "put back, then the new window");
     });
 
+    suite.run("a use that changes its stack sends the whole own window, a drop nothing, and each window counts its state ids", [] {
+        // As both official servers do (circuit-clienttest/window-sync.js,
+        // both versions alike in these packets and state ids). The player
+        // stands at the spawn (0, -60, 0) and looks at the floor's top at
+        // (2.5, -60, 2.5), as in the bucket suite.
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Clerk");
+        const contracts::PlayerKey key{1, 1};
+        const auto inventory = [&] {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? *inv : empty_inventory(key);
+        };
+        // Window packets since the last call: (name, window, slot count,
+        // slot index or menu type, state id).
+        std::size_t seen = 0;
+        std::map<std::int32_t, std::int32_t> state; // the last state id of each window
+        const auto window_packets = [&] {
+            const auto open = f.wire.ids().id(State::play, Bound::clientbound, "open_screen");
+            const auto content_id = f.wire.ids().id(State::play, Bound::clientbound, "container_set_content");
+            const auto slot_id = f.wire.ids().id(State::play, Bound::clientbound, "container_set_slot");
+            std::vector<std::tuple<std::string, std::int32_t, std::int32_t, std::int32_t>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk) continue;
+                if (pk->id == open) {
+                    const auto window = pk->fields.varint().value();
+                    out.emplace_back("open", window, pk->fields.varint().value(), 0);
+                } else if (pk->id == content_id || pk->id == slot_id) {
+                    const auto window = pk->fields.varint().value();
+                    const auto id = pk->fields.varint().value();
+                    state[window] = id;
+                    out.emplace_back(pk->id == content_id ? "content" : "slot", window,
+                                     pk->id == content_id ? pk->fields.varint().value() : pk->fields.i16().value(), id);
+                }
+            }
+            return out;
+        };
+        using Packets = std::vector<std::tuple<std::string, std::int32_t, std::int32_t, std::int32_t>>;
+        const double dx = 2.5, dy = -1.62, dz = 2.5;
+        const auto yaw = static_cast<float>(std::atan2(-dx, dz) * 180.0 / std::numbers::pi);
+        const auto pitch = static_cast<float>(-std::atan2(dy, std::sqrt(dx * dx + dz * dz)) * 180.0 / std::numbers::pi);
+        std::int32_t seq = 0;
+        // The held bucket used on the water at (2, -60, 2), as a client sends it.
+        const auto fill = [&] {
+            f.game->submit(1, I{server::intent::Command{"setblock 2 -60 2 minecraft:water[level=0]"}});
+            f.game->tick();
+            (void)window_packets();
+            f.game->submit(1, GameFixture::click({2, -61, 2}, ++seq));
+            f.game->submit(1, I{server::intent::Use{0, ++seq, yaw, pitch}});
+            f.game->tick();
+        };
+        const auto bucket = content().item_id("minecraft:bucket").value();
+        const auto dirt = content().item_id("minecraft:dirt").value();
+        f.game->submit(1, I{server::intent::CreativeSlot{36, 2, bucket}});
+        f.game->submit(1, I{server::intent::CreativeSlot{37, 5, dirt}});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->tick();
+        (void)window_packets();
+        const auto own = state[0];
+        fill();
+        require(inventory().slots[36] == contracts::ItemStack{gameplay::items::bucket, 1, 0}
+                    && std::ranges::count(inventory().slots, contracts::ItemStack{gameplay::items::water_bucket, 1, 0}) == 1,
+                "a bucket of two filled");
+        require(window_packets() == Packets{{"content", 0, 46, own + 1}}, "the whole own window, in place of the two slots");
+        // The bucket left, used at the sky: it changes nothing, and nothing is sent.
+        f.game->submit(1, I{server::intent::Use{0, ++seq, 0.0f, -90.0f}});
+        f.game->tick();
+        require(inventory().slots[36].count == 1 && window_packets().empty(), "a use that changes nothing sends nothing");
+        // Drops: the client empties its slot itself.
+        f.game->submit(1, I{server::intent::HeldSlot{1}});
+        f.game->submit(1, I{server::intent::Dig{4, {0, 0, 0}, 0, 0}});
+        f.game->tick();
+        require(inventory().slots[37].count == 4 && window_packets().empty(), "one dropped: nothing sent");
+        f.game->submit(1, I{server::intent::Dig{3, {0, 0, 0}, 0, 0}});
+        f.game->tick();
+        require(inventory().slots[37].empty() && window_packets().empty(), "the stack dropped: nothing sent");
+        // One dropped, then in the same tick a shift-click fills the stack
+        // again: the client shows the stack the drop left, so it is sent.
+        f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::CreativeSlot{37, 5, dirt}});
+        f.game->submit(1, I{server::intent::CreativeSlot{9, 1, dirt}});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->tick();
+        (void)window_packets();
+        f.game->submit(1, I{server::intent::Dig{4, {0, 0, 0}, 0, 0}});
+        f.game->submit(1, window_click(0, 9, 0, 1, state[0]));
+        f.game->tick();
+        require(inventory().slots[37].count == 5 && inventory().slots[9].empty(), "one dropped, one shift-clicked onto the stack");
+        const auto refilled = window_packets();
+        require(refilled.size() == 2 && std::get<2>(refilled[0]) == 9 && std::get<2>(refilled[1]) == 37, "both slots sent");
+        // In creative mode the bucket stays and a water bucket is held already.
+        f.game->submit(1, I{server::intent::HeldSlot{0}});
+        f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+        f.game->tick();
+        fill();
+        require(f.at({2, -60, 2}) == "minecraft:air" && inventory().slots[36].count == 1 && window_packets().empty(),
+                "creative: the water taken, nothing sent");
+        // A chest's window counts from 1; a use with it open sends the whole
+        // own window, which goes on counting its own ids, then the chest
+        // window's hotbar slot.
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->submit(1, I{server::intent::Command{"setblock 2 -60 -2 minecraft:chest[facing=north,type=single,waterlogged=false]"}});
+        f.game->tick();
+        (void)window_packets();
+        f.game->submit(1, GameFixture::click({2, -60, -2}, ++seq));
+        f.game->tick();
+        require(window_packets() == Packets{{"open", 1, 2, 0}, {"content", 1, 63, 1}}, "the chest window's first state id is 1");
+        const auto own_last = state[0];
+        fill();
+        require(inventory().slots[36].item == gameplay::items::water_bucket, "the last bucket filled with the chest open");
+        require(window_packets() == Packets{{"content", 0, 46, own_last + 1}, {"slot", 1, 54, 2}}, "the own window, then the chest window's slot");
+        // A click on the chest window's state id is not stale.
+        f.game->submit(1, window_click(1, 0, 0, 0, 2));
+        f.game->tick();
+        require(std::ranges::none_of(window_packets(), [](const auto& t) { return std::get<0>(t) == "content"; }), "the chest window's id is current");
+        f.game->submit(1, I{server::intent::ContainerClose{1}});
+        f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::CreativeSlot{37, 5, dirt}});
+        f.game->tick();
+        (void)window_packets();
+        // Back in the own window, a click on the own window's id is current too.
+        f.game->submit(1, window_click(0, 37, 0, 0, state[0]));
+        f.game->tick();
+        require(inventory().cursor.count == 5 && std::ranges::none_of(window_packets(), [](const auto& t) { return std::get<0>(t) == "content"; }),
+                "the own window's id goes on");
+    });
+
     suite.run("chests send their lids' block events and trapped chests power by their viewers", [] {
         using I = server::Intent;
         GameFixture f;

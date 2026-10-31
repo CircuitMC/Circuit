@@ -100,6 +100,9 @@ struct Player {
         std::int32_t id{};
         BlockPos pos;
         std::size_t container_slots{};
+        // The window's own state id (the own window keeps `inventory_state`),
+        // as each of the target version's menus counts its packets.
+        std::int32_t state{};
         // The window's properties as last sent (a furnace's fuel ticks left
         // and burn time, cooking progress and time; a stonecutter's recipe),
         // INT32_MIN when not sent yet.
@@ -126,7 +129,18 @@ struct Player {
     // The ContainerClicks of this player not yet seen applied: each change
     // of a crafting grid's slot they make sends the result again.
     std::vector<std::uint64_t> clicks;
-    std::int32_t inventory_state{};
+    // The item uses (PlayerUseItem) and drops (DropItem) of this player not
+    // yet seen applied, with the slot each takes from: a use that changes
+    // that slot sends the whole own window; a drop's change is not sent, the
+    // client having made it (client/window_sync).
+    struct HandAction {
+        std::uint64_t admission{};
+        std::uint8_t slot{};
+        bool drop{};
+        contracts::ItemStack left; // a drop's: the stack it leaves, as the server knew the slot at admission
+    };
+    std::vector<HandAction> hand_actions;
+    std::int32_t inventory_state{}; // the own window's state id
     std::vector<std::int32_t> acks;
     bool moved{};
     std::set<std::uint64_t> seen_by; // peers whose clients show this player's entity
@@ -967,7 +981,8 @@ struct Game::Impl final : GameServices {
     // (window 0), or a container's slots (a crafting table's result and grid)
     // followed by the main inventory and the hotbar.
     // Sends the window's slots that differ from the client's view, one by
-    // one, or the whole window when the client describes another one.
+    // one, or the whole window when the client describes another one. Each
+    // window counts its own state ids.
     void sync_inventory(Player& p) {
         const auto view = engine->view();
         const auto inv = view.player(key_of(p));
@@ -1043,13 +1058,57 @@ struct Game::Impl final : GameServices {
                 if (const auto slot = r.c >> 48; slot >= first && slot <= last) ++resends;
             }
         }
+        // As both official servers do (client/window_sync): a use that changed
+        // the stack it took from sends the whole own window, while another
+        // window is open too (before that window's changes); a drop's change
+        // of its slot is the client's view, which the client made itself.
+        bool whole_own = false;
+        if (!p.hand_actions.empty()) {
+            const auto key = key_of(p);
+            std::optional<Player::HandAction> current;
+            for (const auto& r : engine->trace()) {
+                if (r.kind == contracts::TraceKind::command_applied || r.kind == contracts::TraceKind::command_rejected) {
+                    current.reset();
+                    const auto it = std::ranges::find(p.hand_actions, r.a, &Player::HandAction::admission);
+                    if (it == p.hand_actions.end()) continue;
+                    if (r.kind == contracts::TraceKind::command_applied) current = *it;
+                    p.hand_actions.erase(it);
+                    continue;
+                }
+                if (!current || r.kind != contracts::TraceKind::player_slot_changed || r.a != key.hi || r.b != key.lo || r.c >> 48 != current->slot)
+                    continue;
+                if (!current->drop) {
+                    whole_own = true;
+                    continue;
+                }
+                // The client shows the slot as the drop left it (the stack the
+                // server expected, or the slot now if a click before it in
+                // the tick changed it); a later change of the tick is sent.
+                const auto index = !p.window ? std::size_t{current->slot}
+                                 : current->slot >= 9 && current->slot < 45 ? p.window->container_slots + current->slot - 9
+                                                                            : slots.size();
+                const auto left = r.c & ((std::uint64_t{1} << 48) - 1);
+                const auto now = inv && *inv ? (*inv)->slots[current->slot] : contracts::ItemStack{};
+                if (p.remote_window != id || index >= p.remote.size()) continue;
+                if (contracts::pack_stack(current->left) == left) p.remote[index] = wire_stack(current->left);
+                else if (contracts::pack_stack(now) == left) p.remote[index] = wire_stack(now);
+            }
+        }
+        if (whole_own && !p.window) p.remote_window = -1;
+        if (whole_own && p.window) {
+            std::vector<WireStack> own;
+            for (std::size_t i = 0; i < inventory_slots; ++i) own.push_back(player_slot(i));
+            p.peer->send(wire.container_content(0, ++p.inventory_state, own, WireStack{}));
+            p.own.assign(own.begin(), own.end());
+        }
+        auto& state = p.window ? p.window->state : p.inventory_state;
         // An open window's player slots are the client's own window's too.
         const auto mirror = [&] {
             if (p.window && p.own.size() == inventory_slots && p.remote.size() >= p.window->container_slots + 36)
                 for (std::size_t k = 0; k < 36; ++k) p.own[9 + k] = p.remote[p.window->container_slots + k];
         };
         if (p.remote_window != id || p.remote.size() != slots.size()) {
-            p.peer->send(wire.container_content(id, ++p.inventory_state, slots, carried));
+            p.peer->send(wire.container_content(id, ++state, slots, carried));
             p.remote_window = id;
             p.remote.assign(slots.begin(), slots.end());
             p.remote_carried = carried;
@@ -1057,12 +1116,12 @@ struct Game::Impl final : GameServices {
             return;
         }
         for (; resends > 0; --resends) {
-            p.peer->send(wire.container_slot(id, ++p.inventory_state, 0, slots[0]));
+            p.peer->send(wire.container_slot(id, ++state, 0, slots[0]));
             p.remote[0] = slots[0];
         }
         for (std::size_t i = 0; i < slots.size(); ++i)
             if (p.remote[i] != slots[i]) {
-                p.peer->send(wire.container_slot(id, ++p.inventory_state, static_cast<std::int16_t>(i), slots[i]));
+                p.peer->send(wire.container_slot(id, ++state, static_cast<std::int16_t>(i), slots[i]));
                 p.remote[i] = slots[i];
             }
         if (p.remote_carried != carried) {
@@ -1780,7 +1839,15 @@ struct Game::Impl final : GameServices {
     void drop(Player& p, bool whole_stack) {
         if (p.game_mode == spectator) return;
         const auto [position, velocity] = throw_from(p);
-        admit(contracts::DropItem{key_of(p), main_hand(p), whole_stack, position, velocity});
+        const auto view = engine->view();
+        const auto inv = view.player(key_of(p));
+        auto left = inv && *inv ? (*inv)->slots[main_hand(p)] : contracts::ItemStack{};
+        if (whole_stack || left.count <= 1) left = {};
+        else --left.count;
+        if (const auto admission = queue.admit(contracts::DropItem{key_of(p), main_hand(p), whole_stack, position, velocity}, overworld))
+            p.hand_actions.push_back({*admission, main_hand(p), true, left});
+        else
+            log_warn("game: command queue full; input dropped");
     }
 
     // Players pick up the items their box, widened by 1 sideways and 0.5 up
@@ -1918,10 +1985,8 @@ struct Game::Impl final : GameServices {
         contracts::PlayerUseItem use{key_of(p), slot, {p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62), p.pos.z}, p.yaw, p.pitch,
                                      p.game_mode == creative ? creative_view : survival_view, p.game_mode == survival, std::nullopt};
         if (used_on && used_on->tick == tick_count.load() && used_on->hand == u.hand) use.hit = used_on->hit;
-        // The client changes the bucket in its hand as it expects; the slot is
-        // sent again whatever the use does.
-        if (!p.window && slot < p.remote.size()) p.remote[slot] = std::nullopt;
-        admit(use);
+        if (const auto admission = queue.admit(use, overworld)) p.hand_actions.push_back({*admission, slot, false, {}});
+        else log_warn("game: command queue full; input dropped");
     }
 
     void handle(Player& p, intent::HeldSlot& h) {
@@ -1978,7 +2043,7 @@ struct Game::Impl final : GameServices {
         if (p.dead) return;
         const auto id = p.window ? p.window->id : 0;
         if (c.window != id) return;
-        if (p.game_mode == spectator || c.mode < 0 || c.mode > 6 || c.unknown || c.state != p.inventory_state) {
+        if (p.game_mode == spectator || c.mode < 0 || c.mode > 6 || c.unknown || c.state != (p.window ? p.window->state : p.inventory_state)) {
             p.remote_window = -1;
         } else {
             for (const auto& [i, stack] : c.changed)

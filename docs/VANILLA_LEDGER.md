@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 102 |
+| black_box | passing | 103 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 231 |
@@ -500,7 +500,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Sounds and particles | C10 | missing, none | missing, none |  |
 | Boss bars, titles, scoreboards, world border and tab list | C10 | partial, none | partial, none | Tab list |
 | Maps, books, signs and displays | C10 | partial, compared | partial, compared | `client/books`, `client/crafter_map`, `client/crafter_special2`, `client/map_extend`, `client/map_extend2`, `client/maps`, `client/maps_explore`, `client/special_c`, `maps/colors`; maps in the Nether do not explore (the official servers draw a pattern not described publicly); banners and item frames are not modeled; signs and displays are not shown; books given unresolved are not resolved when opened; Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them. A book and quill in a hotbar slot or the off hand takes the pages a client edits (100 of 1024 code units at most, kept as sent) and is signed into a written book (a title of 32 at most, the player as author, generation 0, pages as plain text, resolved), and a written book opens for reading and is copied with books and quills, and filled maps with empty maps, and filled maps are extended with paper into new maps of the next scale at crafting tables and in crafters, as both official servers do |
-| Inventory and window synchronization | C10 | implemented, compared | implemented, compared | `client/windows` |
+| Inventory and window synchronization | C10 | implemented, compared | implemented, compared | `client/own_grid_counts`, `client/window_sync`, `client/windows`; The server keeps each client's view of its window and sends the slots that differ after a tick, the whole window when the client describes another one or clicked on a stale state id; each window counts its own state ids. As both official servers do, an item use that changes the stack it takes from sends the whole own window (with a chest open, before the chest window's changes), one that leaves its stack as it was sends only what else changed, and a drop's change of the held slot is not sent |
 
 ### V33 Communication and connection lifecycle
 
