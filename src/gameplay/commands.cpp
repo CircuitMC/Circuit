@@ -315,6 +315,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                 ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo);
             };
         }
+        // A beacon opens its window (client/beacon).
+        if (clicked.is(BlockType::beacon)) return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked)
             || is_anvil(clicked) || is_enchanting_table(clicked) || is_cartography_table(clicked))
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
@@ -398,6 +400,9 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         set_block(ctx, target, s);
         // A shulker box takes its item's contents and name.
         if (s.is(BlockType::shulker_box)) detail::fill_shulker_box(ctx, target, held);
+        // A beacon keeps its item's name (its components), which it drops with.
+        if (s.is(BlockType::beacon) && !held.components.empty())
+            if (auto* be = ctx.block_entity(target)) be->components = held.components;
         // A door's upper half follows its lower half.
         if (s.is(BlockType::door)) set_block(ctx, target.relative(Direction::up), s.with_level(static_cast<std::uint8_t>(s.level() | 1)));
         // A diode placed with its input on starts after one tick.
@@ -460,11 +465,19 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
         // A tall plant drops from the half broken before it goes (shears_break).
         const bool drops_first = c.survival && detail::tall_plant(s);
         if (drops_first) detail::drop_items(ctx, c.pos, s, tool, true);
+        // A beacon's drop takes its name from the block entity before it
+        // goes, and drops after (as the shulker box's).
+        const auto beacon = c.survival && s.is(BlockType::beacon)
+                                ? std::optional(detail::block_drops(ctx, c.pos, s, tool, false, true)) : std::nullopt;
         set_block(ctx, c.pos, blocks::air());
         if (box && (c.survival || filled)) {
             detail::pop_resource(ctx, c.pos, *box);
         } else if (c.survival) {
-            if (!drops_first) detail::drop_items(ctx, c.pos, s, tool, true);
+            if (beacon) {
+                for (const auto& d : *beacon) detail::pop_resource(ctx, c.pos, d);
+            } else if (!drops_first) {
+                detail::drop_items(ctx, c.pos, s, tool, true);
+            }
             // What the tool harvests gives experience too.
             if (harvests(s, tool, ctx.data())) detail::drop_experience(ctx, c.pos, s, tool);
             detail::ice_broken(ctx, c.pos, s, tool);
@@ -544,6 +557,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerDeath& c) { return detail::pl
 Plan plan(RuleContext& ctx, const contracts::ContainerClick& c) { return detail::plan_click(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail::plan_close(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::ContainerButton& c) { return detail::plan_button(ctx, c); }
+Plan plan(RuleContext& ctx, const contracts::SetBeacon& c) { return detail::plan_set_beacon(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::SetSlotEnabled& c) { return detail::plan_slot_enabled(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::PlaceRecipe& c) { return detail::plan_place_recipe(ctx, c); }
 

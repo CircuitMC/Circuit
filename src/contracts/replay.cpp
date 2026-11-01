@@ -137,8 +137,9 @@ private:
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
 // (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes, 39 EditBook,
-// 40 SwapHands.
+// 40 SwapHands, 41 SetBeacon.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<SetBeacon>(body)) return 41;
     if (std::holds_alternative<SwapHands>(body)) return 40;
     if (std::holds_alternative<EditBook>(body)) return 39;
     if (std::holds_alternative<KnowRecipes>(body)) return 38;
@@ -319,6 +320,13 @@ void encode_command(Writer& w, const Command& c) {
         } else if constexpr (std::is_same_v<T, SwapHands>) {
             w.player(body.player);
             w.put(body.slot);
+        } else if constexpr (std::is_same_v<T, SetBeacon>) {
+            w.player(body.player);
+            w.put(static_cast<std::uint8_t>(body.container.has_value()));
+            if (body.container) w.pos(*body.container);
+            // Each power as an effect id plus one, 0 for none.
+            w.put(body.primary ? *body.primary + 1 : 0);
+            w.put(body.secondary ? *body.secondary + 1 : 0);
         } else if constexpr (std::is_same_v<T, EditBook>) {
             const auto text = [&](const std::string& s) {
                 w.put(static_cast<std::uint16_t>(s.size()));
@@ -618,6 +626,24 @@ bool decode_command(Reader& r, Command& c) {
         if (!r.player(b.player) || !r.get(b.amount) || !r.get(levels) || levels > 1 || !r.get(set) || set > 1) return false;
         b.levels = levels == 1;
         b.set = set == 1;
+        c.body = b;
+        return true;
+    }
+    case 41: {
+        SetBeacon b;
+        std::uint8_t has{};
+        std::int32_t primary{}, secondary{};
+        if (!r.player(b.player) || !r.get(has) || has > 1) return false;
+        if (has) {
+            BlockPos p;
+            if (!r.pos(p)) return false;
+            b.container = p;
+        }
+        if (!r.get(primary) || !r.get(secondary) || primary < 0 || secondary < 0 || primary > max_beacon_effect + 1
+            || secondary > max_beacon_effect + 1)
+            return false;
+        if (primary > 0) b.primary = primary - 1;
+        if (secondary > 0) b.secondary = secondary - 1;
         c.body = b;
         return true;
     }

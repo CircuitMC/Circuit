@@ -24,6 +24,9 @@ std::optional<std::uint8_t> id(std::string_view name) noexcept;
 // Instant health, instant damage and saturation: /effect counts their
 // duration in ticks where others count seconds.
 bool instant(std::uint8_t effect) noexcept;
+// The powers a beacon gives: speed, haste, resistance, jump boost, strength
+// and regeneration (minecraft.wiki "Beacon").
+bool is_beacon_power(std::uint8_t effect) noexcept;
 
 // The particle an effect shows: entity_effect in an ARGB color, or a
 // particle without data (trial and raid omens, wind charged's small gust,

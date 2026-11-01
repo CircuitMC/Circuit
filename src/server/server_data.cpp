@@ -356,6 +356,12 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             for (const auto& member : *books)
                 if (const auto id = gameplay::items::by_name(member)) game->bookshelf_books.push_back(*id);
         std::ranges::sort(game->bookshelf_books);
+        // Beacons: their pyramid blocks and payments.
+        game->beacon_base_blocks = blocks_of("minecraft:beacon_base_blocks");
+        if (const auto* payments = packs->tag("item", "minecraft:beacon_payment_items"))
+            for (const auto& member : *payments)
+                if (const auto id = gameplay::items::by_name(member)) game->beacon_payment_items.push_back(*id);
+        std::ranges::sort(game->beacon_payment_items);
         if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema))
         {
             game->book_pages = [codec](const contracts::ItemStack& book) { return codec->book_pages_of(book.components); };

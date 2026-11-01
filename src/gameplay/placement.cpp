@@ -82,6 +82,7 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     case items::ender_chest: return blocks::ender_chest(contracts::opposite(horizontal));
     // Chiseled bookshelves face the player (tests/fixtures/placement).
     case items::chiseled_bookshelf: return blocks::chiseled_bookshelf(contracts::opposite(horizontal));
+    case items::beacon: return blocks::beacon();
     case items::smoker: return blocks::furnace(blocks::FurnaceKind::smoker, contracts::opposite(horizontal));
     case items::blast_furnace: return blocks::furnace(blocks::FurnaceKind::blast_furnace, contracts::opposite(horizontal));
     case items::hopper:
@@ -122,6 +123,7 @@ bool has_collision(BlockState s) {
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {
     const auto stack = slot == contracts::player_slots ? inventory.cursor
+                     : slot >= contracts::beacon_first ? inventory.beacon[slot - contracts::beacon_first]
                      : slot >= contracts::cartography_first ? inventory.cartography[slot - contracts::cartography_first]
                      : slot >= contracts::ender_first ? inventory.ender[slot - contracts::ender_first]
                      : slot >= contracts::enchant_first ? inventory.enchant[slot - contracts::enchant_first]

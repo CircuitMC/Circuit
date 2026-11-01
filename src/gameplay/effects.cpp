@@ -37,6 +37,11 @@ std::optional<std::uint8_t> id(std::string_view name) noexcept {
 
 bool instant(std::uint8_t effect) noexcept { return effect == 5 || effect == 6 || effect == 22; }
 
+bool is_beacon_power(std::uint8_t effect) noexcept {
+    // speed, haste, strength, jump boost, regeneration, resistance
+    return effect == 0 || effect == 2 || effect == 4 || effect == 7 || effect == 9 || effect == 10;
+}
+
 Particle particle(std::uint8_t effect) noexcept {
     if (effect >= count) return {};
     if (effect >= trial_omen) return {own_particles[effect - trial_omen], 0};

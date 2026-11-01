@@ -202,10 +202,11 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
     std::string slots;
     for (const auto& s : b.second.slots) slots += std::format("{}x{} ", s.item, s.count);
     return std::format("block_entity {} kind={} order={} cooldown={} signal={} moving={:#x} progress={} motion={} lit={}/{} cook={}/{} "
-                       "disabled={:#x} crafting={} slots=[{}]",
+                       "disabled={:#x} crafting={} beacon={}/{}/{}/{} slots=[{}]",
                        pos_text(b.first), static_cast<int>(b.second.kind), b.second.order, b.second.cooldown,
                        b.second.signal, b.second.moving, b.second.progress, b.second.motion, b.second.lit_time, b.second.lit_total,
-                       b.second.cook_time, b.second.cook_total, b.second.disabled, b.second.crafting_ticks, slots);
+                       b.second.cook_time, b.second.cook_total, b.second.disabled, b.second.crafting_ticks, b.second.levels,
+                       b.second.primary, b.second.secondary, b.second.beam, slots);
 }
 std::string text(const Entity& e) {
     return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) ticks={} stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={} "
@@ -262,6 +263,8 @@ std::string text(const PlayerInventory& p) {
     if (p.viewing) slots += std::format("viewing:{},{},{} ", p.viewing->x, p.viewing->y, p.viewing->z);
     for (std::size_t i = 0; i < p.ender.size(); ++i)
         if (!p.ender[i].empty()) slots += std::format("ender{}:{}x{}/{} ", i, p.ender[i].item, p.ender[i].count, p.ender[i].damage);
+    for (std::size_t i = 0; i < p.beacon.size(); ++i)
+        if (!p.beacon[i].empty()) slots += std::format("beacon{}:{}x{}/{} ", i, p.beacon[i].item, p.beacon[i].count, p.beacon[i].damage);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}] xp={}+{}/{} xp_ready={}", p.player.hi, p.player.lo, p.cursor.item,
                        p.cursor.count, slots, p.xp_level, p.xp_progress, p.xp_total, p.xp_ready);
 }
@@ -397,6 +400,7 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(static_cast<std::uint32_t>(be.lit_time)); h.add(static_cast<std::uint32_t>(be.lit_total));
             h.add(static_cast<std::uint32_t>(be.cook_time)); h.add(static_cast<std::uint32_t>(be.cook_total));
             h.add(be.disabled); h.add(static_cast<std::uint32_t>(be.crafting_ticks));
+            h.add(be.levels); h.add(be.primary); h.add(be.secondary); h.add(be.beam);
             h.add(be.viewers.size());
             for (const auto& v : be.viewers) { h.add(v.hi); h.add(v.lo); }
             h.add(be.recipes_used.size());
@@ -461,6 +465,7 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(p.viewing.has_value());
         if (p.viewing) h.add(*p.viewing);
         for (const auto& s : p.ender) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
+        for (const auto& s : p.beacon) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(static_cast<std::uint32_t>(p.xp_level)); h.add(std::bit_cast<std::uint32_t>(p.xp_progress));
         h.add(static_cast<std::uint32_t>(p.xp_total)); h.add(p.xp_ready);
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());

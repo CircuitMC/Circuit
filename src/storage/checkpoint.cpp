@@ -3,10 +3,12 @@
 #include <bit>
 #include <cstdlib>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/physics.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/framing.hpp>
+#include <circuit/protocol/nbt.hpp>
 #include <circuit/storage/checkpoint.hpp>
 #include <set>
 #include <unordered_map>
@@ -21,6 +23,9 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 53: beacons have rules of their own: their block entities keep their
+// levels, powers and beam, and player inventories an open beacon's payment
+// slot;
 // 52: player inventories keep the recipe placed into an open crafting
 // table's grid;
 // 51: player inventories keep the crafting recipes the player knows;
@@ -91,7 +96,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 52;
+constexpr std::uint32_t version = 53;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -200,6 +205,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         for (const auto& [id, count] : be.recipes_used) w.string(id, 256).varint(count);
         w.varint(static_cast<std::int32_t>(be.viewers.size()));
         for (const auto& v : be.viewers) w.i64(static_cast<std::int64_t>(v.hi)).i64(static_cast<std::int64_t>(v.lo));
+        w.u8(be.levels).u8(be.primary).u8(be.secondary).u8(be.beam ? 1 : 0);
     }
     w.varint(static_cast<std::int32_t>(l.entities.size()));
     for (const auto& e : l.entities) {
@@ -290,6 +296,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.varint(static_cast<std::int32_t>(p.known_crafting.size()));
         for (const auto r : p.known_crafting) w.varlong(r);
         w.varint(p.table_recipe);
+        for (const auto& st : p.beacon) stack(w, st);
     }
     w.varint(s.last_map_id).varint(static_cast<std::int32_t>(s.maps.size()));
     for (const auto& m : s.maps) {
@@ -490,6 +497,13 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
                 be.viewers.push_back({static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)});
             }
         }
+        if (b.version >= 53) {
+            std::uint8_t beam{};
+            if (!b.get(b.r.u8(), be.levels) || !b.get(b.r.u8(), be.primary) || !b.get(b.r.u8(), be.secondary) || !b.get(b.r.u8(), beam))
+                return false;
+            if (be.levels > 4 || be.primary > gameplay::effects::count || be.secondary > gameplay::effects::count || beam > 1) return false;
+            be.beam = beam == 1;
+        }
         be.moving = static_cast<std::uint32_t>(moving);
         s.block_entities.push_back({p, std::move(be)});
     }
@@ -527,6 +541,47 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     newly_modeled(gameplay::BlockType::ender_chest, 46);
     newly_modeled(gameplay::BlockType::shulker_box, 47);
     newly_modeled(gameplay::BlockType::chiseled_bookshelf, 48);
+    // Before 53 beacons had no rules of their own either. Their block
+    // entities keep the levels and powers their saved data names (as the
+    // target version saves them: Levels, primary_effect, secondary_effect;
+    // not a name, kept as a protocol's component), and those set without a
+    // block entity get one.
+    if (b.version < 53) {
+        std::set<contracts::BlockPos> beacons;
+        for (auto& [p, raw] : s.blocks) {
+            if (static_cast<gameplay::BlockType>(raw & 0xFF) != gameplay::BlockType::other) continue;
+            const auto now = gameplay::physics::modeled_state_of(raw >> 8);
+            if (!now || !now->is(gameplay::BlockType::beacon)) continue;
+            raw = now->raw();
+            beacons.insert(p);
+        }
+        const auto power = [](const protocol::nbt::Tag& saved, std::string_view key) -> std::uint8_t {
+            const auto* tag = saved.find(key);
+            if (!tag || tag->type() != protocol::nbt::TagType::string) return 0;
+            const auto id = gameplay::effects::id(tag->text());
+            return id && gameplay::effects::is_beacon_power(*id) ? static_cast<std::uint8_t>(*id + 1) : std::uint8_t{0};
+        };
+        std::set<contracts::BlockPos> with_entity;
+        for (auto& [p, be] : s.block_entities) {
+            if (!beacons.contains(p) || be.kind != gameplay::BlockType::other) continue;
+            gameplay::BlockEntity beacon{gameplay::BlockType::beacon, be.order, {}, 0};
+            protocol::Reader r(be.saved.bytes());
+            if (const auto saved = protocol::nbt::read_network(r); saved && saved->type() == protocol::nbt::TagType::compound) {
+                if (const auto* levels = saved->find("Levels"); levels && levels->type() == protocol::nbt::TagType::int_)
+                    beacon.levels = static_cast<std::uint8_t>(std::clamp<std::int64_t>(levels->integer(), 0, 4));
+                beacon.primary = power(*saved, "primary_effect");
+                beacon.secondary = power(*saved, "secondary_effect");
+            }
+            be = std::move(beacon);
+            with_entity.insert(p);
+        }
+        for (const auto p : beacons)
+            if (!with_entity.contains(p)) {
+                gameplay::BlockEntity beacon{gameplay::BlockType::beacon, s.next_block_entity_order++, {}, 0};
+                const auto at = std::ranges::lower_bound(s.block_entities, p, {}, [](const auto& e) { return e.first; });
+                s.block_entities.insert(at, {p, std::move(beacon)});
+            }
+    }
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;
@@ -841,6 +896,9 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                 }
             }
             if (b.version >= 52 && (!b.get(b.r.varint(), p.table_recipe) || p.table_recipe < -1)) return false;
+            if (b.version >= 53)
+                for (auto& st : p.beacon)
+                    if (!b.stack(st)) return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
         }

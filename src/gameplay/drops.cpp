@@ -62,6 +62,7 @@ std::optional<ItemStack> own_item(BlockState s) {
     // Without its loot table, a chiseled bookshelf drops nothing (its table
     // gives itself only with Silk Touch).
     case BlockType::chiseled_bookshelf: return std::nullopt;
+    case BlockType::beacon: return ItemStack{items::beacon, 1};
     case BlockType::shulker_box: {
         const auto item = items::by_name(std::string("minecraft:") + std::string(blocks::shulker_box_names[s.variant() % 17]));
         return ItemStack{item.value_or(0), 1};
@@ -131,6 +132,18 @@ std::vector<ItemStack> block_drops(RuleContext& ctx, BlockPos pos, BlockState de
         // compile yet), blocks that need support drop as their rules say.
         if (const auto own = supported_drop(destroyed)) return {*own};
         return {};
+    }
+    // A beacon drops itself with its name: its loot table copies the block
+    // entity's custom_name alone (the official data packs); without them it
+    // keeps every component the block entity holds.
+    if (destroyed.is(BlockType::beacon)) {
+        ItemStack beacon{items::beacon, 1};
+        if (const auto* be = ctx.peek_block_entity(pos); be && !be->components.empty()) {
+            const auto* data = ctx.data();
+            if (!data || !data->with_component_from) beacon.components = be->components;
+            else if (auto name = data->with_component_from({}, be->components, "custom_name")) beacon.components = std::move(*name);
+        }
+        return {beacon};
     }
     // A shulker box drops one of itself that keeps its contents and name
     // (shulker_boxes, client/shulker).

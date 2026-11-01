@@ -46,7 +46,13 @@ enum class TraceKind : std::uint8_t {
     recipe_used = 28,           // a player took what a recipe made: a = player key high half, b = low half, c = kind << 32 | index
                                 // (kind 0 crafting, 1 cooking, 2 stonecutting, 3 smithing: the index in that list of the game data)
     recipe_ghost = 29,          // a recipe a player asked to place is missing items: its ghost is shown; a, b, c as recipe_used's
+    sound_played = 30,          // pos, a = the SoundEvent
+    beacon_effects = 31,        // a beacon gives its powers to the players in range: pos, a = its levels, b = its primary power,
+                                // c = its secondary (each an effect id plus one, 0: none)
 };
+
+// Sounds the rules play (sound_played), whatever the protocol's sound ids.
+enum class SoundEvent : std::uint8_t { beacon_activate = 1, beacon_ambient = 2, beacon_deactivate = 3, beacon_power_select = 4 };
 
 struct TraceRecord {
     OrderKey key;

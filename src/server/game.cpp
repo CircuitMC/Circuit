@@ -446,6 +446,7 @@ struct Game::Impl final : GameServices {
     // The weather players last got.
     gameplay::Weather sent_weather;
     std::int32_t next_entity_id{1};
+    std::uint64_t sound_seed{}; // the official servers draw a sound's seed at random
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
@@ -1142,6 +1143,9 @@ struct Game::Impl final : GameServices {
             if (gameplay::is_cartography_table(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::cartography_slots; ++i)
                     slots.push_back(inv && *inv ? wire_stack((*inv)->cartography[i]) : WireStack{});
+            if (at(p.window->pos).is(BlockType::beacon))
+                for (std::size_t i = 0; i < contracts::beacon_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->beacon[i]) : WireStack{});
             // An ender chest's window shows the player's own ender inventory.
             if (at(p.window->pos).is(BlockType::ender_chest))
                 for (std::size_t i = 0; i < contracts::ender_slots; ++i)
@@ -1303,6 +1307,17 @@ struct Game::Impl final : GameServices {
                     p.window->data[k] = now[k];
                 }
         }
+        // A beacon window's properties: its levels and powers (each an effect
+        // id plus one), each when it changed (client/beacon).
+        if (p.window && at(p.window->pos).is(BlockType::beacon))
+            if (const auto be = view.block_entity(overworld, p.window->pos); be && *be) {
+                const std::array<std::int32_t, 3> now{(*be)->levels, (*be)->primary, (*be)->secondary};
+                for (std::size_t k = 0; k < now.size(); ++k)
+                    if (p.window->data[k] != now[k]) {
+                        p.peer->send(wire.container_data(p.window->id, static_cast<std::int16_t>(k), static_cast<std::int16_t>(now[k])));
+                        p.window->data[k] = now[k];
+                    }
+            }
         // A lectern window's property: the page its book is open at.
         if (p.window && at(p.window->pos).is(BlockType::lectern))
             if (const auto be = view.block_entity(overworld, p.window->pos); be && *be && p.window->data[0] != (*be)->cook_time) {
@@ -1372,6 +1387,7 @@ struct Game::Impl final : GameServices {
         if (gameplay::is_anvil(at(pos))) return contracts::anvil_slots;
         if (gameplay::is_enchanting_table(at(pos))) return contracts::enchant_slots;
         if (gameplay::is_cartography_table(at(pos))) return contracts::cartography_slots;
+        if (at(pos).is(BlockType::beacon)) return contracts::beacon_slots;
         if (at(pos).is(BlockType::lectern)) return 1;
         if (at(pos).is(BlockType::ender_chest)) return contracts::ender_slots;
         std::size_t n = 0;
@@ -1394,7 +1410,7 @@ struct Game::Impl final : GameServices {
         const auto block = at(pos);
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
-        // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7, anvil 8,
+        // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7, anvil 8, beacon 9,
         // blast_furnace 10, brewing_stand 11, crafting 12, enchantment 13, furnace 14, lectern 17,
         // grindstone 15, hopper 16, loom 18, shulker_box 20, smithing 21, smoker 22, cartography_table 23,
         // stonecutter 24.
@@ -1411,6 +1427,7 @@ struct Game::Impl final : GameServices {
                                 : block.is(BlockType::crafter) ? 7
                                 : block.is(BlockType::brewing_stand) ? 11
                                 : block.is(BlockType::lectern) ? 17
+                                : block.is(BlockType::beacon) ? 9
                                 : block.is(BlockType::shulker_box) ? 20
                                 : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : enchanting ? 13 : cartography ? 23 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // The title is the translation the official servers send for the
@@ -1421,6 +1438,7 @@ struct Game::Impl final : GameServices {
                                    : block.is(BlockType::crafter) ? "container.crafter"
                                    : block.is(BlockType::brewing_stand) ? "container.brewing"
                                    : block.is(BlockType::lectern) ? "container.lectern"
+                                   : block.is(BlockType::beacon) ? "container.beacon"
                                    : block.is(BlockType::barrel) ? "container.barrel"
                                    : block.is(BlockType::ender_chest) ? "container.enderchest"
                                    : block.is(BlockType::shulker_box) ? "container.shulkerBox"
@@ -1432,7 +1450,9 @@ struct Game::Impl final : GameServices {
         auto title = translation(key, protocol::nbt::Tag::list(protocol::nbt::TagType::string));
         const auto view = engine->view();
         const auto name_type = wire.components().type_id("custom_name");
-        for (const auto part : container_parts_of(pos)) {
+        auto named = container_parts_of(pos);
+        if (block.is(BlockType::beacon)) named = {pos}; // a beacon's own name
+        for (const auto part : named) {
             const auto be = view.block_entity(overworld, part);
             if (!be || !*be) continue;
             const auto added = (*be)->components.added();
@@ -1932,6 +1952,28 @@ struct Game::Impl final : GameServices {
             p.peer->send(data);
             for (const auto viewer : p.seen_by)
                 if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
+        }
+    }
+
+    // A beacon's cycle gives its powers to the players in range (client/beacon,
+    // client/beacon2, both versions): those but spectators whose box meets the
+    // beacon's cell grown by 10 blocks per level and 10 more, and then by the
+    // world's height upwards (a one-level beacon at y -59 reached a player at
+    // y 345.5, not one at 346.5), get the primary power for 9 seconds and 2
+    // per level, ambient, at amplifier 1 with four levels and the same
+    // secondary, then with four levels another secondary at amplifier 0.
+    void give_beacon_effects(BlockPos pos, std::uint8_t levels, std::uint8_t primary, std::uint8_t secondary) {
+        if (primary == 0) return;
+        const double range = 10.0 * levels + 10.0;
+        const gameplay::physics::Aabb area{pos.x - range, pos.y - range, pos.z - range,
+                                           pos.x + 1.0 + range, pos.y + 1.0 + range + bundle.world.height, pos.z + 1.0 + range};
+        const gameplay::effects::Level level{levels >= 4 && primary == secondary ? 1 : 0, (9 + levels * 2) * 20, true, true, true};
+        for (auto& [id, p] : players) {
+            if (p.dead || p.vitals_pending || p.game_mode == spectator) continue;
+            if (!movement::player_box(p.pos, p.sneaking).intersects(area)) continue;
+            give_effect(p, static_cast<std::uint8_t>(primary - 1), level);
+            if (levels >= 4 && secondary != 0 && secondary != primary)
+                give_effect(p, static_cast<std::uint8_t>(secondary - 1), {0, level.duration, true, true, true});
         }
     }
 
@@ -2745,6 +2787,18 @@ struct Game::Impl final : GameServices {
         send_translation(p, std::format("commands.recipe.{}.success.single", action), string_arguments({std::to_string(named), target->name}));
     }
 
+    // The powers chosen in an open beacon window.
+    void handle(Player& p, intent::SetBeacon& s) {
+        if (!p.window || !at(p.window->pos).is(BlockType::beacon)) return;
+        // An id that is not a beacon's power counts as none, as the rules
+        // take it; so the log keeps only the powers.
+        const auto power = [](std::optional<std::int32_t> e) -> std::optional<std::int32_t> {
+            return e && *e >= 0 && *e <= contracts::max_beacon_effect && gameplay::effects::is_beacon_power(static_cast<std::uint8_t>(*e))
+                       ? e : std::nullopt;
+        };
+        admit(contracts::SetBeacon{key_of(p), p.window->pos, power(s.primary), power(s.secondary)});
+    }
+
     void handle(Player& p, intent::RenameItem& r) {
         if (!p.window || !gameplay::is_anvil(at(p.window->pos))) return;
         std::string name;
@@ -3395,11 +3449,14 @@ struct Game::Impl final : GameServices {
     }
 
     void publish_blocks() {
-        std::set<BlockPos> changed;
+        std::set<BlockPos> changed, beacons;
         std::set<ChunkPos> unloaded;
         for (const auto& r : engine->trace()) {
             if (r.dimension != overworld) continue; // no player is in another level
             if (r.kind == contracts::TraceKind::block_changed) changed.insert(r.pos);
+            // A beacon set where there was none (its block entity is new).
+            constexpr auto beacon = static_cast<std::uint64_t>(BlockType::beacon); // a raw state's low byte is its type
+            if (r.kind == contracts::TraceKind::block_changed && (r.b & 0xFF) == beacon && (r.a & 0xFF) != beacon) beacons.insert(r.pos);
             if (r.kind == contracts::TraceKind::chunk_unloaded) unloaded.insert(contracts::chunk_of(r.pos));
         }
         // Every displayed property is rule state: the changes are what clients need.
@@ -3413,6 +3470,17 @@ struct Game::Impl final : GameServices {
                 p.peer->send(*packet);
             }
         }
+        // A new beacon's block entity data follows its block, as both
+        // official servers send it: its levels, none yet (client/beacon; the
+        // beacon block entity type, 15 on both protocols).
+        for (const auto b : beacons) {
+            if (!at(b).is(BlockType::beacon)) continue;
+            auto tag = protocol::nbt::Tag::compound();
+            tag.set("Levels", protocol::nbt::Tag::int_(0));
+            const auto packet = wire.block_entity_data(wire_pos(b), 15, tag);
+            for (auto& [id, p] : players)
+                if (p.sent.contains(contracts::chunk_of(b))) p.peer->send(packet);
+        }
         for (auto& [id, p] : players)
             for (const auto c : unloaded)
                 if (p.sent.erase(c)) forget(p, c);
@@ -3424,6 +3492,20 @@ struct Game::Impl final : GameServices {
     void publish_block_events() {
         for (const auto& r : engine->trace()) {
             if (r.dimension != overworld) continue;
+            // Sounds the rules played, to players within 16 blocks (a sound
+            // of volume 1 carries that far).
+            if (r.kind == contracts::TraceKind::sound_played) {
+                const auto packet = wire.sound(static_cast<contracts::SoundEvent>(r.a), r.pos, static_cast<std::int64_t>(sound_seed++));
+                for (auto& [id, p] : players) {
+                    const double dx = p.pos.x - (r.pos.x + 0.5), dy = p.pos.y - (r.pos.y + 0.5), dz = p.pos.z - (r.pos.z + 0.5);
+                    if (dx * dx + dy * dy + dz * dz < 256.0) p.peer->send(packet);
+                }
+                continue;
+            }
+            if (r.kind == contracts::TraceKind::beacon_effects) {
+                give_beacon_effects(r.pos, static_cast<std::uint8_t>(r.a), static_cast<std::uint8_t>(r.b), static_cast<std::uint8_t>(r.c));
+                continue;
+            }
             if (r.kind == contracts::TraceKind::level_event) {
                 const auto packet = wire.level_event(static_cast<std::int32_t>(r.a), wire_pos(r.pos), static_cast<std::int32_t>(r.b));
                 for (auto& [id, p] : players) {

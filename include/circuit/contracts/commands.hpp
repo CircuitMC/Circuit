@@ -3,6 +3,7 @@
 #include <circuit/contracts/errors.hpp>
 #include <circuit/contracts/ids.hpp>
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <map>
 #include <optional>
@@ -145,6 +146,9 @@ inline constexpr std::uint8_t ender_first = 75;
 // beside it, and the result (window slots 0-2), recorded as slots 102-104.
 inline constexpr std::uint8_t cartography_slots = 3;
 inline constexpr std::uint8_t cartography_first = 102;
+// The beacon window: the payment (window slot 0), recorded as slot 105.
+inline constexpr std::uint8_t beacon_slots = 1;
+inline constexpr std::uint8_t beacon_first = 105;
 // The longest name an anvil gives, in UTF-16 code units as the protocol
 // counts them (minecraft.wiki "Anvil").
 inline constexpr std::size_t max_item_name = 50;
@@ -408,6 +412,18 @@ struct KnowRecipes {
     bool operator==(const KnowRecipes&) const = default;
 };
 
+// A player chooses a beacon's powers in its window (the set_beacon packet):
+// with a payment in the window's slot, the payment is used up and the beacon
+// at `container` takes the powers, by effect id (one that is not a beacon's
+// power counts as none; ids above max_beacon_effect are not admitted).
+inline constexpr std::int32_t max_beacon_effect = 255;
+struct SetBeacon {
+    PlayerKey player;
+    std::optional<BlockPos> container;
+    std::optional<std::int32_t> primary, secondary;
+    bool operator==(const SetBeacon&) const = default;
+};
+
 // A player swaps the stacks of the main hand (`slot`, a hotbar slot) and the
 // off hand (the swap key).
 struct SwapHands {
@@ -454,7 +470,8 @@ struct ChangeExperience {
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands>;
+                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands,
+                                 SetBeacon>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -493,6 +510,10 @@ public:
         if (const auto* set = std::get_if<SetDifficulty>(&body); set && set->difficulty > max_difficulty)
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* summon = std::get_if<SummonEntity>(&body); summon && !valid_entity_type(summon->type))
+            return std::unexpected(ErrorCode::invalid_argument);
+        if (const auto* beacon = std::get_if<SetBeacon>(&body);
+            beacon && std::ranges::any_of(std::array{beacon->primary, beacon->secondary},
+                                          [](std::optional<std::int32_t> e) { return e && (*e < 0 || *e > max_beacon_effect); }))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* weather = std::get_if<SetWeather>(&body);
             weather && (static_cast<std::uint8_t>(weather->kind) >= weather_kind_count || weather->duration < 0))

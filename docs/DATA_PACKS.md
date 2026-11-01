@@ -57,6 +57,7 @@ The tags of game events, points of interest, structures, world presets and the 1
   - Packs must define exactly the vanilla enchantments; packs that add or remove some are refused, since clients only know the vanilla definitions by name.
   - Anvils use each enchantment's `anvil_cost`, `max_level`, `supported_items` and `exclusive_set`, and grindstones its `min_cost`; the item tags `*_tool_materials` and `repairs_*` give what repairs an item at an anvil.
   - Lecterns take the books of the item tag `lectern_books`.
+  - Beacons count the blocks of the block tag `beacon_base_blocks` in their pyramids and take the items of the item tag `beacon_payment_items` as payments (without tags, the five blocks and five items minecraft.wiki names).
   - Enchanting tables offer the enchantments of the tag `in_enchanting_table`, in its order, by their `weight`, `max_level`, `min_cost`, `max_cost`, `primary_items` (else `supported_items`) and `exclusive_set`; the block tags `enchantment_power_provider` and `enchantment_power_transmitter` give the bookshelves that power them and the blocks that let the power through.
 - **Block tools:** the `mineable/*` and `needs_*_tool` block tags give the effective tool and harvest tier of blocks without rules of their own. A block that needs a tool of another kind (a sword or shears) keeps that from the public data.
   - With the official packs, 44 blocks of 1.21.4 and 2 of 1.21.8 get another tool or tier than the public data gave. Most are plants, which the official tags put in `mineable/axe`; the crafter needs a stone pickaxe.

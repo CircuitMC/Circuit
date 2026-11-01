@@ -65,6 +65,7 @@ enum class BlockType : std::uint8_t {
     shulker_box,         // facing: front (any side); variant: 0 plain, 1-16 the colors. Block entity: 27 slots, its viewers
     chiseled_bookshelf,  // facing: front (horizontal); variant: bit k slot k occupied. Block entity: six slots; signal the
                          // last slot touched, plus one (0: none)
+    beacon,              // no properties. Block entity: its levels, powers and whether its beam reached the sky (beacon.cpp)
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -302,6 +303,7 @@ constexpr BlockState chiseled_bookshelf(Direction front, std::uint8_t slots = 0)
 }
 // An ender chest facing `front` (horizontal).
 constexpr BlockState ender_chest(Direction front) { return BlockState::of(BlockType::ender_chest).with_facing(front); }
+constexpr BlockState beacon() { return BlockState::of(BlockType::beacon); }
 // A composter at `level` (0 to 8).
 constexpr BlockState composter(std::uint8_t level = 0) { return BlockState::of(BlockType::composter).with_level(level); }
 // A note block; `instrument` is a registry::Instrument.
@@ -404,10 +406,10 @@ constexpr bool is_container(BlockType t) noexcept {
         || t == BlockType::brewing_stand || t == BlockType::barrel || t == BlockType::shulker_box || t == BlockType::chiseled_bookshelf;
 }
 // Block entities hold container slots, hopper cooldowns, comparator output
-// signals and moving blocks; a daylight detector's ticks it.
+// signals and moving blocks; a daylight detector's ticks it, as a beacon's does.
 constexpr bool has_block_entity(BlockType t) noexcept {
     return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston || t == BlockType::daylight_detector
-        || t == BlockType::lectern || t == BlockType::ender_chest;
+        || t == BlockType::lectern || t == BlockType::ender_chest || t == BlockType::beacon;
 }
 // Direction from a chest half to its partner (reference convention: left pairs
 // clockwise, right counter-clockwise, seen from above); nullopt for single chests.
@@ -453,7 +455,7 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
     case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block: case BlockType::daylight_detector:
     case BlockType::note_block: case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter:
-    case BlockType::brewing_stand:
+    case BlockType::brewing_stand: case BlockType::beacon:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:

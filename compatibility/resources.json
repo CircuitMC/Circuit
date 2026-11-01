@@ -2932,13 +2932,15 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
+          "client/beacon",
+          "client/beacon2",
           "collision/block_entities",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the beam is looked up whole at each cycle"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; counts its pyramid, gives its powers, plays its sounds and opens its window as both official servers do (client/beacon, client/beacon2)"
       },
       "jukebox": {
         "impl": "partial",

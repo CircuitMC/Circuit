@@ -58,6 +58,11 @@ struct BlockEntity {
     // shows that it crafted.
     std::uint16_t disabled{};
     std::int32_t crafting_ticks{};
+    // Beacon: its pyramid's levels (0-4), its primary and secondary powers
+    // (an effect id plus one, 0: none), and whether its beam reached the sky
+    // at its last cycle (beacon.cpp).
+    std::uint8_t levels{}, primary{}, secondary{};
+    bool beam{};
     // Data components of the block entity (a container's custom name), in
     // the item component form of the world's protocol.
     contracts::ComponentPatch components{};
@@ -253,6 +258,8 @@ struct PlayerInventory {
     // The cartography table window the player has open: its map, the item
     // beside it and the result.
     std::array<ItemStack, contracts::cartography_slots> cartography{};
+    // The beacon window the player has open: its payment.
+    std::array<ItemStack, contracts::beacon_slots> beacon{};
     // The crafting recipes the player knows, as the server's recipe book
     // tells them (KnowRecipes): indices of the game data's crafting recipes,
     // ascending. With doLimitedCrafting on, the grids make only these.
@@ -278,7 +285,7 @@ struct PlayerInventory {
             && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1
             && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && std::ranges::all_of(enchant, none)
             && enchant_costs == std::array<std::int32_t, 3>{} && enchant_clues == std::array<std::int32_t, 3>{-1, -1, -1}
-            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && !viewing && std::ranges::all_of(ender, none) && std::ranges::all_of(cartography, none) && known_crafting.empty() && xp_level == 0
+            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && !viewing && std::ranges::all_of(ender, none) && std::ranges::all_of(cartography, none) && std::ranges::all_of(beacon, none) && known_crafting.empty() && xp_level == 0
             && xp_progress == 0.0f && xp_total == 0 && xp_ready == 0;
     }
     bool operator==(const PlayerInventory&) const = default;

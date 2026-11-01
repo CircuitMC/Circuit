@@ -259,6 +259,19 @@ constexpr std::array reference_v4_mechanisms{
         "not open under a conductor; comparators read nothing from them, hoppers neither fill nor empty them, and "
         "pistons do not move them; broken, they drop by their loot table (itself with Silk Touch, else 8 obsidian). "
         "Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
+    MechanismEntry{"beacon", l0_exact, l2_declared_deviation, controlled_experiment,
+        "Beacons as both official servers run them (client/beacon, client/beacon2; the sounds' game times recorded "
+        "apart): a cycle at every game time that is a multiple of 80 looks up the beam (stopped by blocks that stop "
+        "light fully, bedrock excepted) and, with it open, the pyramid's levels (complete layers of the block tag "
+        "beacon_base_blocks, up to four); with levels and the beam the powers go to the players but spectators within "
+        "10 blocks per level and 10 more, and up by the world's height, for 9 seconds and 2 per level, ambient, the "
+        "secondary at four levels; the ambient, activate, deactivate (also when a beacon goes) and power_select "
+        "sounds; the window takes one payment (the item tag beacon_payment_items), thrown out when it closes, and "
+        "keeps the powers chosen whatever the levels; a named beacon keeps its name. Gaps: the beam is found whole at "
+        "each cycle (the official servers were not recorded with a beam changing far up just before one); an active "
+        "beacon across a chunk reload, the range's bottom and a payment when its player leaves or dies were not "
+        "recorded; a name an Anvil import kept for a beacon in a checkpoint saved before format 53 is not carried "
+        "over."},
     MechanismEntry{"composter", l0_exact, l2_declared_deviation, harness_trace,
         "Composters as both official servers run them (composters_items, composters_items_new, composter_use, "
         "composter_break, composter_inputs, composter_inputs2; client/composter): items compost by the chance of "
@@ -558,7 +571,7 @@ constexpr std::array reference_v4_mechanisms{
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest, hopper, furnace, crafter, brewing stand, crafting table, stonecutter, smithing "
-        "table, grindstone, loom, anvil, enchanting table and lectern menus with every click mode, applied as commands. "
+        "table, grindstone, loom, anvil, enchanting table, lectern and beacon menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "

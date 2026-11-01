@@ -129,6 +129,13 @@ int main() {
                 "weather kinds and durations");
         require(rules.admit(SetDifficulty{3}).has_value() && rules.admit(SetDifficulty{4}).error() == ErrorCode::invalid_argument,
                 "difficulties from peaceful to hard");
+        // A client's set_beacon may name any id; records keep 0 to max_beacon_effect.
+        require(rules.admit(SetBeacon{{}, std::nullopt, 0, max_beacon_effect}).has_value()
+                    && rules.admit(SetBeacon{{}, std::nullopt, -1, std::nullopt}).error() == ErrorCode::invalid_argument
+                    && rules.admit(SetBeacon{{}, std::nullopt, -2, std::nullopt}).error() == ErrorCode::invalid_argument
+                    && rules.admit(SetBeacon{{}, std::nullopt, std::nullopt, max_beacon_effect + 1}).error() == ErrorCode::invalid_argument
+                    && rules.admit(SetBeacon{{}, std::nullopt, INT32_MAX, std::nullopt}).error() == ErrorCode::invalid_argument,
+                "beacon powers within the ids records keep");
     });
 
     suite.run("trace divergence", [] {
@@ -182,6 +189,8 @@ int main() {
         // Books edited and signed (tag 39).
         log.ticks.push_back({13, {{41, EditBook{alex, 36, {"hello", "", "\xC2\xA7" "cred\n"}, std::nullopt, "alice"}},
                                   {42, EditBook{alex, offhand_slot, {"first"}, std::string(32, 'y'), "alice"}}, {43, EditBook{alex, 44, {}, std::nullopt, ""}}, {44, SwapHands{alex, 40}}}});
+        log.ticks.push_back({14, {{45, SetBeacon{alex, BlockPos{1, 2, 3}, 0, 9}}, {46, SetBeacon{alex, std::nullopt, std::nullopt, 4}},
+                                  {47, SetBeacon{alex, BlockPos{0, 0, 0}, max_beacon_effect, max_beacon_effect}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

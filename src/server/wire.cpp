@@ -25,7 +25,7 @@ struct Wire::Ids {
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
-        update_mob_effect, remove_mob_effect, update_attributes;
+        update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -118,6 +118,9 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->update_mob_effect = cb(State::play, "update_mob_effect");
     ids->remove_mob_effect = cb(State::play, "remove_mob_effect");
     ids->update_attributes = cb(State::play, "update_attributes");
+    ids->sound = cb(State::play, "sound");
+    ids->block_entity_data = cb(State::play, "block_entity_data");
+    ids->sb_set_beacon = sb(State::play, "set_beacon");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -415,6 +418,27 @@ Bytes Wire::explosion(Vec3 center) const {
     Writer w;
     w.f64(center.x).f64(center.y).f64(center.z).boolean(false).varint(21).varint(sound + 1);
     return packet(id_->explode, w);
+}
+Bytes Wire::sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int64_t seed) const {
+    // Sound event ids (PrismarineJS minecraft-data sounds.json, MIT; the same
+    // on both protocols: the lists agree up to cake candles), sent plus one.
+    std::int32_t id = 0;
+    switch (sound) {
+    case contracts::SoundEvent::beacon_activate: id = 140; break;
+    case contracts::SoundEvent::beacon_ambient: id = 141; break;
+    case contracts::SoundEvent::beacon_deactivate: id = 142; break;
+    case contracts::SoundEvent::beacon_power_select: id = 143; break;
+    }
+    constexpr std::int32_t block_category = 4;
+    Writer w;
+    w.varint(id + 1).varint(block_category).i32(at.x * 8 + 4).i32(at.y * 8 + 4).i32(at.z * 8 + 4).f32(1.0f).f32(1.0f).i64(seed);
+    return packet(id_->sound, w);
+}
+Bytes Wire::block_entity_data(WirePosition at, std::int32_t type, const protocol::nbt::Tag& tag) const {
+    Writer w;
+    w.position(at).varint(type);
+    nbt::write_network(w, tag);
+    return packet(id_->block_entity_data, w);
 }
 Bytes Wire::remove_entities(const std::vector<std::int32_t>& ids) const {
     Writer w;
@@ -863,6 +887,17 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_rename_item) {
         TRY(name, r.string(32767));
         return done(intent::RenameItem{std::move(*name)});
+    }
+    if (id == i.sb_set_beacon) {
+        intent::SetBeacon b;
+        for (auto* power : {&b.primary, &b.secondary}) {
+            TRY(present, r.boolean());
+            if (*present) {
+                TRY(effect, r.varint());
+                *power = *effect;
+            }
+        }
+        return done(std::move(b));
     }
     if (id == i.sb_recipe_book_seen_recipe) {
         TRY(display, r.varint());

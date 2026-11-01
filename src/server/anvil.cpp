@@ -6,6 +6,7 @@
 #include <charconv>
 #include <circuit/evidence/content.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/protocol/content.hpp>
 #include <circuit/protocol/framing.hpp>
@@ -887,6 +888,18 @@ private:
             out.cook_total = time("cooking_total_time");
             out.lit_time = time("lit_time_remaining");
             out.lit_total = time("lit_total_time");
+        } else if (id == "minecraft:beacon" && expect(BlockType::beacon)) {
+            // Its levels and powers (a power that is not a beacon's counts as
+            // none); its beam is found at its next cycle.
+            out = {BlockType::beacon, 0, {}, 0};
+            out.levels = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "Levels").value_or(0), 0, 4));
+            const auto power = [&](std::string_view key) -> std::uint8_t {
+                const auto* name = child(be, key, TagType::string);
+                const auto effect = name ? gameplay::effects::id(name->text()) : std::nullopt;
+                return effect && gameplay::effects::is_beacon_power(*effect) ? static_cast<std::uint8_t>(*effect + 1) : std::uint8_t{0};
+            };
+            out.primary = power("primary_effect");
+            out.secondary = power("secondary_effect");
         } else if (id == "minecraft:ender_chest" && expect(BlockType::ender_chest)) {
             // Nothing of its own: the contents are each player's.
             out = {BlockType::ender_chest, 0, {}, 0};
@@ -1465,6 +1478,13 @@ private:
             break;
         }
         case BlockType::ender_chest: t.set("id", Tag::string("minecraft:ender_chest")); break;
+        case BlockType::beacon:
+            // Its levels; its powers only when chosen, as the official servers save them.
+            t.set("id", Tag::string("minecraft:beacon"));
+            t.set("Levels", Tag::int_(be.levels));
+            if (be.primary != 0) t.set("primary_effect", Tag::string(std::format("minecraft:{}", gameplay::effects::names()[be.primary - 1])));
+            if (be.secondary != 0) t.set("secondary_effect", Tag::string(std::format("minecraft:{}", gameplay::effects::names()[be.secondary - 1])));
+            break;
         case BlockType::lectern:
             t.set("id", Tag::string("minecraft:lectern"));
             if (!be.slots.empty() && !be.slots[0].empty()) {

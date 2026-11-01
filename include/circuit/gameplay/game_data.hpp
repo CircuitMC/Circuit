@@ -151,6 +151,11 @@ struct GameData {
     // The books a chiseled bookshelf takes (the item tag bookshelf_books,
     // ascending).
     std::vector<std::uint16_t> bookshelf_books;
+    // A beacon's pyramid blocks (the block tag beacon_base_blocks: internal
+    // registry blocks, ascending) and payments (the item tag
+    // beacon_payment_items, ascending).
+    std::vector<std::uint32_t> beacon_base_blocks;
+    std::vector<std::uint16_t> beacon_payment_items;
     std::function<std::int32_t(const contracts::ItemStack&)> book_pages;
     // A writable book's components with pages "1" to "n" (fixtures' books).
     std::function<std::optional<contracts::ComponentPatch>(std::int32_t pages)> writable_book;

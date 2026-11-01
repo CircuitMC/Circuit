@@ -2,6 +2,7 @@
 #pragma once
 #include "recipe_book.hpp"
 #include "registries.hpp"
+#include <circuit/contracts/trace.hpp>
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/maps.hpp>
@@ -118,6 +119,10 @@ struct ContainerButton {
     std::int32_t window{};
     std::int32_t button{};
 };
+// The powers chosen in the open beacon window, by effect id (set_beacon).
+struct SetBeacon {
+    std::optional<std::int32_t> primary, secondary;
+};
 // The name typed into the open anvil window.
 struct RenameItem {
     std::string name;
@@ -177,7 +182,8 @@ using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, 
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
                             intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
-                            intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe, intent::EditBook>;
+                            intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe, intent::EditBook,
+                            intent::SetBeacon>;
 
 class Wire {
 public:
@@ -277,6 +283,13 @@ public:
     // A player's experience: the progress toward the next level, the level and the total.
     Bytes set_experience(float progress, std::int32_t level, std::int32_t total) const;
     Bytes explosion(Vec3 center) const;
+    // A sound the rules played, at a block's center (category block, volume
+    // and pitch 1, as both official servers send a beacon's; the seed varies
+    // on them).
+    Bytes sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int64_t seed) const;
+    // A block entity's data for clients (block_entity_data): its type by the
+    // protocol's id, and its tag.
+    Bytes block_entity_data(WirePosition at, std::int32_t type, const protocol::nbt::Tag& tag) const;
     Bytes remove_entities(const std::vector<std::int32_t>& ids) const;
     Bytes entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, bool on_ground) const;
     Bytes head_rotation(std::int32_t id, float head_yaw) const;

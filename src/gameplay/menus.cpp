@@ -31,6 +31,7 @@ bool offhand_item(std::uint16_t item) { return item == items::shield; }
 // A player slot by its slot-record number: the inventory, the slots of an
 // open workstation's window, or the ender inventory.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::beacon_first) return inv.beacon[index - contracts::beacon_first];
     if (index >= contracts::cartography_first) return inv.cartography[index - contracts::cartography_first];
     if (index >= contracts::ender_first) return inv.ender[index - contracts::ender_first];
     if (index >= contracts::enchant_first) return inv.enchant[index - contracts::enchant_first];
@@ -307,6 +308,7 @@ public:
         anvil_ = parts.size() == 1 && is_anvil(ctx.block(parts[0]));
         enchant_ = parts.size() == 1 && is_enchanting_table(ctx.block(parts[0]));
         cartography_ = parts.size() == 1 && is_cartography_table(ctx.block(parts[0]));
+        beacon_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::beacon);
         const bool ender = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::ender_chest);
         if (parts.size() == 1) block_ = parts[0];
         if (ender) {
@@ -317,6 +319,8 @@ public:
         } else if (cartography_) {
             for (std::uint8_t i = 0; i < contracts::cartography_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::cartography_first + i), false});
+        } else if (beacon_) {
+            slots_.push_back({{}, contracts::beacon_first, false});
         } else if (enchant_) {
             for (std::uint8_t i = 0; i < contracts::enchant_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::enchant_first + i), false});
@@ -432,6 +436,8 @@ public:
         if (loom_ && i < 3) return loom_takes(i, stack.item);
         // An enchanting table's lapis slot takes lapis lazuli.
         if (enchant_ && i == 1) return stack.item == items::lapis_lazuli;
+        // A beacon's slot takes payments (client/beacon).
+        if (beacon_ && i == 0) return is_beacon_payment(ctx_, stack.item);
         // A shulker box takes no shulker box (client/shulker).
         if (shulker_ && i < container_size_) return !is_shulker_box_item(stack.item);
         // A crafter's disabled slots take nothing.
@@ -447,6 +453,7 @@ public:
         if (furnace_ && i == 1 && stack.item == items::bucket) return 1;
         if (brewing_ && i < 3) return 1;
         if (enchant_ && i == 0) return 1;
+        if (beacon_ && i == 0) return 1;
         return std::min<int>(contracts::max_stack_size, items::max_stack(stack));
     }
 
@@ -548,6 +555,22 @@ public:
             else if (to) moved = move_into(stack, *to, *to + 1, false);
             else if (i < 31) moved = move_into(stack, 31, 40, false);
             else moved = move_into(stack, 4, 31, false);
+        } else if (beacon_) {
+            // The payment goes to the inventory from the hotbar's end; from
+            // the inventory a single payment into the empty payment slot (a
+            // stack of two moves on as any other: client/beacon), else
+            // between the main inventory and the hotbar.
+            if (i < 1) {
+                moved = move_into(stack, 1, 37, true);
+            } else if (stack.count == 1 && get(0).empty() && may_place(0, stack)) {
+                set(0, stack);
+                stack = {};
+                moved = true;
+            } else if (i < 28) {
+                moved = move_into(stack, 28, 37, false);
+            } else {
+                moved = move_into(stack, 1, 28, false);
+            }
         } else if (cartography_) {
             // The inputs go to the inventory from its start; from the
             // inventory a filled map goes into the map slot, paper, empty maps
@@ -700,16 +723,17 @@ public:
     [[nodiscard]] bool anvil() const { return anvil_; }
     [[nodiscard]] bool enchant() const { return enchant_; }
     [[nodiscard]] bool cartography() const { return cartography_; }
+    [[nodiscard]] bool beacon() const { return beacon_; }
     [[nodiscard]] bool creative() const { return creative_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
     // Whether a crafting grid's cell changed through this menu.
     [[nodiscard]] bool grid_changed() const { return grid_changed_; }
     // The window slots of the main inventory and the hotbar.
     [[nodiscard]] std::size_t inventory_first() const {
-        return smith_ || loom_ ? 4 : grind_ || anvil_ || cartography_ ? 3 : cutter_ || enchant_ ? 2 : table_ ? 10 : 9;
+        return smith_ || loom_ ? 4 : grind_ || anvil_ || cartography_ ? 3 : cutter_ || enchant_ ? 2 : beacon_ ? 1 : table_ ? 10 : 9;
     }
     [[nodiscard]] std::size_t inventory_end() const {
-        return smith_ || loom_ ? 40 : grind_ || anvil_ || cartography_ ? 39 : cutter_ || enchant_ ? 38 : table_ ? 46 : 45;
+        return smith_ || loom_ ? 40 : grind_ || anvil_ || cartography_ ? 39 : cutter_ || enchant_ ? 38 : beacon_ ? 37 : table_ ? 46 : 45;
     }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
@@ -735,6 +759,7 @@ private:
     bool anvil_{};
     bool enchant_{};
     bool cartography_{};
+    bool beacon_{};
     bool brewing_{};
     bool shulker_{};
     bool creative_{};
@@ -1052,7 +1077,7 @@ contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optio
     const auto s = ctx.block(*container);
     if (!s.is_unloaded()
         && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s) || is_enchanting_table(s) || is_cartography_table(s)
-            || s.is(BlockType::ender_chest)))
+            || s.is(BlockType::ender_chest) || s.is(BlockType::beacon)))
         return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);
@@ -1328,6 +1353,23 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
 
 // A stonecutter's recipe button: one of the input's recipes, by its place
 // in their list; another number does nothing.
+// A beacon's window: with a payment in its slot, the payment is used up and
+// the beacon takes the powers chosen (client/beacon: whatever its levels;
+// an effect that is not a beacon's power counts as none). Without one,
+// nothing happens.
+contracts::Result<std::function<void()>> plan_set_beacon(RuleContext& ctx, const contracts::SetBeacon& c) {
+    if (!c.container || !ctx.block(*c.container).is(BlockType::beacon)) return std::unexpected(contracts::ErrorCode::not_a_container);
+    return [&ctx, c] {
+        auto& inv = ctx.player(c.player);
+        auto& payment = inv.beacon[0];
+        if (payment.empty()) return;
+        const auto power = [](std::optional<std::int32_t> effect) { return effect ? beacon_power(*effect) : std::uint8_t{0}; };
+        choose_beacon_powers(ctx, *c.container, power(c.primary), power(c.secondary));
+        if (--payment.count == 0) payment = {};
+        record_slot(ctx, inv, contracts::beacon_first);
+    };
+}
+
 contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const contracts::ContainerButton& c) {
     // A lectern's buttons turn its book's pages or take the book.
     if (c.container && ctx.block(*c.container).is(BlockType::lectern))
@@ -1636,6 +1678,14 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
             record_slot(ctx, inv, player_slots);
             throw_item(ctx, c.drop_position, c.drop_velocity, put_back(carried));
         }
+        // A beacon's payment does not go back: it is thrown out
+        // (client/beacon2, both versions).
+        if (!inv.beacon[0].empty()) {
+            const auto payment = inv.beacon[0];
+            inv.beacon[0] = {};
+            record_slot(ctx, inv, contracts::beacon_first);
+            throw_item(ctx, c.drop_position, c.drop_velocity, payment);
+        }
     };
 }
 
@@ -1680,6 +1730,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::anvil_first + k));
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::enchant_first + k));
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::cartography_first + k));
+        order.push_back(contracts::beacon_first);
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);

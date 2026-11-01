@@ -23,6 +23,7 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
             }
         if (prev.is(BlockType::lectern))
             if (const auto* be = ctx.peek_block_entity(pos); be && !be->slots.empty()) book = be->slots[0];
+        if (prev.is(BlockType::beacon)) beacon_removed(ctx, pos);
         ctx.remove_block_entity(pos);
     } else if (replaced && prev.is(BlockType::other) && ctx.peek_block_entity(pos)) {
         ctx.remove_block_entity(pos); // the saved data of a block without rules goes with it

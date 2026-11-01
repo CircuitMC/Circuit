@@ -9,6 +9,7 @@
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/contracts/version.hpp>
+#include <circuit/contracts/trace.hpp>
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/effects.hpp>
@@ -3236,24 +3237,59 @@ int main() {
     });
 
     suite.run("a block entity block placed from an item with components places nothing", [] {
-        // A named beacon would lose its name: nothing is placed, and the item
+        // A named jukebox would lose its name: nothing is placed, and the item
         // stays; an unnamed one is placed with an empty block entity. (A
-        // shulker box, with rules of its own, keeps its name and contents.)
+        // shulker box or a beacon, with rules of their own, keep their name.)
         const circuit::contracts::PlayerKey alex{1, 2};
-        const auto beacon = items::by_name("minecraft:beacon").value();
+        const auto jukebox = items::by_name("minecraft:jukebox").value();
         Sim s;
-        s.tick(with_floor(floor(-1, 4, -1, 1), {}));
-        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, named(beacon, 1, "Box")},
+        s.tick(with_floor(floor(-1, 6, -1, 1), {}));
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, named(jukebox, 1, "Box")},
                 circuit::contracts::PlayerUse{alex, 36, {0, -1, 0}, D::up, D::north, D::north, false, true, 3, 3},
-                circuit::contracts::SetPlayerSlot{alex, 37, {beacon, 1, 0}},
-                circuit::contracts::PlayerUse{alex, 37, {2, -1, 0}, D::up, D::north, D::north, false, true, 3, 3}});
-        require(s.at({0, 0, 0}).is_air(), "the named beacon is not placed");
+                circuit::contracts::SetPlayerSlot{alex, 37, {jukebox, 1, 0}},
+                circuit::contracts::PlayerUse{alex, 37, {2, -1, 0}, D::up, D::north, D::north, false, true, 3, 3},
+                circuit::contracts::SetPlayerSlot{alex, 38, named(items::beacon, 1, "Light")},
+                circuit::contracts::PlayerUse{alex, 38, {4, -1, 0}, D::up, D::north, D::north, false, true, 3, 3}});
+        require(s.at({0, 0, 0}).is_air(), "the named jukebox is not placed");
         const auto d = s.oracle.dump();
         const auto inventory = std::ranges::find(d.players, alex, &PlayerInventory::player);
-        require(inventory != d.players.end() && inventory->slots[36] == named(beacon, 1, "Box") && inventory->slots[37].empty(),
-                "the named beacon stays in the hand, the other was used");
+        require(inventory != d.players.end() && inventory->slots[36] == named(jukebox, 1, "Box") && inventory->slots[37].empty(),
+                "the named jukebox stays in the hand, the other was used");
         const auto* be = block_entity_at(d, {2, 0, 0});
-        require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed beacon is placed with its block entity");
+        require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed jukebox is placed with its block entity");
+        const auto* light = block_entity_at(d, {4, 0, 0});
+        require(s.at({4, 0, 0}).is(BlockType::beacon) && light && light->components == named(items::beacon, 1, "Light").components
+                    && inventory->slots[38].empty(),
+                "the named beacon is placed and keeps its name");
+        // Broken in survival, it drops itself with its name; its deactivate sound plays.
+        s.tick({circuit::contracts::PlayerBreak{alex, {4, 0, 0}, true, 39}});
+        const auto after = s.oracle.dump();
+        const auto dropped = std::ranges::find_if(after.overworld().entities, [](const auto& e) { return e.kind == EntityKind::item && e.stack.item == items::beacon; });
+        require(s.at({4, 0, 0}).is_air() && dropped != after.overworld().entities.end() && dropped->stack == named(items::beacon, 1, "Light"),
+                "the broken named beacon drops with its name");
+        require(of_kind(s.last, TraceKind::sound_played).size() == 1, "the deactivate sound");
+    });
+
+    suite.run("a broken beacon drops with its name alone, as its loot table copies it", [] {
+        // The official data packs' loot_table/blocks/beacon.json copies the
+        // block entity's custom_name only; the codec does the copying.
+        const circuit::contracts::PlayerKey alex{1, 2};
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        std::vector<std::string> asked;
+        data->with_component_from = [&](const ComponentPatch&, const ComponentPatch&, std::string_view name) {
+            asked.emplace_back(name);
+            return std::optional(named(items::beacon, 1, "Only").components);
+        };
+        Sim s(bundle(), 7, 2, data);
+        s.tick(with_floor(floor(-1, 6, -1, 1), {}));
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, named(items::beacon, 1, "Light")},
+                circuit::contracts::PlayerUse{alex, 36, {0, -1, 0}, D::up, D::north, D::north, false, true, 3, 3}});
+        require(s.at({0, 0, 0}).is(BlockType::beacon), "placed");
+        s.tick({circuit::contracts::PlayerBreak{alex, {0, 0, 0}, true, 37}});
+        const auto d = s.oracle.dump();
+        const auto dropped = std::ranges::find_if(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::item; });
+        require(dropped != d.overworld().entities.end() && dropped->stack == named(items::beacon, 1, "Only"), "the drop takes what the copy gives");
+        require(asked == std::vector<std::string>{"custom_name"}, "only the name is copied");
     });
 
     suite.run("buckets take and pour fluids along the player's view as both official servers do", [] {
@@ -6618,6 +6654,138 @@ int main() {
         require(at_once({1, -1}, 34) && at_once({0, -1}, 38), "haste: at once");
         require(!at_once({-1, 0}, 50) && whole({-1, 0}) / 20.0 > 9.75 && whole({-1, 0}) / 20.0 < 10.25, "mining fatigue: about 10 s");
         require(!at_once({1, 0}, 50) && whole({1, 0}) / 20.0 > 6.75 && whole({1, 0}) / 20.0 < 7.25, "both: about 7 s");
+    });
+
+    suite.run("beacons count their pyramid on their cycle and give the powers a payment chose", [] {
+        // circuit-clienttest/beacon.js and beacon-dbg.js, both versions identical.
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetBeacon;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::contracts::SoundEvent;
+        namespace fx = circuit::gameplay::effects;
+        const PlayerKey alex{4, 2};
+        const BlockPos beacon{0, 3, 0};
+        const auto iron = registry_block("iron_block");
+        Sim s;
+        std::vector<CommandBody> build;
+        for (std::int32_t x = -1; x <= 1; ++x)
+            for (std::int32_t z = -1; z <= 1; ++z) build.push_back(place({x, 2, z}, iron));
+        build.push_back(place(beacon, blocks::beacon()));
+        s.tick(build);
+        const auto entity = [&] {
+            const auto d = s.oracle.dump();
+            const auto* be = block_entity_at(d, beacon);
+            return be ? *be : circuit::gameplay::BlockEntity{};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto sounds = [](const std::vector<TraceRecord>& t) {
+            std::vector<SoundEvent> out;
+            for (const auto& r : of_kind(t, TraceKind::sound_played)) out.push_back(static_cast<SoundEvent>(r.a));
+            return out;
+        };
+        // Runs up to the next cycle (the tick that leaves the game time a multiple of 80); its trace.
+        const auto cycle = [&] {
+            for (int k = 0; k < 80; ++k) {
+                s.tick();
+                if (s.oracle.time() % 80 == 0) return s.last;
+            }
+            return std::vector<TraceRecord>{};
+        };
+        auto t = cycle();
+        require(sounds(t) == std::vector{SoundEvent::beacon_ambient, SoundEvent::beacon_activate} && of_kind(t, TraceKind::beacon_effects).empty(),
+                "the first cycle: one level, the ambient then the activate sound, no powers yet");
+        require(entity().levels == 1 && entity().beam, "one level, the beam open");
+        t = cycle();
+        require(sounds(t) == std::vector{SoundEvent::beacon_ambient}, "then the ambient sound alone");
+        // A payment: the window takes one iron ingot (shift-clicked from the hotbar), not stone.
+        const auto shift = [&](std::int16_t slot) { return ContainerClick{alex, std::optional(beacon), slot, 0, 1, false, at_block(0.5, 4, 0.5), {}}; };
+        s.tick({SetPlayerSlot{alex, 36, {items::stone, 1}}, shift(28)});
+        require(player().beacon[0].empty(), "stone is no payment");
+        // Two shift-clicked move on into the main inventory; one goes into the payment slot.
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_ingot, 2}}, shift(28)});
+        require(player().beacon[0].empty() && player().slots[36].empty() && player().slots[10] == ItemStack{items::iron_ingot, 2},
+                "two iron ingots go to the main inventory");
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_ingot, 1}}, shift(28)});
+        require(player().beacon[0] == ItemStack{items::iron_ingot, 1} && player().slots[36].empty(), "one iron ingot in the payment slot");
+        s.tick({SetBeacon{alex, beacon, fx::id("strength"), std::nullopt}});
+        require(sounds(s.last) == std::vector{SoundEvent::beacon_power_select} && entity().primary == *fx::id("strength") + 1 && player().beacon[0].empty(),
+                "strength chosen at one level: the payment used up");
+        t = cycle();
+        const auto given = of_kind(t, TraceKind::beacon_effects);
+        require(given.size() == 1 && given[0].a == 1 && given[0].b == *fx::id("strength") + 1u && given[0].c == 0, "the cycle gives strength");
+        require(sounds(t) == std::vector{SoundEvent::beacon_ambient}, "then its ambient sound");
+        s.tick({SetBeacon{alex, beacon, fx::id("speed"), std::nullopt}});
+        require(entity().primary == *fx::id("strength") + 1 && sounds(s.last).empty(), "without a payment nothing changes");
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_ingot, 1}}, shift(28), SetBeacon{alex, beacon, fx::id("night_vision"), fx::id("regeneration")}});
+        require(entity().primary == 0 && entity().secondary == *fx::id("regeneration") + 1, "a power a beacon does not give counts as none");
+        t = cycle();
+        require(of_kind(t, TraceKind::beacon_effects).empty() && sounds(t) == std::vector{SoundEvent::beacon_ambient}, "no primary: nothing given");
+        // A second layer: two levels.
+        build.clear();
+        for (std::int32_t x = -2; x <= 2; ++x)
+            for (std::int32_t z = -2; z <= 2; ++z) build.push_back(place({x, 1, z}, iron));
+        s.tick(build);
+        cycle();
+        require(entity().levels == 2, "two levels");
+        // A blocked beam keeps the levels and plays nothing, also with the
+        // pyramid gone; opened again, the cycle finds no levels.
+        s.tick({place({0, 40, 0}, blocks::stone())});
+        t = cycle();
+        require(t.empty() || (sounds(t).empty() && of_kind(t, TraceKind::beacon_effects).empty()), "blocked: nothing");
+        require(entity().levels == 2 && !entity().beam, "the levels kept");
+        build.clear();
+        for (std::int32_t x = -1; x <= 1; ++x)
+            for (std::int32_t z = -1; z <= 1; ++z) build.push_back(place({x, 2, z}, blocks::air()));
+        s.tick(build);
+        t = cycle();
+        require(sounds(t).empty() && entity().levels == 2, "still blocked: the levels kept");
+        s.tick({place({0, 40, 0}, blocks::air())});
+        t = cycle();
+        require(sounds(t) == std::vector{SoundEvent::beacon_deactivate} && entity().levels == 0, "open again: no levels, the deactivate sound");
+        // Glass, bedrock and the top of the world let the beam through; tinted glass does not.
+        build.clear();
+        for (std::int32_t x = -1; x <= 1; ++x)
+            for (std::int32_t z = -1; z <= 1; ++z) build.push_back(place({x, 2, z}, iron));
+        build.push_back(place({0, 10, 0}, blocks::glass()));
+        build.push_back(place({0, 20, 0}, registry_block("bedrock")));
+        s.tick(build);
+        t = cycle();
+        require(sounds(t) == std::vector{SoundEvent::beacon_ambient, SoundEvent::beacon_activate}, "through glass and bedrock");
+        s.tick({place({0, 30, 0}, registry_block("tinted_glass"))});
+        t = cycle();
+        require(sounds(t).empty(), "tinted glass stops it");
+        s.tick({place({0, 30, 0}, blocks::air())});
+        cycle();
+        // A payment left in the slot when the window closes is thrown out (client/beacon2).
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_ingot, 1}}, shift(28)});
+        require(player().beacon[0] == ItemStack{items::iron_ingot, 1}, "a payment in the slot");
+        const auto changed = of_kind(s.last, TraceKind::player_slot_changed);
+        require(std::ranges::any_of(changed, [](const TraceRecord& r) {
+                    return r.c == ((std::uint64_t{circuit::contracts::beacon_first} << 48) | circuit::contracts::pack_stack({items::iron_ingot, 1}));
+                }),
+                "its slot change records the payment");
+        s.tick({circuit::contracts::CloseContainer{alex, at_block(0.5, 4.5, -2.5), {0, 0.1, 0.3}}});
+        const auto thrown = of_kind(s.last, TraceKind::entity_spawned);
+        const auto iron_held = [&] {
+            int n = 0;
+            for (const auto& st : player().slots) n += st.item == items::iron_ingot ? st.count : 0;
+            return n;
+        };
+        require(player().beacon[0].empty() && thrown.size() == 1 && iron_held() == 2,
+                "closed: the payment is thrown out, not returned (the two earlier ingots stay)");
+        // A beacon that goes plays the deactivate sound at once, with levels
+        // and without (client/beacon2).
+        s.tick({place(beacon, blocks::air())});
+        require(sounds(s.last) == std::vector{SoundEvent::beacon_deactivate}, "removed: the deactivate sound");
+        s.tick({place({8, 3, 8}, blocks::beacon())});
+        cycle();
+        t = cycle();
+        require(sounds(t).empty(), "a beacon without a pyramid plays nothing at its cycles");
+        s.tick({place({8, 3, 8}, blocks::air())});
+        require(sounds(s.last) == std::vector{SoundEvent::beacon_deactivate}, "removed without levels: the deactivate sound");
     });
 
     return suite.finish();

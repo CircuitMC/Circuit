@@ -113,6 +113,7 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const contracts::ContainerClick& c);
 contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const contracts::CloseContainer& c);
 contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const contracts::ContainerButton& c);
+contracts::Result<std::function<void()>> plan_set_beacon(RuleContext& ctx, const contracts::SetBeacon& c);
 contracts::Result<std::function<void()>> plan_slot_enabled(RuleContext& ctx, const contracts::SetSlotEnabled& c);
 contracts::Result<std::function<void()>> plan_place_recipe(RuleContext& ctx, const contracts::PlaceRecipe& c);
 contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c);
@@ -554,6 +555,19 @@ bool brewing_accepts(const GameData* data, const BlockEntity& be, std::size_t sl
 // fuel) takes an item, full or not: what its window lets players put there.
 bool brewing_slot_takes(const GameData* data, std::size_t slot, std::uint16_t item);
 bool brewing_gives(std::size_t slot, const ItemStack& stack);
+
+// ---- beacons (beacon.cpp) ----
+// The block-entity tick: the cycle every 80 game ticks; a beacon going (its
+// deactivate sound); powers chosen in its window. A power is an effect id
+// plus one, 0 for none: beacon_power gives it for an effect id that is one
+// of a beacon's powers (speed, haste, resistance, jump boost, strength,
+// regeneration), else 0. Payments are the items of the
+// beacon_payment_items tag (GameData, or minecraft.wiki's without data).
+void tick_beacon(RuleContext& ctx, BlockPos pos);
+void beacon_removed(RuleContext& ctx, BlockPos pos);
+void choose_beacon_powers(RuleContext& ctx, BlockPos pos, std::uint8_t primary, std::uint8_t secondary);
+std::uint8_t beacon_power(std::int32_t effect);
+bool is_beacon_payment(RuleContext& ctx, std::uint16_t item);
 
 // ---- dispensers and droppers (dispenser.cpp) ----
 // A neighbor update: triggered by power at the block or above it.

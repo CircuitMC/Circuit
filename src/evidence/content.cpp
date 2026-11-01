@@ -256,6 +256,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         }
         return simple(blocks::chiseled_bookshelf(facing, slots));
     }
+    if (id == "minecraft:beacon") return simple(blocks::beacon());
     if (id == "minecraft:ender_chest") {
         // Absent properties take the default state's (facing north, dry).
         CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));

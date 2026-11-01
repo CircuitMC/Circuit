@@ -35,6 +35,8 @@ std::string_view kind_name(TraceKind kind) {
     case TraceKind::level_event: return "level_event";
     case TraceKind::recipe_used: return "recipe_used";
     case TraceKind::recipe_ghost: return "recipe_ghost";
+    case TraceKind::sound_played: return "sound_played";
+    case TraceKind::beacon_effects: return "beacon_effects";
     }
     return "unknown";
 }

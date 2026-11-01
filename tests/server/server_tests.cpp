@@ -3258,6 +3258,120 @@ int main() {
         }
     });
 
+    suite.run("beacons give their powers to players in range and play their sounds as both official servers do", [] {
+        // circuit-clienttest/beacon.js, both versions identical.
+        using I = server::Intent;
+        GameFixture f;
+        auto alice = f.join(1, "Alice");
+        auto bob = f.join(2, "Bob");
+        // Since the last call, as text: "data <x> <y> <z> <type> <tag>" (block
+        // entity data), "sound <id> <category> <x> <y> <z>" (the wire's id),
+        // "screen <type> <title key>", "property <index> <value>", "effect
+        // <id> <amplifier> <duration> <flags>".
+        std::map<std::uint64_t, std::size_t> seen;
+        std::int32_t window = 0;
+        const auto packets = [&](Recorder& r) {
+            const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+            std::vector<std::string> out;
+            std::lock_guard lock(r.mutex);
+            for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                auto pk = protocol::open_packet(r.packets[at]);
+                if (!pk) continue;
+                auto& in = pk->fields;
+                if (pk->id == id("block_entity_data")) {
+                    const auto pos = in.position().value();
+                    const auto type = in.varint().value();
+                    const auto tag = protocol::nbt::read_network(in).value();
+                    const auto* levels = tag.find("Levels");
+                    out.push_back(std::format("data {} {} {} {} Levels={}", pos.x, pos.y, pos.z, type, levels ? levels->integer() : -1));
+                } else if (pk->id == id("sound")) {
+                    const auto sound = in.varint().value(), category = in.varint().value();
+                    const auto x = in.i32().value(), y = in.i32().value(), z = in.i32().value();
+                    out.push_back(std::format("sound {} {} {} {} {}", sound, category, x, y, z));
+                } else if (pk->id == id("open_screen")) {
+                    window = in.varint().value();
+                    const auto type = in.varint().value();
+                    const auto title = protocol::nbt::read_network(in).value();
+                    out.push_back(std::format("screen {} {}", type, title.find("translate") ? title.find("translate")->text() : "?"));
+                } else if (pk->id == id("container_set_data")) {
+                    (void)in.varint();
+                    const auto property = in.i16().value();
+                    out.push_back(std::format("property {} {}", property, in.i16().value()));
+                } else if (pk->id == id("update_mob_effect")) {
+                    (void)in.varint();
+                    const auto effect = in.varint().value(), amplifier = in.varint().value(), duration = in.varint().value();
+                    out.push_back(std::format("effect {} {} {} {}", effect, amplifier, duration, in.u8().value()));
+                }
+            }
+            return out;
+        };
+        const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+        command(1, "tp 8.5 -60 4.5");
+        command(2, "tp 8.5 -60 31.5");
+        command(1, "fill 7 -60 7 9 -60 9 minecraft:iron_block");
+        command(1, "setblock 8 -59 8 minecraft:beacon");
+        f.game->tick();
+        f.game->tick();
+        auto a = packets(*alice);
+        require(std::ranges::count(a, std::string("data 8 -59 8 15 Levels=0")) == 1, "the new beacon's block entity data");
+        (void)packets(*bob);
+        // Up to the first cycle: the ambient, then the activate sound (ids plus one), at the block's center.
+        const auto until_sound = [&] {
+            for (int k = 0; k < 81; ++k) {
+                f.game->tick();
+                auto now = packets(*alice);
+                if (std::ranges::any_of(now, [](const auto& t) { return t.starts_with("sound "); })) return now;
+            }
+            return std::vector<std::string>{};
+        };
+        a = until_sound();
+        require(a == std::vector<std::string>{"sound 142 4 68 -468 68", "sound 141 4 68 -468 68"}, "ambient then activate");
+        // The window: menu type 9, its title, the levels and no powers.
+        f.game->submit(1, I{server::intent::UseOn{0, {8, -59, 8}, 1, 0.5f, 1.0f, 0.5f, false, 1}});
+        f.game->tick();
+        a = packets(*alice);
+        require(std::ranges::find(a, std::string("screen 9 container.beacon")) != a.end(), "the beacon window");
+        for (const auto* p : {"property 0 1", "property 1 0", "property 2 0"})
+            require(std::ranges::find(a, std::string(p)) != a.end(), std::format("{}", p));
+        // A payment shift-clicked from the hotbar, then strength chosen.
+        f.game->submit(1, I{server::intent::CreativeSlot{36, 1, content().item_id("minecraft:iron_ingot").value()}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::ContainerClick{window, 0, 28, 0, 1, {}, std::nullopt}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::SetBeacon{4, std::nullopt}});
+        f.game->tick();
+        f.game->tick();
+        a = packets(*alice);
+        require(std::ranges::find(a, std::string("sound 144 4 68 -468 68")) != a.end() && std::ranges::find(a, std::string("property 1 5")) != a.end(),
+                "strength chosen: the power_select sound and the property");
+        // The next cycle: strength for 11 seconds, ambient, to alice; bob, 23 blocks away, gets nothing.
+        a = until_sound();
+        require(a == std::vector<std::string>{"effect 4 0 220 15", "sound 142 4 68 -468 68"}, "the cycle gives strength, then its sound");
+        require(std::ranges::none_of(packets(*bob), [](const auto& t) { return t.starts_with("effect "); }), "bob is out of range");
+        command(2, "tp 8.5 -60 27.5");
+        until_sound();
+        const auto b = packets(*bob);
+        require(std::ranges::find(b, std::string("effect 4 0 220 15")) != b.end(), "19 blocks away, bob gets it");
+        // client/beacon2: a spectator gets nothing; the range reaches the
+        // world's height (384) above the grown cell: y 346 here.
+        const auto given = [&](Recorder& r) {
+            for (int k = 0; k < 80; ++k) f.game->tick();
+            return std::ranges::any_of(packets(r), [](const auto& t) { return t.starts_with("effect 4 0 220"); });
+        };
+        command(2, "gamemode spectator");
+        f.game->tick();
+        (void)packets(*bob);
+        require(!given(*bob), "a spectator gets nothing");
+        command(1, "tp 8.5 345.5 8.5");
+        f.game->tick();
+        (void)packets(*alice);
+        require(given(*alice), "y 345.5: in range");
+        command(1, "tp 8.5 346.5 8.5");
+        f.game->tick();
+        (void)packets(*alice);
+        require(!given(*alice), "y 346.5: out of range");
+    });
+
     suite.run("status effects are saved with the players", [] {
         const auto dir = temporary_directory();
         auto config = offline_config();
@@ -3845,13 +3959,14 @@ int main() {
         // and fence gates', the honey block's, the daylight detector's, the
         // note block's, the four rails', the ten coral fans', the
         // dispenser's and dropper's, the furnace's, smoker's and blast
-        // furnace's, the crafter's, the brewing stand's and the lectern's; but wheat's,
+        // furnace's, the crafter's, the brewing stand's, the lectern's and the
+        // beacon's (whose table copies components, so it was never used); but wheat's,
         // which its rules use. The 49
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 926, 887, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 918, 879, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 925, 887, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 917, 879, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

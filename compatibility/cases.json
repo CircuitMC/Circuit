@@ -834,6 +834,28 @@
       "description": "4 falls in survival with positions set directly: 5.5 blocks landing apart, 6.3 landing 0.5 blocks down, 9 landing 0.416 down as a client falling from rest lands, 4.4 landing 0.4 down; 1.21.8 counts the landing move and rounds down, 1.21.4 leaves it out and rounds up; Circuit and both official servers give the same health"
     },
     {
+      "id": "client/beacon",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/beacon.js",
+      "status": "passing",
+      "description": "35 steps with two players at a beacon on an iron pyramid, each step a moment after a cycle: the beacon set on one layer (its block entity data, then the ambient and activate sounds), its window (type 9, title container.beacon, the levels and both powers as properties), cobblestone refused by the payment slot, two iron ingots shift-clicked into the main inventory, one into the payment slot and back, powers chosen with a payment at one level (strength, speed and regeneration, speed twice, haste) and at four (haste and regeneration, speed twice), the effects each cycle gives (ambient, 9 seconds and 2 per level, the secondary and the stronger primary at four levels) to the player standing by and to the second player only within range (23 and then 19 blocks away), a corner of the lowest layer gone (three levels), the beam blocked by stone (levels kept, nothing played), passing glass and open again, and the pyramid gone (the deactivate sound); effect removals of one tick sorted; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/beacon2",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/beacon2.js",
+      "status": "passing",
+      "description": "15 steps with two players at a one-level beacon, each step a moment after a cycle: a payment left in the window's slot thrown out when the window closes (an item entity, not back in the inventory), strength chosen, the second player as a spectator 4 blocks away getting no powers (but the sounds), in creative mode getting them, flying above the beacon at y 330 and 345.5 getting them and at 346.5 and 350 not, cleared, a beacon without a pyramid set (no sounds at its cycles) and removed (the deactivate sound), and a named beacon placed from a creative slot and opened (its name as the window's title); Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/join_message",
       "kind": "black_box",
       "versions": [

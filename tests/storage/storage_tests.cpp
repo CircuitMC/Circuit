@@ -280,6 +280,13 @@ int main() {
             circuit::gameplay::BlockEntity chest{circuit::gameplay::BlockType::chest, 97, std::vector<circuit::contracts::ItemStack>(27), 0};
             chest.viewers = {{0, 77}, {0xFFFFFFFFFFFFFFFFULL, 1}};
             bes.push_back({{29997, 0, 29999}, chest});
+            // A beacon's levels, powers and beam.
+            circuit::gameplay::BlockEntity beacon{circuit::gameplay::BlockType::beacon, 96, {}, 0};
+            beacon.levels = 4;
+            beacon.primary = 1;
+            beacon.secondary = 10;
+            beacon.beam = true;
+            bes.push_back({{29996, 0, 29999}, beacon});
             std::ranges::sort(bes, {}, &std::pair<circuit::contracts::BlockPos, circuit::gameplay::BlockEntity>::first);
         }
         // A player's open crafting table, stonecutter and smithing table.
@@ -295,6 +302,7 @@ int main() {
             p.grind[0] = {circuit::gameplay::items::iron_pickaxe, 1, 30};
             p.loom[1] = {circuit::gameplay::items::stone, 3};
             p.loom_pattern = 5;
+            p.beacon[0] = {circuit::gameplay::items::iron_ingot, 1};
             p.anvil[0] = named(circuit::gameplay::items::stone, 2, "Rock");
             p.anvil[2] = {circuit::gameplay::items::iron_pickaxe, 1, 3};
             p.anvil_name = "Rock \xE2\x9B\x8F";

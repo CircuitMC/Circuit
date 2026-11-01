@@ -100,7 +100,7 @@ Tool effective_tool(BlockState s, const GameData* data) noexcept {
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::daylight_detector:
     case BlockType::note_block: case BlockType::rail: case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter:
     case BlockType::brewing_stand: case BlockType::lectern: case BlockType::barrel: case BlockType::composter:
-    case BlockType::ender_chest: case BlockType::shulker_box: case BlockType::chiseled_bookshelf: {
+    case BlockType::ender_chest: case BlockType::shulker_box: case BlockType::chiseled_bookshelf: case BlockType::beacon: {
         const auto info = detail::modeled_info(s);
         switch (info ? info->tool : registry::Tool::none) {
         case registry::Tool::pickaxe: return Tool::pickaxe;
@@ -124,7 +124,7 @@ int required_tier(BlockState s, const GameData* data) noexcept {
     case BlockType::obsidian: return 4;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::dispenser: case BlockType::furnace:
     case BlockType::crafter: case BlockType::brewing_stand: case BlockType::lectern: case BlockType::barrel: case BlockType::composter:
-    case BlockType::ender_chest: case BlockType::shulker_box: case BlockType::chiseled_bookshelf: {
+    case BlockType::ender_chest: case BlockType::shulker_box: case BlockType::chiseled_bookshelf: case BlockType::beacon: {
         const auto info = detail::modeled_info(s);
         return info ? info->tier : 0;
     }
@@ -150,7 +150,7 @@ float hardness(BlockState s) noexcept {
     case BlockType::note_block: case BlockType::rail: case BlockType::coral_fan: case BlockType::coral_wall_fan:
     case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter: case BlockType::brewing_stand: case BlockType::lectern:
     case BlockType::barrel: case BlockType::composter: case BlockType::ender_chest: case BlockType::shulker_box:
-    case BlockType::chiseled_bookshelf: {
+    case BlockType::chiseled_bookshelf: case BlockType::beacon: {
         const auto info = detail::modeled_info(s);
         return info ? info->hardness : -1.0f;
     }

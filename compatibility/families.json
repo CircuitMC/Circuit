@@ -2620,8 +2620,23 @@
           ]
         },
         {
+          "id": "beacons",
+          "name": "Beacons",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Beacons count their pyramids of the beacon_base_blocks tag and look up their beams every 80 game ticks, give the powers their window chose (paid with an item of the beacon_payment_items tag, which closing the window throws out) to the players but spectators in range (up by the world's height), and play their activate, ambient, deactivate (also when removed) and power_select sounds; a 35-step scenario with two players and a 15-step scenario of payments left in the window, spectators, players far above, a beacon without levels removed and a named beacon give the same windows, properties, effects, sounds, item entities and block entity data as both official servers",
+          "deviations": [
+            "the beam is looked up whole at each cycle; how the official servers follow a beam changing far up between cycles was not recorded"
+          ],
+          "cases": [
+            "client/beacon",
+            "client/beacon2"
+          ]
+        },
+        {
           "id": "other_menus",
-          "name": "Beacons, merchants and mount inventories",
+          "name": "Merchants and mount inventories",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"

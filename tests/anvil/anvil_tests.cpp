@@ -6,6 +6,7 @@
 // sequence worlds, for loading them in the game.
 #include "../sim/scenarios.hpp"
 #include "../support/check.hpp"
+#include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
@@ -432,23 +433,23 @@ int main() {
     });
 
     suite.run("blocks with block entities that players place export their official defaults", [&] {
-        // A beacon, a bee nest and a jukebox placed on stone: each keeps an
-        // empty block entity, written out as its type's defaults and read back
-        // as saved data.
+        // A bee nest and a jukebox placed on stone: each keeps an empty block
+        // entity, written out as its type's defaults and read back as saved
+        // data.
         namespace registry = circuit::gameplay::registry;
         Engine engine(bundle(), 5);
         Admissions admit;
         const circuit::contracts::PlayerKey alex{1, 2};
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
         std::vector<CommandBody> commands;
-        for (const auto& [x, item] : {std::pair{1, "minecraft:beacon"}, std::pair{3, "minecraft:bee_nest"}, std::pair{5, "minecraft:jukebox"}}) {
+        for (const auto& [x, item] : {std::pair{3, "minecraft:bee_nest"}, std::pair{5, "minecraft:jukebox"}}) {
             commands.push_back(place({x, 0, 3}, blocks::stone()));
             commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {circuit::gameplay::items::by_name(item).value(), 1, 0}});
             commands.push_back(circuit::contracts::PlayerUse{alex, 36, {x, 0, 3}, Direction::up, Direction::north, Direction::north, false, false, 3, 3});
         }
         engine.advance(admit(std::move(commands)));
         const auto state = engine.dump();
-        for (const int x : {1, 3, 5}) {
+        for (const int x : {3, 5}) {
             const auto* be = block_entity_at(state, {x, 1, 3});
             require(be && be->kind == BlockType::other && be->saved.bytes().empty(), std::format("an empty block entity at {}", x));
         }
@@ -456,7 +457,7 @@ int main() {
         require(anvil::export_world(state, bundle(), target, {.level_name = "placed", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
         require(back.has_value(), back ? "" : back.error());
-        for (const auto& [x, saved] : {std::pair{1, "beacon"}, std::pair{3, "bee_nest"}, std::pair{5, "jukebox"}}) {
+        for (const auto& [x, saved] : {std::pair{3, "bee_nest"}, std::pair{5, "jukebox"}}) {
             const auto* be = block_entity_at(back->state, {x, 1, 3});
             require(be && be->kind == BlockType::other, std::format("{}: imported", saved));
             circuit::protocol::Reader r(be->saved.bytes());
@@ -571,6 +572,33 @@ int main() {
                 "its book and page");
         const auto* empty = block_entity_at(back->state, {4, 0, 2});
         require(empty && empty->kind == BlockType::lectern && empty->slots.empty() && empty->cook_time == 0, "the other without");
+    });
+
+    suite.run("beacons round-trip through Anvil with their levels and powers", [&] {
+        namespace fx = circuit::gameplay::effects;
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 1, 2}, blocks::beacon()), place({5, 1, 2}, blocks::beacon())}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (be.kind == BlockType::beacon && pos == BlockPos{2, 1, 2}) {
+                    be.levels = 3;
+                    be.primary = static_cast<std::uint8_t>(*fx::id("speed") + 1);
+                    be.secondary = static_cast<std::uint8_t>(*fx::id("regeneration") + 1);
+                    be.beam = true;
+                }
+        const auto target = root / "beacon";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "beacon", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto* be = block_entity_at(back->state, {2, 1, 2});
+        require(state_at(back->state, {2, 1, 2}) == blocks::beacon() && be && be->kind == BlockType::beacon && be->levels == 3
+                    && be->primary == *fx::id("speed") + 1 && be->secondary == *fx::id("regeneration") + 1 && !be->beam,
+                "its levels and powers (its beam is found at its next cycle)");
+        const auto* plain = block_entity_at(back->state, {5, 1, 2});
+        require(plain && plain->kind == BlockType::beacon && plain->levels == 0 && plain->primary == 0 && plain->secondary == 0, "the other without");
     });
 
     suite.run("trapped chests round-trip through Anvil as trapped chests with their contents", [&] {
