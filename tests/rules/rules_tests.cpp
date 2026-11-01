@@ -9,6 +9,7 @@
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/experience.hpp>
@@ -6537,6 +6538,86 @@ int main() {
         require(again == 1 && e.levels.front().duration == 1800, "at 1800");
         e = {0, {level(0, 600)}};
         require(!fx::tick(e).again, "not when given for 600");
+    });
+
+    suite.run("effects modify players' attributes as both official servers send them", [] {
+        // circuit-clienttest/attributes.js and attributes-order.js, both versions identical.
+        namespace at = circuit::gameplay::attributes;
+        namespace fx = circuit::gameplay::effects;
+        require(at::by_name("minecraft:movement_speed") == at::Attribute::movement_speed && at::by_name("luck") == at::Attribute::luck
+                    && !at::by_name("armor") && at::name(at::Attribute::safe_fall_distance) == "safe_fall_distance",
+                "names");
+        // The values as the official servers print them (shortest round trip).
+        const auto text = [](double v) { return std::format("{}", v); };
+        require(text(at::base(at::Attribute::movement_speed)) == "0.10000000149011612" && at::base(at::Attribute::attack_speed) == 4.0
+                    && at::base(at::Attribute::block_interaction_range) == 4.5 && at::base(at::Attribute::entity_interaction_range) == 3.0
+                    && at::base(at::Attribute::max_health) == 20.0 && at::base(at::Attribute::safe_fall_distance) == 3.0,
+                "a player's bases");
+        require(!at::synced(at::Attribute::attack_damage) && at::synced(at::Attribute::max_health), "attack damage is not sent");
+        const auto modifier = [&](std::string_view effect, std::int32_t amplifier) {
+            const auto m = at::effect_modifier(*fx::id(effect), amplifier);
+            return m ? std::format("{} {} {} {}", at::name(m->attribute), m->modifier.id, text(m->modifier.amount),
+                                   static_cast<int>(m->modifier.operation))
+                     : std::string("none");
+        };
+        require(modifier("speed", 0) == "movement_speed effect.speed 0.20000000298023224 2" && modifier("speed", 1) == "movement_speed effect.speed 0.4000000059604645 2"
+                    && modifier("speed", 2) == "movement_speed effect.speed 0.6000000089406967 2"
+                    && modifier("speed", 3) == "movement_speed effect.speed 0.800000011920929 2",
+                "speed");
+        require(modifier("slowness", 0) == "movement_speed effect.slowness -0.15000000596046448 2"
+                    && modifier("slowness", 2) == "movement_speed effect.slowness -0.45000001788139343 2",
+                "slowness");
+        require(modifier("haste", 0) == "attack_speed effect.haste 0.10000000149011612 2" && modifier("haste", 2) == "attack_speed effect.haste 0.30000000447034836 2"
+                    && modifier("mining_fatigue", 0) == "attack_speed effect.mining_fatigue -0.10000000149011612 2"
+                    && modifier("mining_fatigue", 2) == "attack_speed effect.mining_fatigue -0.30000000447034836 2",
+                "haste and mining fatigue");
+        require(modifier("jump_boost", 1) == "safe_fall_distance effect.jump_boost 2 0" && modifier("health_boost", 2) == "max_health effect.health_boost 12 0"
+                    && modifier("absorption", 1) == "max_absorption effect.absorption 8 0" && modifier("luck", 2) == "luck effect.luck 3 0"
+                    && modifier("unluck", 0) == "luck effect.unluck -1 0",
+                "the added values");
+        require(modifier("strength", 0).starts_with("attack_damage") && modifier("weakness", 0).starts_with("attack_damage"), "strength and weakness");
+        for (const auto* none : {"regeneration", "invisibility", "levitation", "slow_falling", "conduit_power", "instant_health", "infested"})
+            require(modifier(none, 0) == "none", std::format("{} has no modifier", none));
+        require(text(at::sprinting.amount) == "0.30000001192092896" && at::creative_block_range.amount == 0.5 && at::creative_entity_range.amount == 2.0,
+                "sprinting and creative mode");
+        // Values: added, then multiples of the base, then of the total; within the range.
+        at::Instance speed{at::Attribute::movement_speed, {at::sprinting, at::effect_modifier(0, 1)->modifier}};
+        require(std::abs(at::value(speed) - static_cast<double>(0.1f) * (1.0 + static_cast<double>(0.3f)) * (1.0 + 2.0 * static_cast<double>(0.2f))) < 1e-15,
+                "multiples of the total");
+        at::Instance health{at::Attribute::max_health, {at::effect_modifier(20, 1)->modifier}};
+        require(at::value(health) == 28.0, "health boost");
+        at::Instance luck{at::Attribute::luck, {{"a", 2.0, at::Operation::add_value}, {"b", 0.5, at::Operation::add_multiplied_base},
+                                               {"c", 0.5, at::Operation::add_multiplied_base}}};
+        require(at::value(luck) == 4.0, "multiples of the base add up");
+        at::Instance slow{at::Attribute::movement_speed, {{"x", -2.0, at::Operation::add_multiplied_total}}};
+        require(at::value(slow) == 0.0, "within the range");
+    });
+
+    suite.run("haste and mining fatigue change digging speed", [] {
+        // The documented values (minecraft.wiki "Haste", "Mining Fatigue"), recorded with
+        // circuit-clienttest/dig-effects.js (both versions identical) for haste 0 and 1 and
+        // mining fatigue 0: oak planks by hand (60 ticks). Conduit power counts as haste in
+        // the server (server_tests).
+        using circuit::gameplay::DigEffects;
+        const auto near = [](float a, float b) { return std::abs(a - b) <= 1e-5f * std::abs(b); };
+        const auto planks = registry_block("oak_planks");
+        const auto progress = [&](DigEffects e) { return destroy_progress(planks, {}, true, false, nullptr, e); };
+        require(near(progress({}), 1.0f / 60.0f), "no effect");
+        require(near(progress({1, -1}), 1.4f / 60.0f) && near(progress({0, -1}), 1.2f / 60.0f), "haste");
+        require(near(progress({-1, 0}), 0.3f / 60.0f) && near(progress({-1, 1}), 0.09f / 60.0f) && near(progress({-1, 2}), 0.0027f / 60.0f)
+                    && near(progress({-1, 3}), 8.1e-4f / 60.0f) && near(progress({-1, 9}), 8.1e-4f / 60.0f),
+                "mining fatigue");
+        // The server breaks a block finished with 70% dug at once, else when it counts the whole.
+        const auto at_once = [&](DigEffects e, float ticks) { return progress(e) * (ticks + 1.0f) >= 0.7f; };
+        const auto whole = [&](DigEffects e) {
+            int t = 0;
+            while (progress(e) * (static_cast<float>(t) + 1.0f) < 1.0f) ++t;
+            return t;
+        };
+        require(!at_once({}, 34) && at_once({}, 50) && !at_once({}, 38), "without effects: later after 34 and 38 ticks, at once after 50");
+        require(at_once({1, -1}, 34) && at_once({0, -1}, 38), "haste: at once");
+        require(!at_once({-1, 0}, 50) && whole({-1, 0}) / 20.0 > 9.75 && whole({-1, 0}) / 20.0 < 10.25, "mining fatigue: about 10 s");
+        require(!at_once({1, 0}, 50) && whole({1, 0}) / 20.0 > 6.75 && whole({1, 0}) / 20.0 < 7.25, "both: about 7 s");
     });
 
     return suite.finish();

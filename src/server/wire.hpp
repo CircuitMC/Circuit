@@ -2,6 +2,7 @@
 #pragma once
 #include "recipe_book.hpp"
 #include "registries.hpp"
+#include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/maps.hpp>
 #include <circuit/protocol/codec.hpp>
@@ -317,11 +318,16 @@ public:
     Bytes update_mob_effect(std::int32_t entity, std::int32_t effect, std::int32_t amplifier, std::int32_t duration,
                             std::uint8_t flags) const;
     Bytes remove_mob_effect(std::int32_t entity, std::int32_t effect) const;
-    // The data of a living entity that its status effects decide, each entry
-    // when given: its shared flags (index 0), its effect particles (10) and
-    // whether they are ambient (11).
+    // The data of a player that status effects decide, each entry when
+    // given: its shared flags (index 0), its effect particles (10), whether
+    // they are ambient (11) and its absorption (15).
     Bytes effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
-                          const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient) const;
+                          const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
+                          std::optional<float> absorption = std::nullopt) const;
+    // A player's attributes (client/attributes), in the order given: each
+    // with a player's base and its modifiers; those the official servers
+    // keep to themselves are left out.
+    Bytes update_attributes(std::int32_t entity, std::span<const gameplay::attributes::Instance> attributes) const;
     // The ghost of a recipe that could not be placed, shown in a window's grid.
     Bytes place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const;
     // What item components may refer to on this protocol.

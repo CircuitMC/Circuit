@@ -776,7 +776,62 @@
       ],
       "location": "external: circuit-clienttest/effects5.js",
       "status": "passing",
-      "description": "23 steps: a level underneath that runs out before the one above it ends (shown with no time left, then removed at once), the same under an infinite level across a rejoin (the infinite level kept) and over a third level (removed with it), an effect sent again at 1800 ticks left, the entity data of effects given and ending 25 ms or more after their packets, and levitation in survival (not kicked for flying, and where the player lands; the health after the fall is left out, a deviation); Circuit and both official servers give the same"
+      "description": "23 steps: a level underneath that runs out before the one above it ends (shown with no time left, then removed at once), the same under an infinite level across a rejoin (the infinite level kept) and over a third level (removed with it), an effect sent again at 1800 ticks left, the entity data of effects given and ending 25 ms or more after their packets, and levitation in survival (not kicked for flying, and where the player lands; the health after the fall is left out: the fall hurts as on both official servers since C6.1b, the regeneration after it on 1.21.4 is a deviation); Circuit and both official servers give the same"
+    },
+    {
+      "id": "client/attributes",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/attributes.js",
+      "status": "passing",
+      "description": "127 steps with two players: the attributes on joining and when the other appears, each of the 39 effects at amplifiers 0 and 2 and cleared (instant health and damage, poison, wither, hunger, levitation and saturation at 0 for a second), health boost and absorption with the absorption, two modifiers on one attribute in either order, several attributes cleared at once, sprinting alone and with speed, a rejoin and a respawn with effects; attribute ids read raw and each packet's attributes sorted; Circuit and both official servers give the same, but for the ids, which differ between the versions"
+    },
+    {
+      "id": "client/attribute_rules",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/attributes-order.js",
+      "status": "passing",
+      "description": "35 steps: the order of an attribute's modifiers as levels change and come back; the attributes when an effect is lengthened, refused, put underneath, given with hidden particles, sent again at 600 ticks left and ending; health boost with the health regenerated to 24, kept across a rejoin and cut to 20; absorption given, refused, lengthened, kept across a rejoin and taken first by a fall (1 point left of 8); falls of 5.5 blocks (3 points on 1.21.4, 2 on 1.21.8) and of 10 with jump boost; Circuit and both official servers give the same"
+    },
+    {
+      "id": "client/attribute_join",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/attributes-join.js",
+      "status": "passing",
+      "description": "12 steps: where the attribute packets come for the player and for a viewer on a first join, game mode changes, rejoins in survival, with effects and in creative, and respawns in survival and creative (before or after the health, twice for a viewer, creative mode's reach after); Circuit and both official servers give the same"
+    },
+    {
+      "id": "client/dig_effects",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/dig-effects.js",
+      "status": "passing",
+      "description": "8 digs of oak planks by hand with raw packets, finished early: without effects, with haste 0 and 1, conduit power 1, mining fatigue 0, and haste with fatigue; broken at once or later, and when; Circuit and both official servers give the same"
+    },
+    {
+      "id": "client/falls",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/falls.js",
+      "status": "passing",
+      "description": "4 falls in survival with positions set directly: 5.5 blocks landing apart, 6.3 landing 0.5 blocks down, 9 landing 0.416 down as a client falling from rest lands, 4.4 landing 0.4 down; 1.21.8 counts the landing move and rounds down, 1.21.4 leaves it out and rounds up; Circuit and both official servers give the same health"
     },
     {
       "id": "client/join_message",

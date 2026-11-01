@@ -19,7 +19,7 @@
     "effect": {
       "impl": "partial",
       "evidence": "compared",
-      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers; no consequence yet",
+      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, and haste's, conduit power's and mining fatigue's in digging; the effects' other consequences are not modeled yet",
       "cases": [
         "client/effect_particles"
       ]
@@ -6485,6 +6485,81 @@
         "cases": [
           "client/recipes"
         ]
+      }
+    },
+    "attribute": {
+      "movement_speed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes"
+        ],
+        "note": "Sent with sprinting's and the effects' modifiers; only the client uses it"
+      },
+      "attack_speed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes"
+        ],
+        "note": "Sent with haste's and mining fatigue's modifiers; only the client uses it"
+      },
+      "block_interaction_range": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes"
+        ],
+        "note": "Sent with creative mode's modifier; the server's reach checks use their own distances"
+      },
+      "entity_interaction_range": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes"
+        ],
+        "note": "Sent with creative mode's modifier; there are no attacks"
+      },
+      "luck": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes"
+        ],
+        "note": "Sent with luck's and bad luck's modifiers; nothing rolls with it"
+      },
+      "max_health": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes",
+          "client/attribute_rules"
+        ],
+        "note": "Sent with health boost's modifier; regeneration, rejoins and the health cut when it falls use it"
+      },
+      "max_absorption": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes",
+          "client/attribute_rules"
+        ],
+        "note": "Sent with absorption's modifier; absorption is cut to it"
+      },
+      "safe_fall_distance": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/attributes",
+          "client/attribute_rules",
+          "client/falls"
+        ],
+        "note": "Sent with jump boost's modifier; fall damage uses it"
+      },
+      "attack_damage": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Strength's and weakness's modifiers are kept; the official servers do not send it, and there are no attacks"
       }
     }
   }

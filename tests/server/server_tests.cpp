@@ -200,6 +200,10 @@ struct GameFixture {
     explicit GameFixture(ServerConfig c = offline_config()) : config(std::move(c)) {
         game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, data);
     }
+    // On another target version ("1.21.4").
+    GameFixture(std::string_view v, ServerConfig c) : version(v), config(std::move(c)) {
+        game = std::make_unique<server::Game>(config, bundle, wire, *protocol::ContentTables::for_protocol(wire.protocol()), mapping, data);
+    }
     // With the data a server loaded from data packs.
     GameFixture(ServerConfig c, server::ServerData d) : data(std::move(d)), wire(772, data.components), config(std::move(c)) {
         game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, data);
@@ -223,10 +227,11 @@ struct GameFixture {
         return server::intent::UseOn{0, pos, face, 0.5f, 1.0f, 0.5f, false, seq};
     }
 
-    const contracts::VersionBundle& bundle = **contracts::BundleRegistry::select_for_simulation("java-1.21.8");
-    const evidence::ContentMapping& mapping = *evidence::ContentMapping::for_game_version("1.21.8");
+    std::string version{"1.21.8"};
+    const contracts::VersionBundle& bundle = **contracts::BundleRegistry::select_for_simulation(std::format("java-{}", version));
+    const evidence::ContentMapping& mapping = *evidence::ContentMapping::for_game_version(version);
     server::ServerData data = server::load_server_data(bundle, {}).value();
-    server::Wire wire{772, data.components};
+    server::Wire wire{version == "1.21.4" ? 769 : 772, data.components};
     ServerConfig config;
     std::unique_ptr<server::Game> game;
 };
@@ -2909,6 +2914,350 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
+    suite.run("players' attributes go to them and to those who see them as both official servers send them", [] {
+        // circuit-clienttest/attributes.js, attributes-order.js and
+        // attributes-join.js: both versions alike but for the attribute ids
+        // (here 1.21.8's) and fall damage's rounding; the official servers
+        // list a packet's attributes in an order that varies from run to
+        // run, here in id order.
+        using I = server::Intent;
+        GameFixture f;
+        // Since the last call, as text: attribute packets "attributes
+        // <entity> <id> <base> [<modifier> <amount> <operation>]... | ...",
+        // "absorption <entity> <amount>" (entity data 15), "health
+        // <health>" and "spawn <entity>".
+        std::map<std::uint64_t, std::size_t> seen;
+        const auto packets = [&](Recorder& r) {
+            const auto attributes = f.wire.ids().id(State::play, Bound::clientbound, "update_attributes");
+            const auto data = f.wire.ids().id(State::play, Bound::clientbound, "set_entity_data");
+            const auto health = f.wire.ids().id(State::play, Bound::clientbound, "set_health");
+            const auto spawn = f.wire.ids().id(State::play, Bound::clientbound, "add_entity");
+            std::vector<std::string> out;
+            std::lock_guard lock(r.mutex);
+            for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                auto pk = protocol::open_packet(r.packets[at]);
+                if (!pk) continue;
+                auto& in = pk->fields;
+                if (pk->id == attributes) {
+                    std::string text = std::format("attributes {}", in.varint().value());
+                    const auto n = in.varint().value();
+                    for (std::int32_t k = 0; k < n; ++k) {
+                        const auto id = in.varint().value();
+                        text += std::format("{} {} {}", k ? " |" : "", id, in.f64().value());
+                        const auto modifiers = in.varint().value();
+                        for (std::int32_t m = 0; m < modifiers; ++m) {
+                            const auto name = in.string(32767).value();
+                            const auto amount = in.f64().value();
+                            text += std::format(" {} {} {}", name, amount, in.u8().value());
+                        }
+                    }
+                    out.push_back(std::move(text));
+                } else if (pk->id == data) {
+                    // The effects' entries are passed over (shared flags, particles, ambience).
+                    const auto entity = in.varint().value();
+                    for (auto index = in.u8().value(); index != 0xFF; index = in.u8().value()) {
+                        const auto type = in.varint().value();
+                        if (type == 0) (void)in.u8();
+                        else if (type == 8) (void)in.boolean();
+                        else if (type == 3) out.push_back(std::format("absorption {} {}", entity, in.f32().value()));
+                        else if (type == 18) {
+                            const auto count = in.varint().value();
+                            for (std::int32_t k = 0; k < count; ++k)
+                                if (in.varint().value() == 20) (void)in.i32();
+                        }
+                    }
+                } else if (pk->id == health) {
+                    out.push_back(std::format("health {}", in.f32().value()));
+                } else if (pk->id == spawn) {
+                    out.push_back(std::format("spawn {}", in.varint().value()));
+                }
+            }
+            return out;
+        };
+        const auto only = [](const std::string& line) { return std::vector<std::string>{line}; };
+        const auto command = [&](std::string text) {
+            f.game->submit(1, I{server::intent::Command{std::move(text)}});
+            f.game->tick();
+        };
+        const auto then = [&] { f.game->tick(); };
+        // A first join: after the health, the movement speed and both
+        // reaches, with creative mode's modifiers (players join in creative).
+        auto alice = f.join(1, "Alice");
+        auto a = packets(*alice);
+        const auto first = std::ranges::find_if(a, [](const auto& t) { return t.starts_with("attributes "); });
+        require(first != a.end() && std::ranges::find(a, std::string("health 20")) < first, "the attributes after the health");
+        auto entity = first->substr(11, first->find(' ', 11) - 11);
+        const auto creative = [&](const std::string& e) {
+            return std::format("attributes {} 6 4.5 minecraft:creative_mode_block_range 0.5 0 | 10 3 minecraft:creative_mode_entity_range 2 0 | "
+                               "22 0.10000000149011612", e);
+        };
+        require(*first == creative(entity), "a first join's: " + *first);
+        // Bob sees Alice appear with her attributes; Alice sees him with his
+        // once (the first join's attributes, after he appeared).
+        auto bob = f.join(2, "Bob");
+        for (int i = 0; i < 3; ++i) then();
+        auto b = packets(*bob);
+        const auto spawned = std::ranges::find(b, std::format("spawn {}", entity));
+        require(spawned != b.end() && spawned + 1 != b.end() && *(spawned + 1) == creative(entity), "bob sees alice's attributes");
+        a = packets(*alice);
+        require(a.size() == 2 && a[0].starts_with("spawn ") && a[1] == creative(a[0].substr(6)), "alice sees bob's once");
+        // Game modes: creative's reach goes, with the next tick's entity data.
+        command("gamemode survival");
+        require(packets(*alice).empty(), "not in the command's tick");
+        then();
+        const auto survival = std::format("attributes {} 6 4.5 | 10 3", entity);
+        require(packets(*alice) == only(survival) && packets(*bob) == only(survival), "creative mode's reach removed");
+        // Effects: a modifier added; added again (at the end) when the level
+        // is lengthened or changes; nothing when refused.
+        const auto speed = [&](std::string mods) { return std::format("attributes {} 22 0.10000000149011612{}", entity, mods); };
+        const auto speed1 = std::string(" minecraft:effect.speed 0.4000000059604645 2"), sprint = std::string(" minecraft:sprinting 0.30000001192092896 2");
+        command("effect give Alice minecraft:speed 30 1");
+        then();
+        require(packets(*alice) == only(speed(speed1)) && packets(*bob) == only(speed(speed1)), "speed's modifier");
+        command("effect give Alice minecraft:speed 40 1");
+        then();
+        require(packets(*alice) == only(speed(speed1)), "lengthened: sent again");
+        command("effect give Alice minecraft:speed 10 1");
+        then();
+        require(packets(*alice).empty(), "refused: nothing");
+        f.game->submit(1, I{server::intent::Sprint{true}});
+        then();
+        then();
+        require(packets(*alice) == only(speed(speed1 + sprint)), "sprinting");
+        command("effect give Alice minecraft:speed 30 2");
+        then();
+        require(packets(*alice) == only(speed(sprint + " minecraft:effect.speed 0.6000000089406967 2")), "a stronger speed moves to the end");
+        f.game->submit(1, I{server::intent::Sprint{false}});
+        then();
+        then();
+        require(packets(*alice) == only(speed(" minecraft:effect.speed 0.6000000089406967 2")), "sprinting stopped");
+        command("effect clear Alice");
+        then();
+        require(packets(*alice) == only(speed("")), "cleared");
+        b = packets(*bob);
+        require(b.size() == 5 && b.back() == speed(""), "bob saw each change since: lengthened, sprinting, stronger, not sprinting, cleared");
+        // Health boost: the health regenerates to the boosted maximum.
+        command("effect give Alice minecraft:health_boost 120 0");
+        then();
+        require(packets(*alice) == only(std::format("attributes {} 19 20 minecraft:effect.health_boost 4 0", entity)), "health boost");
+        for (int i = 0; i < 400; ++i) then();
+        a = packets(*alice);
+        require(!a.empty() && a.back() == "health 24", "regenerated to 24: " + (a.empty() ? "" : a.back()));
+        // A rejoin: every attribute before the health (24 kept); those who
+        // see the player get them twice.
+        f.game->leave(1);
+        then();
+        (void)packets(*bob);
+        alice = f.join(1, "Alice");
+        seen[1] = 0;
+        for (int i = 0; i < 3; ++i) then();
+        a = packets(*alice);
+        const auto again = std::ranges::find_if(a, [](const auto& t) { return t.starts_with("attributes "); });
+        require(again != a.end(), "attributes on rejoining");
+        entity = again->substr(11, again->find(' ', 11) - 11);
+        const auto all = std::format("attributes {} 6 4.5 | 10 3 | 19 20 minecraft:effect.health_boost 4 0 | 22 0.10000000149011612", entity);
+        require(*again == all && again + 1 != a.end() && *(again + 1) == "health 24", "all of them, then the health: " + *again);
+        b = packets(*bob);
+        require(std::ranges::count(b, all) == 2 && std::ranges::find(b, std::format("spawn {}", entity)) < std::ranges::find(b, all),
+                "bob gets them twice after alice appears");
+        // Clearing the boost cuts the health, after the attributes.
+        command("effect clear Alice minecraft:health_boost");
+        then();
+        require(packets(*alice) == std::vector<std::string>{std::format("attributes {} 19 20", entity), "health 20"}, "the health cut to 20");
+        // Absorption: given with its maximum; a fall takes it first.
+        command("effect give Alice minecraft:absorption 60 1");
+        then();
+        const auto absorbing = std::format("attributes {} 18 0 minecraft:effect.absorption 8 0", entity);
+        require(packets(*alice) == std::vector<std::string>{std::format("absorption {} 8", entity), absorbing}, "absorption 8");
+        f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+        const auto move = [&](double y, bool ground) { f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, y, 0.5}, std::nullopt, ground}}); };
+        const auto fall = [&](double height) {
+            move(-60.0 + std::min(height, 9.0), false);
+            if (height > 9.0) move(-60.0 + height, false);
+            for (double y = -60.0 + height - 1.0; y > -60.0; y -= 1.0) move(y, false);
+            move(-60.0, false);
+            move(-60.0, true);
+            then();
+            then();
+        };
+        fall(10.0);
+        require(packets(*alice) == only(std::format("absorption {} 1", entity)), "seven points: absorption 1 left, the health untouched");
+        command("effect give Alice minecraft:absorption 80 1");
+        then();
+        require(packets(*alice) == std::vector<std::string>{std::format("absorption {} 8", entity), absorbing}, "lengthened: back to 8");
+        command("effect clear Alice minecraft:absorption");
+        then();
+        require(packets(*alice) == std::vector<std::string>{std::format("absorption {} 0", entity), std::format("attributes {} 18 0", entity)},
+                "cleared");
+        // Falls: beyond the safe fall distance, rounded down on 1.21.8; jump
+        // boost adds to it. (Each after the hurt cooldown's first half.)
+        for (int i = 0; i < 20; ++i) then();
+        fall(5.5);
+        require(packets(*alice) == only("health 18"), "5.5 blocks: 2");
+        command("effect give Alice minecraft:jump_boost 60 1");
+        then();
+        require(packets(*alice) == only(std::format("attributes {} 24 3 minecraft:effect.jump_boost 2 0", entity)), "jump boost");
+        for (int i = 0; i < 20; ++i) then();
+        fall(10.0);
+        require(packets(*alice) == only("health 13"), "10 blocks with jump boost 1: 5");
+        // A respawn: every attribute, without modifiers, before the health;
+        // bob appears to alice again, and bob sees her with them twice.
+        command("kill Alice");
+        (void)packets(*bob);
+        f.game->submit(1, I{server::intent::ClientCommand{0}});
+        for (int i = 0; i < 3; ++i) then();
+        a = packets(*alice);
+        const auto bare = std::format("attributes {} 6 4.5 | 10 3 | 18 0 | 19 20 | 22 0.10000000149011612 | 24 3", entity);
+        const auto respawned = std::ranges::find(a, bare);
+        require(respawned != a.end() && respawned + 1 != a.end() && *(respawned + 1) == "health 20", "respawned: all of them, then the health");
+        require(std::ranges::any_of(a, [](const auto& t) { return t.starts_with("spawn "); }), "bob appears again");
+        b = packets(*bob);
+        require(std::ranges::count(b, bare) == 2, "bob gets them twice");
+        // A creative rejoin with absorption: the absorption, then every
+        // attribute (without creative mode's), the health, then creative
+        // mode's reach; bob sees the absorption and the attributes twice,
+        // then the reach.
+        command("gamemode creative");
+        then();
+        (void)packets(*alice);
+        command("effect give Alice minecraft:absorption 60 1");
+        then();
+        (void)packets(*alice);
+        f.game->leave(1);
+        then();
+        (void)packets(*bob);
+        alice = f.join(1, "Alice");
+        seen[1] = 0;
+        for (int i = 0; i < 3; ++i) then();
+        a = packets(*alice);
+        const auto told = std::ranges::find_if(a, [](const auto& t) { return t.starts_with("absorption "); });
+        require(told != a.end(), "absorption on rejoining");
+        entity = told->substr(11, told->find(' ', 11) - 11);
+        const auto kept = std::format("attributes {} 6 4.5 | 10 3 | 18 0 minecraft:effect.absorption 8 0 | 19 20 | 22 0.10000000149011612 | 24 3", entity);
+        const auto reach = std::format("attributes {} 6 4.5 minecraft:creative_mode_block_range 0.5 0 | 10 3 minecraft:creative_mode_entity_range 2 0", entity);
+        require(*told == std::format("absorption {} 8", entity) && told + 2 < a.end() && *(told + 1) == kept && *(told + 2) == "health 20",
+                "the absorption, every attribute, the health");
+        require(std::ranges::find(told + 3, a.end(), reach) != a.end(), "creative mode's reach after the health");
+        b = packets(*bob);
+        const auto appear = std::ranges::find(b, std::format("spawn {}", entity));
+        require(appear != b.end() && std::vector<std::string>(appear + 1, b.end())
+                    == std::vector<std::string>{std::format("absorption {} 8", entity), kept, std::format("absorption {} 8", entity), kept, reach},
+                "bob: the absorption and the attributes twice, then the reach");
+    });
+
+    suite.run("haste, conduit power and mining fatigue time digging as both official servers do", [] {
+        // circuit-clienttest/dig-effects.js, both versions identical: oak planks by
+        // hand take 60 ticks; a client may finish at 70%.
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Digger");
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+        f.game->submit(1, I{server::intent::Move{std::nullopt, std::nullopt, true}}); // on the ground
+        f.game->tick();
+        std::int32_t seq = 1;
+        // Digs at x 2, z `z`, finished after `ticks`; returns the ticks after finishing until it broke (-1: not within `wait`).
+        const auto dig = [&](std::int32_t z, const std::vector<std::string>& effects, int ticks, int wait) {
+            f.game->submit(1, I{server::intent::Command{std::format("setblock 2 -60 {} minecraft:oak_planks", z)}});
+            f.game->submit(1, I{server::intent::Command{"effect clear Digger"}});
+            for (const auto& e : effects) f.game->submit(1, I{server::intent::Command{"effect give Digger " + e}});
+            f.game->tick();
+            f.game->submit(1, I{server::intent::Dig{0, {2, -60, z}, 1, seq++}});
+            f.game->tick();
+            for (int i = 1; i < ticks; ++i) f.game->tick();
+            f.game->submit(1, I{server::intent::Dig{2, {2, -60, z}, 1, seq++}});
+            for (int i = 1; i <= wait; ++i) {
+                f.game->tick();
+                if (f.at({2, -60, z}) == "minecraft:air") return i;
+            }
+            return -1;
+        };
+        require(dig(-3, {}, 34, 40) > 20, "no effect, finished after 34 ticks: later");
+        require(dig(-2, {}, 50, 5) == 1, "no effect, finished after 50 ticks: at once");
+        require(dig(-1, {"minecraft:haste 60 1"}, 34, 5) == 1, "haste 1: at once");
+        require(dig(1, {"minecraft:haste 60 0"}, 38, 5) == 1, "haste 0: at once");
+        require(dig(2, {"minecraft:conduit_power 60 1"}, 34, 5) == 1, "conduit power 1: at once");
+        const auto fatigued = dig(3, {"minecraft:mining_fatigue 60 0"}, 50, 200);
+        require(fatigued > 140 && fatigued < 160, std::format("mining fatigue 0: about 200 ticks from the start ({} after finishing)", fatigued));
+        const auto both = dig(4, {"minecraft:haste 60 1", "minecraft:mining_fatigue 60 0"}, 50, 150);
+        require(both > 85 && both < 100, std::format("haste 1 and fatigue 0: about 142 ticks from the start ({} after finishing)", both));
+        (void)peer;
+    });
+
+    suite.run("falls count the move that lands on 1.21.8 and are rounded as each version does", [] {
+        // circuit-clienttest/falls.js and attributes-order.js: 1.21.8 counts the
+        // landing move and rounds down, 1.21.4 leaves it out and rounds up.
+        using I = server::Intent;
+        for (const auto& [version, expected] : {std::pair{"1.21.8", std::array{18.0f, 15.0f, 9.0f, 8.0f}}, std::pair{"1.21.4", std::array{17.0f, 14.0f, 8.0f, 7.0f}}}) {
+            GameFixture f(version, offline_config());
+            auto peer = f.join(1, "Faller");
+            // Flying in creative, then survival: the abilities sent stop the flight, so the falls hurt.
+            f.game->submit(1, I{server::intent::Flying{true}});
+            f.game->tick();
+            f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+            f.game->submit(1, I{server::intent::Command{"gamerule naturalRegeneration false"}}); // no healing between the falls
+            f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+            f.game->tick();
+            const auto move = [&](double y, bool ground) { f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, y, 0.5}, std::nullopt, ground}}); };
+            const auto health = [&] {
+                const auto id = f.wire.ids().id(State::play, Bound::clientbound, "set_health");
+                float last = 0.0f;
+                std::lock_guard lock(peer->mutex);
+                for (const auto& bytes : peer->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == id) last = pk->fields.f32().value();
+                return last;
+            };
+            // From `top` up, a block a move down to `last`, then the landing (apart, without height, or from `last`).
+            const auto fall = [&](double top, double last, bool apart) {
+                move(-60.0 + top, false);
+                for (double y = top - 1.0; y > last + 1e-9; y -= 1.0) move(-60.0 + y, false);
+                move(-60.0 + last, false);
+                if (apart) move(-60.0, false);
+                move(-60.0, true);
+                for (int i = 0; i < 25; ++i) f.game->tick(); // past the hurt cooldown's first half
+                return health();
+            };
+            auto h = fall(5.5, 0.5, true);
+            require(h == expected[0], std::format("{}: 5.5 blocks, landing apart: {}", version, h));
+            h = fall(6.3, 0.5, false);
+            require(h == expected[1], std::format("{}: 6.3 blocks, landing 0.5 down: {}", version, h));
+            h = fall(9.0, 0.416, false); // as a client falling from rest lands
+            require(h == expected[2], std::format("{}: 9 blocks, landing 0.416 down: {}", version, h));
+            h = fall(4.4, 0.4, false);
+            require(h == expected[3], std::format("{}: 4.4 blocks, landing 0.4 down: {}", version, h));
+            // The naturalRegeneration rule stopped regeneration; on again, it heals.
+            for (int i = 0; i < 200; ++i) f.game->tick();
+            require(health() == expected[3], std::format("{}: no regeneration while the rule is off", version));
+            f.game->submit(1, I{server::intent::Command{"gamerule naturalRegeneration true"}});
+            for (int i = 0; i < 20; ++i) f.game->tick();
+            require(health() > expected[3], std::format("{}: regeneration with the rule on", version));
+            // The attribute ids are each version's: block reach 6, entity reach 10 or 9, movement speed 22 or 21.
+            const auto attributes = f.wire.ids().id(State::play, Bound::clientbound, "update_attributes");
+            std::lock_guard lock(peer->mutex);
+            bool found = false;
+            const auto want = std::string_view(version) == "1.21.8" ? std::vector<std::int32_t>{6, 10, 22} : std::vector<std::int32_t>{6, 9, 21};
+            for (const auto& bytes : peer->packets) {
+                auto pk = protocol::open_packet(bytes);
+                if (!pk || pk->id != attributes) continue;
+                auto& in = pk->fields;
+                (void)in.varint();
+                const auto n = in.varint().value();
+                std::vector<std::int32_t> ids;
+                for (std::int32_t k = 0; k < n; ++k) {
+                    ids.push_back(in.varint().value());
+                    (void)in.f64();
+                    for (auto m = in.varint().value(); m > 0; --m) {
+                        (void)in.string(32767);
+                        (void)in.f64();
+                        (void)in.u8();
+                    }
+                }
+                found = found || ids == want;
+            }
+            require(found, std::format("{}: the first join's attribute ids", version));
+        }
+    });
+
     suite.run("status effects are saved with the players", [] {
         const auto dir = temporary_directory();
         auto config = offline_config();
@@ -2922,8 +3271,14 @@ int main() {
             c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:speed 210 0"));
             c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:speed 3 2 true"));
             c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:night_vision infinite 0"));
-            // The third effect's packet: all three were given.
-            for (int k = 0; k < 3; ++k) require(c.until(State::play, "update_mob_effect").has_value(), "given");
+            c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:health_boost 120 0"));
+            c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:absorption 120 1"));
+            // Luck given and cleared: the player keeps the attribute, with no effect to bring it back.
+            c.send(State::play, "chat_command", Writer().string("effect give @s minecraft:luck 120 0"));
+            c.send(State::play, "chat_command", Writer().string("effect clear @s minecraft:luck"));
+            // The sixth effect's packet, then luck's removal: all were given.
+            for (int k = 0; k < 6; ++k) require(c.until(State::play, "update_mob_effect").has_value(), "given");
+            require(c.until(State::play, "remove_mob_effect").has_value(), "luck cleared");
             s.stop();
         }
         {
@@ -2946,6 +3301,39 @@ int main() {
             (void)n.varint();
             const auto nv = n.varint().value(), nv_amplifier = n.varint().value(), nv_duration = n.varint().value();
             require(nv == 15 && nv_amplifier == 0 && nv_duration == -1 && n.u8().value() == 6, "night vision, infinite");
+            for (const auto expected : {20, 21}) {
+                const auto e = c.until(State::play, "update_mob_effect");
+                require(e.has_value(), "health boost and absorption too");
+                auto er = e->reader();
+                (void)er.varint();
+                require(er.varint().value() == expected, std::format("effect {}", expected));
+            }
+            // Player data version 6: the absorption, then the attributes with
+            // the effects' modifiers (max absorption 18, max health 19).
+            const auto data = c.until(State::play, "set_entity_data");
+            require(data.has_value(), "the absorption");
+            auto d = data->reader();
+            (void)d.varint();
+            require(d.u8().value() == 15 && d.varint().value() == 3 && d.f32().value() == 8.0f, "absorption 8");
+            const auto attributes = c.until(State::play, "update_attributes");
+            require(attributes.has_value(), "the attributes");
+            auto a = attributes->reader();
+            (void)a.varint();
+            std::map<std::int32_t, std::string> modifiers;
+            std::set<std::int32_t> listed;
+            for (auto k = a.varint().value(); k > 0; --k) {
+                const auto attribute = a.varint().value();
+                listed.insert(attribute);
+                (void)a.f64();
+                for (auto m = a.varint().value(); m > 0; --m) {
+                    const auto name = a.string(32767).value();
+                    const auto amount = a.f64().value(); // read in order
+                    modifiers[attribute] += std::format("{} {} {};", name, amount, a.u8().value());
+                }
+            }
+            require(modifiers[18] == "minecraft:effect.absorption 8 0;" && modifiers[19] == "minecraft:effect.health_boost 4 0;",
+                    "the effects' modifiers back");
+            require(listed.contains(17) && modifiers[17].empty(), "luck kept by its saved name, without a modifier");
             // The stronger speed ends: the weaker one comes back from underneath.
             const auto back = c.until(State::play, "update_mob_effect");
             require(back.has_value(), "the weaker speed back");

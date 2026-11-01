@@ -6,6 +6,7 @@
 #include "movement.hpp"
 #include "world_meta.hpp"
 #include <circuit/evidence/fixture_runner.hpp>
+#include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/rules.hpp>
@@ -178,10 +179,32 @@ struct Player {
         std::uint8_t flags{};
         std::vector<gameplay::effects::Particle> particles;
         bool ambient{};
+        float absorption{};
     };
     EffectView effect_view;
     bool effects_dirty{};
-    std::optional<EffectView> effects_decided;
+    bool absorption_dirty{}; // the absorption alone changed (damage, a lower maximum)
+    struct Decided {
+        EffectView view;
+        bool effects{}; // effects changed, not only the absorption
+    };
+    std::optional<Decided> effects_decided;
+    // Attributes (client/attributes): those the player has (made on first
+    // joining, by the game mode, sprinting and effects; kept across
+    // respawns and saved), in the registry's order, each with its modifiers
+    // in the order added; those changed in a tick, decided at its end and
+    // sent after the entity data at the start of the next. A player joining
+    // for the first time has none until the end of the joining tick; one
+    // rejoining or respawning is sent all of them before the health, and
+    // whoever sees them gets them again at the end of that tick, then the
+    // game mode's (Arrival). The absorption the absorption effect gives is
+    // entity data (15).
+    std::vector<gameplay::attributes::Instance> attributes;
+    std::set<gameplay::attributes::Attribute> attributes_changed;
+    std::vector<gameplay::attributes::Instance> attributes_decided;
+    enum class Arrival : std::uint8_t { none, first, again };
+    Arrival arrival{};
+    float absorption{};
     // The maps the client was sent, with the markers it last got for each.
     // The player's recipe book, and their inventory (armor, main, hotbar,
     // off hand) as its triggers last saw it.
@@ -215,6 +238,8 @@ struct SavedPlayer {
     float exhaustion{};
     SavedBook book;
     std::vector<gameplay::effects::Effect> effects;
+    std::vector<std::string> attributes; // those the player has, by name
+    float absorption{};
 };
 
 void write_strings(protocol::Writer& w, const std::vector<std::string>& v) {
@@ -235,7 +260,7 @@ std::optional<std::vector<std::string>> read_strings(protocol::Reader& r) {
 
 std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players) {
     protocol::Writer w;
-    w.varint(5).varint(static_cast<std::int32_t>(players.size()));
+    w.varint(6).varint(static_cast<std::int32_t>(players.size()));
     for (const auto& [uuid, p] : players) {
         w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held).f32(p.health)
             .varint(p.food).f32(p.saturation).f32(p.exhaustion);
@@ -258,6 +283,9 @@ std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players
             for (const auto& l : e.levels)
                 w.varint(l.amplifier).varint(l.duration).u8(static_cast<std::uint8_t>((l.ambient ? 1 : 0) | (l.particles ? 2 : 0) | (l.icon ? 4 : 0)));
         }
+        // The attributes the player has, by name, and the absorption.
+        write_strings(w, p.attributes);
+        w.f32(p.absorption);
     }
     return w.take();
 }
@@ -265,8 +293,9 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
     protocol::Reader r(bytes);
     const auto version = r.varint();
     const auto count = r.length(1u << 20, 30);
-    // Version 2 had no health, version 3 no recipe book, version 4 no effects.
-    if (!version || *version < 2 || *version > 5 || !count) return std::nullopt;
+    // Version 2 had no health, version 3 no recipe book, version 4 no
+    // effects, version 5 no attributes or absorption.
+    if (!version || *version < 2 || *version > 6 || !count) return std::nullopt;
     std::map<Uuid, SavedPlayer> out;
     for (std::size_t i = 0; i < *count; ++i) {
         SavedPlayer p;
@@ -325,6 +354,13 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
                 }
                 p.effects.push_back(std::move(e));
             }
+        }
+        if (*version >= 6) {
+            auto attributes = read_strings(r);
+            const auto absorption = r.f32();
+            if (!attributes || !absorption) return std::nullopt;
+            p.attributes = std::move(*attributes);
+            p.absorption = *absorption;
         }
         out[*uuid] = std::move(p);
     }
@@ -581,8 +617,10 @@ struct Game::Impl final : GameServices {
     }
 
     SavedPlayer snapshot(const Player& p) const {
+        std::vector<std::string> attributes;
+        for (const auto& i : p.attributes) attributes.emplace_back(gameplay::attributes::name(i.attribute));
         return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion, saved_book(p.book),
-                p.dead ? std::vector<gameplay::effects::Effect>{} : p.effects};
+                p.dead ? std::vector<gameplay::effects::Effect>{} : p.effects, std::move(attributes), p.dead ? 0.0f : p.absorption};
     }
     // A recipe book by ids, and back (ids the data packs no longer have are left out).
     SavedBook saved_book(const PlayerBook& b) const {
@@ -800,10 +838,17 @@ struct Game::Impl final : GameServices {
         p.verified = r.verified;
         p.entity_id = next_entity_id++;
         p.pos = spawn_point();
-        if (const auto it = saved.find(p.uuid); it != saved.end()) restore(p, it->second);
+        p.arrival = Player::Arrival::first;
+        if (const auto it = saved.find(p.uuid); it != saved.end()) {
+            restore(p, it->second);
+            p.arrival = Player::Arrival::again;
+        }
         // Restored effects go to the player at the end of the joining tick;
         // the entity data they decide follows a tick later (client/effects).
         p.effects_dirty = !p.effects.empty();
+        // A returning player's absorption is told before the attributes
+        // (send_joining_vitals), and is part of the entity's data from then on.
+        p.effect_view.absorption = p.absorption;
         p.view_distance = std::clamp(r.view_distance, 2, config.view_distance);
         p.center = chunk_at(p.pos);
         p.ticket = next_ticket;
@@ -895,7 +940,7 @@ struct Game::Impl final : GameServices {
     }
 
     // Applies saved data; values the movement rules would refuse are ignored.
-    void restore(Player& p, const SavedPlayer& s) const {
+    void restore(Player& p, const SavedPlayer& s) {
         if (finite(s.pos) && std::abs(s.pos.x) < 3.0e7 && std::abs(s.pos.z) < 3.0e7 && std::abs(s.pos.y) <= 4096.0) p.pos = s.pos;
         if (std::isfinite(s.yaw) && std::isfinite(s.pitch)) {
             p.yaw = s.yaw;
@@ -905,7 +950,7 @@ struct Game::Impl final : GameServices {
         if (s.held >= 0 && s.held < 9) p.held = s.held;
         // A player who left dead joins respawned at the world spawn.
         if (std::isfinite(s.health) && s.health > 0.0f) {
-            p.health = std::min(s.health, 20.0f);
+            p.health = std::min(s.health, 20.0f); // up to a boosted maximum below, once the effects are back
             if (s.food >= 0 && s.food <= 20) p.food = s.food;
             if (std::isfinite(s.saturation)) p.saturation = std::clamp(s.saturation, 0.0f, static_cast<float>(p.food));
             if (std::isfinite(s.exhaustion)) p.exhaustion = std::clamp(s.exhaustion, 0.0f, 40.0f);
@@ -928,6 +973,22 @@ struct Game::Impl final : GameServices {
             };
             for (const auto& e : s.effects)
                 if (valid(e) && (p.effects.empty() || p.effects.back().id < e.id)) p.effects.push_back(e);
+        }
+        // The attributes the player had, with the modifiers of their
+        // effects; the game mode's follow at the end of the joining tick.
+        // Every player who joined before has those of a first join (also one
+        // saved before version 6, or who left in the tick they first joined).
+        for (const auto a : {gameplay::attributes::Attribute::block_interaction_range, gameplay::attributes::Attribute::entity_interaction_range,
+                             gameplay::attributes::Attribute::movement_speed})
+            attribute(p, a);
+        for (const auto& name : s.attributes)
+            if (const auto a = gameplay::attributes::by_name(name)) attribute(p, *a);
+        for (const auto& e : p.effects) effect_attributes(p, e.id);
+        p.attributes_changed.clear();
+        if (std::isfinite(s.health) && s.health > 0.0f) {
+            p.health = std::min(s.health, max_health(p));
+            if (std::isfinite(s.absorption))
+                p.absorption = std::clamp(s.absorption, 0.0f, static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::max_absorption)));
         }
     }
     Vec3 spawn_point() const { return {meta.spawn.x + 0.5, static_cast<double>(meta.spawn.y) + 1.0, meta.spawn.z + 0.5}; }
@@ -1574,8 +1635,10 @@ struct Game::Impl final : GameServices {
     }
 
     // Fall distance grows while the player moves down off the ground; on
-    // landing, every block beyond 3 deals one point of damage (none on a slime
-    // block unless sneaking). Water and flying reset it.
+    // landing, every block beyond the safe fall distance deals one point of
+    // damage (none on a slime block unless sneaking). 1.21.8 counts the move
+    // that lands too, 1.21.4 does not (client/falls). Water and flying reset
+    // it.
     void fall(Player& p, double dy, bool on_ground) {
         if (p.game_mode == spectator || p.flying || in_water(p)) {
             p.fall_distance = 0.0;
@@ -1585,13 +1648,17 @@ struct Game::Impl final : GameServices {
             if (dy < 0.0) p.fall_distance -= dy;
             return;
         }
-        const auto distance = p.fall_distance;
+        const auto distance = p.fall_distance + (wire.protocol() >= 772 && dy < 0.0 ? -dy : 0.0);
         p.fall_distance = 0.0;
         if (distance <= 0.0) return;
         const BlockPos below{static_cast<std::int32_t>(std::floor(p.pos.x)), static_cast<std::int32_t>(std::floor(p.pos.y - 0.2)),
                              static_cast<std::int32_t>(std::floor(p.pos.z))};
         if (at(below).is(BlockType::slime_block) && !p.sneaking) return;
-        const auto damage = std::ceil(distance - 3.0);
+        // Beyond the safe fall distance (3, more with jump boost), rounded up
+        // on 1.21.4 and down on 1.21.8 (client/attribute_rules: 5.5 blocks
+        // took 3 and 2; client/falls).
+        const auto beyond = distance - attribute_value(p, gameplay::attributes::Attribute::safe_fall_distance);
+        const auto damage = wire.protocol() >= 772 ? std::floor(beyond) : std::ceil(beyond);
         if (damage > 0.0) hurt(p, static_cast<float>(damage), Harm::fall, distance);
     }
 
@@ -1614,6 +1681,13 @@ struct Game::Impl final : GameServices {
             p.hurt_cooldown = 20;
         }
         p.last_hurt = amount;
+        // Absorption takes the damage first.
+        if (p.absorption > 0.0f) {
+            const auto absorbed = std::min(p.absorption, applied);
+            p.absorption -= absorbed;
+            applied -= absorbed;
+            p.absorption_dirty = true;
+        }
         p.health = std::max(0.0f, p.health - applied);
         const auto name = harm == Harm::fall    ? "minecraft:fall"
                         : harm == Harm::void_   ? "minecraft:out_of_world"
@@ -1626,7 +1700,7 @@ struct Game::Impl final : GameServices {
         if (p.health <= 0.0f) die(p, harm, fall_distance);
     }
     void heal(Player& p, float amount) {
-        if (!p.dead) p.health = std::min(20.0f, p.health + amount);
+        if (!p.dead) p.health = std::min(max_health(p), p.health + amount);
     }
 
     // Death: the inventory drops (a command, so that the rules account for
@@ -1666,10 +1740,21 @@ struct Game::Impl final : GameServices {
     void respawn(Player& p) {
         p.dead = false;
         // A respawned player has no effects; the respawn resets the client's.
+        // They keep the attributes they had, without modifiers (the game
+        // mode's come back at the end of the tick: finish_arrival).
         p.effects.clear();
         p.effect_view = {};
         p.effects_dirty = false;
+        p.absorption_dirty = false;
         p.effects_decided.reset();
+        p.absorption = 0.0f;
+        p.sprinting = false;
+        for (auto& i : p.attributes) i.modifiers.clear();
+        p.attributes_changed.clear();
+        p.attributes_decided.clear();
+        p.arrival = Player::Arrival::again;
+        // Those the client saw are gone with its entities: they appear again.
+        for (auto& [oid, o] : players) o.seen_by.erase(p.peer->id());
         p.health = 20.0f;
         p.food = 20;
         p.saturation = 5.0f;
@@ -1683,6 +1768,7 @@ struct Game::Impl final : GameServices {
         Wire::JoinGame j{p.entity_id, config.max_players, p.view_distance, config.simulation_distance, dimension_type, p.game_mode};
         p.peer->send(wire.respawn(j));
         p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
+        p.flying = p.game_mode == spectator;
         p.peer->send(wire.set_held_slot(p.held));
         p.peer->send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         p.remote_window = -1;
@@ -1695,6 +1781,7 @@ struct Game::Impl final : GameServices {
         p.peer->send(wire.chunk_center(chunk.x, chunk.z));
         move_tickets(p, chunk);
         teleport(p, to);
+        send_attributes(p, p.attributes, true, false);
         send_vitals(p);
         p.moved = true;
     }
@@ -1727,7 +1814,22 @@ struct Game::Impl final : GameServices {
             return false;
         }
         p.effects_dirty = true;
+        effect_started(p, id);
         return true;
+    }
+    // What an effect's shown level does when it is added, changed,
+    // lengthened or comes back: its modifier, and absorption's absorption
+    // (raised to 4 per level: client/attribute_rules).
+    void effect_started(Player& p, std::uint8_t id) {
+        effect_attributes(p, id);
+        static const auto absorption = gameplay::effects::id("absorption");
+        if (id != absorption) return;
+        const auto it = std::ranges::find(p.effects, id, &gameplay::effects::Effect::id);
+        const auto amount = 4.0f * static_cast<float>(it->levels.front().amplifier + 1);
+        if (p.absorption < amount) {
+            p.absorption = amount;
+            p.effects_dirty = true;
+        }
     }
     // Removes one effect (with the levels underneath it) or every effect;
     // returns whether there was any.
@@ -1739,7 +1841,9 @@ struct Game::Impl final : GameServices {
                 continue;
             }
             p.peer->send(wire.remove_mob_effect(p.entity_id, it->id));
+            const auto removed = it->id;
             it = p.effects.erase(it);
+            effect_attributes(p, removed);
             any = true;
         }
         p.effects_dirty = p.effects_dirty || any;
@@ -1755,10 +1859,13 @@ struct Game::Impl final : GameServices {
             if (t.next) send_effect(p, *it, false);
             if (t.ended) {
                 p.peer->send(wire.remove_mob_effect(p.entity_id, it->id));
+                const auto removed = it->id;
                 it = p.effects.erase(it);
+                effect_attributes(p, removed);
                 p.effects_dirty = true;
                 continue;
             }
+            if (t.next) effect_started(p, it->id);
             if (t.again) send_effect(p, *it, false);
             p.effects_dirty = p.effects_dirty || t.next || t.again;
             ++it;
@@ -1769,6 +1876,7 @@ struct Game::Impl final : GameServices {
     // whether all of those are ambient (left as it was without effects).
     Player::EffectView effect_view(const Player& p) const {
         Player::EffectView v;
+        v.absorption = p.absorption;
         v.ambient = p.effect_view.ambient;
         if (p.effects.empty()) return v;
         v.ambient = true;
@@ -1786,38 +1894,180 @@ struct Game::Impl final : GameServices {
     // among them, are not).
     std::optional<Bytes> shown_effects(const Player& p) const {
         const auto& v = p.effect_view;
-        if (v.flags == 0 && v.particles.empty() && !v.ambient) return std::nullopt;
+        if (v.flags == 0 && v.particles.empty() && !v.ambient && v.absorption == 0.0f) return std::nullopt;
         return wire.effect_metadata(p.entity_id, v.flags ? std::optional(v.flags) : std::nullopt,
-                                    v.particles.empty() ? std::nullopt : std::optional(v.particles), v.ambient ? std::optional(true) : std::nullopt);
+                                    v.particles.empty() ? std::nullopt : std::optional(v.particles), v.ambient ? std::optional(true) : std::nullopt,
+                                    v.absorption != 0.0f ? std::optional(v.absorption) : std::nullopt);
     }
-    // At the end of a tick, the entity data of the effects changed in it.
+    // At the end of a tick, the entity data of the effects changed in it,
+    // or of the absorption alone.
     void decide_effects() {
         for (auto& [id, p] : players) {
-            if (!p.effects_dirty) continue;
+            if (!p.effects_dirty && !p.absorption_dirty) continue;
+            auto view = p.effects_dirty ? effect_view(p) : p.effect_view;
+            view.absorption = p.absorption;
+            p.effects_decided = Player::Decided{std::move(view), p.effects_dirty};
             p.effects_dirty = false;
-            p.effects_decided = effect_view(p);
+            p.absorption_dirty = false;
         }
     }
-    // At the start of the next, what changed of it: the flags and the
-    // ambience when they changed, the particles unless none were shown and
-    // none are (both official servers send a list of particles again even
-    // when it is the same).
+    // At the start of the next, what changed of it: the flags, the ambience
+    // and the absorption when they changed, the particles when effects
+    // changed unless none were shown and none are (both official servers
+    // send a list of particles again even when it is the same).
     void send_decided_effects() {
         for (auto& [id, p] : players) {
             if (!p.effects_decided) continue;
-            const auto now = std::move(*p.effects_decided);
+            const auto decided = std::move(*p.effects_decided);
             p.effects_decided.reset();
+            const auto& now = decided.view;
             const auto& was = p.effect_view;
             const auto flags = now.flags != was.flags ? std::optional(now.flags) : std::nullopt;
-            const auto particles = now.particles.empty() && was.particles.empty() ? std::nullopt : std::optional(now.particles);
+            const auto particles = !decided.effects || (now.particles.empty() && was.particles.empty()) ? std::nullopt : std::optional(now.particles);
             const auto ambient = now.ambient != was.ambient ? std::optional(now.ambient) : std::nullopt;
+            const auto absorption = now.absorption != was.absorption ? std::optional(now.absorption) : std::nullopt;
             p.effect_view = now;
-            if (!flags && !particles && !ambient) continue;
-            const auto data = wire.effect_metadata(p.entity_id, flags, particles, ambient);
+            if (!flags && !particles && !ambient && !absorption) continue;
+            const auto data = wire.effect_metadata(p.entity_id, flags, particles, ambient, absorption);
             p.peer->send(data);
             for (const auto viewer : p.seen_by)
                 if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
         }
+    }
+
+    // ---- attributes ---------------------------------------------------------
+    // As both official servers keep them on players and send them
+    // (client/attributes, client/attribute_rules, client/attribute_join):
+    // changed in a tick, they are decided at its end and go to the player
+    // and to whoever sees them after the entity data at the start of the
+    // next, each changed attribute with a player's base and all its
+    // modifiers. The official servers list the attributes of one packet in
+    // an order that varies from run to run; here they come in id order.
+
+    gameplay::attributes::Instance& attribute(Player& p, gameplay::attributes::Attribute a) {
+        auto it = std::ranges::lower_bound(p.attributes, a, {}, &gameplay::attributes::Instance::attribute);
+        if (it == p.attributes.end() || it->attribute != a) it = p.attributes.insert(it, {a, {}});
+        return *it;
+    }
+    double attribute_value(const Player& p, gameplay::attributes::Attribute a) const {
+        const auto it = std::ranges::find(p.attributes, a, &gameplay::attributes::Instance::attribute);
+        return it == p.attributes.end() ? gameplay::attributes::base(a) : gameplay::attributes::value(*it);
+    }
+    float max_health(const Player& p) const { return static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::max_health)); }
+    // A modifier added (the player has the attribute from then on), or
+    // added again: then it moves to the end, also when unchanged (an effect
+    // lengthened: client/attribute_rules), unless `again` is false.
+    void add_modifier(Player& p, gameplay::attributes::Attribute a, const gameplay::attributes::Modifier& m, bool again = false) {
+        auto& i = attribute(p, a);
+        const auto it = std::ranges::find(i.modifiers, m.id, &gameplay::attributes::Modifier::id);
+        if (it != i.modifiers.end()) {
+            if (*it == m && !again) return;
+            i.modifiers.erase(it);
+        }
+        i.modifiers.push_back(m);
+        p.attributes_changed.insert(a);
+    }
+    void remove_modifier(Player& p, gameplay::attributes::Attribute a, std::string_view id) {
+        const auto it = std::ranges::find(p.attributes, a, &gameplay::attributes::Instance::attribute);
+        if (it == p.attributes.end()) return;
+        if (std::erase_if(it->modifiers, [&](const auto& m) { return m.id == id; }) > 0) p.attributes_changed.insert(a);
+    }
+    // An effect's modifier as its shown level gives it, added again
+    // whenever that level is (given, changed, lengthened or coming back; not
+    // when the effect is only sent again), or none once the effect is gone.
+    void effect_attributes(Player& p, std::uint8_t id) {
+        const auto it = std::ranges::find(p.effects, id, &gameplay::effects::Effect::id);
+        const auto any = gameplay::attributes::effect_modifier(id, 0);
+        if (!any) return;
+        if (it == p.effects.end()) return remove_modifier(p, any->attribute, any->modifier.id);
+        const auto m = gameplay::attributes::effect_modifier(id, it->levels.front().amplifier);
+        add_modifier(p, m->attribute, m->modifier, true);
+    }
+    // The effects on the player's digging: the stronger of haste and conduit
+    // power, and mining fatigue (their shown levels).
+    gameplay::DigEffects dig_effects(const Player& p) const {
+        static const auto haste = gameplay::effects::id("haste"), conduit = gameplay::effects::id("conduit_power"),
+                          fatigue = gameplay::effects::id("mining_fatigue");
+        gameplay::DigEffects out;
+        for (const auto& e : p.effects) {
+            const auto amplifier = e.levels.front().amplifier;
+            if (e.id == haste || e.id == conduit) out.haste = std::max(out.haste, amplifier);
+            else if (e.id == fatigue) out.fatigue = amplifier;
+        }
+        return out;
+    }
+    // Creative mode reaches further.
+    void game_mode_attributes(Player& p) {
+        using gameplay::attributes::Attribute;
+        if (p.game_mode == creative) {
+            add_modifier(p, Attribute::block_interaction_range, gameplay::attributes::creative_block_range);
+            add_modifier(p, Attribute::entity_interaction_range, gameplay::attributes::creative_entity_range);
+        } else {
+            remove_modifier(p, Attribute::block_interaction_range, gameplay::attributes::creative_block_range.id);
+            remove_modifier(p, Attribute::entity_interaction_range, gameplay::attributes::creative_entity_range.id);
+        }
+    }
+    void send_attributes(Player& p, std::span<const gameplay::attributes::Instance> list, bool to_player, bool to_viewers) {
+        if (std::ranges::none_of(list, [](const auto& i) { return gameplay::attributes::synced(i.attribute); })) return;
+        const auto packet = wire.update_attributes(p.entity_id, list);
+        if (to_player) p.peer->send(packet);
+        if (to_viewers)
+            for (const auto viewer : p.seen_by)
+                if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(packet);
+    }
+    // At the end of a tick, the attributes changed in it. A health or an
+    // absorption above its new maximum is cut to it then (the health packet
+    // follows the attributes, client/attribute_rules).
+    void decide_attributes() {
+        for (auto& [id, p] : players) {
+            if (p.attributes_changed.empty()) continue;
+            for (const auto a : p.attributes_changed) p.attributes_decided.push_back(attribute(p, a));
+            p.attributes_changed.clear();
+            if (p.health > max_health(p)) p.health = max_health(p);
+            const auto most = static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::max_absorption));
+            if (p.absorption > most) {
+                p.absorption = most;
+                p.absorption_dirty = true;
+            }
+        }
+    }
+    // At the start of the next, after the entity data.
+    void send_decided_attributes() {
+        for (auto& [id, p] : players) {
+            if (p.attributes_decided.empty()) continue;
+            const auto list = std::move(p.attributes_decided);
+            p.attributes_decided.clear();
+            send_attributes(p, list, true, true);
+        }
+    }
+    // The end of the tick a player joined or respawned in, after they
+    // appeared to others: on a first join the attributes every player has
+    // (the movement speed and both reaches, with the game mode's modifiers),
+    // to the player and to those who see them; otherwise the absorption and
+    // all the attributes again to those who see them, then the game mode's
+    // modifiers to all.
+    void finish_arrival(Player& p) {
+        using gameplay::attributes::Attribute;
+        const auto arrival = std::exchange(p.arrival, Player::Arrival::none);
+        if (arrival == Player::Arrival::none) return;
+        if (arrival == Player::Arrival::first) {
+            for (const auto a : {Attribute::block_interaction_range, Attribute::entity_interaction_range, Attribute::movement_speed}) attribute(p, a);
+            game_mode_attributes(p);
+            p.attributes_changed.clear();
+            send_attributes(p, p.attributes, true, true);
+            return;
+        }
+        if (p.absorption > 0.0f) {
+            const auto data = wire.effect_metadata(p.entity_id, std::nullopt, std::nullopt, std::nullopt, p.absorption);
+            for (const auto viewer : p.seen_by)
+                if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
+        }
+        send_attributes(p, p.attributes, false, true);
+        game_mode_attributes(p);
+        std::vector<gameplay::attributes::Instance> changed;
+        for (const auto a : p.attributes_changed) changed.push_back(attribute(p, a));
+        p.attributes_changed.clear();
+        send_attributes(p, changed, true, true);
     }
 
     // Health, food and saturation, sent when they change (saturation only
@@ -1832,11 +2082,13 @@ struct Game::Impl final : GameServices {
     }
 
     // Hunger, once per tick in every game mode: exhaustion beyond 4 uses up saturation, then
-    // food. A hurt player regenerates: with full food and saturation left,
+    // food. A hurt player (below their maximum health) regenerates while the
+    // naturalRegeneration rule allows: with full food and saturation left,
     // saturation/6 (at most 1) every 10 ticks for that much exhaustion; with
     // food 18 or more, 1 every 80 ticks for 6. Without food, starvation
     // hurts every 80 ticks down to 10 health (easy), 1 (normal) or death
-    // (hard). In peaceful, health and food come back by themselves.
+    // (hard). In peaceful, health (by that rule) and food come back by
+    // themselves.
     void hunger(Player& p) {
         const auto difficulty = config.difficulty;
         if (p.exhaustion > 4.0f) {
@@ -1844,15 +2096,16 @@ struct Game::Impl final : GameServices {
             if (p.saturation > 0.0f) p.saturation = std::max(p.saturation - 1.0f, 0.0f);
             else if (difficulty != 0) p.food = std::max(p.food - 1, 0);
         }
-        const bool hurt_now = p.health < 20.0f;
-        if (p.saturation > 0.0f && hurt_now && p.food >= 20) {
+        const bool hurt_now = p.health < max_health(p);
+        const bool regenerates = gameplay::game_rule_value(bundle, rules, "naturalRegeneration") != 0;
+        if (regenerates && p.saturation > 0.0f && hurt_now && p.food >= 20) {
             if (++p.food_timer >= 10) {
                 const auto f = std::min(p.saturation, 6.0f);
                 heal(p, f / 6.0f);
                 p.exhaustion = std::min(p.exhaustion + f, 40.0f);
                 p.food_timer = 0;
             }
-        } else if (p.food >= 18 && hurt_now) {
+        } else if (regenerates && p.food >= 18 && hurt_now) {
             if (++p.food_timer >= 80) {
                 heal(p, 1.0f);
                 p.exhaustion = std::min(p.exhaustion + 6.0f, 40.0f);
@@ -1867,7 +2120,7 @@ struct Game::Impl final : GameServices {
             p.food_timer = 0;
         }
         if (difficulty == 0 && !p.dead) {
-            if (hurt_now && p.ticks_alive % 20 == 0) heal(p, 1.0f);
+            if (regenerates && hurt_now && p.ticks_alive % 20 == 0) heal(p, 1.0f);
             if (p.food < 20 && p.ticks_alive % 10 == 0) ++p.food;
         }
     }
@@ -1974,7 +2227,7 @@ struct Game::Impl final : GameServices {
         // Survival: the time a block takes follows the target version's
         // destroy progress; the client's finish is accepted at 70 % (network
         // delay), and an early finish completes once the progress is whole.
-        const auto progress = gameplay::destroy_progress(at(b), slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p));
+        const auto progress = gameplay::destroy_progress(at(b), slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), nullptr, dig_effects(p));
         if (d.status == 0) {
             if (progress >= 1.0f) {
                 admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});
@@ -2020,7 +2273,8 @@ struct Game::Impl final : GameServices {
                 continue;
             }
             const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
-            if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), data.game.get()) * (ticks + 1.0f) >= 1.0f) {
+            if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), data.game.get(), dig_effects(p)) * (ticks + 1.0f)
+                >= 1.0f) {
                 admit(contracts::PlayerBreak{key_of(p), p.digging->pos, true, main_hand(p)});
                 exhaust(p, 0.005f); // breaking a block
                 p.digging.reset();
@@ -2224,7 +2478,13 @@ struct Game::Impl final : GameServices {
     }
 
     void handle(Player& p, intent::Sneak& s) { p.sneaking = s.sneaking; }
-    void handle(Player& p, intent::Sprint& s) { p.sprinting = s.sprinting; }
+    // Sprinting is faster (client/attributes).
+    void handle(Player& p, intent::Sprint& s) {
+        if (p.dead || p.sprinting == s.sprinting) return;
+        p.sprinting = s.sprinting;
+        if (p.sprinting) add_modifier(p, gameplay::attributes::Attribute::movement_speed, gameplay::attributes::sprinting);
+        else remove_modifier(p, gameplay::attributes::Attribute::movement_speed, gameplay::attributes::sprinting.id);
+    }
     void handle(Player& p, intent::Flying& f) { p.flying = f.flying && (p.game_mode == creative || p.game_mode == spectator); }
     void handle(Player&, intent::Loaded&) {}
 
@@ -2576,7 +2836,9 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.game_event(3, static_cast<float>(p.game_mode)));
             // Spectators fly permanently; creative players may fly and build instantly.
             p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
+            p.flying = p.game_mode == spectator; // as the abilities just sent say (a creative flyer stops flying)
             broadcast(wire.player_info_add({entry(p)}));
+            game_mode_attributes(p);
         } else if (args[0] == "forceload") {
             forceload(p, std::span(args).subspan(1));
         } else if (args[0] == "gamerule" && c.text.starts_with("gamerule")) {
@@ -3353,8 +3615,14 @@ struct Game::Impl final : GameServices {
     void send_joining_vitals(Player& p) {
         if (!p.vitals_pending) return;
         p.vitals_pending = false;
-        // Effects first, then health and experience (client/effects: a rejoin).
+        // Effects first, then a returning player's absorption and attributes,
+        // health and experience (client/effects and client/attribute_join: a
+        // rejoin).
         for (const auto& e : p.effects) send_effect(p, e, false);
+        if (p.arrival == Player::Arrival::again) {
+            if (p.absorption > 0.0f) p.peer->send(wire.effect_metadata(p.entity_id, std::nullopt, std::nullopt, std::nullopt, p.absorption));
+            send_attributes(p, p.attributes, true, false);
+        }
         send_vitals(p);
         sync_experience(p);
     }
@@ -3556,8 +3824,11 @@ struct Game::Impl final : GameServices {
                 if (oid == id) continue;
                 const bool visible = !p.dead && o.sent.contains(chunk_at(p.pos));
                 if (visible && p.seen_by.insert(oid).second) {
+                    // The entity, its data, then its attributes (client/attribute_join).
                     o.peer->send(wire.spawn_entity(p.entity_id, p.uuid, player_entity_type, p.pos, p.pitch, p.yaw, p.yaw, 0));
                     if (const auto data = shown_effects(p)) o.peer->send(*data);
+                    if (std::ranges::any_of(p.attributes, [](const auto& i) { return gameplay::attributes::synced(i.attribute); }))
+                        o.peer->send(wire.update_attributes(p.entity_id, p.attributes));
                 } else if (!visible && p.seen_by.erase(oid)) {
                     o.peer->send(wire.remove_entities({p.entity_id}));
                 }
@@ -3634,6 +3905,7 @@ struct Game::Impl final : GameServices {
             }
         }
         send_decided_effects();
+        send_decided_attributes();
         if (extensions) extensions->before_tick();
         // An empty server pauses after `pause-when-empty-seconds`, as the
         // target versions do, and resumes when a player joins.
@@ -3664,6 +3936,8 @@ struct Game::Impl final : GameServices {
         publish_light();
         publish_chunks();
         publish_players();
+        for (auto& [id, p] : players) finish_arrival(p);
+        decide_attributes();
         decide_effects();
         for (auto& [id, p] : players) {
             for (const auto seq : p.acks) p.peer->send(wire.block_changed_ack(seq));

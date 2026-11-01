@@ -25,7 +25,7 @@ struct Wire::Ids {
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
-        update_mob_effect, remove_mob_effect;
+        update_mob_effect, remove_mob_effect, update_attributes;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -117,6 +117,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->open_book = cb(State::play, "open_book");
     ids->update_mob_effect = cb(State::play, "update_mob_effect");
     ids->remove_mob_effect = cb(State::play, "remove_mob_effect");
+    ids->update_attributes = cb(State::play, "update_attributes");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -565,8 +566,42 @@ Bytes Wire::update_mob_effect(std::int32_t entity, std::int32_t effect, std::int
 Bytes Wire::remove_mob_effect(std::int32_t entity, std::int32_t effect) const {
     return packet(id_->remove_mob_effect, Writer().varint(entity).varint(effect));
 }
+
+Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::attributes::Instance> attributes) const {
+    namespace attr = gameplay::attributes;
+    // Attribute ids (PrismarineJS minecraft-data attributes.json, MIT; the
+    // registry's order, as both official servers send them:
+    // client/attributes): 772 has the camera distance after the burning
+    // time, so the later ones are one higher.
+    const auto id = [&](attr::Attribute a) -> std::int32_t {
+        const bool later = protocol_ >= 772;
+        switch (a) {
+        case attr::Attribute::attack_damage: return 2;
+        case attr::Attribute::attack_speed: return 4;
+        case attr::Attribute::block_interaction_range: return 6;
+        case attr::Attribute::entity_interaction_range: return later ? 10 : 9;
+        case attr::Attribute::luck: return later ? 17 : 16;
+        case attr::Attribute::max_absorption: return later ? 18 : 17;
+        case attr::Attribute::max_health: return later ? 19 : 18;
+        case attr::Attribute::movement_speed: return later ? 22 : 21;
+        case attr::Attribute::safe_fall_distance: return later ? 24 : 23;
+        }
+        return 0;
+    };
+    Writer w;
+    w.varint(entity);
+    const auto sent = std::ranges::count_if(attributes, [](const attr::Instance& i) { return attr::synced(i.attribute); });
+    w.varint(static_cast<std::int32_t>(sent));
+    for (const auto& i : attributes) {
+        if (!attr::synced(i.attribute)) continue;
+        w.varint(id(i.attribute)).f64(attr::base(i.attribute)).varint(static_cast<std::int32_t>(i.modifiers.size()));
+        for (const auto& m : i.modifiers) w.string(std::format("minecraft:{}", m.id)).f64(m.amount).u8(static_cast<std::uint8_t>(m.operation));
+    }
+    return packet(id_->update_attributes, w);
+}
 Bytes Wire::effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
-                            const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient) const {
+                            const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
+                            std::optional<float> absorption) const {
     // Particle type ids (PrismarineJS minecraft-data particles.json, MIT):
     // the same on both protocols up to infested, the items' and omens' one
     // higher on 772.
@@ -591,6 +626,7 @@ Bytes Wire::effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
         }
     }
     if (ambient) w.u8(11).varint(8).boolean(*ambient); // index 11 (ambient effects), type Boolean
+    if (absorption) w.u8(15).varint(3).f32(*absorption); // index 15 (a player's absorption), type Float
     w.u8(0xFF);
     return packet(id_->set_entity_data, w);
 }

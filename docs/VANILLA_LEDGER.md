@@ -46,7 +46,7 @@ Feature counts per implementation state, then the number of features with compar
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 5 / 5 | 0 / 0 | 0 / 0 | 0 / 0 | 7 / 7 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 17 / 17 | 38 / 56 | 33 / 35 | 21 / 1 | 8 / 8 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
-| V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 46 / 46 | 91 / 91 | 78 / 81 | 3 / 0 | 46 / 46 |
+| V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 56 / 56 | 91 / 91 | 68 / 71 | 3 / 0 | 55 / 55 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 22 / 22 | 116 / 118 | 3 / 3 | 2 / 0 | 8 / 9 |
 | V25 Menus, recipes and production | C5 | 194 | 4 / 4 | 17 / 17 | 170 / 170 | 3 / 3 | 0 / 0 | 19 / 20 |
 | V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 2 / 2 | 12 / 14 | 77 / 78 | 3 / 0 | 2 / 2 |
@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 8 / 8 | 16 / 20 | 84 / 89 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 11 / 11 | 65 / 65 | 0 / 0 | 204 / 210 | 7 / 1 | 19 / 19 |
+| V32 Client-visible world state | C10 | 287 | 11 / 11 | 66 / 66 | 0 / 0 | 203 / 209 | 7 / 1 | 19 / 19 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -72,12 +72,12 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 18 / 18 | 0 / 0 | 131 / 133 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 39 / 39 | 0 / 0 | 0 / 0 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
-| attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
+| attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 9 / 9 | 0 / 0 | 23 / 26 |
 | damage_type | src/server/registries.cpp (minecraft.wiki "Damage type") / src/server/registries.cpp (minecraft.wiki "Damage type") | 49 / 49 | 0 / 0 | 3 / 3 | 46 / 46 | 0 / 0 |
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 5 / 5 | 0 / 0 | 78 / 83 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 26 / 26 | 79 / 79 | 0 / 0 | 129 / 139 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 26 / 26 | 80 / 80 | 0 / 0 | 128 / 138 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 109 |
+| black_box | passing | 114 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 231 |
@@ -387,20 +387,20 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Movement checks against block shapes, step-up and corrections | C6 | implemented, compared | implemented, compared | `client/collision`, `client/vitals`, `realclient/survival`; Walking, jumping and sprinting |
 | Floating detection and allow-flight | C6 | implemented, compared | implemented, compared | `client/vitals` |
 | Swimming, crawling, climbing, elytra flight and sleeping | C6 | missing, none | missing, none |  |
-| Interaction reach and dig timing | C6 | implemented, compared | implemented, compared | `client/windows`; Reach for blocks and containers; dig time from documented values |
+| Interaction reach and dig timing | C6 | implemented, compared | implemented, compared | `client/dig_effects`, `client/windows`; Reach for blocks and containers; dig time from documented values, with haste, conduit power and mining fatigue (the documented factors, as both official servers count haste 0 and 1, conduit power 1 and mining fatigue 0) |
 
 ### V23 Combat, attributes and effects
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Health, hunger, saturation, exhaustion and regeneration | C6 | implemented, compared | implemented, compared | `client/join_order`, `client/vitals`; Eating is not modeled; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers |
-| Damage sources and the hurt cooldown | C6 | partial, compared | partial, compared | `client/vitals`; Falls, the void and starvation |
+| Health, hunger, saturation, exhaustion and regeneration | C6 | implemented, compared | implemented, compared | `client/attribute_rules`, `client/join_order`, `client/vitals`; Eating is not modeled; regeneration up to the maximum health while the naturalRegeneration game rule allows; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers |
+| Damage sources and the hurt cooldown | C6 | partial, compared | partial, compared | `client/attribute_rules`, `client/falls`, `client/vitals`; Falls (beyond the safe fall distance: on 1.21.8 with the move that lands, rounded down; on 1.21.4 without it, rounded up), the void and starvation; absorption takes damage first |
 | Death, drops and respawning | C6 | partial, compared | partial, compared | `client/vitals`, `realclient/survival`; death drops spread in a fixed pattern |
 | Melee attacks, attack cooldown, critical hits, sweeping and knockback | C6 | missing, none | missing, none |  |
 | Armor protection, toughness and shields | C6 | missing, none | missing, none |  |
-| Status effects | C6 | partial, compared | partial, compared | `client/effect_edges`, `client/effect_particles`, `client/effect_rules`, `client/effect_time`, `client/effects`; a player's effects come in id order and players' entity data of one tick in the order they connected; the official servers' orders are their own (for effects one that varies from run to run); effects have no consequence: no attribute modifiers are sent or applied, and the effects that heal, hurt or feed change nothing; of the shared flags only the effects' (invisibility and glowing) are sent, not sneaking or sprinting; only players have effects; /effect takes players by name, @s, @p, @a and @e; the entity data of a command's effects comes in the next tick, 50 ms after the effect packet, where the official 1.21.8 server took 80 ms (25 ms or more on both official servers); the fall after levitating hurts as Circuit's other falls do, by the height the client reports (2 or 3 points after rising about 5.2 blocks), where the official 1.21.8 server took 2 and 1.21.4 3 in every run; the health regenerated after it differed; /effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none |
+| Status effects | C6 | partial, compared | partial, compared | `client/attributes`, `client/effect_edges`, `client/effect_particles`, `client/effect_rules`, `client/effect_time`, `client/effects`; a player's effects come in id order and players' entity data of one tick in the order they connected; the official servers' orders are their own (for effects one that varies from run to run); of the shared flags only the effects' (invisibility and glowing) are sent, not sneaking or sprinting; on 1.21.4 the health regenerated after a levitation's fall differs from the fourth heal (0.33 points where the official server healed 0.5); the fall itself hurts as on both official servers; only players have effects; /effect takes players by name, @s, @p, @a and @e; the effects that heal, hurt or feed change nothing, nor do resistance and slow falling (fall damage is taken in full), fire resistance and water breathing, the omens and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client; the entity data of a command's effects comes in the next tick, 50 ms after the effect packet, where the official 1.21.8 server took 80 ms (25 ms or more on both official servers); /effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none |
 | Enchantment effects | C6 | missing, none | missing, none |  |
-| Attributes and modifiers | C6 | missing, none | missing, none |  |
+| Attributes and modifiers | C6 | partial, compared | partial, compared | `client/attribute_join`, `client/attribute_rules`, `client/attributes`; a packet's attributes come in id order; the official servers' order varies from run to run; only players have attributes, and only those Circuit models: the movement and attack speed, the attack damage, both reaches, luck, the maximum health and absorption and the safe fall distance; players' health and skin entity data (indexes 9 and 17), which the official servers send around the attributes on joining, to those who see a player and when the health changes, are not sent; the movement and attack speed, the reaches and luck only reach the client: Circuit's movement checks do not use the speed, and it has no attacks or rolls with luck; A player's attributes as both official servers keep and send them: the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage by minecraft.wiki, which the official servers do not send) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied |
 
 ### V24 Food, equipment and item use
 
