@@ -2255,9 +2255,15 @@
           "cases": [
             "client/vitals",
             "client/attribute_rules",
-            "client/falls"
+            "client/falls",
+            "client/effects_heal"
           ],
-          "note": "Falls (beyond the safe fall distance: on 1.21.8 with the move that lands, rounded down; on 1.21.4 without it, rounded up), the void and starvation; absorption takes damage first"
+          "note": "Falls (beyond the safe fall distance: on 1.21.8 with the move that lands, rounded down; on 1.21.4 without it, rounded up), the void, starvation and the effects' magic and wither damage; absorption takes damage first; the damage event, the hurt, death and fall sounds for the others nearby and the velocity at the next entity update, as both official servers send them",
+          "deviations": [
+            "the velocity told is that of a player standing still (players hurt in the air or moving were not recorded)",
+            "the fall sound of the block landed on is not played",
+            "the hurt and death sounds' pitches come from Circuit's own draws"
+          ]
         },
         {
           "id": "death_and_respawn",
@@ -2267,11 +2273,15 @@
           "evidence": "compared",
           "cases": [
             "client/vitals",
-            "realclient/survival"
+            "realclient/survival",
+            "client/effects_heal"
           ],
           "deviations": [
-            "death drops spread in a fixed pattern"
-          ]
+            "death drops spread in a fixed pattern",
+            "players respawn at the world spawn itself, not at random around it",
+            "the operator level (entity events 24 to 28) is not sent"
+          ],
+          "note": "The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view until the respawn, then removed and the player spawned again"
         },
         {
           "id": "melee_combat",
@@ -2294,7 +2304,8 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "the effects that heal, hurt or feed change nothing, nor do resistance and slow falling (fall damage is taken in full), fire resistance and water breathing, the omens and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
+            "resistance and slow falling change nothing (fall damage is taken in full), nor do fire resistance and water breathing, the omens and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
+            "amplifiers above 28 of instant health and damage double without the official servers' integer overflow (not recorded)",
             "only players have effects; /effect takes players by name, @s, @p, @a and @e",
             "of the shared flags only the effects' (invisibility and glowing) are sent, not sneaking or sprinting",
             "on 1.21.4 the health regenerated after a levitation's fall differs from the fourth heal (0.33 points where the official server healed 0.5); the fall itself hurts as on both official servers",
@@ -2307,9 +2318,10 @@
             "client/effect_particles",
             "client/effect_time",
             "client/effect_edges",
-            "client/attributes"
+            "client/attributes",
+            "client/effects_heal"
           ],
-          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none"
+          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none; the effects that heal, hurt or feed act by the time their shown level has left before each tick and their amplifier: instant health and damage, hunger and saturation every tick they last, regeneration, poison and wither every 50, 25 and 40 ticks halved per level, through the hurt cooldown"
         },
         {
           "id": "enchantment_effects",

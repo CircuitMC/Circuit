@@ -25,7 +25,7 @@ struct Wire::Ids {
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
-        update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon;
+        update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -121,6 +121,8 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sound = cb(State::play, "sound");
     ids->block_entity_data = cb(State::play, "block_entity_data");
     ids->sb_set_beacon = sb(State::play, "set_beacon");
+    ids->entity_event = cb(State::play, "entity_event");
+    ids->set_entity_motion = cb(State::play, "set_entity_motion");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -433,6 +435,31 @@ Bytes Wire::sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int6
     Writer w;
     w.varint(id + 1).varint(block_category).i32(at.x * 8 + 4).i32(at.y * 8 + 4).i32(at.z * 8 + 4).f32(1.0f).f32(1.0f).i64(seed);
     return packet(id_->sound, w);
+}
+Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed) const {
+    // Sound event ids of each protocol (PrismarineJS minecraft-data
+    // sounds.json, MIT, less one: its lists number from 1), sent plus one.
+    const bool v772 = protocol_ >= 772;
+    std::int32_t id = 0;
+    switch (sound) {
+    case PlayerSound::hurt: id = v772 ? 1175 : 1135; break;
+    case PlayerSound::death: id = v772 ? 1174 : 1134; break;
+    case PlayerSound::big_fall: id = v772 ? 1171 : 1131; break;
+    case PlayerSound::small_fall: id = v772 ? 1181 : 1141; break;
+    }
+    constexpr std::int32_t player_category = 7;
+    const auto fixed = [](double v) { return static_cast<std::int32_t>(v * 8.0); };
+    Writer w;
+    w.varint(id + 1).varint(player_category).i32(fixed(at.x)).i32(fixed(at.y)).i32(fixed(at.z)).f32(volume).f32(pitch).i64(seed);
+    return packet(id_->sound, w);
+}
+Bytes Wire::entity_event(std::int32_t entity_id, std::int8_t event) const {
+    return packet(id_->entity_event, Writer().i32(entity_id).i8(event));
+}
+Bytes Wire::entity_motion(std::int32_t entity_id, Vec3 velocity) const {
+    // In 1/8000 of a block per tick, within 3.9 blocks per tick.
+    const auto part = [](double v) { return static_cast<std::int16_t>(std::clamp(v, -3.9, 3.9) * 8000.0); };
+    return packet(id_->set_entity_motion, Writer().varint(entity_id).i16(part(velocity.x)).i16(part(velocity.y)).i16(part(velocity.z)));
 }
 Bytes Wire::block_entity_data(WirePosition at, std::int32_t type, const protocol::nbt::Tag& tag) const {
     Writer w;

@@ -161,6 +161,7 @@ struct Player {
     double fall_distance{};
     std::int32_t hurt_cooldown{};
     float last_hurt{};
+    bool hurt_marked{}; // hurt since its velocity was last told
     bool floating{};
     std::int32_t floating_ticks{};
     bool sprinting{};
@@ -447,6 +448,7 @@ struct Game::Impl final : GameServices {
     gameplay::Weather sent_weather;
     std::int32_t next_entity_id{1};
     std::uint64_t sound_seed{}; // the official servers draw a sound's seed at random
+    std::uint64_t voice_draws{}; // and a voice's pitch (Circuit's own draws: splitmix64 of a counter)
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
@@ -1061,6 +1063,9 @@ struct Game::Impl final : GameServices {
 
     void teleport(Player& p, Vec3 to) {
         p.pos = to;
+        // A dead player's body moves with them for those who see it (a
+        // living player's client moves after confirming).
+        if (p.dead) p.moved = true;
         const auto id = p.next_teleport++;
         p.awaiting_teleport = id;
         p.peer->send(wire.player_position(id, to, p.yaw, p.pitch));
@@ -1679,13 +1684,40 @@ struct Game::Impl final : GameServices {
         // took 3 and 2; client/falls).
         const auto beyond = distance - attribute_value(p, gameplay::attributes::Attribute::safe_fall_distance);
         const auto damage = wire.protocol() >= 772 ? std::floor(beyond) : std::ceil(beyond);
-        if (damage > 0.0) hurt(p, static_cast<float>(damage), Harm::fall, distance);
+        if (damage <= 0.0 || p.game_mode != survival) return;
+        // The fall's sound comes first, for the others nearby (client/effects_heal:
+        // 7 points gave big_fall; 4 or less gives small_fall).
+        sound_around(p, damage > 4.0 ? Wire::PlayerSound::big_fall : Wire::PlayerSound::small_fall, 1.0f);
+        hurt(p, static_cast<float>(damage), Harm::fall, distance);
     }
 
-    enum class Harm : std::uint8_t { fall, void_, starve, kill };
+    enum class Harm : std::uint8_t { fall, void_, starve, kill, magic, wither };
+
+    // A player's own sound, for the other players within 16 blocks (the
+    // player's client plays its own).
+    void sound_around(const Player& p, Wire::PlayerSound sound, float pitch) {
+        const auto packet = wire.player_sound(sound, p.pos, 1.0f, pitch, static_cast<std::int64_t>(sound_seed++));
+        for (auto& [oid, o] : players) {
+            if (&o == &p) continue;
+            const double dx = o.pos.x - p.pos.x, dy = o.pos.y - p.pos.y, dz = o.pos.z - p.pos.z;
+            if (dx * dx + dy * dy + dz * dz < 256.0) o.peer->send(packet);
+        }
+    }
+    // A voice's pitch: 1 give or take 0.2, the difference of two uniform
+    // draws (the official servers draw them from the entity's random).
+    float voice_pitch() {
+        const auto draw = [this] {
+            auto z = (++voice_draws) * 0x9E3779B97F4A7C15ull;
+            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
+            z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
+            return static_cast<float>((z ^ (z >> 31)) >> 40) / 16777216.0f;
+        };
+        const auto a = draw();
+        return (a - draw()) * 0.2f + 1.0f;
+    }
 
     // Damage: creative and spectator players take none but from the void
-    // (spectators not even that). Within the last 10 ticks of the 20-tick
+    // (spectators not even that). Within the first 10 ticks of the 20-tick
     // hurt cooldown, damage counts only by how much it exceeds the last.
     // These damage types cost no exhaustion.
     void hurt(Player& p, float amount, Harm harm, double fall_distance = 0.0) {
@@ -1712,12 +1744,37 @@ struct Game::Impl final : GameServices {
         const auto name = harm == Harm::fall    ? "minecraft:fall"
                         : harm == Harm::void_   ? "minecraft:out_of_world"
                         : harm == Harm::kill    ? "minecraft:generic_kill"
+                        : harm == Harm::magic   ? "minecraft:magic"
+                        : harm == Harm::wither  ? "minecraft:wither"
                                                 : "minecraft:starve";
         const auto event = wire.damage_event(p.entity_id, registry_index(registries, "minecraft:damage_type", name).value_or(0));
         p.peer->send(event);
         for (const auto viewer : p.seen_by)
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
-        if (p.health <= 0.0f) die(p, harm, fall_distance);
+        // Then the others nearby hear the hurt or the death; the hurt player's
+        // velocity is told at the next entity update (client/effects_heal).
+        if (p.health <= 0.0f) {
+            sound_around(p, Wire::PlayerSound::death, voice_pitch());
+            die(p, harm, fall_distance);
+            return;
+        }
+        sound_around(p, Wire::PlayerSound::hurt, voice_pitch());
+        p.hurt_marked = true;
+    }
+    // The velocity of the players hurt since the last entity update, to
+    // them and to those who see them: the server's, a player standing still
+    // (client/effects_heal; a hurt player in the air or moving was not
+    // recorded).
+    void tell_hurt_velocities() {
+        for (auto& [id, p] : players) {
+            if (!p.hurt_marked) continue;
+            p.hurt_marked = false;
+            if (p.dead) continue;
+            const auto motion = wire.entity_motion(p.entity_id, {0.0, -0.0784, 0.0});
+            p.peer->send(motion);
+            for (const auto viewer : p.seen_by)
+                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(motion);
+        }
     }
     void heal(Player& p, float amount) {
         if (!p.dead) p.health = std::min(max_health(p), p.health + amount);
@@ -1728,6 +1785,7 @@ struct Game::Impl final : GameServices {
     // death message.
     void die(Player& p, Harm harm, double fall_distance) {
         p.dead = true;
+        p.hurt_marked = false; // no velocity for a body
         p.digging.reset();
         p.floating = false;
         p.fall_distance = 0.0;
@@ -1739,21 +1797,62 @@ struct Game::Impl final : GameServices {
         const auto key = harm == Harm::void_ ? "death.attack.outOfWorld"
                          : harm == Harm::starve ? "death.attack.starve"
                          : harm == Harm::kill ? "death.attack.genericKill"
+                         : harm == Harm::magic ? "death.attack.magic"
+                         : harm == Harm::wither ? "death.attack.wither"
                          : fall_distance > 5.0 ? "death.fell.accident.generic" : "death.attack.fall";
         auto with = nbt::Tag::list(nbt::TagType::compound);
-        auto name = nbt::Tag::compound();
-        name.set("text", nbt::Tag::string(p.name));
-        with.push(std::move(name));
+        with.push(display_name(p));
         auto text = nbt::Tag::compound();
-        text.set("translate", nbt::Tag::string(key));
         text.set("with", std::move(with));
+        text.set("translate", nbt::Tag::string(key));
         p.peer->send(wire.combat_kill(p.entity_id, text));
         broadcast(wire.system_chat(text));
         log_info(std::format("{} died ({})", p.name, key));
-        const auto remove = wire.remove_entities({p.entity_id});
+        // The death animation, for the player and those who see them; the
+        // body stays in their view until the player respawns.
+        const auto dying = wire.entity_event(p.entity_id, 3);
+        p.peer->send(dying);
         for (const auto viewer : p.seen_by)
-            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(remove);
-        p.seen_by.clear();
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(dying);
+    }
+    // A player's name in messages, as both official servers write it
+    // (client/effects_heal): a click suggests "/tell <name> ", a hover shows
+    // the player entity, a shift-click inserts the name; 1.21.5 and later
+    // write the events' new form. The keys come in the official servers' order.
+    nbt::Tag display_name(const Player& p) const {
+        auto uuid = nbt::Tag::int_array({static_cast<std::int32_t>(p.uuid.high >> 32), static_cast<std::int32_t>(p.uuid.high),
+                                         static_cast<std::int32_t>(p.uuid.low >> 32), static_cast<std::int32_t>(p.uuid.low)});
+        auto name = nbt::Tag::compound();
+        if (wire.protocol() >= 772) {
+            auto click = nbt::Tag::compound();
+            click.set("action", nbt::Tag::string("suggest_command"));
+            click.set("command", nbt::Tag::string(std::format("/tell {} ", p.name)));
+            auto hover = nbt::Tag::compound();
+            hover.set("name", nbt::Tag::string(p.name));
+            hover.set("action", nbt::Tag::string("show_entity"));
+            hover.set("id", nbt::Tag::string("minecraft:player"));
+            hover.set("uuid", std::move(uuid));
+            name.set("click_event", std::move(click));
+            name.set("insertion", nbt::Tag::string(p.name));
+            name.set("text", nbt::Tag::string(p.name));
+            name.set("hover_event", std::move(hover));
+        } else {
+            auto contents = nbt::Tag::compound();
+            contents.set("name", nbt::Tag::string(p.name));
+            contents.set("id", std::move(uuid));
+            contents.set("type", nbt::Tag::string("minecraft:player"));
+            auto hover = nbt::Tag::compound();
+            hover.set("contents", std::move(contents));
+            hover.set("action", nbt::Tag::string("show_entity"));
+            auto click = nbt::Tag::compound();
+            click.set("action", nbt::Tag::string("suggest_command"));
+            click.set("value", nbt::Tag::string(std::format("/tell {} ", p.name)));
+            name.set("hoverEvent", std::move(hover));
+            name.set("clickEvent", std::move(click));
+            name.set("insertion", nbt::Tag::string(p.name));
+            name.set("text", nbt::Tag::string(p.name));
+        }
+        return name;
     }
 
     // Respawning at the world spawn with full health and hunger.
@@ -1773,8 +1872,17 @@ struct Game::Impl final : GameServices {
         p.attributes_changed.clear();
         p.attributes_decided.clear();
         p.arrival = Player::Arrival::again;
-        // Those the client saw are gone with its entities: they appear again.
-        for (auto& [oid, o] : players) o.seen_by.erase(p.peer->id());
+        // Those the client saw go before the respawn, and appear again after
+        // it; those who saw the player see the body go and the player appear
+        // again (client/effects_heal).
+        std::vector<std::int32_t> seen;
+        for (auto& [oid, o] : players)
+            if (o.seen_by.erase(p.peer->id())) seen.push_back(o.entity_id);
+        if (!seen.empty()) p.peer->send(wire.remove_entities(seen));
+        const auto body = wire.remove_entities({p.entity_id});
+        for (const auto viewer : p.seen_by)
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(body);
+        p.seen_by.clear();
         p.health = 20.0f;
         p.food = 20;
         p.saturation = 5.0f;
@@ -1782,6 +1890,7 @@ struct Game::Impl final : GameServices {
         p.food_timer = 0;
         p.hurt_cooldown = 0;
         p.last_hurt = 0.0f;
+        p.hurt_marked = false;
         p.fall_distance = 0.0;
         p.floating = false;
         p.floating_ticks = 0;
@@ -1875,6 +1984,13 @@ struct Game::Impl final : GameServices {
     // level underneath, when both).
     void tick_effects(Player& p) {
         for (auto it = p.effects.begin(); it != p.effects.end();) {
+            // What it does this tick, by the time its shown level has left
+            // before it counts down (an infinite one by the player's age).
+            if (const auto& shown = it->levels.front(); shown.duration != 0) {
+                const auto time = shown.duration == gameplay::effects::infinite ? static_cast<std::int32_t>(p.ticks_alive % 0x7FFFFFFF)
+                                                                                 : shown.duration;
+                if (gameplay::effects::acts(it->id, time, shown.amplifier)) effect_acts(p, it->id, shown.amplifier);
+            }
             const auto t = gameplay::effects::tick(*it);
             if (t.next) send_effect(p, *it, false);
             if (t.ended) {
@@ -1891,6 +2007,35 @@ struct Game::Impl final : GameServices {
             ++it;
         }
     }
+    // An effect that heals, hurts or feeds, in a tick it acts (client/effects_heal,
+    // both versions): instant health heals 4 and instant damage hurts 6
+    // (magic), doubled per level; regeneration heals 1 below the maximum
+    // health; poison hurts 1 (magic) above 1 health; wither hurts 1 (wither);
+    // hunger tires by 0.005 per level; saturation gives 1 food and 2
+    // saturation per level (the saturation up to the food).
+    void effect_acts(Player& p, std::uint8_t id, std::int32_t amplifier) {
+        const auto doubled = [&](float base) { return std::ldexp(base, std::clamp(amplifier, 0, 127)); };
+        switch (id) {
+        case 5: heal(p, doubled(4.0f)); break;
+        case 6: hurt(p, doubled(6.0f), Harm::magic); break;
+        case 9:
+            if (p.health < max_health(p)) heal(p, 1.0f);
+            break;
+        case 18:
+            if (p.health > 1.0f) hurt(p, 1.0f, Harm::magic);
+            break;
+        case 19: hurt(p, 1.0f, Harm::wither); break;
+        case 16: exhaust(p, 0.005f * static_cast<float>(amplifier + 1)); break;
+        case 22: {
+            const auto n = std::clamp(amplifier + 1, 0, 20);
+            p.food = std::min(p.food + n, 20);
+            p.saturation = std::clamp(p.saturation + static_cast<float>(n) * 2.0f, 0.0f, static_cast<float>(p.food));
+            break;
+        }
+        default: break;
+        }
+    }
+
     // What the effects decide of the entity's data: the invisibility and
     // glowing flags, a particle for each effect showing particles, and
     // whether all of those are ambient (left as it was without effects).
@@ -2172,6 +2317,7 @@ struct Game::Impl final : GameServices {
     // floating kick after 80 ticks.
     void update_vitals(bool world_runs) {
         std::vector<std::uint64_t> kicked;
+        tell_hurt_velocities();
         for (auto& [id, p] : players) {
             if (!p.dead) {
                 if (p.floating && ++p.floating_ticks > 80) {
@@ -3904,7 +4050,8 @@ struct Game::Impl final : GameServices {
         for (auto& [id, p] : players)
             for (auto& [oid, o] : players) {
                 if (oid == id) continue;
-                const bool visible = !p.dead && o.sent.contains(chunk_at(p.pos));
+                // A dead player stays until they respawn (client/effects_heal).
+                const bool visible = o.sent.contains(chunk_at(p.pos));
                 if (visible && p.seen_by.insert(oid).second) {
                     // The entity, its data, then its attributes (client/attribute_join).
                     o.peer->send(wire.spawn_entity(p.entity_id, p.uuid, player_entity_type, p.pos, p.pitch, p.yaw, p.yaw, 0));

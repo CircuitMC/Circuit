@@ -37,6 +37,24 @@ std::optional<std::uint8_t> id(std::string_view name) noexcept {
 
 bool instant(std::uint8_t effect) noexcept { return effect == 5 || effect == 6 || effect == 22; }
 
+bool acts(std::uint8_t effect, std::int32_t time, std::int32_t amplifier) noexcept {
+    const auto every = [&](std::int32_t base) {
+        const auto interval = amplifier >= 0 && amplifier < 31 ? base >> amplifier : 0;
+        return interval <= 0 || time % interval == 0;
+    };
+    switch (effect) {
+    case 5:  // instant health
+    case 6:  // instant damage
+    case 16: // hunger
+    case 22: // saturation
+        return true;
+    case 9: return every(50);  // regeneration
+    case 18: return every(25); // poison
+    case 19: return every(40); // wither
+    default: return false;
+    }
+}
+
 bool is_beacon_power(std::uint8_t effect) noexcept {
     // speed, haste, strength, jump boost, regeneration, resistance
     return effect == 0 || effect == 2 || effect == 4 || effect == 7 || effect == 9 || effect == 10;

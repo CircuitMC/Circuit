@@ -3372,6 +3372,181 @@ int main() {
         require(!given(*alice), "y 346.5: out of range");
     });
 
+    suite.run("effects heal, hurt and feed players, who are hurt, die and respawn as both official servers show them", [] {
+        // circuit-clienttest/effects-heal.js: alice in survival, bob in creative
+        // beside her; both versions alike but for the sound ids and the name's form.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            const bool v772 = std::string_view(version) == "1.21.8";
+            GameFixture f(version, offline_config());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            command(1, "gamemode survival");
+            command(1, "gamerule naturalRegeneration false"); // Circuit's default difficulty, easy: food runs down
+            command(1, "tp 8.5 -60 8.5");
+            command(2, "tp 8.5 -60 12.5");
+            for (int k = 0; k < 5; ++k) f.game->tick();
+            // Each player's entity id, from their login.
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = name;
+            }
+            // Since the last call, as text.
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("set_health")) {
+                        const auto health = in.f32().value();
+                        const auto food = in.varint().value();
+                        out.push_back(std::format("health {} food {} saturation {}", health, food, in.f32().value()));
+                    } else if (pk->id == id("damage_event")) {
+                        const auto e = in.varint().value();
+                        out.push_back(std::format("damage {} type {}", who(e), in.varint().value()));
+                    } else if (pk->id == id("set_entity_motion")) {
+                        const auto e = in.varint().value();
+                        const auto x = in.i16().value(), y = in.i16().value(), z = in.i16().value();
+                        out.push_back(std::format("velocity {} {} {} {}", who(e), x, y, z));
+                    } else if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        const auto x = in.i32().value(), y = in.i32().value(), z = in.i32().value();
+                        out.push_back(std::format("sound {} category {} at {} {} {} volume {}", sound, category, x, y, z, in.f32().value()));
+                    } else if (pk->id == id("entity_event")) {
+                        const auto e = in.i32().value();
+                        out.push_back(std::format("status {} {}", who(e), static_cast<int>(in.i8().value())));
+                    } else if (pk->id == id("player_combat_kill")) {
+                        (void)in.varint();
+                        const auto message = protocol::nbt::read_network(in).value();
+                        out.push_back(std::format("death screen {}", message.find("translate")->text()));
+                        // The whole message, keys in order (an int array by its length).
+                        std::function<std::string(const protocol::nbt::Tag&)> text;
+                        text = [&text](const protocol::nbt::Tag& t) -> std::string {
+                            const auto& self = text;
+                            switch (t.type()) {
+                            case protocol::nbt::TagType::string: return std::format("\"{}\"", t.text());
+                            case protocol::nbt::TagType::int_array: return std::format("[I;{}]", t.array().size());
+                            case protocol::nbt::TagType::list: {
+                                std::string out = "[";
+                                for (const auto& i : t.items()) out += (out.size() > 1 ? "," : "") + self(i);
+                                return out + "]";
+                            }
+                            case protocol::nbt::TagType::compound: {
+                                std::string out = "{";
+                                for (std::size_t k = 0; k < t.keys().size(); ++k)
+                                    out += std::format("{}{}:{}", k ? "," : "", t.keys()[k], self(t.items()[k]));
+                                return out + "}";
+                            }
+                            default: return "?";
+                            }
+                        };
+                        out.push_back("message " + text(message));
+                    } else if (pk->id == id("remove_entities")) {
+                        for (auto n = in.varint().value(); n > 0; --n) out.push_back(std::format("removed {}", who(in.varint().value())));
+                    } else if (pk->id == id("add_entity")) {
+                        out.push_back(std::format("spawned {}", who(in.varint().value())));
+                    } else if (pk->id == id("respawn")) {
+                        out.emplace_back("respawn");
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto give = [&](std::string what) { command(1, "effect give " + what); };
+            const std::int32_t magic = 27, wither = 47;
+            const auto hurt = v772 ? 1175 : 1135, death = v772 ? 1174 : 1134;
+            const auto at = std::format("at 68 -480 68");
+            (void)packets(*alice);
+            (void)packets(*bob);
+            // Instant damage: 6, magic; the velocity at the next entity update; bob hears the hurt.
+            give("alice minecraft:instant_damage 1 0");
+            ticks(2);
+            auto a = packets(*alice);
+            auto b = packets(*bob);
+            require(a == std::vector<std::string>{std::format("damage alice type {}", magic), "health 14 food 20 saturation 5", "velocity alice 0 -627 0"},
+                    std::format("{}: instant damage: {}", version, a.size()));
+            require(b == std::vector<std::string>{std::format("damage alice type {}", magic), std::format("sound {} category 7 {} volume 1", hurt, at),
+                                                  "velocity alice 0 -627 0"},
+                    std::format("{}: what bob sees of it", version));
+            // Again at once: the hurt cooldown keeps it out.
+            give("alice minecraft:instant_damage 1 0");
+            ticks(2);
+            require(packets(*alice).empty(), std::format("{}: within the hurt cooldown, nothing", version));
+            // Regeneration I for 10 s: a heal at once, then every 50 ticks (4 in all).
+            ticks(30);
+            give("alice minecraft:regeneration 10 0");
+            ticks(1);
+            require(packets(*alice) == std::vector<std::string>{"health 15 food 20 saturation 5"}, std::format("{}: the first heal at once", version));
+            ticks(210);
+            a = packets(*alice);
+            require(a.size() == 3 && a.back() == "health 18 food 20 saturation 5", std::format("{}: three more heals", version));
+            // Poison III for 1 s (every 6 ticks): the hurt cooldown lets every other one through; magic damage.
+            give("alice minecraft:poison 1 2");
+            ticks(21);
+            a = packets(*alice);
+            require(std::ranges::count(a, std::format("damage alice type {}", magic)) == 2 && std::ranges::count(a, std::string("health 16 food 20 saturation 5")) == 1,
+                    std::format("{}: poison III twice in 20 ticks", version));
+            // Wither V until she dies: the death screen, the death animation, health 0; bob hears the death and keeps the body.
+            ticks(20);
+            (void)packets(*bob);
+            give("alice minecraft:wither 30 4");
+            ticks(200);
+            a = packets(*alice);
+            b = packets(*bob);
+            const auto from = std::ranges::find(a, std::string("death screen death.attack.wither"));
+            const auto message = std::string(v772 ? R"(message {with:[{click_event:{action:"suggest_command",command:"/tell alice "},insertion:"alice",text:"alice",)"
+                                                    R"(hover_event:{name:"alice",action:"show_entity",id:"minecraft:player",uuid:[I;4]}}],translate:"death.attack.wither"})"
+                                                  : R"(message {with:[{hoverEvent:{contents:{name:"alice",id:[I;4],type:"minecraft:player"},action:"show_entity"},)"
+                                                    R"(clickEvent:{action:"suggest_command",value:"/tell alice "},insertion:"alice",text:"alice"}],translate:"death.attack.wither"})");
+            require(from != a.end() && std::vector(from, a.end()) == std::vector<std::string>{"death screen death.attack.wither", message, "status alice 3", "health 0 food 20 saturation 5"},
+                    std::format("{}: the wither's death, the name in the version's form", version));
+            require(std::ranges::count(a, std::format("damage alice type {}", wither)) == 16, std::format("{}: 16 wither hits", version));
+            const auto last = std::ranges::find(b, std::format("sound {} category 7 {} volume 1", death, at));
+            require(last != b.end() && std::vector(last - 1, b.end()) == std::vector<std::string>{std::format("damage alice type {}", wither),
+                        std::format("sound {} category 7 {} volume 1", death, at), "status alice 3"},
+                    std::format("{}: bob hears the death and sees the animation; the body stays", version));
+            // The respawn: alice's client drops bob, then sees him again; bob sees the body go and alice come back.
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            ticks(2);
+            a = packets(*alice);
+            b = packets(*bob);
+            require(a.size() >= 3 && a[0] == "removed bob" && a[1] == "respawn" && std::ranges::count(a, std::string("spawned bob")) == 1,
+                    std::format("{}: alice respawns", version));
+            require(b == std::vector<std::string>{"removed alice", "spawned alice"}, std::format("{}: bob sees her come back", version));
+            // Hunger L for 5 s: 25 exhaustion, the saturation, then a point of food.
+            command(1, "tp 8.5 -60 8.5");
+            ticks(2);
+            (void)packets(*alice);
+            give("alice minecraft:hunger 5 49");
+            ticks(110);
+            require(packets(*alice) == std::vector<std::string>{"health 20 food 20 saturation 0", "health 20 food 19 saturation 0"},
+                    std::format("{}: hunger", version));
+            // Saturation I: a point of food and 2 saturation.
+            give("alice minecraft:saturation 1 0");
+            ticks(2);
+            require(packets(*alice) == std::vector<std::string>{"health 20 food 20 saturation 2"}, std::format("{}: saturation", version));
+            // Bob in creative: no damage, no hurt.
+            (void)packets(*bob);
+            give("bob minecraft:instant_damage 1 1");
+            give("bob minecraft:wither 2 2");
+            ticks(45);
+            b = packets(*bob);
+            require(std::ranges::none_of(b, [](const auto& t) { return t.starts_with("damage") || t.starts_with("health"); }),
+                    std::format("{}: a creative player is not hurt", version));
+        }
+    });
+
     suite.run("status effects are saved with the players", [] {
         const auto dir = temporary_directory();
         auto config = offline_config();

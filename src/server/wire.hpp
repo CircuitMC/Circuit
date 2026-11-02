@@ -287,6 +287,14 @@ public:
     // and pitch 1, as both official servers send a beacon's; the seed varies
     // on them).
     Bytes sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int64_t seed) const;
+    // A player's own sounds (category player): hurt, death, and the falls
+    // beyond and within 4 blocks of damage, at the player's position.
+    enum class PlayerSound : std::uint8_t { hurt, death, big_fall, small_fall };
+    Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed) const;
+    // An entity event (entity_event): 3 a living entity's death.
+    Bytes entity_event(std::int32_t entity_id, std::int8_t event) const;
+    // An entity's velocity (set_entity_motion).
+    Bytes entity_motion(std::int32_t entity_id, Vec3 velocity) const;
     // A block entity's data for clients (block_entity_data): its type by the
     // protocol's id, and its tag.
     Bytes block_entity_data(WirePosition at, std::int32_t type, const protocol::nbt::Tag& tag) const;

@@ -6576,6 +6576,27 @@ int main() {
         require(!fx::tick(e).again, "not when given for 600");
     });
 
+    suite.run("effects that heal, hurt or feed act in the ticks both official servers act", [] {
+        // circuit-clienttest/effects-heal.js: by the time the shown level has
+        // left before it counts down, and the amplifier.
+        namespace fx = circuit::gameplay::effects;
+        const auto id = [](std::string_view name) { return *fx::id(name); };
+        const auto count = [&](std::string_view name, std::int32_t duration, std::int32_t amplifier) {
+            int n = 0;
+            for (std::int32_t t = duration; t > 0; --t) n += fx::acts(id(name), t, amplifier) ? 1 : 0;
+            return n;
+        };
+        require(fx::acts(id("regeneration"), 200, 0) && !fx::acts(id("regeneration"), 199, 0), "regeneration I acts at once, every 50 ticks");
+        require(count("regeneration", 200, 0) == 4 && count("regeneration", 100, 1) == 4 && count("regeneration", 20, 5) == 20,
+                "regeneration I for 10 s, II for 5 s, VI for 1 s");
+        require(count("poison", 200, 0) == 8 && count("poison", 100, 2) == 16 && !fx::acts(id("poison"), 100, 2) && fx::acts(id("poison"), 96, 2),
+                "poison every 25 ticks, halved per level (the hurt cooldown keeps half of poison III's out)");
+        require(count("wither", 120, 0) == 3 && count("wither", 60, 2) == 6 && count("wither", 40, 6) == 40, "wither every 40 ticks, halved per level, then every tick");
+        for (const auto* every : {"instant_health", "instant_damage", "hunger", "saturation"})
+            require(count(every, 3, 0) == 3, std::format("{} acts every tick it lasts", every));
+        require(!fx::acts(id("speed"), 200, 0) && !fx::acts(id("absorption"), 200, 0), "the others do not act");
+    });
+
     suite.run("effects modify players' attributes as both official servers send them", [] {
         // circuit-clienttest/attributes.js and attributes-order.js, both versions identical.
         namespace at = circuit::gameplay::attributes;

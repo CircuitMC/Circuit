@@ -24,6 +24,14 @@ std::optional<std::uint8_t> id(std::string_view name) noexcept;
 // Instant health, instant damage and saturation: /effect counts their
 // duration in ticks where others count seconds.
 bool instant(std::uint8_t effect) noexcept;
+// Whether an effect that heals, hurts or feeds acts in a tick, by the time
+// its shown level has left before the tick counts it down (for an infinite
+// level, the entity's age) and its amplifier, as both official servers act
+// (client/effects_heal): instant health and damage, saturation and hunger in
+// every tick they last; regeneration every 50, poison every 25 and wither
+// every 40 ticks, halved per level (every tick once that reaches 0); no
+// other effect.
+bool acts(std::uint8_t effect, std::int32_t time, std::int32_t amplifier) noexcept;
 // The powers a beacon gives: speed, haste, resistance, jump boost, strength
 // and regeneration (minecraft.wiki "Beacon").
 bool is_beacon_power(std::uint8_t effect) noexcept;

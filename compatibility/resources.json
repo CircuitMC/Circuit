@@ -19,9 +19,10 @@
     "effect": {
       "impl": "partial",
       "evidence": "compared",
-      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, and haste's, conduit power's and mining fatigue's in digging; the effects' other consequences are not modeled yet",
+      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, haste's, conduit power's and mining fatigue's in digging, and those of the effects that heal, hurt or feed (instant health and damage, regeneration, poison, wither, hunger, saturation); the effects' other consequences are not modeled yet",
       "cases": [
-        "client/effect_particles"
+        "client/effect_particles",
+        "client/effects_heal"
       ]
     },
     "enchantment": {
@@ -6246,19 +6247,40 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/vitals"
+          "client/vitals",
+          "client/effects_heal"
         ]
+      },
+      "magic": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/effects_heal"
+        ],
+        "note": "Instant damage and poison"
       },
       "out_of_world": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
           "client/vitals"
-        ]
+        ],
+        "note": "Its sounds and the velocity told were not recorded"
       },
       "starve": {
         "impl": "partial",
-        "evidence": "documented"
+        "evidence": "compared",
+        "cases": [
+          "client/effects_heal"
+        ]
+      },
+      "wither": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/effects_heal"
+        ],
+        "note": "The wither effect"
       }
     },
     "biome": {
