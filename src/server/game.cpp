@@ -173,6 +173,10 @@ struct Player {
     std::optional<float> told_health;
     std::uint8_t told_skin_parts{};
     std::uint8_t told_main_arm{1};
+    std::uint8_t told_flags{};  // the shared flags (index 0) last told
+    std::int32_t told_pose{};   // the pose (index 6) last told: 0 standing
+    // A spectator's camera: the entity whose view it follows (client/spectators).
+    std::optional<std::int32_t> camera;
     // A new entity's first data is due (`fresh`); once sent, it and the tick
     // it went in: those who see the entity appear later in that tick get it
     // after the appearance, as both official servers send it twice then.
@@ -851,6 +855,81 @@ struct Game::Impl final : GameServices {
     }
     void message(Player& p, std::string text, std::string_view color = "gray") {
         p.peer->send(wire.system_chat(nbt::colored_text(std::move(text), color)));
+    }
+
+    // A game mode change, as both official servers tell it (client/spectators):
+    // the abilities, the game mode event, the player list's game mode for
+    // everyone, the abilities again. Spectators fly permanently; creative
+    // players may fly and build instantly. A spectator leaves the view of
+    // those who are not at once (on both official servers the invisibility
+    // came first in two of eight runs: when their entity tracker ran before
+    // the spectator's next move).
+    void set_game_mode(Player& p, std::uint8_t mode) {
+        const bool was_spectator = p.game_mode == spectator;
+        p.game_mode = mode;
+        p.digging.reset();
+        const auto abilities_packet = wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f);
+        p.peer->send(abilities_packet);
+        p.peer->send(wire.game_event(3, static_cast<float>(p.game_mode)));
+        broadcast(wire.player_info_game_mode(p.uuid, p.game_mode));
+        p.peer->send(abilities_packet);
+        p.flying = p.game_mode == spectator; // as the abilities just sent say (a creative flyer stops flying)
+        if (mode != spectator && p.camera) set_camera(p, std::nullopt);
+        if (mode == spectator && !was_spectator) {
+            const auto gone = wire.remove_entities({p.entity_id});
+            for (auto it = p.seen_by.begin(); it != p.seen_by.end();) {
+                const auto o = players.find(*it);
+                if (o != players.end() && o->second.game_mode != spectator) {
+                    o->second.peer->send(gone);
+                    it = p.seen_by.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        }
+        game_mode_attributes(p);
+    }
+    // A spectator's camera: an entity it follows (its view and position), or
+    // its own (none); the client is told and teleported to where it now looks
+    // from (client/spectators).
+    void set_camera(Player& p, std::optional<std::int32_t> entity) {
+        p.camera = entity;
+        p.peer->send(wire.set_camera(entity.value_or(p.entity_id)));
+        if (const auto at = entity ? entity_position(*entity) : std::optional(p.pos)) {
+            place_spectator(p, *at);
+            teleport(p, *at);
+        }
+    }
+    // A spectator moved by its camera or a teleport: its chunks and tickets
+    // follow it, as a move's do.
+    void place_spectator(Player& p, Vec3 at) {
+        p.pos = at;
+        p.moved = true;
+        if (const auto chunk = chunk_at(at); chunk.x != p.center.x || chunk.z != p.center.z) {
+            p.center = chunk;
+            p.peer->send(wire.chunk_center(chunk.x, chunk.z));
+            move_tickets(p, chunk);
+        }
+    }
+    // Where an entity Circuit shows is: a living player or a tracked entity
+    // (none if gone).
+    std::optional<Vec3> entity_position(std::int32_t entity) const {
+        for (const auto& [id, o] : players)
+            if (o.entity_id == entity) return o.dead ? std::nullopt : std::optional(o.pos);
+        for (const auto& [id, t] : tracked)
+            if (t.protocol_id == entity) return t.last;
+        return std::nullopt;
+    }
+    // A spectator follows its camera's entity each tick, and goes back to its
+    // own when the shift key is down or the entity is gone.
+    void follow_camera(Player& p) {
+        if (!p.camera || p.dead) return;
+        const auto at = entity_position(*p.camera);
+        if (!at || p.sneaking || p.game_mode != spectator) {
+            set_camera(p, std::nullopt);
+            return;
+        }
+        if (p.pos.x != at->x || p.pos.y != at->y || p.pos.z != at->z) place_spectator(p, *at);
     }
 
     // ---- joining and leaving ------------------------------------------------
@@ -1863,6 +1942,7 @@ struct Game::Impl final : GameServices {
     void die(Player& p, Harm harm, double fall_distance) {
         p.dead = true;
         p.dead_ticks = 0;
+        p.camera.reset(); // the death screen replaces the view; a respawn has its own
         p.digging.reset();
         p.floating = false;
         p.fall_distance = 0.0;
@@ -2166,13 +2246,14 @@ struct Game::Impl final : GameServices {
         return v;
     }
     // The entity's data as last told, for a client that has not seen it:
-    // the entries that differ from a new entity's, if any. Only the effects'
-    // bits of the shared flags are sent (the others, sneaking and sprinting
-    // among them, are not).
+    // the entries that differ from a new entity's (the shared flags hold the
+    // effects', a spectator's and the shift key's bits; sprinting's is not
+    // sent yet).
     Bytes shown_data(const Player& p) const {
         const auto& v = p.effect_view;
         Wire::PlayerData d;
-        if (v.flags != 0) d.flags = v.flags;
+        if (p.told_flags != 0) d.flags = p.told_flags;
+        if (p.told_pose != 0) d.pose = p.told_pose;
         const auto health = p.told_health.value_or(p.health);
         if (health != 1.0f) d.health = health; // a new living entity's is 1
         if (!v.particles.empty()) d.particles = v.particles;
@@ -2217,13 +2298,20 @@ struct Game::Impl final : GameServices {
                 p.effects_decided.reset();
                 const auto& now = decided.view;
                 const auto& was = p.effect_view;
-                if (now.flags != was.flags) d.flags = now.flags;
                 if (decided.effects && !(now.particles.empty() && was.particles.empty())) d.particles = now.particles;
                 if (now.ambient != was.ambient) d.ambient = now.ambient;
                 if (now.absorption != was.absorption) d.absorption = now.absorption;
                 p.effect_view = now;
             }
-            if (!d.flags && !d.health && !d.particles && !d.ambient && !d.absorption && !d.skin_parts && !d.main_hand) continue;
+            // The shared flags (the effects' with a spectator's invisibility and
+            // the shift key) and the pose (crouching), when they changed.
+            if (!p.fresh) {
+                if (const auto flags = shared_flags(p); flags != p.told_flags) d.flags = flags;
+                if (const auto pose = pose_of(p); pose != p.told_pose) d.pose = pose;
+            }
+            if (!d.flags && !d.pose && !d.health && !d.particles && !d.ambient && !d.absorption && !d.skin_parts && !d.main_hand) continue;
+            if (d.flags) p.told_flags = *d.flags;
+            if (d.pose) p.told_pose = *d.pose;
             if (d.health) p.told_health = *d.health;
             if (d.skin_parts) p.told_skin_parts = *d.skin_parts;
             if (d.main_hand) p.told_main_arm = *d.main_hand;
@@ -2233,6 +2321,14 @@ struct Game::Impl final : GameServices {
                 if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
         }
     }
+    // A player's shared flags: the effects' (invisibility, glowing), a
+    // spectator's invisibility, and the shift key (client/spectators). And its
+    // pose: crouching while the shift key is down, but for a spectator or a
+    // flyer.
+    std::uint8_t shared_flags(const Player& p) const {
+        return static_cast<std::uint8_t>(p.effect_view.flags | (p.game_mode == spectator ? 0x20 : 0) | (p.sneaking ? 0x02 : 0));
+    }
+    std::int32_t pose_of(const Player& p) const { return p.sneaking && p.game_mode != spectator && !p.flying ? 5 : 0; }
     // A new entity's first data (joined or respawned): its health, its
     // absorption, the skin parts it shows and a left main hand (by the same
     // rule; not recorded), to the
@@ -2242,6 +2338,8 @@ struct Game::Impl final : GameServices {
     void send_fresh_data(Player& p) {
         p.fresh = false;
         Wire::PlayerData d;
+        if (const auto flags = shared_flags(p); flags != 0) d.flags = flags;
+        if (const auto pose = pose_of(p); pose != 0) d.pose = pose;
         d.health = p.health;
         if (p.absorption > 0.0f) d.absorption = p.absorption;
         if (p.skin_parts != 0) d.skin_parts = p.skin_parts;
@@ -2249,6 +2347,8 @@ struct Game::Impl final : GameServices {
         p.told_health = p.health;
         p.told_skin_parts = p.skin_parts;
         p.told_main_arm = p.main_arm;
+        p.told_flags = d.flags.value_or(0);
+        p.told_pose = d.pose.value_or(0);
         const auto data = wire.player_data(p.entity_id, d);
         p.peer->send(data);
         for (const auto viewer : p.seen_by)
@@ -2480,6 +2580,7 @@ struct Game::Impl final : GameServices {
                 }
                 if (!p.floating) p.floating_ticks = 0;
             }
+            follow_camera(p);
             if (world_runs && !p.dead) {
                 ++p.ticks_alive;
                 if (p.hurt_cooldown > 0) --p.hurt_cooldown;
@@ -2558,7 +2659,11 @@ struct Game::Impl final : GameServices {
             return;
         }
         if (d.status != 0 && d.status != 2) return;
-        if (p.game_mode == spectator || !in_reach(p, b) || !gameplay::in_world(bundle, b)) {
+        if (p.game_mode == spectator) {
+            if (d.status == 0) correct(p, b); // the start alone is answered (client/spectators)
+            return;
+        }
+        if (!in_reach(p, b) || !gameplay::in_world(bundle, b)) {
             correct(p, b);
             return;
         }
@@ -2712,6 +2817,12 @@ struct Game::Impl final : GameServices {
         if (p.dead) return;
         p.acks.push_back(u.sequence);
         const auto b = block_pos(u.pos);
+        // A spectator opens a block's window, if it has one (a chest's,
+        // without opening its lid: client/spectators; the other windows by the
+        // same rule, but an ender chest's and a lectern's, not recorded), and
+        // uses nothing.
+        if (p.game_mode == spectator && u.face >= 0 && u.face <= 5 && in_reach(p, b) && gameplay::in_world(bundle, b) && spectator_window(b))
+            open_window(p, b);
         if (u.face < 0 || u.face > 5 || p.game_mode == spectator || !in_reach(p, b) || !gameplay::in_world(bundle, b)) {
             // The client predicted a change at the clicked block or next to it.
             correct(p, b);
@@ -2869,14 +2980,15 @@ struct Game::Impl final : GameServices {
     // A slot toggle of the open window (a crafter's grid); one of another
     // window does nothing.
     void handle(Player& p, intent::SlotState& s) {
-        if (!p.window || s.window != p.window->id || s.slot < 0 || s.slot > 8) return;
+        // A spectator changes nothing through a window it may look into.
+        if (!p.window || p.game_mode == spectator || s.window != p.window->id || s.slot < 0 || s.slot > 8) return;
         admit(contracts::SetSlotEnabled{key_of(p), p.window->pos, static_cast<std::uint8_t>(s.slot), s.enabled});
     }
 
     // A button of the open window (a stonecutter's recipe); a button of
     // another window does nothing.
     void handle(Player& p, intent::ContainerButton& c) {
-        if (!p.window || c.window != p.window->id) return;
+        if (!p.window || p.game_mode == spectator || c.window != p.window->id) return;
         admit(contracts::ContainerButton{key_of(p), p.window->pos, c.button, p.game_mode == creative});
     }
 
@@ -3089,6 +3201,36 @@ struct Game::Impl final : GameServices {
     }
 
     // The powers chosen in an open beacon window.
+    // Whether a spectator's use opens the block's window: one with a window
+    // (not a chiseled bookshelf's slots, an ender chest or a lectern), but a
+    // chest under a block that conducts, which opens for no one.
+    bool spectator_window(BlockPos b) const {
+        const auto s = at(b);
+        if (container_slot_count(b) == 0 || s.is(BlockType::ender_chest) || s.is(BlockType::lectern) || s.is(BlockType::chiseled_bookshelf)) return false;
+        for (const auto part : container_parts_of(b))
+            if (at(part).is(BlockType::chest) && gameplay::conductor(at(part.relative(Direction::up)))) return false;
+        return true;
+    }
+    // A spectator's attack takes the entity's view (client/spectators); other
+    // attacks are not modeled yet.
+    void handle(Player& p, intent::Attack& a) {
+        if (p.dead || p.game_mode != spectator || a.entity == p.entity_id || !entity_position(a.entity)) return;
+        set_camera(p, a.entity);
+    }
+    // The spectator menu's teleport to a player (client/spectators: to the
+    // player's position; other entities are not shown in it here).
+    void handle(Player& p, intent::TeleportToEntity& t) {
+        if (p.dead || p.game_mode != spectator) return;
+        for (const auto& [id, o] : players)
+            if (o.uuid == t.target && &o != &p) {
+                const auto at = o.pos;
+                if (p.camera) set_camera(p, std::nullopt); // its own view first
+                place_spectator(p, at);
+                teleport(p, at);
+                return;
+            }
+    }
+
     // The client's settings: the skin parts and main hand its entity data
     // shows, told at the next entity update (client/player_data).
     void handle(Player& p, intent::ClientInformation& c) {
@@ -3097,7 +3239,7 @@ struct Game::Impl final : GameServices {
     }
 
     void handle(Player& p, intent::SetBeacon& s) {
-        if (!p.window || !at(p.window->pos).is(BlockType::beacon)) return;
+        if (!p.window || p.game_mode == spectator || !at(p.window->pos).is(BlockType::beacon)) return;
         // An id that is not a beacon's power counts as none, as the rules
         // take it; so the log keeps only the powers.
         const auto power = [](std::optional<std::int32_t> e) -> std::optional<std::int32_t> {
@@ -3108,7 +3250,7 @@ struct Game::Impl final : GameServices {
     }
 
     void handle(Player& p, intent::RenameItem& r) {
-        if (!p.window || !gameplay::is_anvil(at(p.window->pos))) return;
+        if (!p.window || p.game_mode == spectator || !gameplay::is_anvil(at(p.window->pos))) return;
         std::string name;
         std::size_t units = 0;
         for (std::size_t i = 0; i < r.name.size();) {
@@ -3193,14 +3335,8 @@ struct Game::Impl final : GameServices {
             move_tickets(p, chunk);
         } else if (args[0] == "gamemode" && args.size() == 2
                    && (args[1] == "survival" || args[1] == "creative" || args[1] == "spectator")) {
-            p.game_mode = args[1] == "survival" ? survival : args[1] == "creative" ? creative : spectator;
-            p.digging.reset();
-            p.peer->send(wire.game_event(3, static_cast<float>(p.game_mode)));
-            // Spectators fly permanently; creative players may fly and build instantly.
-            p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
-            p.flying = p.game_mode == spectator; // as the abilities just sent say (a creative flyer stops flying)
-            broadcast(wire.player_info_add({entry(p)}));
-            game_mode_attributes(p);
+            const auto mode = args[1] == "survival" ? survival : args[1] == "creative" ? creative : spectator;
+            set_game_mode(p, mode);
         } else if (args[0] == "forceload") {
             forceload(p, std::span(args).subspan(1));
         } else if (args[0] == "gamerule" && c.text.starts_with("gamerule")) {
@@ -4220,7 +4356,9 @@ struct Game::Impl final : GameServices {
                 // A dead player stays until they respawn or the body goes
                 // (client/effects_heal, client/player_data), and one whose
                 // body went sees no one.
-                const bool visible = o.sent.contains(chunk_at(p.pos)) && !(p.dead && p.dead_ticks >= 20) && !(o.dead && o.dead_ticks >= 20);
+                // A spectator only to spectators (client/spectators).
+                const bool visible = o.sent.contains(chunk_at(p.pos)) && !(p.dead && p.dead_ticks >= 20) && !(o.dead && o.dead_ticks >= 20)
+                                  && (p.game_mode != spectator || o.game_mode == spectator);
                 if (visible && p.seen_by.insert(oid).second) {
                     // The entity, its data, then its attributes (client/attribute_join),
                     // and a new entity's first data again (client/player_data).

@@ -3714,6 +3714,166 @@ int main() {
         }
     });
 
+    suite.run("spectators are seen by spectators only, look on, and sneak as both official servers show them", [] {
+        // circuit-clienttest/spectators.js, both versions alike.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            const bool v772 = std::string_view(version) == "1.21.8";
+            GameFixture f(version, offline_config());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = name;
+            }
+            std::map<std::uint64_t, std::size_t> seen;
+            // Since the last call, as text.
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("player_abilities")) out.push_back(std::format("abilities {}", in.u8().value()));
+                    else if (pk->id == id("game_event")) {
+                        const auto event = in.u8().value();
+                        if (event == 3) out.push_back(std::format("game mode {}", in.f32().value()));
+                    } else if (pk->id == id("player_info_update")) {
+                        const auto actions = in.u8().value();
+                        out.push_back(std::format("list {}", actions));
+                    } else if (pk->id == id("remove_entities")) {
+                        for (auto n = in.varint().value(); n > 0; --n) out.push_back(std::format("removed {}", who(in.varint().value())));
+                    } else if (pk->id == id("add_entity")) {
+                        out.push_back(std::format("spawned {}", who(in.varint().value())));
+                    } else if (pk->id == id("set_entity_data")) {
+                        const auto e = in.varint().value();
+                        for (auto index = in.u8().value(); index != 0xFF; index = in.u8().value()) {
+                            const auto type = in.varint().value();
+                            if (type == 0) {
+                                const auto v = in.u8().value();
+                                if (index == 0) out.push_back(std::format("flags {} {}", who(e), static_cast<int>(v)));
+                            } else if (type == 21) out.push_back(std::format("pose {} {}", who(e), in.varint().value()));
+                            else if (type == 3) (void)in.f32();
+                            else break;
+                        }
+                    } else if (pk->id == id("set_camera")) {
+                        out.push_back(std::format("camera {}", who(in.varint().value())));
+                    } else if (pk->id == id("block_update")) {
+                        const auto pos = in.position().value();
+                        out.push_back(std::format("block {} {} {}", pos.x, pos.y, pos.z));
+                    } else if (pk->id == id("open_screen")) {
+                        (void)in.varint();
+                        out.push_back(std::format("window {}", in.varint().value()));
+                    } else if (pk->id == id("player_position")) {
+                        out.emplace_back("position");
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            command(1, "tp 8.5 -60 8.5");
+            command(2, "tp 8.5 -60 12.5");
+            ticks(3);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            // Sneaking: the shift key flag and the crouching pose, to the player and those who see them (1.21.4 by the player command).
+            const auto sneak = [&](std::uint64_t who, bool on) {
+                f.game->submit(who, I{server::intent::Sneak{on}});
+                ticks(1);
+            };
+            sneak(1, true);
+            require(packets(*alice) == std::vector<std::string>{"flags alice 2", "pose alice 5"} && packets(*bob) == std::vector<std::string>{"flags alice 2", "pose alice 5"},
+                    std::format("{}: alice crouches", version));
+            sneak(1, false);
+            require(packets(*bob) == std::vector<std::string>{"flags alice 0", "pose alice 0"}, std::format("{}: and stands", version));
+            (void)packets(*alice);
+            // Bob a spectator: the abilities, the game mode, the list, the abilities; alice no longer sees him; he is invisible.
+            command(2, "gamemode spectator");
+            ticks(1);
+            auto b = packets(*bob);
+            require(b.size() >= 5 && b[0] == "abilities 7" && b[1] == "game mode 3" && b[2] == "list 4" && b[3] == "abilities 7" &&
+                        std::ranges::count(b, std::string("flags bob 32")) == 1,
+                    std::format("{}: bob's view of it", version));
+            require(packets(*alice) == std::vector<std::string>{"list 4", "removed bob"}, std::format("{}: alice's", version));
+            // Alice a spectator too: she sees him; back in survival, not.
+            command(1, "gamemode spectator");
+            ticks(1);
+            auto a = packets(*alice);
+            require(std::ranges::count(a, std::string("spawned bob")) == 1 && std::ranges::count(a, std::string("flags bob 32")) == 1, std::format("{}: spectators see spectators", version));
+            command(1, "gamemode survival");
+            ticks(1);
+            a = packets(*alice);
+            require(std::ranges::count(a, std::string("removed bob")) == 1, std::format("{}: not after", version));
+            (void)packets(*bob);
+            // A spectator's dig is answered once; a chest's window opens without its lid.
+            f.game->submit(2, I{server::intent::Dig{0, {8, -61, 12}, 1, 1}});
+            f.game->submit(2, I{server::intent::Dig{2, {8, -61, 12}, 1, 2}});
+            ticks(1);
+            require(std::ranges::count(packets(*bob), std::string("block 8 -61 12")) == 1, std::format("{}: one correction", version));
+            command(1, "setblock 9 -60 13 minecraft:chest[facing=north,type=single,waterlogged=false]");
+            ticks(2);
+            (void)packets(*bob);
+            f.game->submit(2, I{server::intent::UseOn{0, {9, -60, 13}, 1, 0.5f, 1.0f, 0.5f, false, 3}});
+            ticks(1);
+            b = packets(*bob);
+            require(!b.empty() && b[0] == "window 2", std::format("{}: the chest's window", version));
+            // Attacking alice takes her view; sneaking gives it back.
+            f.game->submit(2, I{server::intent::Attack{std::ranges::find_if(names, [](const auto& e) { return e.second == "alice"; })->first}});
+            ticks(1);
+            require(packets(*bob) == std::vector<std::string>{"camera alice", "position"}, std::format("{}: alice's view", version));
+            sneak(2, true);
+            b = packets(*bob);
+            require(b.size() == 3 && b[0] == "flags bob 34" && b[1] == "camera bob" && b[2] == "position", std::format("{}: back to his", version));
+            sneak(2, false);
+            (void)packets(*bob);
+            // The chest's lid did not rise for the spectator (no block event for the other player).
+            {
+                const auto event = f.wire.ids().id(State::play, Bound::clientbound, "block_event");
+                std::lock_guard lock(alice->mutex);
+                require(std::ranges::none_of(alice->packets, [&](const auto& bytes) {
+                            const auto pk = protocol::open_packet(bytes);
+                            return pk && pk->id == event;
+                        }),
+                        std::format("{}: no lid", version));
+            }
+            // The packets: the shift key from player_input on 1.21.8 and from the player command on 1.21.4;
+            // interact's three forms (only the attack is taken); the spectator menu's teleport.
+            const auto parse = [&](std::string_view name, const Writer& w) {
+                protocol::Reader r(w.bytes());
+                auto parsed = f.wire.parse_play(f.wire.ids().id(State::play, Bound::serverbound, name), r);
+                require(parsed.has_value() && r.remaining() == 0, std::format("{}: {} parsed whole", version, name));
+                return *parsed;
+            };
+            const auto sneaks = [](const std::optional<I>& i) -> std::optional<bool> {
+                if (!i) return std::nullopt;
+                if (const auto* s = std::get_if<server::intent::Sneak>(&*i)) return s->sneaking;
+                return std::nullopt;
+            };
+            require(sneaks(parse("player_input", Writer().u8(0x20))) == (v772 ? std::optional(true) : std::nullopt),
+                    std::format("{}: player_input's shift", version));
+            require(sneaks(parse("player_command", Writer().varint(1).varint(0).varint(0))) == (v772 ? std::nullopt : std::optional(true)) &&
+                        sneaks(parse("player_command", Writer().varint(1).varint(1).varint(0))) == (v772 ? std::nullopt : std::optional(false)),
+                    std::format("{}: the player command's shift", version));
+            const auto attack = parse("interact", Writer().varint(7).varint(1).boolean(false));
+            require(attack && std::holds_alternative<server::intent::Attack>(*attack) && std::get<server::intent::Attack>(*attack).entity == 7,
+                    std::format("{}: an attack", version));
+            require(!parse("interact", Writer().varint(7).varint(0).varint(0).boolean(true)) &&
+                        !parse("interact", Writer().varint(7).varint(2).f32(0.5f).f32(1.0f).f32(0.5f).varint(1).boolean(false)),
+                    std::format("{}: interactions passed over, read whole", version));
+            const auto teleport = parse("teleport_to_entity", Writer().uuid({1, 2}));
+            require(teleport && std::holds_alternative<server::intent::TeleportToEntity>(*teleport), std::format("{}: the spectator menu's teleport", version));
+        }
+    });
+
     suite.run("status effects are saved with the players", [] {
         const auto dir = temporary_directory();
         auto config = offline_config();

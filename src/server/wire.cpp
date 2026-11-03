@@ -26,7 +26,7 @@ struct Wire::Ids {
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
         update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion,
-        sb_client_information;
+        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -125,6 +125,9 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->entity_event = cb(State::play, "entity_event");
     ids->set_entity_motion = cb(State::play, "set_entity_motion");
     ids->sb_client_information = sb(State::play, "client_information");
+    ids->set_camera = cb(State::play, "set_camera");
+    ids->sb_interact = sb(State::play, "interact");
+    ids->sb_teleport_to_entity = sb(State::play, "teleport_to_entity");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -360,6 +363,12 @@ Bytes Wire::player_info_add(const std::vector<PlayerListEntry>& players) const {
     }
     return packet(id_->player_info_update, w);
 }
+Bytes Wire::player_info_game_mode(Uuid player, std::int32_t game_mode) const {
+    Writer w;
+    w.u8(0x04).varint(1).uuid(player).varint(game_mode); // update game mode
+    return packet(id_->player_info_update, w);
+}
+Bytes Wire::set_camera(std::int32_t entity) const { return packet(id_->set_camera, Writer().varint(entity)); }
 Bytes Wire::player_info_remove(const std::vector<Uuid>& players) const {
     Writer w;
     w.varint(static_cast<std::int32_t>(players.size()));
@@ -653,7 +662,7 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
     return packet(id_->update_attributes, w);
 }
 Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
-    const auto& [flags, health, particles, ambient, absorption, skin_parts, main_hand] = d;
+    const auto& [flags, pose, health, particles, ambient, absorption, skin_parts, main_hand] = d;
     // Particle type ids (PrismarineJS minecraft-data particles.json, MIT):
     // the same on both protocols up to infested, the items' and omens' one
     // higher on 772.
@@ -670,6 +679,7 @@ Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
     Writer w;
     w.varint(id);
     if (flags) w.u8(0).varint(0).u8(*flags); // index 0 (shared flags), type Byte
+    if (pose) w.u8(6).varint(21).varint(*pose); // index 6 (pose), type Pose
     if (health) w.u8(9).varint(3).f32(*health); // index 9 (health), type Float
     if (particles) {
         w.u8(10).varint(18).varint(static_cast<std::int32_t>(particles->size())); // index 10 (effect particles), type Particles
@@ -906,6 +916,34 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
         TRY(action, r.varint());
         return done(intent::ClientCommand{*action});
     }
+    if (id == i.sb_interact) {
+        // The entity, the action (0 interact, 1 attack, 2 interact at a
+        // point: its x, y, z and hand; 0 its hand), then sneaking: attacks
+        // only for now.
+        TRY(entity, r.varint());
+        TRY(action, r.varint());
+        if (*action < 0 || *action > 2) return std::unexpected(CodecError::malformed);
+        if (*action == 2) {
+            TRY(x, r.f32());
+            TRY(y, r.f32());
+            TRY(z, r.f32());
+            (void)x;
+            (void)y;
+            (void)z;
+        }
+        if (*action != 1) {
+            TRY(hand, r.varint());
+            (void)hand;
+        }
+        TRY(sneaking, r.boolean());
+        (void)sneaking;
+        if (*action != 1) return std::optional<Intent>{};
+        return done(intent::Attack{*entity});
+    }
+    if (id == i.sb_teleport_to_entity) {
+        TRY(target, r.uuid());
+        return done(intent::TeleportToEntity{*target});
+    }
     if (id == i.sb_client_information) {
         // Locale, view distance, chat mode and colors, then what matters here;
         // text filtering, server listings and the particle level follow.
@@ -995,7 +1033,10 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
         return done(intent::Chat{std::move(*text)});
     }
     if (id == i.sb_player_input) {
+        // The shift key sneaks from protocol 770 on; 769 takes it from the
+        // player command (client/spectators: its server ignores this one's).
         TRY(flags, r.u8());
+        if (protocol_ < 770) return std::optional<Intent>{};
         return done(intent::Sneak{(*flags & 0x20) != 0});
     }
     if (id == i.sb_player_abilities) {
@@ -1003,10 +1044,13 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
         return done(intent::Flying{(*flags & 0x02) != 0});
     }
     if (id == i.sb_player_command) {
-        // Entity id, action and jump boost; only sprinting is used. Protocol
-        // 769 still lists the sneaking actions first.
+        // Entity id, action and jump boost: sprinting, and on protocol 769
+        // the shift key, which its sneaking actions list first.
         TRY(entity, r.varint());
         TRY(action, r.varint());
+        TRY(boost, r.varint());
+        (void)boost;
+        if (protocol_ < 770 && (*action == 0 || *action == 1)) return done(intent::Sneak{*action == 0});
         const std::int32_t start = protocol_ >= 770 ? 1 : 3;
         if (*action == start) return done(intent::Sprint{true});
         if (*action == start + 1) return done(intent::Sprint{false});

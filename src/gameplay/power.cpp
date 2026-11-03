@@ -191,3 +191,7 @@ bool has_neighbor_signal(RuleContext& ctx, BlockPos pos) { return best_neighbor_
 namespace circuit::gameplay {
 bool redstone_conductor(BlockState s) noexcept { return detail::is_conductor(s); }
 } // namespace circuit::gameplay
+
+namespace circuit::gameplay {
+bool conductor(BlockState s) noexcept { return detail::is_conductor(s); }
+} // namespace circuit::gameplay

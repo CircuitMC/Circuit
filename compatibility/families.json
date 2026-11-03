@@ -2172,7 +2172,13 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
-            "client/vitals"
+            "client/vitals",
+            "client/spectators"
+          ],
+          "note": "/gamemode's abilities, game mode event and the player list's game mode as both official servers send them; spectators seen by spectators only, invisible, flying through blocks, opening windows without using or taking anything, taking an entity's view by attacking it until the shift key, teleporting by the spectator menu; the shift key's flag and the crouching pose shown to others",
+          "deviations": [
+            "adventure and hardcore modes are not modeled",
+            "a spectator's windows other than a chest's (an ender chest's and a lectern's not opened) were not recorded"
           ]
         },
         {
@@ -2307,7 +2313,7 @@
             "resistance and slow falling change nothing (fall damage is taken in full), nor do fire resistance and water breathing, the omens and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
             "amplifiers above 28 of instant health and damage double without the official servers' integer overflow (not recorded)",
             "only players have effects; /effect takes players by name, @s, @p, @a and @e",
-            "of the shared flags only the effects' (invisibility and glowing) are sent, not sneaking or sprinting",
+            "of the shared flags sprinting's is not sent yet",
             "on 1.21.4 the health regenerated after a levitation's fall differs from the fourth heal (0.33 points where the official server healed 0.5); the fall itself hurts as on both official servers",
             "a player's effects come in id order and players' entity data of one tick in the order they connected; the official servers' orders are their own (for effects one that varies from run to run)",
             "the entity data of a command's effects comes in the next tick, 50 ms after the effect packet, where the official 1.21.8 server took 80 ms (25 ms or more on both official servers)"
@@ -2987,10 +2993,11 @@
           "milestone": "C10",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear",
+          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility",
           "cases": [
             "client/player_data",
-            "client/effects_heal"
+            "client/effects_heal",
+            "client/spectators"
           ]
         },
         {

@@ -130,6 +130,14 @@ struct ClientInformation {
     std::uint8_t skin_parts{};
     std::uint8_t main_hand{1};
 };
+// An attack on an entity (interact, its attack action), by its entity id.
+struct Attack {
+    std::int32_t entity{};
+};
+// A spectator's teleport to an entity, from the spectator menu (teleport_to_entity).
+struct TeleportToEntity {
+    Uuid target;
+};
 // The name typed into the open anvil window.
 struct RenameItem {
     std::string name;
@@ -190,7 +198,7 @@ using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, 
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
                             intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
                             intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe, intent::EditBook,
-                            intent::SetBeacon, intent::ClientInformation>;
+                            intent::SetBeacon, intent::ClientInformation, intent::Attack, intent::TeleportToEntity>;
 
 class Wire {
 public:
@@ -276,6 +284,10 @@ public:
     Bytes keep_alive(std::int64_t id) const;
     Bytes system_chat(const protocol::nbt::Tag& text, bool overlay = false) const;
     Bytes player_info_add(const std::vector<PlayerListEntry>& players) const;
+    // A player's new game mode for the player list (player_info_update, that action alone).
+    Bytes player_info_game_mode(Uuid player, std::int32_t game_mode) const;
+    // What the client's view follows (set_camera): an entity, or its own player.
+    Bytes set_camera(std::int32_t entity) const;
     Bytes player_info_remove(const std::vector<Uuid>& players) const;
     Bytes spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
                        std::int32_t data, Vec3 velocity = {}) const;
@@ -347,11 +359,12 @@ public:
                             std::uint8_t flags) const;
     Bytes remove_mob_effect(std::int32_t entity, std::int32_t effect) const;
     // A player's entity data, each entry when given, in index order: its
-    // shared flags (index 0), its health (9), its effect particles (10),
+    // shared flags (index 0), its pose (6), its health (9), its effect particles (10),
     // whether they are ambient (11), its absorption (15), the skin parts it
     // shows (17) and its main hand (18).
     struct PlayerData {
         std::optional<std::uint8_t> flags;
+        std::optional<std::int32_t> pose; // index 6: 0 standing, 5 crouching
         std::optional<float> health;
         std::optional<std::vector<gameplay::effects::Particle>> particles;
         std::optional<bool> ambient;
@@ -364,7 +377,7 @@ public:
     Bytes effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
                           const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
                           std::optional<float> absorption = std::nullopt) const {
-        return player_data(id, {flags, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt});
+        return player_data(id, {flags, std::nullopt, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt});
     }
     // A player's attributes (client/attributes), in the order given: each
     // with a player's base and its modifiers; those the official servers
