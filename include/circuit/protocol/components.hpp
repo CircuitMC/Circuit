@@ -112,6 +112,21 @@ public:
     // The potion (an id of the potion registry) of the patch's potion
     // contents; nullopt without one.
     [[nodiscard]] std::optional<std::uint32_t> potion_of(const contracts::ComponentPatch& patch) const;
+    // The effects a stack's potion contents add to its potion's (each by its
+    // effect's id and its level; the hidden levels under one left out), and
+    // those of a suspicious stew (amplifier 0, its particles and icon shown);
+    // none without the component (client/eat).
+    struct ItemEffect {
+        std::int32_t effect{};
+        std::int32_t amplifier{};
+        std::int32_t duration{};
+        bool ambient{};
+        bool particles{true};
+        bool icon{true};
+        bool operator==(const ItemEffect&) const = default;
+    };
+    [[nodiscard]] std::vector<ItemEffect> potion_effects_of(const contracts::ComponentPatch& patch) const;
+    [[nodiscard]] std::vector<ItemEffect> stew_effects_of(const contracts::ComponentPatch& patch) const;
     // `base` with the potion of its potion contents set to `potion`, their
     // color, effects and name and its other components kept.
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_potion(const contracts::ComponentPatch& base, std::uint32_t potion,

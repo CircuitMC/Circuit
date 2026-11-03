@@ -19,10 +19,11 @@
     "effect": {
       "impl": "partial",
       "evidence": "compared",
-      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, haste's, conduit power's and mining fatigue's in digging, and those of the effects that heal, hurt or feed (instant health and damage, regeneration, poison, wither, hunger, saturation); the effects' other consequences are not modeled yet",
+      "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, haste's, conduit power's and mining fatigue's in digging, and those of the effects that heal, hurt or feed (instant health and damage, regeneration, poison, wither, hunger, saturation); given by foods, potions and ominous bottles; absorption ending when used up and the omens' sounds; the effects' other consequences are not modeled yet",
       "cases": [
         "client/effect_particles",
-        "client/effects_heal"
+        "client/effects_heal",
+        "client/eat"
       ]
     },
     "enchantment": {
@@ -6042,6 +6043,405 @@
           "maps in the Nether do not explore; banners and item frames do not show on them"
         ],
         "note": "Its map's data reaches the players carrying it, with their markers; held in a hand, it explores the terrain, as on both official servers"
+      },
+      "apple": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "baked_potato": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "beef": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "beetroot": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "beetroot_soup": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "bread": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "carrot": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "chicken": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "chorus_fruit": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cod": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_beef": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_chicken": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_cod": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_mutton": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_porkchop": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_rabbit": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cooked_salmon": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "cookie": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "dried_kelp": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "enchanted_golden_apple": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "glow_berries": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "golden_apple": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "golden_carrot": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "honey_bottle": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Drunk as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "melon_slice": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "mushroom_stew": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "mutton": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "poisonous_potato": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "porkchop": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "potato": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "pufferfish": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "pumpkin_pie": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "rabbit": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "rabbit_stew": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "rotten_flesh": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "salmon": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "spider_eye": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "suspicious_stew": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "sweet_berries": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Eaten as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "tropical_fish": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "milk_bucket": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Drunk as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
+      },
+      "potion": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Drunk as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read",
+          "1.21.8's potion duration scale is not read"
+        ]
+      },
+      "ominous_bottle": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat"
+        ],
+        "note": "Drunk as both official servers run it (client/eat)",
+        "deviations": [
+          "the stack's own food, consumable, use remainder and use cooldown components are not read"
+        ]
       }
     },
     "entity": {

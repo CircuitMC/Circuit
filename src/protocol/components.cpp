@@ -1289,6 +1289,70 @@ std::optional<std::uint32_t> ComponentCodec::potion_of(const contracts::Componen
     return std::nullopt;
 }
 
+std::vector<ComponentCodec::ItemEffect> ComponentCodec::potion_effects_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("potion_contents");
+    if (patch.empty() || patch.protocol() != protocol() || !type) return {};
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // The potion, the custom color, then the effects.
+        Reader r(a.value);
+        const auto has = r.boolean();
+        if (!has || (*has && !r.varint())) return {};
+        const auto colored = r.boolean();
+        if (!colored || (*colored && !r.i32())) return {};
+        const auto n = r.varint();
+        if (!n || *n < 0 || *n > 1024) return {};
+        std::vector<ItemEffect> out;
+        for (std::int32_t k = 0; k < *n; ++k) {
+            ItemEffect e;
+            const auto id = r.varint();
+            if (!id) return {};
+            e.effect = *id;
+            // A level, then optionally the hidden level under it, each the same way.
+            for (bool first = true;; first = false) {
+                const auto amplifier = r.varint();
+                const auto duration = r.varint();
+                const auto ambient = r.boolean();
+                const auto particles = r.boolean();
+                const auto icon = r.boolean();
+                const auto hidden = r.boolean();
+                if (!amplifier || !duration || !ambient || !particles || !icon || !hidden) return {};
+                if (first) {
+                    e.amplifier = *amplifier;
+                    e.duration = *duration;
+                    e.ambient = *ambient;
+                    e.particles = *particles;
+                    e.icon = *icon;
+                }
+                if (!*hidden) break;
+            }
+            out.push_back(e);
+        }
+        return out;
+    }
+    return {};
+}
+
+std::vector<ComponentCodec::ItemEffect> ComponentCodec::stew_effects_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("suspicious_stew_effects");
+    if (patch.empty() || patch.protocol() != protocol() || !type) return {};
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        Reader r(a.value);
+        const auto n = r.varint();
+        if (!n || *n < 0 || *n > 1024) return {};
+        std::vector<ItemEffect> out;
+        for (std::int32_t k = 0; k < *n; ++k) {
+            const auto id = r.varint();
+            const auto duration = r.varint();
+            if (!id || !duration) return {};
+            out.push_back({*id, 0, *duration, false, true, true});
+        }
+        return out;
+    }
+    return {};
+}
+
 std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_potion(const contracts::ComponentPatch& base, std::uint32_t potion,
                                                                                   const ComponentContext& ctx) const {
     const auto type = type_id("potion_contents");

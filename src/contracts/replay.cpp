@@ -137,8 +137,9 @@ private:
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
 // (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes, 39 EditBook,
-// 40 SwapHands, 41 SetBeacon.
+// 40 SwapHands, 41 SetBeacon, 42 ConsumeItem.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<ConsumeItem>(body)) return 42;
     if (std::holds_alternative<SetBeacon>(body)) return 41;
     if (std::holds_alternative<SwapHands>(body)) return 40;
     if (std::holds_alternative<EditBook>(body)) return 39;
@@ -320,6 +321,12 @@ void encode_command(Writer& w, const Command& c) {
         } else if constexpr (std::is_same_v<T, SwapHands>) {
             w.player(body.player);
             w.put(body.slot);
+        } else if constexpr (std::is_same_v<T, ConsumeItem>) {
+            w.player(body.player);
+            w.put(body.slot);
+            w.stack(body.stack);
+            w.put(static_cast<std::uint8_t>(body.creative));
+            w.vec(body.eye);
         } else if constexpr (std::is_same_v<T, SetBeacon>) {
             w.player(body.player);
             w.put(static_cast<std::uint8_t>(body.container.has_value()));
@@ -644,6 +651,16 @@ bool decode_command(Reader& r, Command& c) {
             return false;
         if (primary > 0) b.primary = primary - 1;
         if (secondary > 0) b.secondary = secondary - 1;
+        c.body = b;
+        return true;
+    }
+    case 42: {
+        ConsumeItem b;
+        std::uint8_t creative{};
+        if (!r.player(b.player) || !r.get(b.slot) || !(b.slot == offhand_slot || (b.slot >= hotbar_first && b.slot < hotbar_first + 9)))
+            return false;
+        if (!r.stack(b.stack) || !r.get(creative) || creative > 1 || !r.vec(b.eye)) return false;
+        b.creative = creative == 1;
         c.body = b;
         return true;
     }

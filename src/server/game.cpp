@@ -9,6 +9,8 @@
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/experience.hpp>
+#include <circuit/gameplay/food.hpp>
+#include <circuit/gameplay/potions.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
@@ -175,6 +177,24 @@ struct Player {
     std::uint8_t told_main_arm{1};
     std::uint8_t told_flags{};  // the shared flags (index 0) last told
     std::int32_t told_pose{};   // the pose (index 6) last told: 0 standing
+    // What the player eats or drinks (client/eat): the hand (0 main, 1 off)
+    // and its slot, the stack, the use's length and the ticks it has left;
+    // once they ran out, the consumption admitted (ConsumeItem), finished
+    // with the rules' tick. The living flags (index 8: 1 using an item, 2
+    // the off hand, which stays after the use) and those last told; the
+    // items whose use waits for a cooldown, with the tick it ends.
+    struct Using {
+        std::int32_t hand{};
+        std::uint8_t slot{};
+        contracts::ItemStack stack;
+        std::int32_t ticks{};
+        std::int32_t left{};
+        std::optional<std::uint64_t> consuming;
+    };
+    std::optional<Using> using_item;
+    std::uint8_t living{};
+    std::uint8_t told_living{};
+    std::map<std::uint16_t, std::uint64_t> cooldowns;
     // A spectator's camera: the entity whose view it follows (client/spectators).
     std::optional<std::int32_t> camera;
     // A new entity's first data is due (`fresh`); once sent, it and the tick
@@ -1784,11 +1804,13 @@ struct Game::Impl final : GameServices {
     // ---- vitals --------------------------------------------------------------
     //
     // As the target version keeps them for players (the documented health and
-    // hunger rules). Food only goes down: eating is not modeled.
+    // hunger rules). Food comes back by eating and drinking (below) and with
+    // the saturation effect.
 
     // Whether the player's box touches water.
-    bool in_water(const Player& p) const {
-        const auto box = movement::player_box(p.pos, p.sneaking).deflate(0.001);
+    bool in_water(const Player& p) const { return fluid_in(movement::player_box(p.pos, p.sneaking)); }
+    bool fluid_in(const movement::Aabb& player_box) const {
+        const auto box = player_box.deflate(0.001);
         for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
             for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
                 for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
@@ -1852,24 +1874,30 @@ struct Game::Impl final : GameServices {
     // A player's own sound, for the other players within 16 blocks (the
     // player's client plays its own).
     void sound_around(const Player& p, Wire::PlayerSound sound, float pitch) {
-        const auto packet = wire.player_sound(sound, p.pos, 1.0f, pitch, static_cast<std::int64_t>(sound_seed++));
+        sound_near(p, wire.player_sound(sound, p.pos, 1.0f, pitch, static_cast<std::int64_t>(sound_seed++)), false);
+    }
+    // A sound at a position, for the players within 16 blocks of it (and the
+    // player there, with `self`).
+    void sound_near(const Player& p, const Bytes& packet, bool self, std::optional<Vec3> where = std::nullopt) {
+        const auto at = where.value_or(p.pos);
         for (auto& [oid, o] : players) {
-            if (&o == &p) continue;
-            const double dx = o.pos.x - p.pos.x, dy = o.pos.y - p.pos.y, dz = o.pos.z - p.pos.z;
+            if (&o == &p && !self) continue;
+            const double dx = o.pos.x - at.x, dy = o.pos.y - at.y, dz = o.pos.z - at.z;
             if (dx * dx + dy * dy + dz * dz < 256.0) o.peer->send(packet);
         }
     }
-    // A voice's pitch: 1 give or take 0.2, the difference of two uniform
-    // draws (the official servers draw them from the entity's random).
+    // A uniform draw in [0, 1): the official servers draw from the entity's
+    // random; Circuit's own draws are splitmix64 of a counter.
+    float random_draw() {
+        auto z = (++voice_draws) * 0x9E3779B97F4A7C15ull;
+        z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
+        z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
+        return static_cast<float>((z ^ (z >> 31)) >> 40) / 16777216.0f;
+    }
+    // A voice's pitch: 1 give or take 0.2, the difference of two uniform draws.
     float voice_pitch() {
-        const auto draw = [this] {
-            auto z = (++voice_draws) * 0x9E3779B97F4A7C15ull;
-            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
-            z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
-            return static_cast<float>((z ^ (z >> 31)) >> 40) / 16777216.0f;
-        };
-        const auto a = draw();
-        return (a - draw()) * 0.2f + 1.0f;
+        const auto a = random_draw();
+        return (a - random_draw()) * 0.2f + 1.0f;
     }
 
     // Damage: creative and spectator players take none but from the void
@@ -1944,6 +1972,7 @@ struct Game::Impl final : GameServices {
         p.dead_ticks = 0;
         p.camera.reset(); // the death screen replaces the view; a respawn has its own
         p.digging.reset();
+        stop_use(p);
         p.floating = false;
         p.fall_distance = 0.0;
         // The window closes without telling the client (the death screen
@@ -2070,6 +2099,7 @@ struct Game::Impl final : GameServices {
         p.fall_distance = 0.0;
         p.floating = false;
         p.floating_ticks = 0;
+        p.living = p.told_living = 0; // a new entity's
         // A new entity: its first data, then its attributes (without
         // modifiers), at the next entity update, the health after them
         // (client/player_data, client/attribute_join).
@@ -2129,6 +2159,13 @@ struct Game::Impl final : GameServices {
         if (it == p.effects.end() || it->id != id) {
             it = p.effects.insert(it, {id, {level}});
             send_effect(p, *it, true);
+            // The omens are heard when they come (client/eat: an ominous
+            // bottle's bad omen, to the player and the others nearby).
+            static const std::array omens{gameplay::effects::id("bad_omen"), gameplay::effects::id("trial_omen"), gameplay::effects::id("raid_omen")};
+            if (const auto k = std::ranges::find(omens, std::optional<std::uint8_t>(id)); k != omens.end()) {
+                constexpr std::array sounds{Wire::PlayerSound::bad_omen, Wire::PlayerSound::trial_omen, Wire::PlayerSound::raid_omen};
+                sound_around_at(p, sounds[static_cast<std::size_t>(k - omens.begin())], 1.0f, 1.0f, Wire::SoundCategory::player, true);
+            }
         } else if (gameplay::effects::give(*it, level)) {
             send_effect(p, *it, false);
         } else {
@@ -2175,7 +2212,18 @@ struct Game::Impl final : GameServices {
     // whose time left is a multiple of 600 ticks is sent again (after the
     // level underneath, when both).
     void tick_effects(Player& p) {
+        static const auto absorption = gameplay::effects::id("absorption");
         for (auto it = p.effects.begin(); it != p.effects.end();) {
+            // Absorption ends once its absorption is used up (client/eat:
+            // removed when poison's damage took the last of it).
+            if (it->id == absorption && p.absorption <= 0.0f) {
+                p.peer->send(wire.remove_mob_effect(p.entity_id, it->id));
+                const auto removed = it->id;
+                it = p.effects.erase(it);
+                effect_attributes(p, removed);
+                p.effects_dirty = true;
+                continue;
+            }
             // What it does this tick, by the time its shown level has left
             // before it counts down (an infinite one by the player's age).
             if (const auto& shown = it->levels.front(); shown.duration != 0) {
@@ -2228,6 +2276,219 @@ struct Game::Impl final : GameServices {
         }
     }
 
+    // ---- eating and drinking ------------------------------------------------
+    // As both official servers run them (client/eat): a use of food or drink
+    // starts with the living flags (to the player and those who see them)
+    // and lasts its ticks, the others nearby hearing it; then the rules use
+    // the item up (ConsumeItem) and, once applied, the player gets what it
+    // gives. Letting go, another item in the hand, another hotbar slot,
+    // spectating or death end it before.
+
+    // A use starts. Food waits for hunger, but in creative mode and for what
+    // is always eaten (refused at full hunger in survival).
+    void start_use(Player& p, std::int32_t hand, std::uint8_t slot, const gameplay::food::Consumable& c) {
+        if (c.food() && !c.always && p.game_mode != creative && p.food >= 20) return;
+        const auto stack = slot_of(p, slot);
+        if (p.cooldowns.contains(stack.item)) return;
+        p.using_item = Player::Using{hand, slot, stack, c.ticks, c.ticks, std::nullopt};
+        p.living = static_cast<std::uint8_t>(1 | (hand == 1 ? 2 : 0));
+    }
+    // Cooldowns that ended, told as cooldowns of 0 ticks (client/eat).
+    void end_cooldowns(Player& p) {
+        for (auto it = p.cooldowns.begin(); it != p.cooldowns.end();) {
+            if (it->second > tick_count.load()) {
+                ++it;
+                continue;
+            }
+            if (const auto* info = gameplay::items::info(it->first)) p.peer->send(wire.cooldown(info->name, 0));
+            it = p.cooldowns.erase(it);
+        }
+    }
+    // A tick of the use: its sound every fourth tick, and when its ticks run
+    // out the item is used up.
+    void tick_use(Player& p) {
+        if (!p.using_item || p.using_item->consuming) return;
+        auto& u = *p.using_item;
+        const auto now = slot_of(p, u.slot);
+        const auto* c = gameplay::food::of(now.item);
+        if (!c || now.empty() || now.item != u.stack.item || p.game_mode == spectator || (u.hand == 0 && u.slot != main_hand(p))) {
+            stop_use(p);
+            return;
+        }
+        u.stack = now;
+        --u.left;
+        if (gameplay::food::use_sound(u.ticks, u.left)) {
+            // Eating at volume 0.5 or 1, drinking at 0.5; the player's client plays its own.
+            const auto volume = c->drink() ? 0.5f : (random_draw() < 0.5f ? 0.5f : 1.0f);
+            sound_around_at(p, use_sound_of(*c), volume, voice_pitch(), Wire::SoundCategory::player, false);
+        }
+        if (u.left > 0) return;
+        const contracts::Vec3 eye{p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62), p.pos.z};
+        if (const auto admission = queue.admit(contracts::ConsumeItem{key_of(p), u.slot, now, p.game_mode == creative, eye}, overworld)) {
+            u.consuming = *admission;
+        } else {
+            log_warn("game: command queue full; input dropped");
+            stop_use(p);
+        }
+    }
+    static Wire::PlayerSound use_sound_of(const gameplay::food::Consumable& c) {
+        switch (c.sound) {
+        case gameplay::food::Sound::drink: return Wire::PlayerSound::drink;
+        case gameplay::food::Sound::honey_drink: return Wire::PlayerSound::honey_drink;
+        default: return Wire::PlayerSound::eat;
+        }
+    }
+    void sound_around_at(const Player& p, Wire::PlayerSound sound, float volume, float pitch, Wire::SoundCategory category, bool self,
+                         std::optional<Vec3> where = std::nullopt) {
+        sound_near(p, wire.player_sound(sound, where.value_or(p.pos), volume, pitch, static_cast<std::int64_t>(sound_seed++), category), self, where);
+    }
+    // A use ends: the off hand's flag stays (client/eat: 3, then 2).
+    static void stop_use(Player& p) {
+        p.using_item.reset();
+        p.living &= static_cast<std::uint8_t>(~1u);
+    }
+    // The living flags when they changed, to the player and those who see
+    // them, at once: a use's start before its first tick's sounds, its end
+    // after the health packet and before the slot (client/eat).
+    void send_living(Player& p) {
+        const auto flags = p.living;
+        if (flags == p.told_living) return;
+        p.told_living = flags;
+        Wire::PlayerData d;
+        d.living = flags;
+        const auto data = wire.player_data(p.entity_id, d);
+        p.peer->send(data);
+        for (const auto viewer : p.seen_by)
+            if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
+    }
+    // After the rules' tick, the uses whose items they used up finish.
+    void finish_uses() {
+        const auto& trace = engine->trace();
+        for (auto& [id, p] : players) {
+            if (!p.using_item || !p.using_item->consuming) continue;
+            const auto admission = *p.using_item->consuming;
+            const auto stack = p.using_item->stack;
+            stop_use(p);
+            const auto r = std::ranges::find_if(trace, [&](const contracts::TraceRecord& t) {
+                return (t.kind == contracts::TraceKind::command_applied || t.kind == contracts::TraceKind::command_rejected) && t.a == admission;
+            });
+            if (r != trace.end() && r->kind == contracts::TraceKind::command_applied && !p.dead) consumed(p, stack);
+            send_living(p);
+        }
+    }
+    // An item eaten or drunk, in the order both official servers act: the
+    // finished use's event (to the player alone), a suspicious stew's
+    // effects, a food's sound and a burp (to everyone within 16 blocks), a
+    // potion's effects, an ominous bottle's bad omen and its sound, what
+    // milk, honey and a chorus fruit do, the item's own effects (each by
+    // its chance), and its food; then the health packet (client/eat).
+    void consumed(Player& p, const contracts::ItemStack& stack) {
+        const auto* c = gameplay::food::of(stack.item);
+        if (!c) return;
+        p.peer->send(wire.entity_event(p.entity_id, 9));
+        using Special = gameplay::food::Special;
+        // An effect a stack names is given in the ranges the player's save
+        // keeps (amplifier 0-255, a duration of a tick or more or infinite).
+        const auto give = [&](std::int32_t effect, const gameplay::effects::Level& level) {
+            if (effect < 0 || static_cast<std::size_t>(effect) >= gameplay::effects::count) return;
+            if (level.amplifier < 0 || level.amplifier > 255 || (level.duration < 1 && level.duration != gameplay::effects::infinite)) return;
+            give_effect(p, static_cast<std::uint8_t>(effect), level);
+        };
+        if (c->special == Special::stew)
+            for (const auto& e : wire.components().stew_effects_of(stack.components)) give(e.effect, {e.amplifier, e.duration, e.ambient, e.particles, e.icon});
+        if (c->food()) {
+            sound_around_at(p, use_sound_of(*c), 1.0f, voice_pitch(), Wire::SoundCategory::neutral, true);
+            sound_around_at(p, Wire::PlayerSound::burp, 0.5f, voice_pitch(), Wire::SoundCategory::player, true);
+        }
+        switch (c->special) {
+        case Special::potion: {
+            // The potion's effects, then those its contents add; instant
+            // health heals and instant damage hurts at once.
+            std::vector<protocol::ComponentCodec::ItemEffect> all;
+            if (const auto id = wire.components().potion_of(stack.components))
+                for (const auto& e : gameplay::potions::effects(*id))
+                    if (const auto effect = gameplay::effects::id(e.effect)) all.push_back({*effect, e.amplifier, e.duration, false, true, true});
+            for (const auto& e : wire.components().potion_effects_of(stack.components)) all.push_back(e);
+            static const auto instant_health = gameplay::effects::id("instant_health");
+            static const auto instant_damage = gameplay::effects::id("instant_damage");
+            for (const auto& e : all) {
+                if (e.amplifier < 0 || e.amplifier > 255) continue;
+                const auto doubled = [&](float base) { return std::ldexp(base, std::clamp(e.amplifier, 0, 127)); };
+                if (e.effect == instant_health) heal(p, doubled(4.0f));
+                else if (e.effect == instant_damage) hurt(p, doubled(6.0f), Harm::magic);
+                else give(e.effect, {e.amplifier, e.duration, e.ambient, e.particles, e.icon});
+                if (p.dead) return;
+            }
+            break;
+        }
+        case Special::ominous: {
+            const auto amplifier = std::clamp(wire.components().varint_of(stack.components, "ominous_bottle_amplifier").value_or(0), 0, 4);
+            static const auto bad_omen = gameplay::effects::id("bad_omen");
+            give(*bad_omen, {amplifier, 120000, false, false, true}); // its particles hidden (client/eat)
+            sound_around_at(p, Wire::PlayerSound::ominous_bottle, 1.0f, 1.0f, Wire::SoundCategory::player, true);
+            break;
+        }
+        case Special::clear_effects: clear_effects(p, std::nullopt); break;
+        case Special::remove_poison: clear_effects(p, gameplay::effects::id("poison")); break;
+        case Special::teleport: {
+            chorus_teleport(p);
+            // Every chorus fruit waits a second (minecraft.wiki "Chorus Fruit"; client/eat).
+            constexpr std::int32_t cooldown = 20;
+            p.cooldowns[stack.item] = tick_count.load() + cooldown;
+            p.peer->send(wire.cooldown("minecraft:chorus_fruit", cooldown));
+            break;
+        }
+        default: break;
+        }
+        for (const auto& e : c->effects) {
+            if (e.probability < 1.0f && random_draw() >= e.probability) continue;
+            if (const auto effect = gameplay::effects::id(e.effect)) give(*effect, {e.amplifier, e.duration, false, true, true});
+        }
+        if (c->food()) {
+            p.food = std::min(p.food + c->nutrition, 20);
+            p.saturation = std::min(p.saturation + c->saturation(), static_cast<float>(p.food));
+        }
+        send_vitals(p, true);
+    }
+    // A chorus fruit's teleport (minecraft.wiki "Chorus Fruit"): up to 16
+    // tries at a random place within 8 blocks on each axis, inside the
+    // world, let down onto the first block with collision below it; the
+    // player goes to each try that finds such a block and stays at the first
+    // where it fits out of fluids, or goes back. Both official servers sent
+    // one to nine positions in a use (client/eat), failing more tries than
+    // this does, by rules not determined; the places are Circuit's own
+    // draws. Then the teleport's particles (entity event 46, to the player
+    // and those who see them) and its sound where the player was.
+    void chorus_teleport(Player& p) {
+        const auto lookup = shapes();
+        const auto bottom = static_cast<double>(bundle.world.min_y);
+        const auto top = bottom + bundle.world.height - 1.0;
+        const auto from = p.pos;
+        bool moved = false;
+        for (int attempt = 0; attempt < 16; ++attempt) {
+            const double x = from.x + (random_draw() - 0.5) * 16.0;
+            const double z = from.z + (random_draw() - 0.5) * 16.0;
+            double y = std::clamp(std::floor(from.y) + std::floor(random_draw() * 16.0) - 8.0, bottom, top);
+            const auto cell = [&](double at_y) {
+                return BlockPos{static_cast<std::int32_t>(std::floor(x)), static_cast<std::int32_t>(std::floor(at_y)), static_cast<std::int32_t>(std::floor(z))};
+            };
+            while (y > bottom && lookup(cell(y - 1.0)).boxes.empty()) y -= 1.0;
+            if (y <= bottom || !gameplay::in_world(bundle, cell(y - 1.0)) || !engine->view().block(overworld, cell(y - 1.0))) continue;
+            teleport(p, {x, y, z});
+            moved = true;
+            const auto box = movement::player_box({x, y, z}, false);
+            if (movement::collides(box, lookup) || fluid_in(box)) continue;
+            p.fall_distance = 0.0;
+            const auto event = wire.entity_event(p.entity_id, 46);
+            p.peer->send(event);
+            for (const auto viewer : p.seen_by)
+                if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(event);
+            sound_around_at(p, Wire::PlayerSound::chorus_teleport, 1.0f, 1.0f, Wire::SoundCategory::player, true, from);
+            return;
+        }
+        if (moved) teleport(p, from);
+    }
+
     // What the effects decide of the entity's data: the invisibility and
     // glowing flags, a particle for each effect showing particles, and
     // whether all of those are ambient (left as it was without effects).
@@ -2254,6 +2515,7 @@ struct Game::Impl final : GameServices {
         Wire::PlayerData d;
         if (p.told_flags != 0) d.flags = p.told_flags;
         if (p.told_pose != 0) d.pose = p.told_pose;
+        if (p.told_living != 0) d.living = p.told_living;
         const auto health = p.told_health.value_or(p.health);
         if (health != 1.0f) d.health = health; // a new living entity's is 1
         if (!v.particles.empty()) d.particles = v.particles;
@@ -2585,12 +2847,19 @@ struct Game::Impl final : GameServices {
                 ++p.ticks_alive;
                 if (p.hurt_cooldown > 0) --p.hurt_cooldown;
                 if (p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
-                hunger(p); // in every mode (only survival actions tire), also in the tick of a death
+                // The effects act before hunger takes the tick's exhaustion
+                // (client/eat: the last food a hunger effect takes goes
+                // before the effect's removal). Hunger in every mode (only
+                // survival actions tire), also in the tick of a death.
                 if (!p.vitals_pending) tick_effects(p);
+                hunger(p);
+                end_cooldowns(p);
+                tick_use(p);
             } else if (world_runs && p.dead && ++p.dead_ticks == 20) {
                 body_goes(p);
             }
             if (!p.vitals_pending) send_vitals(p, true);
+            send_living(p);
         }
         for (const auto id : kicked) players.at(id).peer->kick("translate:multiplayer.disconnect.flying");
     }
@@ -2654,6 +2923,10 @@ struct Game::Impl final : GameServices {
             return;
         }
         p.acks.push_back(d.sequence);
+        if (d.status == 5) { // the use let go
+            if (p.using_item && !p.using_item->consuming) stop_use(p);
+            return;
+        }
         if (d.status == 1) { // aborted
             p.digging.reset();
             return;
@@ -2863,9 +3136,14 @@ struct Game::Impl final : GameServices {
     void handle(Player& p, intent::Use& u) {
         p.acks.push_back(u.sequence);
         const auto used_on = std::exchange(p.used_on, std::nullopt);
-        if (p.dead || p.game_mode == spectator) return;
+        if (p.dead || p.game_mode == spectator || (u.hand != 0 && u.hand != 1)) return; // 0 the main hand, 1 the off hand
         const auto slot = static_cast<std::uint8_t>(u.hand == 0 ? contracts::hotbar_first + p.held : contracts::offhand_slot);
         const auto item = slot_of(p, slot).item;
+        // Food and drink are held until eaten or drunk.
+        if (const auto* c = gameplay::food::of(item)) {
+            start_use(p, u.hand, slot, *c);
+            return;
+        }
         // A written book opens for reading (client/books).
         if (static const auto written = gameplay::items::by_name("minecraft:written_book"); written && item == *written) {
             p.peer->send(wire.open_book(u.hand));
@@ -4520,6 +4798,7 @@ struct Game::Impl final : GameServices {
         publish_block_events();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();
+        finish_uses();
         publish_inventories();
         const auto ns = static_cast<std::uint64_t>(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - started_at).count());

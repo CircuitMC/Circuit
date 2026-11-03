@@ -427,6 +427,38 @@ int main() {
             }
     });
 
+    suite.run("the effects a potion's contents and a suspicious stew name", [] {
+        for (const std::int32_t protocol : {769, 772}) {
+            const auto& c = *ComponentCodec::for_protocol(protocol);
+            const auto patch = [&](std::string_view type, const Writer& w) {
+                return contracts::ComponentPatch::make(protocol, {{*c.type_id(type), std::vector<std::byte>(w.bytes().begin(), w.bytes().end())}}, {}, {});
+            };
+            // Regeneration with a custom color and two effects of its own, the
+            // second with a hidden level under it, and no custom name.
+            Writer contents;
+            contents.boolean(true).varint(31).boolean(true).i32(0xFF0000).varint(2);
+            contents.varint(1).varint(2).varint(400).boolean(false).boolean(true).boolean(true).boolean(false);
+            contents.varint(18).varint(0).varint(100).boolean(true).boolean(false).boolean(false).boolean(true);
+            contents.varint(0).varint(900).boolean(false).boolean(true).boolean(true).boolean(false);
+            contents.boolean(false);
+            const auto p = patch("potion_contents", contents);
+            require(c.potion_of(p) == 31u, "the potion");
+            const auto effects = c.potion_effects_of(p);
+            require(effects.size() == 2 && effects[0] == ComponentCodec::ItemEffect{1, 2, 400, false, true, true}
+                        && effects[1] == ComponentCodec::ItemEffect{18, 0, 100, true, false, false},
+                    "its own effects, the hidden level left out");
+            Writer stew;
+            stew.varint(2).varint(15).varint(100).varint(18).varint(220);
+            const auto s = c.stew_effects_of(patch("suspicious_stew_effects", stew));
+            require(s.size() == 2 && s[0] == ComponentCodec::ItemEffect{15, 0, 100, false, true, true}
+                        && s[1] == ComponentCodec::ItemEffect{18, 0, 220, false, true, true}, "a stew's effects");
+            Writer cut;
+            cut.varint(2).varint(15);
+            require(c.stew_effects_of(patch("suspicious_stew_effects", cut)).empty(), "a cut list reads as none");
+            require(c.potion_effects_of({}).empty() && c.stew_effects_of({}).empty(), "none without the component");
+        }
+    });
+
     suite.run("save forms name registry entries", [] {
         const auto& codec = *ComponentCodec::for_protocol(772);
         auto ctx = open_context(772);

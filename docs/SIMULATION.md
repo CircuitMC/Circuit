@@ -139,6 +139,7 @@ Player inventories are simulation state, changed only by commands in the command
 | `PickUp` | Moves an item entity, or part of it, into the inventory |
 | `DropItem` | Throws one item or the stack from a slot |
 | `SwapHands` | Swaps the main hand's stack with the off hand's (the swap key) |
+| `ConsumeItem` | Uses up one of the food or drink in a hand's slot outside creative mode, while that slot holds its item, and leaves its bowl, bucket or glass bottle in its place or, with some of the stack left, in the inventory (thrown out without room) |
 | `EditBook` | Sets the pages of the book and quill in a hotbar slot or the off hand, or signs it into a written book by the player (another stack there is left alone; the server gives the components' encoding) |
 | `ContainerClick` | One click in the player's own window or an open container's window |
 | `CloseContainer` | Returns the carried stack and the crafting grid to the inventory, or throws them |

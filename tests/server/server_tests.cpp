@@ -3714,6 +3714,326 @@ int main() {
         }
     });
 
+    suite.run("players eat and drink as both official servers show it", [] {
+        // circuit-clienttest/eat.js: alice in survival, bob in creative beside
+        // her; both versions alike but for the ids.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            const bool v772 = std::string_view(version) == "1.21.8";
+            GameFixture f(version, offline_config());
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = name;
+            }
+            const auto eat = v772 ? 614 : 601, drink = v772 ? 613 : 600, burp = v772 ? 1173 : 1133, bad_omen = v772 ? 1724 : 1648;
+            // Since the last call, as text; the sounds a use makes while it
+            // lasts (category player) by name alone, their volume drawn at random.
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("set_health")) {
+                        const auto health = in.f32().value();
+                        const auto food = in.varint().value();
+                        out.push_back(std::format("health {} food {} saturation {}", health, food, in.f32().value()));
+                    } else if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        (void)in.i32(), (void)in.i32(), (void)in.i32();
+                        if (category == 7 && (sound == eat || sound == drink)) out.push_back(std::format("use sound {}", sound));
+                        else out.push_back(std::format("sound {} category {} volume {}", sound, category, in.f32().value()));
+                    } else if (pk->id == id("entity_event")) {
+                        const auto e = in.i32().value();
+                        out.push_back(std::format("status {} {}", who(e), static_cast<int>(in.i8().value())));
+                    } else if (pk->id == id("set_entity_data")) {
+                        const auto e = in.varint().value();
+                        for (auto index = in.u8().value(); index != 0xFF; index = in.u8().value()) {
+                            const auto type = in.varint().value();
+                            if (type == 0) {
+                                const auto v = in.u8().value();
+                                if (index == 8) out.push_back(std::format("using {} {}", who(e), static_cast<int>(v)));
+                            } else if (type == 3) (void)in.f32();
+                            else break;
+                        }
+                    } else if (pk->id == id("update_mob_effect")) {
+                        (void)in.varint();
+                        const auto effect = in.varint().value(), amplifier = in.varint().value(), duration = in.varint().value();
+                        out.push_back(std::format("effect {} amp {} dur {} flags {}", effect, amplifier, duration, static_cast<int>(in.u8().value())));
+                    } else if (pk->id == id("remove_mob_effect")) {
+                        (void)in.varint();
+                        out.push_back(std::format("removed {}", in.varint().value()));
+                    } else if (pk->id == id("add_entity")) {
+                        out.push_back(std::format("spawned {}", who(in.varint().value())));
+                    } else if (pk->id == id("container_set_slot")) {
+                        (void)in.varint(), (void)in.varint();
+                        const auto slot = in.i16().value();
+                        const auto count = in.varint().value();
+                        out.push_back(count == 0 ? std::format("slot {} empty", slot)
+                                                 : std::format("slot {} {}*{}", slot, tables.item_name(in.varint().value()).value_or("?").substr(10), count));
+                    } else if (pk->id == id("cooldown")) {
+                        const auto group = in.string().value();
+                        out.push_back(std::format("cooldown {} {}", group, in.varint().value()));
+                    } else if (pk->id == id("player_position")) {
+                        if (out.empty() || out.back() != "teleported") out.emplace_back("teleported"); // a chorus fruit's tries: one line
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            // Whether `lines` hold `wanted` in that order, others between them.
+            const auto in_order = [](const std::vector<std::string>& lines, const std::vector<std::string>& wanted) {
+                std::size_t k = 0;
+                for (const auto& l : lines)
+                    if (k < wanted.size() && l == wanted[k]) ++k;
+                return k == wanted.size();
+            };
+            const auto join = [](const std::vector<std::string>& lines) {
+                std::string out;
+                for (const auto& l : lines) out += (out.empty() ? "" : " | ") + l;
+                return out;
+            };
+            std::int32_t sequence = 0;
+            const auto use = [&](std::int32_t hand) { f.game->submit(1, I{server::intent::Use{hand, ++sequence, 0.0f, 0.0f}}); };
+            const auto hold = [&](std::int16_t slot) { f.game->submit(1, I{server::intent::HeldSlot{slot}}); };
+            const auto put = [&](std::int16_t slot, std::string_view name, std::int32_t count, contracts::ComponentPatch c = {}) {
+                f.game->submit(1, I{server::intent::CreativeSlot{slot, count, tables.item_id(name).value(), 0, std::move(c)}});
+            };
+            command(1, "gamerule naturalRegeneration false");
+            command(1, "tp 8.5 -60 8.5");
+            command(2, "tp 8.5 -60 11.5");
+            put(36, "minecraft:cooked_beef", 2);
+            put(37, "minecraft:milk_bucket", 1);
+            put(38, "minecraft:potion", 1, f.wire.components().with_potion({}, 31, f.wire.component_context()).value());
+            put(39, "minecraft:bread", 2);
+            put(45, "minecraft:apple", 1);
+            ticks(2);
+            command(1, "gamemode survival");
+            ticks(3);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            // At full hunger, beef is refused.
+            use(0);
+            ticks(40);
+            require(packets(*alice).empty() && packets(*bob).empty(), std::format("{}: at full hunger nothing", version));
+            // Made hungry: the food as the last health packet tells it.
+            command(1, "effect give alice minecraft:hunger 3 255");
+            ticks(62);
+            command(1, "effect clear alice");
+            ticks(1);
+            auto a = packets(*alice);
+            const auto told = [](const std::vector<std::string>& lines) {
+                std::int32_t food = -1;
+                for (const auto& l : lines)
+                    if (l.starts_with("health 20 food ")) food = std::stoi(l.substr(15));
+                return food;
+            };
+            const auto hungry = told(a);
+            require(hungry > 0 && hungry < 12, std::format("{}: made hungry: {}", version, hungry));
+            (void)packets(*bob);
+            // Beef: the living flags at once; bob hears it every fourth tick
+            // after the first fifth; at the 32nd tick the end.
+            use(0);
+            ticks(1);
+            require(packets(*alice) == std::vector<std::string>{"using alice 1"} && packets(*bob) == std::vector<std::string>{"using alice 1"},
+                    std::format("{}: the use starts", version));
+            ticks(30);
+            auto b = packets(*bob);
+            require(packets(*alice).empty() && b == std::vector<std::string>(6, std::format("use sound {}", eat)), std::format("{}: six sounds so far", version));
+            ticks(1);
+            a = packets(*alice);
+            b = packets(*bob);
+            const auto food = hungry + 8;
+            require(a == std::vector<std::string>{"status alice 9", std::format("sound {} category 6 volume 1", eat), std::format("sound {} category 7 volume 0.5", burp),
+                                                  std::format("health 20 food {} saturation 12.8", food), "using alice 0", "slot 36 cooked_beef*1"},
+                    std::format("{}: eaten: {}", version, join(a)));
+            require(b == std::vector<std::string>{std::format("use sound {}", eat), std::format("sound {} category 6 volume 1", eat),
+                                                  std::format("sound {} category 7 volume 0.5", burp), "using alice 0"},
+                    std::format("{}: what bob hears", version));
+            // Let go after 10 ticks: one sound, nothing eaten.
+            use(0);
+            ticks(10);
+            f.game->submit(1, I{server::intent::Dig{5, {}, 0, 0}});
+            ticks(2);
+            require(packets(*alice) == std::vector<std::string>{"using alice 1", "using alice 0"}, std::format("{}: let go", version));
+            require(packets(*bob) == std::vector<std::string>{"using alice 1", std::format("use sound {}", eat), "using alice 0"},
+                    std::format("{}: one sound for bob", version));
+            // Another hotbar slot ends it.
+            hold(3);
+            use(0);
+            ticks(5);
+            hold(0);
+            ticks(1);
+            require(packets(*alice) == std::vector<std::string>{"using alice 1", "using alice 0"}, std::format("{}: switched away", version));
+            // The off hand: its flag, which stays after the use; the apple is eaten from it.
+            use(1);
+            ticks(1);
+            require(packets(*bob) == std::vector<std::string>{"using alice 1", "using alice 0", "using alice 3"}, std::format("{}: the off hand", version));
+            ticks(31);
+            a = packets(*alice);
+            require(a.size() == 7 && a[0] == "using alice 3" && a[1] == "status alice 9" && a[4].starts_with("health 20 food 18 ") && a[5] == "using alice 2"
+                        && a[6] == "slot 45 empty",
+                    std::format("{}: the apple eaten: {}", version, join(a)));
+            // Milk: no sounds at the end, every effect gone, the bucket left.
+            command(1, "effect give alice minecraft:speed 30 0");
+            hold(1);
+            ticks(1);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            use(0);
+            ticks(32);
+            a = packets(*alice);
+            b = packets(*bob);
+            require(a == std::vector<std::string>{"using alice 1", "status alice 9", "removed 0", "using alice 0", "slot 37 bucket*1"},
+                    std::format("{}: milk: {}", version, join(a)));
+            require(std::ranges::count(b, std::format("use sound {}", drink)) == 7 && b.back() == "using alice 0", std::format("{}: bob hears it drunk", version));
+            // A potion: its effect, the bottle left.
+            hold(2);
+            use(0);
+            ticks(32);
+            a = packets(*alice);
+            require(a == std::vector<std::string>{"using alice 1", "status alice 9", "effect 9 amp 0 dur 900 flags 14", "using alice 0", "slot 38 glass_bottle*1"},
+                    std::format("{}: the potion: {}", version, join(a)));
+            // In creative mode: eaten (its food given), the stack kept.
+            command(1, "gamemode creative");
+            hold(0);
+            ticks(1);
+            (void)packets(*alice);
+            use(0);
+            ticks(32);
+            a = packets(*alice);
+            require(a == std::vector<std::string>{"using alice 1", "status alice 9", std::format("sound {} category 6 volume 1", eat),
+                                                  std::format("sound {} category 7 volume 0.5", burp), "health 20 food 20 saturation 20", "using alice 0"},
+                    std::format("{}: creative: {}", version, join(a)));
+            // Absorption ends with its absorption used up.
+            command(1, "gamemode survival");
+            command(1, "effect clear alice");
+            ticks(1);
+            command(1, "effect give alice minecraft:absorption 30 0");
+            ticks(2);
+            command(1, "effect give alice minecraft:instant_damage 1 0");
+            ticks(3);
+            a = packets(*alice);
+            require(std::ranges::count(a, std::string("removed 21")) == 1, std::format("{}: absorption used up", version));
+            // The bad omen is heard when it comes, by everyone nearby.
+            (void)packets(*bob);
+            command(1, "effect give alice minecraft:bad_omen 30 0");
+            ticks(1);
+            const auto omen = std::format("sound {} category 7 volume 1", bad_omen);
+            require(std::ranges::count(packets(*alice), omen) == 1 && packets(*bob) == std::vector<std::string>{omen}, std::format("{}: bad omen", version));
+            // A chorus fruit at full hunger, from the off hand: eaten, then the
+            // teleport (to a place drawn at random), its event and sound,
+            // and a second's cooldown, in which another is refused.
+            command(1, "gamemode creative");
+            ticks(1);
+            put(45, "minecraft:chorus_fruit", 2);
+            ticks(1);
+            command(1, "gamemode survival");
+            ticks(1);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            const auto chorus = v772 ? 323 : 321;
+            use(1);
+            ticks(32);
+            use(1);
+            ticks(2);
+            a = packets(*alice);
+            require(a == std::vector<std::string>{"using alice 3", "status alice 9", std::format("sound {} category 6 volume 1", eat),
+                                                  std::format("sound {} category 7 volume 0.5", burp), "teleported", "status alice 46",
+                                                  std::format("sound {} category 7 volume 1", chorus), "cooldown minecraft:chorus_fruit 20", "using alice 2",
+                                                  "slot 45 chorus_fruit*1"},
+                    std::format("{}: chorus fruit: {}", version, join(a)));
+            ticks(18);
+            a = packets(*alice);
+            require(a.size() == 1 && a[0] == "cooldown minecraft:chorus_fruit 0", std::format("{}: the cooldown over: {}", version, join(a)));
+            // A second hotbar: a suspicious stew, an ominous bottle, honey, a
+            // potion of healing and two golden apples, all eaten at full hunger
+            // or drunk.
+            command(1, "gamemode creative");
+            command(1, "effect clear alice");
+            ticks(1);
+            protocol::Writer named;
+            named.varint(1).varint(15).varint(100); // night vision for 100 ticks
+            const auto stew_type = *f.wire.components().type_id("suspicious_stew_effects");
+            put(36, "minecraft:suspicious_stew", 1,
+                contracts::ComponentPatch::make(f.wire.protocol(), {{stew_type, std::vector<std::byte>(named.bytes().begin(), named.bytes().end())}}, {}, {}));
+            put(37, "minecraft:ominous_bottle", 1);
+            put(38, "minecraft:honey_bottle", 1);
+            put(39, "minecraft:potion", 1, f.wire.components().with_potion({}, 24, f.wire.component_context()).value());
+            put(40, "minecraft:golden_apple", 2);
+            ticks(1);
+            command(1, "gamemode survival");
+            hold(0);
+            ticks(1);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            const auto drink_slot = [&](std::int16_t slot, int n) {
+                hold(slot);
+                use(0);
+                ticks(n);
+                return packets(*alice);
+            };
+            // The stew's effects come before the food's sounds.
+            a = drink_slot(0, 32);
+            require(a == std::vector<std::string>{"using alice 1", "status alice 9", "effect 15 amp 0 dur 100 flags 14", std::format("sound {} category 6 volume 1", eat),
+                                                  std::format("sound {} category 7 volume 0.5", burp), "using alice 0", "slot 36 bowl*1"},
+                    std::format("{}: the stew: {}", version, join(a)));
+            // The ominous bottle: bad omen with its particles hidden, its sound, the bottle's; nothing left.
+            a = drink_slot(1, 32);
+            require(a == std::vector<std::string>{"using alice 1", "status alice 9", "effect 30 amp 0 dur 120000 flags 12", std::format("sound {} category 7 volume 1", bad_omen),
+                                                  std::format("sound {} category 7 volume 1", v772 ? 1075 : 1035), "using alice 0", "slot 37 empty"},
+                    std::format("{}: the ominous bottle: {}", version, join(a)));
+            // Honey while poisoned: 40 ticks, its sound and a burp, poison ended, the bottle left.
+            command(1, "effect give alice minecraft:poison 30 0");
+            ticks(1);
+            (void)packets(*alice);
+            a = drink_slot(2, 40);
+            const auto honey = v772 ? 754 : 729;
+            require(in_order(a, {"using alice 1", "status alice 9", std::format("sound {} category 6 volume 1", honey), std::format("sound {} category 7 volume 0.5", burp),
+                                 "removed 18", "using alice 0", "slot 38 glass_bottle*1"})
+                        && std::ranges::count(a, std::string("status alice 9")) == 1,
+                    std::format("{}: honey: {}", version, join(a)));
+            // A potion of healing heals at once, with no effect sent.
+            a = drink_slot(3, 32);
+            require(in_order(a, {"using alice 1", "status alice 9", "using alice 0", "slot 39 glass_bottle*1"})
+                        && std::ranges::none_of(a, [](const std::string& l) { return l.starts_with("effect "); })
+                        && std::ranges::any_of(a, [](const std::string& l) { return l.starts_with("health "); }),
+                    std::format("{}: healing: {}", version, join(a)));
+            // A golden apple's effects come after the sounds, in its order.
+            a = drink_slot(4, 32);
+            require(in_order(a, {"status alice 9", std::format("sound {} category 6 volume 1", eat), std::format("sound {} category 7 volume 0.5", burp),
+                                 "effect 9 amp 1 dur 100 flags 14", "effect 21 amp 0 dur 2400 flags 14", "using alice 0", "slot 40 golden_apple*1"}),
+                    std::format("{}: the golden apple: {}", version, join(a)));
+            // A player who appears while eating comes with the living flags.
+            command(2, "tp 300 -60 300");
+            ticks(5);
+            use(0);
+            ticks(2);
+            (void)packets(*bob);
+            command(2, "tp 8.5 -60 11.5");
+            ticks(5);
+            b = packets(*bob);
+            require(in_order(b, {"spawned alice", "using alice 1"}), std::format("{}: alice appears eating: {}", version, join(b)));
+            // Death ends the use.
+            command(1, "kill");
+            ticks(1);
+            require(std::ranges::count(packets(*bob), std::string("using alice 0")) == 1, std::format("{}: death ends it", version));
+        }
+    });
+
     suite.run("spectators are seen by spectators only, look on, and sneak as both official servers show them", [] {
         // circuit-clienttest/spectators.js, both versions alike.
         using I = server::Intent;

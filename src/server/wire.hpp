@@ -288,6 +288,8 @@ public:
     Bytes player_info_game_mode(Uuid player, std::int32_t game_mode) const;
     // What the client's view follows (set_camera): an entity, or its own player.
     Bytes set_camera(std::int32_t entity) const;
+    // An item cooldown group's cooldown (an item's id on both protocols), in ticks.
+    Bytes cooldown(std::string_view group, std::int32_t ticks) const;
     Bytes player_info_remove(const std::vector<Uuid>& players) const;
     Bytes spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
                        std::int32_t data, Vec3 velocity = {}) const;
@@ -306,11 +308,19 @@ public:
     // and pitch 1, as both official servers send a beacon's; the seed varies
     // on them).
     Bytes sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int64_t seed) const;
-    // A player's own sounds (category player): hurt, death, and the falls
-    // beyond and within 4 blocks of damage, at the player's position.
-    enum class PlayerSound : std::uint8_t { hurt, death, big_fall, small_fall };
-    Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed) const;
-    // An entity event (entity_event): 3 a living entity's death.
+    // A player's own sounds, at the player's position: hurt, death, and the
+    // falls beyond and within 4 blocks of damage (category player); eating,
+    // drinking and drinking honey, a burp, an ominous bottle's disposal, a
+    // chorus fruit's teleport and the omens' coming, in the category given
+    // (client/eat).
+    enum class PlayerSound : std::uint8_t {
+        hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen
+    };
+    enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
+    Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,
+                       SoundCategory category = SoundCategory::player) const;
+    // An entity event (entity_event): 3 a living entity's death, 9 a player's
+    // use of an item finished (to the player alone).
     Bytes entity_event(std::int32_t entity_id, std::int8_t event) const;
     // An entity's velocity (set_entity_motion).
     Bytes entity_motion(std::int32_t entity_id, Vec3 velocity) const;
@@ -359,9 +369,9 @@ public:
                             std::uint8_t flags) const;
     Bytes remove_mob_effect(std::int32_t entity, std::int32_t effect) const;
     // A player's entity data, each entry when given, in index order: its
-    // shared flags (index 0), its pose (6), its health (9), its effect particles (10),
-    // whether they are ambient (11), its absorption (15), the skin parts it
-    // shows (17) and its main hand (18).
+    // shared flags (index 0), its pose (6), its living flags (8), its health
+    // (9), its effect particles (10), whether they are ambient (11), its
+    // absorption (15), the skin parts it shows (17) and its main hand (18).
     struct PlayerData {
         std::optional<std::uint8_t> flags;
         std::optional<std::int32_t> pose; // index 6: 0 standing, 5 crouching
@@ -371,13 +381,14 @@ public:
         std::optional<float> absorption;
         std::optional<std::uint8_t> skin_parts;
         std::optional<std::uint8_t> main_hand;
+        std::optional<std::uint8_t> living; // index 8: 1 using an item, 2 in the off hand
     };
     Bytes player_data(std::int32_t id, const PlayerData& d) const;
     // The entries status effects decide.
     Bytes effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
                           const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
                           std::optional<float> absorption = std::nullopt) const {
-        return player_data(id, {flags, std::nullopt, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt});
+        return player_data(id, {flags, std::nullopt, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt, std::nullopt});
     }
     // A player's attributes (client/attributes), in the order given: each
     // with a player's base and its modifiers; those the official servers

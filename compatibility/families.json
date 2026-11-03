@@ -179,7 +179,7 @@
           "note": "Every component type of both protocols is read, checked against its registries and kept losslessly in canonical form (schema compiled from minecraft-data); 29 components have a save form for Anvil interchange",
           "deviations": [
             "components that refer to registries the server does not synchronize (enchantments, trim materials and patterns, banner patterns, instruments, jukebox songs, data component predicates) are refused",
-            "the rules use only damage, max stack size and max damage",
+            "the rules use only damage, max stack size and max damage, and for eating and drinking a potion's contents, a suspicious stew's effects and an ominous bottle's amplifier",
             "a stack's components are written in type order; the official servers write a patch in the order its components were set (clients read it as a map; client/special_a)"
           ]
         },
@@ -2248,9 +2248,10 @@
           "cases": [
             "client/vitals",
             "client/join_order",
-            "client/attribute_rules"
+            "client/attribute_rules",
+            "client/eat"
           ],
-          "note": "Eating is not modeled; regeneration up to the maximum health while the naturalRegeneration game rule allows; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers"
+          "note": "Food from eating and drinking (eating_and_drinking); regeneration up to the maximum health while the naturalRegeneration game rule allows; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers"
         },
         {
           "id": "damage_sources",
@@ -2310,7 +2311,7 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "resistance and slow falling change nothing (fall damage is taken in full), nor do fire resistance and water breathing, the omens and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
+            "resistance and slow falling change nothing (fall damage is taken in full), nor do fire resistance and water breathing, the omens (but for the sound each makes when it comes) and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
             "amplifiers above 28 of instant health and damage double without the official servers' integer overflow (not recorded)",
             "only players have effects; /effect takes players by name, @s, @p, @a and @e",
             "of the shared flags sprinting's is not sent yet",
@@ -2325,9 +2326,10 @@
             "client/effect_time",
             "client/effect_edges",
             "client/attributes",
-            "client/effects_heal"
+            "client/effects_heal",
+            "client/eat"
           ],
-          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none; the effects that heal, hurt or feed act by the time their shown level has left before each tick and their amplifier: instant health and damage, hunger and saturation every tick they last, regeneration, poison and wither every 50, 25 and 40 ticks halved per level, through the hurt cooldown"
+          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none; the effects that heal, hurt or feed act by the time their shown level has left before each tick and their amplifier: instant health and damage, hunger and saturation every tick they last, regeneration, poison and wither every 50, 25 and 40 ticks halved per level, through the hurt cooldown; absorption ends once its absorption is used up, and an omen that comes plays its sound to everyone nearby; foods, potions and ominous bottles give effects (eating_and_drinking)"
         },
         {
           "id": "enchantment_effects",
@@ -2394,8 +2396,19 @@
           "id": "eating_and_drinking",
           "name": "Eating and drinking",
           "milestone": "C6",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/eat"
+          ],
+          "note": "Every food of both versions, milk, potions and ominous bottles: a use refused at full hunger in survival for all but the always eaten, lasting 32 ticks (dried kelp 16, honey 40), shown by the living flags and heard by others; when it runs out the item used up (not in creative mode) with its bowl, bucket or bottle left, then, in the order both official servers act: the finished use's event, a suspicious stew's effects, a food's sound and burp, a potion's and an ominous bottle's effects, milk and honey clearing effects, a chorus fruit's teleport with its event, sound and cooldown, the item's own effects by their chances, the food and saturation, the health packet, the living flags and the slot; the 18 kinds client/eat eats compared, the others from minecraft-data and minecraft.wiki",
+          "deviations": [
+            "a stack's own food, consumable, use remainder and use cooldown components and 1.21.8's potion duration scale are not read: each item eats as its kind does by default",
+            "a chorus fruit's tries follow minecraft.wiki (up to 16 within 8 blocks, down to the ground, where the player fits out of fluids), drawn from Circuit's own random, with a position sent for each try that finds ground: both official servers sent one to nine positions in a use and failed more tries than Circuit does, by rules not determined",
+            "the chances of raw chicken's, rotten flesh's and poisonous potatoes' effects (minecraft.wiki), and the volume and pitch of the use sounds, are drawn from Circuit's own random",
+            "the foods eaten at full hunger beyond honey and chorus fruit (golden apples, suspicious stew), the chance effects, a remainder going into the inventory or thrown out, and spectating or death ending a use were not recorded",
+            "a use in progress and item cooldowns are not saved"
+          ]
         },
         {
           "id": "ranged_weapons",
@@ -2993,11 +3006,12 @@
           "milestone": "C10",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility",
+          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility; the living flags of an item in use (8)",
           "cases": [
             "client/player_data",
             "client/effects_heal",
-            "client/spectators"
+            "client/spectators",
+            "client/eat"
           ]
         },
         {

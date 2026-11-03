@@ -16,6 +16,7 @@
 #include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/potions.hpp>
+#include <circuit/gameplay/food.hpp>
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/loot.hpp>
@@ -1422,6 +1423,67 @@ int main() {
         require(slot() == ItemStack{book, 1}, "creative: kept");
         s.tick({use(true)});
         require(slot().empty(), "survival: used up");
+    });
+
+    suite.run("eaten and drunk items are used up and leave their bowl, bucket or bottle (client/eat)", [] {
+        using circuit::contracts::ConsumeItem;
+        using circuit::contracts::SetPlayerSlot;
+        namespace food = circuit::gameplay::food;
+        const PlayerKey alex{4, 2};
+        const auto item = [](std::string_view name) { return *circuit::gameplay::items::by_name(name); };
+        const auto beef = item("minecraft:cooked_beef"), milk = item("minecraft:milk_bucket"), honey = item("minecraft:honey_bottle");
+        const auto bottle = item("minecraft:glass_bottle"), stew = item("minecraft:mushroom_stew"), bread = item("minecraft:bread");
+        Sim s;
+        const auto slot = [&](std::size_t i) {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            return it == d.players.end() ? ItemStack{} : it->slots[i];
+        };
+        const auto eat = [&](std::uint8_t at, std::uint16_t what, bool creative) { return ConsumeItem{alex, at, {what, 1}, creative, {0.5, 1.62, 0.5}}; };
+        s.tick({SetPlayerSlot{alex, 36, {beef, 2}}, SetPlayerSlot{alex, 37, {milk, 1}}, SetPlayerSlot{alex, 38, {honey, 2}},
+                SetPlayerSlot{alex, 45, {stew, 1}}});
+        s.tick({eat(36, beef, true)});
+        require(slot(36) == ItemStack{beef, 2}, "creative: kept");
+        s.tick({eat(36, beef, false), eat(37, milk, false), eat(45, stew, false)});
+        require(slot(36) == ItemStack{beef, 1} && slot(37) == ItemStack{items::bucket, 1} && slot(45) == ItemStack{item("minecraft:bowl"), 1},
+                "one eaten; the bucket and the bowl in their place");
+        s.tick({eat(38, honey, false)});
+        require(slot(38) == ItemStack{honey, 1} && slot(39) == ItemStack{bottle, 1}, "the bottle beside the rest of the honey");
+        s.tick({eat(36, bread, false)});
+        require(slot(36) == ItemStack{beef, 1}, "another item in the slot: refused");
+        // The same item with other components: refused (a potion swapped for another in the last tick).
+        const auto named = circuit::contracts::ComponentPatch::make(772, {{5, {std::byte{0}}}}, {}, {});
+        s.tick({ConsumeItem{alex, 36, ItemStack{beef, 1, 0, named}, false, {0.5, 1.62, 0.5}}});
+        require(slot(36) == ItemStack{beef, 1}, "other components: refused");
+        // Without room the bottle is thrown out.
+        std::vector<circuit::contracts::CommandBody> fill;
+        for (std::uint8_t k = 9; k < 45; ++k) fill.push_back(SetPlayerSlot{alex, k, {items::stone, 64}});
+        fill.push_back(SetPlayerSlot{alex, 38, {honey, 2}});
+        s.tick(fill);
+        s.tick({eat(38, honey, false)});
+        const auto d = s.oracle.dump();
+        require(slot(38) == ItemStack{honey, 1} && d.overworld().entities.size() == 1 && d.overworld().entities[0].stack == ItemStack{bottle, 1},
+                "the bottle dropped");
+        // The table: what each gives and how long it takes.
+        const auto* cooked = food::of(beef);
+        require(cooked && cooked->nutrition == 8 && cooked->saturation() == 12.8f && cooked->ticks == 32 && !cooked->always,
+                "cooked beef: 8 food, 12.8 saturation, 32 ticks");
+        require(food::of(item("minecraft:dried_kelp"))->ticks == 16 && food::of(honey)->ticks == 40 && food::of(honey)->drink()
+                    && food::of(item("minecraft:golden_apple"))->always && !food::of(milk)->food() && !food::of(items::stone),
+                "kelp 16 ticks, honey 40 and drunk, golden apples always eaten, milk no food, stone nothing");
+        require(food::remainder(honey) == bottle && food::remainder(beef) == std::nullopt, "remainders");
+        const auto sounds = [](std::int32_t ticks, std::int32_t held) {
+            int n = 0;
+            for (std::int32_t left = ticks - 1; left >= ticks - held && left >= 0; --left) n += food::use_sound(ticks, left) ? 1 : 0;
+            return n;
+        };
+        require(sounds(32, 32) == 7 && sounds(16, 16) == 4 && sounds(40, 40) == 8 && sounds(32, 10) == 1 && sounds(32, 16) == 2,
+                "use sounds: 7, 4, 8, 1 let go after 10 ticks and 2 after 16");
+        const auto potions = circuit::gameplay::potions::effects(31);
+        require(potions.size() == 1 && potions[0].effect == "regeneration" && potions[0].duration == 900, "regeneration: 900 ticks");
+        require(circuit::gameplay::potions::effects(*circuit::gameplay::potions::id("minecraft:strong_turtle_master")).size() == 2
+                    && circuit::gameplay::potions::effects(0).empty() && circuit::gameplay::potions::effects(46).empty(),
+                "turtle master gives two, water none, an unknown id none");
     });
 
     suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 #include <circuit/gameplay/experience.hpp>
+#include <circuit/gameplay/food.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <functional>
 
@@ -570,6 +571,43 @@ Plan plan(RuleContext& ctx, const contracts::SwapHands& c) {
         std::swap(inv.slots[c.slot], inv.slots[contracts::offhand_slot]);
         detail::record_slot(ctx, inv, c.slot);
         detail::record_slot(ctx, inv, contracts::offhand_slot);
+    };
+}
+
+// An item eaten or drunk (client/eat): outside creative mode one is used
+// up, and what it leaves takes its place or, with some of the stack left,
+// goes into the inventory (thrown from below the eyes without room, as a
+// bucket's fill is).
+Plan plan(RuleContext& ctx, const contracts::ConsumeItem& c) {
+    if (!(c.slot == contracts::offhand_slot || (c.slot >= contracts::hotbar_first && c.slot < contracts::hotbar_first + 9)))
+        return std::unexpected(ErrorCode::invalid_slot);
+    const auto* inventory = ctx.peek_player(c.player);
+    if (!inventory) return std::unexpected(ErrorCode::not_usable);
+    const auto& held = inventory->slots[c.slot];
+    if (held.empty() || held.item != c.stack.item || held.damage != c.stack.damage || !(held.components == c.stack.components))
+        return std::unexpected(ErrorCode::not_usable);
+    // What it leaves goes to the selected hotbar slot first.
+    auto selected = c.slot == contracts::offhand_slot ? contracts::hotbar_first : c.slot;
+    for (const auto& presence : ctx.presences())
+        if (presence.player == c.player && presence.held < 9) selected = static_cast<std::uint8_t>(contracts::hotbar_first + presence.held);
+    return [&ctx, c, selected] {
+        if (c.creative) return;
+        auto& inv = ctx.player(c.player);
+        auto& slot = inv.slots[c.slot];
+        const auto left = food::remainder(c.stack.item);
+        if (--slot.count == 0) {
+            slot = left ? ItemStack{*left, 1, 0} : ItemStack{};
+            detail::record_slot(ctx, inv, c.slot);
+            return;
+        }
+        detail::record_slot(ctx, inv, c.slot);
+        if (!left) return;
+        if (const auto rest = detail::add_to_player(ctx, inv, ItemStack{*left, 1, 0}, selected); !rest.empty()) {
+            const contracts::Vec3 at{c.eye.x, c.eye.y - 0.3, c.eye.z};
+            detail::spawn_dropped(ctx, {static_cast<std::int32_t>(std::floor(at.x)), static_cast<std::int32_t>(std::floor(at.y)),
+                                        static_cast<std::int32_t>(std::floor(at.z))},
+                                  at, {}, rest, 40);
+        }
     };
 }
 

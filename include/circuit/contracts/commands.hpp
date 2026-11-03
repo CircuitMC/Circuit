@@ -424,6 +424,22 @@ struct SetBeacon {
     bool operator==(const SetBeacon&) const = default;
 };
 
+// A player finishes eating or drinking the stack in a hand's slot (36-44 or
+// 45), applied while that slot holds the item of `stack` (as the server saw
+// it when the use ended) with the same damage and components, whatever its
+// count: outside creative mode one of it is used up, and what it leaves (a
+// bowl, a bucket, a glass bottle) takes its place, or with some of the stack
+// left goes into the inventory (the selected hotbar slot first), thrown from
+// `eye` without room.
+struct ConsumeItem {
+    PlayerKey player;
+    std::uint8_t slot{hotbar_first};
+    ItemStack stack;
+    bool creative{};
+    Vec3 eye;
+    bool operator==(const ConsumeItem&) const = default;
+};
+
 // A player swaps the stacks of the main hand (`slot`, a hotbar slot) and the
 // off hand (the swap key).
 struct SwapHands {
@@ -471,7 +487,7 @@ using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, Remo
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
                                  SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands,
-                                 SetBeacon>;
+                                 SetBeacon, ConsumeItem>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

@@ -67,7 +67,45 @@ constexpr std::array<Change, 33> changes{{
     {"strength", "glowstone_dust", "strong_strength"}, {"weakness", "redstone", "long_weakness"},
     {"slow_falling", "redstone", "long_slow_falling"}}};
 std::string_view bare(std::string_view name) { return name.starts_with("minecraft:") ? name.substr(10) : name; }
+
+// Each potion's effects, in id order (minecraft.wiki "Potion").
+struct Effects {
+    std::array<Effect, 2> list;
+    std::size_t count{};
+};
+constexpr Effects none{};
+constexpr Effects one(std::string_view effect, std::int32_t amplifier, std::int32_t duration) {
+    return {{{{effect, amplifier, duration}, {}}}, 1};
+}
+constexpr std::array<Effects, 46> potion_effects{{
+    none, none, none, none,                                                             // water, mundane, thick, awkward
+    one("night_vision", 0, 3600), one("night_vision", 0, 9600),                         // night vision
+    one("invisibility", 0, 3600), one("invisibility", 0, 9600),                         // invisibility
+    one("jump_boost", 0, 3600), one("jump_boost", 0, 9600), one("jump_boost", 1, 1800), // leaping
+    one("fire_resistance", 0, 3600), one("fire_resistance", 0, 9600),                   // fire resistance
+    one("speed", 0, 3600), one("speed", 0, 9600), one("speed", 1, 1800),                // swiftness
+    one("slowness", 0, 1800), one("slowness", 0, 4800), one("slowness", 3, 400),        // slowness
+    {{{{"slowness", 3, 400}, {"resistance", 2, 400}}}, 2},                              // turtle master
+    {{{{"slowness", 3, 800}, {"resistance", 2, 800}}}, 2},
+    {{{{"slowness", 5, 400}, {"resistance", 3, 400}}}, 2},
+    one("water_breathing", 0, 3600), one("water_breathing", 0, 9600),                   // water breathing
+    one("instant_health", 0, 1), one("instant_health", 1, 1),                           // healing
+    one("instant_damage", 0, 1), one("instant_damage", 1, 1),                           // harming
+    one("poison", 0, 900), one("poison", 0, 1800), one("poison", 1, 432),               // poison
+    one("regeneration", 0, 900), one("regeneration", 0, 1800), one("regeneration", 1, 450), // regeneration
+    one("strength", 0, 3600), one("strength", 0, 9600), one("strength", 1, 1800),       // strength
+    one("weakness", 0, 1800), one("weakness", 0, 4800),                                 // weakness
+    one("luck", 0, 6000),                                                               // luck
+    one("slow_falling", 0, 1800), one("slow_falling", 0, 4800),                         // slow falling
+    one("wind_charged", 0, 3600), one("weaving", 0, 3600), one("oozing", 0, 3600), one("infested", 0, 3600),
+}};
 } // namespace
+
+std::span<const Effect> effects(std::uint32_t potion) noexcept {
+    if (potion >= potion_effects.size()) return {};
+    const auto& e = potion_effects[potion];
+    return std::span(e.list).first(e.count);
+}
 
 std::span<const std::string_view> names() noexcept { return potion_names; }
 

@@ -26,7 +26,7 @@ struct Wire::Ids {
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
         update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion,
-        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity;
+        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity, cooldown;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -126,6 +126,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->set_entity_motion = cb(State::play, "set_entity_motion");
     ids->sb_client_information = sb(State::play, "client_information");
     ids->set_camera = cb(State::play, "set_camera");
+    ids->cooldown = cb(State::play, "cooldown");
     ids->sb_interact = sb(State::play, "interact");
     ids->sb_teleport_to_entity = sb(State::play, "teleport_to_entity");
     ids->disconnect = cb(State::play, "disconnect");
@@ -369,6 +370,7 @@ Bytes Wire::player_info_game_mode(Uuid player, std::int32_t game_mode) const {
     return packet(id_->player_info_update, w);
 }
 Bytes Wire::set_camera(std::int32_t entity) const { return packet(id_->set_camera, Writer().varint(entity)); }
+Bytes Wire::cooldown(std::string_view group, std::int32_t ticks) const { return packet(id_->cooldown, Writer().string(group).varint(ticks)); }
 Bytes Wire::player_info_remove(const std::vector<Uuid>& players) const {
     Writer w;
     w.varint(static_cast<std::int32_t>(players.size()));
@@ -447,7 +449,7 @@ Bytes Wire::sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int6
     w.varint(id + 1).varint(block_category).i32(at.x * 8 + 4).i32(at.y * 8 + 4).i32(at.z * 8 + 4).f32(1.0f).f32(1.0f).i64(seed);
     return packet(id_->sound, w);
 }
-Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed) const {
+Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed, SoundCategory category) const {
     // Sound event ids of each protocol (PrismarineJS minecraft-data
     // sounds.json, MIT, less one: its lists number from 1), sent plus one.
     const bool v772 = protocol_ >= 772;
@@ -457,11 +459,19 @@ Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, 
     case PlayerSound::death: id = v772 ? 1174 : 1134; break;
     case PlayerSound::big_fall: id = v772 ? 1171 : 1131; break;
     case PlayerSound::small_fall: id = v772 ? 1181 : 1141; break;
+    case PlayerSound::eat: id = v772 ? 614 : 601; break;
+    case PlayerSound::drink: id = v772 ? 613 : 600; break;
+    case PlayerSound::honey_drink: id = v772 ? 754 : 729; break;
+    case PlayerSound::burp: id = v772 ? 1173 : 1133; break;
+    case PlayerSound::ominous_bottle: id = v772 ? 1075 : 1035; break;
+    case PlayerSound::chorus_teleport: id = v772 ? 323 : 321; break;
+    case PlayerSound::bad_omen: id = v772 ? 1724 : 1648; break;
+    case PlayerSound::trial_omen: id = v772 ? 1725 : 1649; break;
+    case PlayerSound::raid_omen: id = v772 ? 1726 : 1650; break;
     }
-    constexpr std::int32_t player_category = 7;
     const auto fixed = [](double v) { return static_cast<std::int32_t>(v * 8.0); };
     Writer w;
-    w.varint(id + 1).varint(player_category).i32(fixed(at.x)).i32(fixed(at.y)).i32(fixed(at.z)).f32(volume).f32(pitch).i64(seed);
+    w.varint(id + 1).varint(static_cast<std::int32_t>(category)).i32(fixed(at.x)).i32(fixed(at.y)).i32(fixed(at.z)).f32(volume).f32(pitch).i64(seed);
     return packet(id_->sound, w);
 }
 Bytes Wire::entity_event(std::int32_t entity_id, std::int8_t event) const {
@@ -662,7 +672,7 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
     return packet(id_->update_attributes, w);
 }
 Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
-    const auto& [flags, pose, health, particles, ambient, absorption, skin_parts, main_hand] = d;
+    const auto& [flags, pose, health, particles, ambient, absorption, skin_parts, main_hand, living] = d;
     // Particle type ids (PrismarineJS minecraft-data particles.json, MIT):
     // the same on both protocols up to infested, the items' and omens' one
     // higher on 772.
@@ -680,6 +690,7 @@ Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
     w.varint(id);
     if (flags) w.u8(0).varint(0).u8(*flags); // index 0 (shared flags), type Byte
     if (pose) w.u8(6).varint(21).varint(*pose); // index 6 (pose), type Pose
+    if (living) w.u8(8).varint(0).u8(*living); // index 8 (living flags), type Byte
     if (health) w.u8(9).varint(3).f32(*health); // index 9 (health), type Float
     if (particles) {
         w.u8(10).varint(18).varint(static_cast<std::int32_t>(particles->size())); // index 10 (effect particles), type Particles

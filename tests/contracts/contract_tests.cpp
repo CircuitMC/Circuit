@@ -191,6 +191,9 @@ int main() {
                                   {42, EditBook{alex, offhand_slot, {"first"}, std::string(32, 'y'), "alice"}}, {43, EditBook{alex, 44, {}, std::nullopt, ""}}, {44, SwapHands{alex, 40}}}});
         log.ticks.push_back({14, {{45, SetBeacon{alex, BlockPos{1, 2, 3}, 0, 9}}, {46, SetBeacon{alex, std::nullopt, std::nullopt, 4}},
                                   {47, SetBeacon{alex, BlockPos{0, 0, 0}, max_beacon_effect, max_beacon_effect}}}});
+        // Items eaten and drunk (tag 42), from a hotbar slot and the off hand.
+        log.ticks.push_back({15, {{48, ConsumeItem{alex, 36, {7, 2, 0}, false, {0.5, -58.38, 0.5}}},
+                                  {49, ConsumeItem{alex, offhand_slot, {9, 1, 3}, true, {-1.25, 70.0, 3.5}}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -229,6 +232,14 @@ int main() {
                                                    false, false, static_cast<std::uint8_t>(allowed), 0}}}});
             const auto encoded = encode_replay(one);
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "player use fields range-checked");
+        }
+
+        // A ConsumeItem's slot is a hotbar slot or the off hand.
+        for (const std::uint8_t slot : {std::uint8_t{35}, std::uint8_t{46}}) {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            one.ticks.push_back({1, {{1, ConsumeItem{alex, slot, {7, 1, 0}, false, {}}}}});
+            const auto encoded = encode_replay(one);
+            require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "a consumption's slot is range-checked");
         }
 
         // Where a use clicked and the player's yaw (tag 25) round-trip; a tag
