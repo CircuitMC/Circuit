@@ -314,18 +314,24 @@ bool Session::on_configuration(std::int32_t id, protocol::Reader& r) {
     if (id == w.serverbound(State::configuration, "client_information")) {
         const auto locale = r.string(16);
         const auto distance = r.i8();
-        if (!locale || !distance) {
+        const auto chat = r.varint();
+        const auto colors = r.boolean();
+        const auto parts = r.u8();
+        const auto hand = r.varint();
+        if (!locale || !distance || !chat || !colors || !parts || !hand || *hand < 0 || *hand > 1) {
             fail("Malformed client information");
             return false;
         }
         view_distance_ = std::max<std::int32_t>(2, *distance);
+        skin_parts_ = *parts;
+        main_hand_ = static_cast<std::uint8_t>(*hand);
         return true;
     }
     if (id == w.serverbound(State::configuration, "finish_configuration")) {
         phase_ = Phase::play;
         joined_ = true;
         keep_alive_sent_ = std::chrono::steady_clock::now();
-        shared_.game.join({shared_from_this(), uuid_, name_, properties_, view_distance_, verified_});
+        shared_.game.join({shared_from_this(), uuid_, name_, properties_, view_distance_, verified_, skin_parts_, main_hand_});
         return true;
     }
     // Plugin messages, keep-alive answers, pongs, cookies and resource-pack

@@ -162,6 +162,24 @@ struct Player {
     std::int32_t hurt_cooldown{};
     float last_hurt{};
     bool hurt_marked{}; // hurt since its velocity was last told
+    std::int32_t dead_ticks{}; // since death; at 20 the body goes (client/player_data)
+    // The client's settings the entity data shows: the skin parts (index 17)
+    // and the main hand (18, 1 right); and what was last told of the
+    // entity's data: the health (none for a new entity: joined or
+    // respawned), the skin parts and the main hand (a new entity's are 0 and
+    // right).
+    std::uint8_t skin_parts{};
+    std::uint8_t main_arm{1};
+    std::optional<float> told_health;
+    std::uint8_t told_skin_parts{};
+    std::uint8_t told_main_arm{1};
+    // A new entity's first data is due (`fresh`); once sent, it and the tick
+    // it went in: those who see the entity appear later in that tick get it
+    // after the appearance, as both official servers send it twice then.
+    bool fresh{};
+    std::optional<Bytes> fresh_data;
+    std::uint64_t fresh_data_tick{};
+    bool respawn_attributes{}; // a respawn's attributes, after its first data
     bool floating{};
     std::int32_t floating_ticks{};
     bool sprinting{};
@@ -449,6 +467,7 @@ struct Game::Impl final : GameServices {
     std::int32_t next_entity_id{1};
     std::uint64_t sound_seed{}; // the official servers draw a sound's seed at random
     std::uint64_t voice_draws{}; // and a voice's pitch (Circuit's own draws: splitmix64 of a counter)
+    std::uint64_t spawn_draws{}; // and where a player appears around the spawn (the same)
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
@@ -505,6 +524,21 @@ struct Game::Impl final : GameServices {
         extensions->load();
     }
 
+    // A new world's engine: its state starts with the configured game rules
+    // (game-rule.<name>), which its first checkpoint keeps.
+    std::unique_ptr<runtime::Engine> new_engine() {
+        auto created = std::make_unique<runtime::Engine>(bundle, seed, engine_options(meta.floor_y));
+        if (config.initial_game_rules.empty()) return created;
+        auto state = created->dump();
+        for (const auto& [name, value] : config.initial_game_rules) {
+            const contracts::SetGameRule set{name, static_cast<std::int32_t>(value)};
+            if (!gameplay::check_game_rule(bundle, set))
+                throw std::runtime_error(std::format("game-rule.{}: no such game rule, or {} is out of its range", name, value));
+            gameplay::set_game_rule(bundle, state.game_rules, set);
+        }
+        return std::make_unique<runtime::Engine>(bundle, seed, state, engine_options(meta.floor_y));
+    }
+
     runtime::EngineOptions engine_options(std::int32_t floor_y) const {
         auto o = world_engine_options(bundle, floor_y, config.workers);
         o.data = data.game;
@@ -520,7 +554,8 @@ struct Game::Impl final : GameServices {
         meta.data = data.fingerprint();
         seed = config.seed;
         if (config.world_directory.empty()) {
-            engine = std::make_unique<runtime::Engine>(bundle, seed, engine_options(meta.floor_y));
+            engine = new_engine();
+            rules = engine->dump().game_rules;
             log_warn("no world directory configured: the world is not saved");
             return;
         }
@@ -540,7 +575,7 @@ struct Game::Impl final : GameServices {
                                                              : std::string{}));
         }
         if (!*recovered) {
-            engine = std::make_unique<runtime::Engine>(bundle, seed, engine_options(meta.floor_y));
+            engine = new_engine();
             log_info(std::format("creating a new world in {}", where));
         } else {
             auto& r = **recovered;
@@ -840,6 +875,9 @@ struct Game::Impl final : GameServices {
         p.properties = r.properties;
         p.verified = r.verified;
         p.entity_id = next_entity_id++;
+        p.skin_parts = r.skin_parts;
+        p.main_arm = r.main_hand;
+        p.fresh = true;
         p.pos = spawn_point();
         p.arrival = Player::Arrival::first;
         if (const auto it = saved.find(p.uuid); it != saved.end()) {
@@ -864,8 +902,12 @@ struct Game::Impl final : GameServices {
         peer.send(wire.join_game(j));
         peer.send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
         peer.send(wire.set_held_slot(p.held));
-        peer.send(wire.empty_commands());
         peer.send(recipes_packet());
+        // The operator level (entity event 28: every player may run every
+        // command), then the commands it allows, as both official servers
+        // send them (client/player_data).
+        peer.send(wire.entity_event(p.entity_id, 28));
+        peer.send(wire.empty_commands());
         // The recipe book: its settings, then every recipe the player knows.
         if (data.recipe_book) {
             peer.send(wire.recipe_book_settings(p.book.settings));
@@ -951,7 +993,7 @@ struct Game::Impl final : GameServices {
         }
         if (s.game_mode == survival || s.game_mode == creative || s.game_mode == spectator) p.game_mode = s.game_mode;
         if (s.held >= 0 && s.held < 9) p.held = s.held;
-        // A player who left dead joins respawned at the world spawn.
+        // A player who left dead joins respawned around the world spawn.
         if (std::isfinite(s.health) && s.health > 0.0f) {
             p.health = std::min(s.health, 20.0f); // up to a boosted maximum below, once the effects are back
             if (s.food >= 0 && s.food <= 20) p.food = s.food;
@@ -994,7 +1036,42 @@ struct Game::Impl final : GameServices {
                 p.absorption = std::clamp(s.absorption, 0.0f, static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::max_absorption)));
         }
     }
-    Vec3 spawn_point() const { return {meta.spawn.x + 0.5, static_cast<double>(meta.spawn.y) + 1.0, meta.spawn.z + 0.5}; }
+    // Where a new or respawning player appears: at the world spawn's
+    // center, or with the spawnRadius game rule in a random column of the
+    // square that many blocks around it, on the column's highest block that
+    // stops movement when its top is full and it holds no water
+    // (minecraft.wiki "World spawn"; client/player_data: within 10 blocks on
+    // both official servers, which draw it at random; Circuit draws its own;
+    // after 16 columns that do not do, the spawn itself).
+    Vec3 spawn_point() {
+        const Vec3 center{meta.spawn.x + 0.5, static_cast<double>(meta.spawn.y) + 1.0, meta.spawn.z + 0.5};
+        const auto radius = std::clamp(gameplay::game_rule_value(bundle, rules, "spawnRadius"), 0, 64);
+        if (radius == 0) return center;
+        const auto draw = [this](std::int32_t n) {
+            auto z = (++spawn_draws) * 0x9E3779B97F4A7C15ull;
+            z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
+            z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
+            return static_cast<std::int32_t>((z ^ (z >> 31)) % static_cast<std::uint64_t>(n));
+        };
+        const auto top = bundle.world.min_y + bundle.world.height;
+        for (int attempt = 0; attempt < 16; ++attempt) {
+            const auto x = meta.spawn.x + draw(2 * radius + 1) - radius, z = meta.spawn.z + draw(2 * radius + 1) - radius;
+            for (std::int32_t y = top - 1; y >= bundle.world.min_y; --y) {
+                const auto v = engine->view().block(overworld, {x, y, z});
+                if (!v) break; // not loaded
+                if (v->is_air()) continue;
+                if (v->is(BlockType::water) || gameplay::is_lava(*v)) break; // a liquid covers the column
+                const auto boxes = gameplay::physics::collision_boxes(*v, bundle.schema.content_release);
+                if (boxes.empty()) continue;
+                const bool full_top = std::ranges::any_of(boxes, [](const auto& b) {
+                    return b.min_x <= 0.0 && b.max_x >= 1.0 && b.min_z <= 0.0 && b.max_z >= 1.0 && b.max_y >= 1.0;
+                });
+                if (full_top && !gameplay::waterlogged_block(*v)) return {x + 0.5, y + 1.0, z + 0.5};
+                break;
+            }
+        }
+        return center;
+    }
 
     PlayerListEntry entry(const Player& p) const {
         return {p.uuid, p.name, p.properties, p.game_mode, true, 0};
@@ -1753,13 +1830,13 @@ struct Game::Impl final : GameServices {
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
         // Then the others nearby hear the hurt or the death; the hurt player's
         // velocity is told at the next entity update (client/effects_heal).
+        p.hurt_marked = true;
         if (p.health <= 0.0f) {
             sound_around(p, Wire::PlayerSound::death, voice_pitch());
             die(p, harm, fall_distance);
             return;
         }
         sound_around(p, Wire::PlayerSound::hurt, voice_pitch());
-        p.hurt_marked = true;
     }
     // The velocity of the players hurt since the last entity update, to
     // them and to those who see them: the server's, a player standing still
@@ -1769,7 +1846,7 @@ struct Game::Impl final : GameServices {
         for (auto& [id, p] : players) {
             if (!p.hurt_marked) continue;
             p.hurt_marked = false;
-            if (p.dead) continue;
+            if (p.dead && p.dead_ticks >= 20) continue; // the body went
             const auto motion = wire.entity_motion(p.entity_id, {0.0, -0.0784, 0.0});
             p.peer->send(motion);
             for (const auto viewer : p.seen_by)
@@ -1785,7 +1862,7 @@ struct Game::Impl final : GameServices {
     // death message.
     void die(Player& p, Harm harm, double fall_distance) {
         p.dead = true;
-        p.hurt_marked = false; // no velocity for a body
+        p.dead_ticks = 0;
         p.digging.reset();
         p.floating = false;
         p.fall_distance = 0.0;
@@ -1855,6 +1932,25 @@ struct Game::Impl final : GameServices {
         return name;
     }
 
+    // 20 ticks after a death the body goes, as on both official servers
+    // (client/player_data: a player on the death screen): its last entity
+    // event (60), to the player and those who see the body; then it leaves
+    // their view, and the others leave the dead player's.
+    void body_goes(Player& p) {
+        const auto event = wire.entity_event(p.entity_id, 60);
+        p.peer->send(event);
+        for (const auto viewer : p.seen_by)
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
+        const auto body = wire.remove_entities({p.entity_id});
+        for (const auto viewer : p.seen_by)
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(body);
+        p.seen_by.clear();
+        std::vector<std::int32_t> seen;
+        for (auto& [oid, o] : players)
+            if (o.seen_by.erase(p.peer->id())) seen.push_back(o.entity_id);
+        if (!seen.empty()) p.peer->send(wire.remove_entities(seen));
+    }
+
     // Respawning at the world spawn with full health and hunger.
     void respawn(Player& p) {
         p.dead = false;
@@ -1894,24 +1990,40 @@ struct Game::Impl final : GameServices {
         p.fall_distance = 0.0;
         p.floating = false;
         p.floating_ticks = 0;
+        // A new entity: its first data, then its attributes (without
+        // modifiers), at the next entity update, the health after them
+        // (client/player_data, client/attribute_join).
+        p.fresh = true;
+        p.told_health.reset();
+        p.told_skin_parts = 0;
+        p.told_main_arm = 1;
+        p.respawn_attributes = true;
+        p.dead_ticks = 0;
+        // The abilities, the respawn, the position, the spawn (twice), the
+        // operator level and its commands, the view's center and the
+        // inventory, as both official servers send them (client/player_data;
+        // they send no held slot, and the difficulty, world border and time
+        // again, which Circuit does not).
         Wire::JoinGame j{p.entity_id, config.max_players, p.view_distance, config.simulation_distance, dimension_type, p.game_mode};
-        p.peer->send(wire.respawn(j));
         p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
+        p.peer->send(wire.respawn(j));
         p.flying = p.game_mode == spectator;
-        p.peer->send(wire.set_held_slot(p.held));
-        p.peer->send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         p.remote_window = -1;
         // The client may have dropped its chunks: send the view again.
         p.sent.clear();
-        p.peer->send(wire.game_event(13, 0.0f));
         const auto to = spawn_point();
         const auto chunk = chunk_at(to);
         p.center = chunk;
-        p.peer->send(wire.chunk_center(chunk.x, chunk.z));
         move_tickets(p, chunk);
         teleport(p, to);
-        send_attributes(p, p.attributes, true, false);
-        send_vitals(p);
+        const auto spawn = wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f);
+        p.peer->send(spawn);
+        p.peer->send(spawn);
+        p.peer->send(wire.game_event(13, 0.0f));
+        p.peer->send(wire.entity_event(p.entity_id, 28));
+        p.peer->send(wire.empty_commands());
+        p.peer->send(wire.chunk_center(chunk.x, chunk.z));
+        sync_inventory(p);
         p.moved = true;
     }
 
@@ -2057,12 +2169,18 @@ struct Game::Impl final : GameServices {
     // the entries that differ from a new entity's, if any. Only the effects'
     // bits of the shared flags are sent (the others, sneaking and sprinting
     // among them, are not).
-    std::optional<Bytes> shown_effects(const Player& p) const {
+    Bytes shown_data(const Player& p) const {
         const auto& v = p.effect_view;
-        if (v.flags == 0 && v.particles.empty() && !v.ambient && v.absorption == 0.0f) return std::nullopt;
-        return wire.effect_metadata(p.entity_id, v.flags ? std::optional(v.flags) : std::nullopt,
-                                    v.particles.empty() ? std::nullopt : std::optional(v.particles), v.ambient ? std::optional(true) : std::nullopt,
-                                    v.absorption != 0.0f ? std::optional(v.absorption) : std::nullopt);
+        Wire::PlayerData d;
+        if (v.flags != 0) d.flags = v.flags;
+        const auto health = p.told_health.value_or(p.health);
+        if (health != 1.0f) d.health = health; // a new living entity's is 1
+        if (!v.particles.empty()) d.particles = v.particles;
+        if (v.ambient) d.ambient = true;
+        if (v.absorption != 0.0f) d.absorption = v.absorption;
+        if (p.told_skin_parts != 0) d.skin_parts = p.told_skin_parts;
+        if (p.told_main_arm != 1) d.main_hand = p.told_main_arm;
+        return wire.player_data(p.entity_id, d);
     }
     // At the end of a tick, the entity data of the effects changed in it,
     // or of the absorption alone.
@@ -2080,24 +2198,64 @@ struct Game::Impl final : GameServices {
     // and the absorption when they changed, the particles when effects
     // changed unless none were shown and none are (both official servers
     // send a list of particles again even when it is the same).
+    // With them, at this entity update, the health, skin parts and main hand
+    // when they changed since last told, in the same entity data
+    // (client/player_data: the health after the health packet, to the player
+    // and those who see them); a respawned player's first data instead.
     void send_decided_effects() {
         for (auto& [id, p] : players) {
-            if (!p.effects_decided) continue;
-            const auto decided = std::move(*p.effects_decided);
-            p.effects_decided.reset();
-            const auto& now = decided.view;
-            const auto& was = p.effect_view;
-            const auto flags = now.flags != was.flags ? std::optional(now.flags) : std::nullopt;
-            const auto particles = !decided.effects || (now.particles.empty() && was.particles.empty()) ? std::nullopt : std::optional(now.particles);
-            const auto ambient = now.ambient != was.ambient ? std::optional(now.ambient) : std::nullopt;
-            const auto absorption = now.absorption != was.absorption ? std::optional(now.absorption) : std::nullopt;
-            p.effect_view = now;
-            if (!flags && !particles && !ambient && !absorption) continue;
-            const auto data = wire.effect_metadata(p.entity_id, flags, particles, ambient, absorption);
+            Wire::PlayerData d;
+            if (p.fresh) {
+                if (!p.vitals_pending) send_fresh_data(p); // a respawn's (a join's goes with its vitals)
+            } else {
+                if (p.told_health != p.health) d.health = p.health;
+                if (p.told_skin_parts != p.skin_parts) d.skin_parts = p.skin_parts;
+                if (p.told_main_arm != p.main_arm) d.main_hand = p.main_arm;
+            }
+            if (p.effects_decided) {
+                const auto decided = std::move(*p.effects_decided);
+                p.effects_decided.reset();
+                const auto& now = decided.view;
+                const auto& was = p.effect_view;
+                if (now.flags != was.flags) d.flags = now.flags;
+                if (decided.effects && !(now.particles.empty() && was.particles.empty())) d.particles = now.particles;
+                if (now.ambient != was.ambient) d.ambient = now.ambient;
+                if (now.absorption != was.absorption) d.absorption = now.absorption;
+                p.effect_view = now;
+            }
+            if (!d.flags && !d.health && !d.particles && !d.ambient && !d.absorption && !d.skin_parts && !d.main_hand) continue;
+            if (d.health) p.told_health = *d.health;
+            if (d.skin_parts) p.told_skin_parts = *d.skin_parts;
+            if (d.main_hand) p.told_main_arm = *d.main_hand;
+            const auto data = wire.player_data(p.entity_id, d);
             p.peer->send(data);
             for (const auto viewer : p.seen_by)
                 if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
         }
+    }
+    // A new entity's first data (joined or respawned): its health, its
+    // absorption, the skin parts it shows and a left main hand (by the same
+    // rule; not recorded), to the
+    // player and those who see it, kept for those who see it appear later
+    // in the tick (client/player_data, client/attribute_rules: a rejoin with
+    // absorption).
+    void send_fresh_data(Player& p) {
+        p.fresh = false;
+        Wire::PlayerData d;
+        d.health = p.health;
+        if (p.absorption > 0.0f) d.absorption = p.absorption;
+        if (p.skin_parts != 0) d.skin_parts = p.skin_parts;
+        if (p.main_arm != 1) d.main_hand = p.main_arm;
+        p.told_health = p.health;
+        p.told_skin_parts = p.skin_parts;
+        p.told_main_arm = p.main_arm;
+        const auto data = wire.player_data(p.entity_id, d);
+        p.peer->send(data);
+        for (const auto viewer : p.seen_by)
+            if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
+        p.fresh_data = data;
+        p.fresh_data_tick = tick_count;
+        if (std::exchange(p.respawn_attributes, false)) send_attributes(p, p.attributes, true, false);
     }
 
     // A beacon's cycle gives its powers to the players in range (client/beacon,
@@ -2244,11 +2402,6 @@ struct Game::Impl final : GameServices {
             send_attributes(p, p.attributes, true, true);
             return;
         }
-        if (p.absorption > 0.0f) {
-            const auto data = wire.effect_metadata(p.entity_id, std::nullopt, std::nullopt, std::nullopt, p.absorption);
-            for (const auto viewer : p.seen_by)
-                if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
-        }
         send_attributes(p, p.attributes, false, true);
         game_mode_attributes(p);
         std::vector<gameplay::attributes::Instance> changed;
@@ -2333,6 +2486,8 @@ struct Game::Impl final : GameServices {
                 if (p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
                 hunger(p); // in every mode (only survival actions tire), also in the tick of a death
                 if (!p.vitals_pending) tick_effects(p);
+            } else if (world_runs && p.dead && ++p.dead_ticks == 20) {
+                body_goes(p);
             }
             if (!p.vitals_pending) send_vitals(p, true);
         }
@@ -2934,6 +3089,13 @@ struct Game::Impl final : GameServices {
     }
 
     // The powers chosen in an open beacon window.
+    // The client's settings: the skin parts and main hand its entity data
+    // shows, told at the next entity update (client/player_data).
+    void handle(Player& p, intent::ClientInformation& c) {
+        p.skin_parts = c.skin_parts;
+        p.main_arm = c.main_hand;
+    }
+
     void handle(Player& p, intent::SetBeacon& s) {
         if (!p.window || !at(p.window->pos).is(BlockType::beacon)) return;
         // An id that is not a beacon's power counts as none, as the rules
@@ -3830,6 +3992,7 @@ struct Game::Impl final : GameServices {
             sync_inventory(p);
             if (!p.vitals_pending) sync_experience(p);
             sync_maps(p);
+            send_joining_data(p); // before the first tick's recipe book entries (client/player_data)
             update_recipe_book(p, engine->view());
             send_joining_vitals(p);
         }
@@ -3840,17 +4003,20 @@ struct Game::Impl final : GameServices {
     // servers send them in the player's first tick (client/join_order).
     // Clients that count from the first health packet have read the
     // inventory and the first tick's recipes.
+    // A joining player's effects, then their first entity data (with a
+    // returning player's absorption), before the first tick's recipe book
+    // entries (client/effects, client/attribute_join, client/player_data).
+    void send_joining_data(Player& p) {
+        if (!p.vitals_pending || !p.fresh) return;
+        for (const auto& e : p.effects) send_effect(p, e, false);
+        send_fresh_data(p);
+    }
     void send_joining_vitals(Player& p) {
         if (!p.vitals_pending) return;
+        send_joining_data(p); // unless sent already (a frozen world has no recipe book triggers)
         p.vitals_pending = false;
-        // Effects first, then a returning player's absorption and attributes,
-        // health and experience (client/effects and client/attribute_join: a
-        // rejoin).
-        for (const auto& e : p.effects) send_effect(p, e, false);
-        if (p.arrival == Player::Arrival::again) {
-            if (p.absorption > 0.0f) p.peer->send(wire.effect_metadata(p.entity_id, std::nullopt, std::nullopt, std::nullopt, p.absorption));
-            send_attributes(p, p.attributes, true, false);
-        }
+        // Then a returning player's attributes, the health and experience.
+        if (p.arrival == Player::Arrival::again) send_attributes(p, p.attributes, true, false);
         send_vitals(p);
         sync_experience(p);
     }
@@ -4039,9 +4205,10 @@ struct Game::Impl final : GameServices {
             p.moved = false;
             const auto pos = wire.entity_position(p.entity_id, p.pos, p.yaw, p.pitch, p.on_ground);
             const auto head = wire.head_rotation(p.entity_id, p.yaw);
-            const auto c = chunk_at(p.pos);
+            // To those whose clients have the player (a dead player whose
+            // body went has none, and sees no one).
             for (auto& [oid, o] : players) {
-                if (oid == id || !o.sent.contains(c)) continue;
+                if (oid == id || !p.seen_by.contains(oid)) continue;
                 o.peer->send(pos);
                 o.peer->send(head);
             }
@@ -4050,14 +4217,18 @@ struct Game::Impl final : GameServices {
         for (auto& [id, p] : players)
             for (auto& [oid, o] : players) {
                 if (oid == id) continue;
-                // A dead player stays until they respawn (client/effects_heal).
-                const bool visible = o.sent.contains(chunk_at(p.pos));
+                // A dead player stays until they respawn or the body goes
+                // (client/effects_heal, client/player_data), and one whose
+                // body went sees no one.
+                const bool visible = o.sent.contains(chunk_at(p.pos)) && !(p.dead && p.dead_ticks >= 20) && !(o.dead && o.dead_ticks >= 20);
                 if (visible && p.seen_by.insert(oid).second) {
-                    // The entity, its data, then its attributes (client/attribute_join).
+                    // The entity, its data, then its attributes (client/attribute_join),
+                    // and a new entity's first data again (client/player_data).
                     o.peer->send(wire.spawn_entity(p.entity_id, p.uuid, player_entity_type, p.pos, p.pitch, p.yaw, p.yaw, 0));
-                    if (const auto data = shown_effects(p)) o.peer->send(*data);
+                    o.peer->send(shown_data(p));
                     if (std::ranges::any_of(p.attributes, [](const auto& i) { return gameplay::attributes::synced(i.attribute); }))
                         o.peer->send(wire.update_attributes(p.entity_id, p.attributes));
+                    if (p.fresh_data && p.fresh_data_tick == tick_count) o.peer->send(*p.fresh_data);
                 } else if (!visible && p.seen_by.erase(oid)) {
                     o.peer->send(wire.remove_entities({p.entity_id}));
                 }

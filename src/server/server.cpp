@@ -253,6 +253,12 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text) {
         else if (key == "seed") ok = parse_number<std::uint64_t>(value, c.seed, 0, INT64_MAX);
         else if (key == "max-queued-bytes") ok = parse_number<std::size_t>(value, c.max_queued_bytes, 65536, 1u << 30);
         else if (key == "floor-y") ok = parse_number<std::int32_t>(value, c.floor_y, -2048, 2047);
+        else if (key.starts_with("game-rule.") && key.size() > 10) {
+            std::int64_t rule = 0;
+            if (value == "true") rule = 1;
+            else if (value != "false") ok = parse_number<std::int64_t>(value, rule, INT32_MIN, INT32_MAX);
+            c.initial_game_rules[key.substr(10)] = rule;
+        }
         else if (key == "world-directory") c.world_directory = value;
         else if (key == "autosave-ticks") ok = parse_number<std::uint32_t>(value, c.autosave_ticks, 20, 1728000);
         else if (key == "log-sync-ticks") ok = parse_number<std::uint32_t>(value, c.log_sync_ticks, 1, 1200);

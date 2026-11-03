@@ -2274,14 +2274,14 @@
           "cases": [
             "client/vitals",
             "realclient/survival",
-            "client/effects_heal"
+            "client/effects_heal",
+            "client/player_data"
           ],
           "deviations": [
             "death drops spread in a fixed pattern",
-            "players respawn at the world spawn itself, not at random around it",
-            "the operator level (entity events 24 to 28) is not sent"
+            "where a player appears around the spawn is drawn from Circuit's own random (the official servers draw it from theirs), in at most 16 columns"
           ],
-          "note": "The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view until the respawn, then removed and the player spawned again"
+          "note": "The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view (its health 0 and velocity told) until it goes after the death animation (entity event 60; Circuit takes 20 ticks) or the player respawns; the respawn's packets Circuit sends in the official order, with the operator level; new and respawning players placed in a random column within the spawnRadius game rule"
         },
         {
           "id": "melee_combat",
@@ -2986,8 +2986,12 @@
           "name": "Entity metadata, equipment, animations and events",
           "milestone": "C10",
           "impl": "partial",
-          "evidence": "none",
-          "note": "Items, players and damage events"
+          "evidence": "compared",
+          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear",
+          "cases": [
+            "client/player_data",
+            "client/effects_heal"
+          ]
         },
         {
           "id": "sounds_and_particles",

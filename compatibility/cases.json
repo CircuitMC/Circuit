@@ -845,6 +845,17 @@
       "description": "44 steps with a survival player (naturalRegeneration off, difficulty normal) and a creative one beside her: instant damage I, twice at once and for 3 ticks (the hurt cooldown), instant health I and II, at full health and for 3 ticks, regeneration I (snapshots between its heals), II and VI, poison I and III (every other hit kept out) and at low health (down to 1), wither I and III, wither V and instant damage IV until she dies (the death messages, the death animation, the body kept until the respawn), a fall of 10 blocks, hunger L, saturation I and III, the effects on the creative player (no damage), and starvation; each step's health packets, damage events (raw type ids), velocity, entity events, hurt, death and fall sounds, effect packets, removals and spawns for both players; Circuit and both official servers give identical output (the block's fall sound and the operator levels left out)"
     },
     {
+      "id": "client/player_data",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/player-data.js",
+      "status": "passing",
+      "description": "Two players: the first one's join (the operator level between the recipes and the commands, the position, the first entity data before the health, the attributes after), the second one's (each sees the other appear with the health and skin parts, the newcomer's twice), skin parts and the main hand changed by the client's settings, the health hurt and healed (entity data 9 after the health packet), absorption, a death on the death screen (health 0 and the velocity at the next update, then the body's last event 60 and its removal; Circuit takes 20 ticks, the official servers' tick was not recorded) and the respawn's order, four deaths respawned within 10 blocks of the spawn and not all at its center, and one with spawnRadius 0 at its center; each step's entity data (but the effects' entries), entity events, health packets, appearances and removals; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/beacon",
       "kind": "black_box",
       "versions": [

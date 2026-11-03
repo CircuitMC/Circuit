@@ -123,6 +123,13 @@ struct ContainerButton {
 struct SetBeacon {
     std::optional<std::int32_t> primary, secondary;
 };
+// The client's settings changed (client_information): the skin parts it
+// shows (cape, jacket, sleeves, trouser legs, hat: bits 0 to 6) and its main
+// hand (0 left, 1 right).
+struct ClientInformation {
+    std::uint8_t skin_parts{};
+    std::uint8_t main_hand{1};
+};
 // The name typed into the open anvil window.
 struct RenameItem {
     std::string name;
@@ -183,7 +190,7 @@ using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, 
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
                             intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
                             intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe, intent::EditBook,
-                            intent::SetBeacon>;
+                            intent::SetBeacon, intent::ClientInformation>;
 
 class Wire {
 public:
@@ -339,12 +346,26 @@ public:
     Bytes update_mob_effect(std::int32_t entity, std::int32_t effect, std::int32_t amplifier, std::int32_t duration,
                             std::uint8_t flags) const;
     Bytes remove_mob_effect(std::int32_t entity, std::int32_t effect) const;
-    // The data of a player that status effects decide, each entry when
-    // given: its shared flags (index 0), its effect particles (10), whether
-    // they are ambient (11) and its absorption (15).
+    // A player's entity data, each entry when given, in index order: its
+    // shared flags (index 0), its health (9), its effect particles (10),
+    // whether they are ambient (11), its absorption (15), the skin parts it
+    // shows (17) and its main hand (18).
+    struct PlayerData {
+        std::optional<std::uint8_t> flags;
+        std::optional<float> health;
+        std::optional<std::vector<gameplay::effects::Particle>> particles;
+        std::optional<bool> ambient;
+        std::optional<float> absorption;
+        std::optional<std::uint8_t> skin_parts;
+        std::optional<std::uint8_t> main_hand;
+    };
+    Bytes player_data(std::int32_t id, const PlayerData& d) const;
+    // The entries status effects decide.
     Bytes effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
                           const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
-                          std::optional<float> absorption = std::nullopt) const;
+                          std::optional<float> absorption = std::nullopt) const {
+        return player_data(id, {flags, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt});
+    }
     // A player's attributes (client/attributes), in the order given: each
     // with a player's base and its modifiers; those the official servers
     // keep to themselves are left out.

@@ -25,7 +25,8 @@ struct Wire::Ids {
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
-        update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion;
+        update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion,
+        sb_client_information;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -123,6 +124,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_set_beacon = sb(State::play, "set_beacon");
     ids->entity_event = cb(State::play, "entity_event");
     ids->set_entity_motion = cb(State::play, "set_entity_motion");
+    ids->sb_client_information = sb(State::play, "client_information");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -650,9 +652,8 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
     }
     return packet(id_->update_attributes, w);
 }
-Bytes Wire::effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
-                            const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
-                            std::optional<float> absorption) const {
+Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
+    const auto& [flags, health, particles, ambient, absorption, skin_parts, main_hand] = d;
     // Particle type ids (PrismarineJS minecraft-data particles.json, MIT):
     // the same on both protocols up to infested, the items' and omens' one
     // higher on 772.
@@ -669,6 +670,7 @@ Bytes Wire::effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
     Writer w;
     w.varint(id);
     if (flags) w.u8(0).varint(0).u8(*flags); // index 0 (shared flags), type Byte
+    if (health) w.u8(9).varint(3).f32(*health); // index 9 (health), type Float
     if (particles) {
         w.u8(10).varint(18).varint(static_cast<std::int32_t>(particles->size())); // index 10 (effect particles), type Particles
         for (const auto& p : *particles) {
@@ -678,6 +680,8 @@ Bytes Wire::effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
     }
     if (ambient) w.u8(11).varint(8).boolean(*ambient); // index 11 (ambient effects), type Boolean
     if (absorption) w.u8(15).varint(3).f32(*absorption); // index 15 (a player's absorption), type Float
+    if (skin_parts) w.u8(17).varint(0).u8(*skin_parts); // index 17 (the skin parts shown), type Byte
+    if (main_hand) w.u8(18).varint(0).u8(*main_hand); // index 18 (the main hand), type Byte
     w.u8(0xFF);
     return packet(id_->set_entity_data, w);
 }
@@ -901,6 +905,22 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_client_command) {
         TRY(action, r.varint());
         return done(intent::ClientCommand{*action});
+    }
+    if (id == i.sb_client_information) {
+        // Locale, view distance, chat mode and colors, then what matters here;
+        // text filtering, server listings and the particle level follow.
+        TRY(locale, r.string(16));
+        TRY(distance, r.i8());
+        TRY(chat, r.varint());
+        TRY(colors, r.boolean());
+        TRY(parts, r.u8());
+        TRY(hand, r.varint());
+        (void)locale;
+        (void)distance;
+        (void)chat;
+        (void)colors;
+        if (*hand < 0 || *hand > 1) return std::unexpected(CodecError::malformed);
+        return done(intent::ClientInformation{*parts, static_cast<std::uint8_t>(*hand)});
     }
     if (id == i.sb_container_close) {
         TRY(window, r.varint());

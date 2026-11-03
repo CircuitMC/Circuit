@@ -45,6 +45,9 @@ struct ServerConfig {
     std::chrono::seconds login_timeout{30};
     std::chrono::seconds keep_alive_timeout{30};
     std::int32_t floor_y{-61}; // flat world: one stone layer at this height (new worlds)
+    // game-rule.<name>: the values of game rules a new world starts with
+    // (true and false for the boolean ones).
+    std::map<std::string, std::int64_t> initial_game_rules;
     // Directory of the saved world: checkpoints and the input log. Empty: the
     // world lives in memory only.
     std::filesystem::path world_directory;

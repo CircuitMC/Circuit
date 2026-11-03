@@ -63,6 +63,7 @@ ServerConfig offline_config() {
     c.network_threads = 2;
     c.view_distance = 3;
     c.simulation_distance = 2;
+    c.initial_game_rules["spawnRadius"] = 0; // players appear at the spawn itself
     return c;
 }
 
@@ -366,6 +367,9 @@ int main() {
         const auto w = server::parse_config("world-directory=/srv/world\nautosave-ticks=1200\nlog-sync-ticks=1\n");
         require(w && w->world_directory == "/srv/world" && w->autosave_ticks == 1200 && w->log_sync_ticks == 1, "world settings");
         require(!server::parse_config("log-sync-ticks=0\n") && !server::parse_config("autosave-ticks=5\n"), "world setting ranges");
+        const auto r = server::parse_config("game-rule.spawnRadius=3\ngame-rule.keepInventory=true\n");
+        require(r && r->initial_game_rules == std::map<std::string, std::int64_t>{{"keepInventory", 1}, {"spawnRadius", 3}}, "a new world's game rules");
+        require(!server::parse_config("game-rule.keepInventory=maybe\n"), "a game rule's value");
     });
 
     suite.run("protocol encryption primitives", [] {
@@ -1103,7 +1107,7 @@ int main() {
                 {10, "/gamerule :: gamerule<command.context.here>"}};
             for (const auto& [i, line] : lines) require(contexts[i] == line, contexts[i]);
             const auto d = f.game->engine().dump();
-            require(d.game_rules == std::map<std::string, std::int32_t>{{"keepInventory", 1}, {"randomTickSpeed", 7}, {"spawnChunkRadius", 0}},
+            require(d.game_rules == std::map<std::string, std::int32_t>{{"keepInventory", 1}, {"randomTickSpeed", 7}, {"spawnChunkRadius", 0}, {"spawnRadius", 0}},
                     "the rules are world state");
             require(!start(*f.game), "spawnChunkRadius 0: no spawn chunks");
             f.game->submit(1, I{server::intent::Command{"gamerule spawnChunkRadius 3"}});
@@ -1717,6 +1721,7 @@ int main() {
                         const auto type = in.varint().value();
                         text += std::format(" {}=", index);
                         if (type == 0) text += std::to_string(in.u8().value());
+                        else if (type == 3) text += std::format("{}", in.f32().value());
                         else if (type == 8) text += in.boolean().value() ? "true" : "false";
                         else if (type == 18) {
                             const auto n = in.varint().value();
@@ -1824,10 +1829,15 @@ int main() {
         alice = f.join(1, "Alice");
         seen[1] = 0;
         a = packets(*alice);
-        // Bob appears with his data as last told (glowing, his effects ambient).
-        require(std::erase(a, bob_seen) == 1, "bob appears glowing");
+        // Bob appears with his data as last told (glowing, his health, his
+        // effects ambient).
+        auto bob_appears = bob_seen;
+        bob_appears.insert(bob_appears.find(" 11=true"), " 9=20");
+        require(std::erase(a, bob_appears) == 1, "bob appears glowing");
+        // Alice's first data (her health) follows her effects, then the health packet (client/player_data).
         const auto health = std::ranges::find(a, std::string("health"));
-        require(health != a.end() && health - a.begin() == 3 && health + 1 == a.end(), "three effects, then the health");
+        require(health != a.end() && health - a.begin() == 4 && health + 1 == a.end() && a[3].ends_with(" 9=20"),
+                "three effects, her first data, then the health");
         // Water breathing went down in the tick that gave it (none while
         // away, none in the joining tick); glowing in each tick since its own.
         require(a[0].ends_with(" 2 0 -1 6") && a[1].ends_with(" 12 0 1999 0") && a[2].ends_with(" 23 0 486 0"),
@@ -2959,7 +2969,10 @@ int main() {
                         const auto type = in.varint().value();
                         if (type == 0) (void)in.u8();
                         else if (type == 8) (void)in.boolean();
-                        else if (type == 3) out.push_back(std::format("absorption {} {}", entity, in.f32().value()));
+                        else if (type == 3) { // the health (9) is passed over too
+                            const auto value = in.f32().value();
+                            if (index == 15) out.push_back(std::format("absorption {} {}", entity, value));
+                        }
                         else if (type == 18) {
                             const auto count = in.varint().value();
                             for (std::int32_t k = 0; k < count; ++k)
@@ -3501,29 +3514,46 @@ int main() {
             ticks(20);
             (void)packets(*bob);
             give("alice minecraft:wither 30 4");
-            ticks(200);
-            a = packets(*alice);
-            b = packets(*bob);
-            const auto from = std::ranges::find(a, std::string("death screen death.attack.wither"));
+            const auto dead = std::string("death screen death.attack.wither");
+            a.clear();
+            b.clear();
+            for (int k = 0; k < 300 && std::ranges::find(a, dead) == a.end(); ++k) {
+                f.game->tick();
+                std::ranges::copy(packets(*alice), std::back_inserter(a));
+                std::ranges::copy(packets(*bob), std::back_inserter(b));
+            }
+            const auto from = std::ranges::find(a, dead);
             const auto message = std::string(v772 ? R"(message {with:[{click_event:{action:"suggest_command",command:"/tell alice "},insertion:"alice",text:"alice",)"
                                                     R"(hover_event:{name:"alice",action:"show_entity",id:"minecraft:player",uuid:[I;4]}}],translate:"death.attack.wither"})"
                                                   : R"(message {with:[{hoverEvent:{contents:{name:"alice",id:[I;4],type:"minecraft:player"},action:"show_entity"},)"
                                                     R"(clickEvent:{action:"suggest_command",value:"/tell alice "},insertion:"alice",text:"alice"}],translate:"death.attack.wither"})");
-            require(from != a.end() && std::vector(from, a.end()) == std::vector<std::string>{"death screen death.attack.wither", message, "status alice 3", "health 0 food 20 saturation 5"},
+            require(from != a.end() && std::vector(from, a.end()) == std::vector<std::string>{dead, message, "status alice 3", "health 0 food 20 saturation 5"},
                     std::format("{}: the wither's death, the name in the version's form", version));
             require(std::ranges::count(a, std::format("damage alice type {}", wither)) == 16, std::format("{}: 16 wither hits", version));
             const auto last = std::ranges::find(b, std::format("sound {} category 7 {} volume 1", death, at));
             require(last != b.end() && std::vector(last - 1, b.end()) == std::vector<std::string>{std::format("damage alice type {}", wither),
                         std::format("sound {} category 7 {} volume 1", death, at), "status alice 3"},
                     std::format("{}: bob hears the death and sees the animation; the body stays", version));
-            // The respawn: alice's client drops bob, then sees him again; bob sees the body go and alice come back.
+            // On the death screen: the velocity at the next entity update; 20
+            // ticks after the death the body's last event, then it goes from
+            // bob's view and bob from hers (client/player_data).
+            ticks(1);
+            require(packets(*alice) == std::vector<std::string>{"velocity alice 0 -627 0"} && packets(*bob) == std::vector<std::string>{"velocity alice 0 -627 0"},
+                    std::format("{}: the body's velocity", version));
+            ticks(18);
+            require(packets(*alice).empty() && packets(*bob).empty(), std::format("{}: the body stays 19 ticks", version));
+            ticks(1);
+            require(packets(*alice) == std::vector<std::string>{"status alice 60", "removed bob"} &&
+                        packets(*bob) == std::vector<std::string>{"status alice 60", "removed alice"},
+                    std::format("{}: then it goes", version));
+            // The respawn: nothing left to remove; each sees the other again.
             f.game->submit(1, I{server::intent::ClientCommand{0}});
             ticks(2);
             a = packets(*alice);
             b = packets(*bob);
-            require(a.size() >= 3 && a[0] == "removed bob" && a[1] == "respawn" && std::ranges::count(a, std::string("spawned bob")) == 1,
+            require(a.size() >= 2 && a[0] == "respawn" && std::ranges::count(a, std::string("spawned bob")) == 1 && std::ranges::count(a, std::string("removed bob")) == 0,
                     std::format("{}: alice respawns", version));
-            require(b == std::vector<std::string>{"removed alice", "spawned alice"}, std::format("{}: bob sees her come back", version));
+            require(b == std::vector<std::string>{"spawned alice"}, std::format("{}: bob sees her come back", version));
             // Hunger L for 5 s: 25 exhaustion, the saturation, then a point of food.
             command(1, "tp 8.5 -60 8.5");
             ticks(2);
@@ -3544,6 +3574,143 @@ int main() {
             b = packets(*bob);
             require(std::ranges::none_of(b, [](const auto& t) { return t.starts_with("damage") || t.starts_with("health"); }),
                     std::format("{}: a creative player is not hurt", version));
+        }
+    });
+
+    suite.run("players' entity data, operator level and where they appear as both official servers show them", [] {
+        // circuit-clienttest/player-data.js, both versions alike.
+        using I = server::Intent;
+        std::map<std::uint64_t, std::size_t> seen;
+        // Since the last call, as text: "login <entity>", "recipes",
+        // "status <entity> <event>", "commands", "abilities", "respawn",
+        // "position <x> <y> <z>", "data <entity> <index>=<value> ...",
+        // "health <health>", "attributes <entity>", "spawn <entity>".
+        const auto packets = [&](GameFixture& f, Recorder& r) {
+            const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+            std::vector<std::string> out;
+            std::lock_guard lock(r.mutex);
+            for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                auto pk = protocol::open_packet(r.packets[at]);
+                if (!pk) continue;
+                auto& in = pk->fields;
+                if (pk->id == id("login")) out.push_back(std::format("login {}", in.i32().value()));
+                else if (pk->id == id("update_recipes")) out.emplace_back("recipes");
+                else if (pk->id == id("commands")) out.emplace_back("commands");
+                else if (pk->id == id("player_abilities")) out.emplace_back("abilities");
+                else if (pk->id == id("respawn")) out.emplace_back("respawn");
+                else if (pk->id == id("entity_event")) {
+                    const auto e = in.i32().value();
+                    out.push_back(std::format("status {} {}", e, static_cast<int>(in.i8().value())));
+                } else if (pk->id == id("player_position")) {
+                    (void)in.varint();
+                    const auto x = in.f64().value(), y = in.f64().value();
+                    out.push_back(std::format("position {} {} {}", x, y, in.f64().value()));
+                } else if (pk->id == id("set_entity_data")) {
+                    std::string text = std::format("data {}", in.varint().value());
+                    for (auto index = in.u8().value(); index != 0xFF; index = in.u8().value()) {
+                        const auto type = in.varint().value();
+                        if (type == 0) text += std::format(" {}={}", index, static_cast<int>(in.u8().value()));
+                        else if (type == 3) text += std::format(" {}={}", index, in.f32().value());
+                        else break; // the effects' entries are not used here
+                    }
+                    out.push_back(std::move(text));
+                } else if (pk->id == id("set_health")) {
+                    out.push_back(std::format("health {}", in.f32().value()));
+                } else if (pk->id == id("update_attributes")) {
+                    out.push_back(std::format("attributes {}", in.varint().value()));
+                } else if (pk->id == id("add_entity")) {
+                    out.push_back(std::format("spawn {}", in.varint().value()));
+                } else if (pk->id == id("remove_entities")) {
+                    for (auto n = in.varint().value(); n > 0; --n) out.push_back(std::format("removed {}", in.varint().value()));
+                }
+            }
+            return out;
+        };
+        const auto index = [](const std::vector<std::string>& v, const std::string& s) { return std::ranges::find(v, s) - v.begin(); };
+        {
+            GameFixture f;
+            auto alice = f.join(1, "alice");
+            auto a = packets(f, *alice);
+            const auto me = a.at(0).substr(6);
+            // Joining: the operator level after the recipes and before the commands; the first data before the health, the attributes after.
+            const auto at_status = index(a, std::format("status {} 28", me));
+            require(a[0].starts_with("login ") && index(a, "recipes") < at_status && at_status + 1 == index(a, "commands"), "the operator level");
+            const auto at_data = index(a, std::format("data {} 9=20", me));
+            require(at_data < static_cast<std::ptrdiff_t>(a.size()) && index(a, "position 0.5 -60 0.5") < at_data && at_data < index(a, "health 20") &&
+                        index(a, "health 20") < index(a, std::format("attributes {}", me)),
+                    "the position, the first data, the health, the attributes");
+            // Bob joins with his skin parts: Alice sees him appear with his data, then his first data again.
+            const auto bob = std::make_shared<Recorder>(2);
+            f.game->join({bob, {2, 2}, "bob", {}, 3, false, 127, 1});
+            f.game->tick();
+            a = packets(f, *alice);
+            const auto spawn = std::ranges::find_if(a, [](const auto& t) { return t.starts_with("spawn "); });
+            require(spawn != a.end(), "bob appears");
+            const auto him = spawn->substr(6);
+            // A new player's attributes come after both (client/attribute_join).
+            const auto first_data = index(a, std::format("data {} 9=20 17=127", him));
+            const auto second_data = std::find(a.begin() + first_data + 1, a.end(), std::format("data {} 9=20 17=127", him)) - a.begin();
+            require(index(a, *spawn) < first_data && first_data < second_data && second_data < index(a, std::format("attributes {}", him)) &&
+                        index(a, std::format("attributes {}", him)) < static_cast<std::ptrdiff_t>(a.size()),
+                    "his appearance, his data twice, then his attributes");
+            (void)packets(f, *bob);
+            // The client's settings: the skin parts and the main hand, to her and to those who see her.
+            f.game->submit(1, I{server::intent::ClientInformation{61, 0}});
+            f.game->tick();
+            require(packets(f, *alice) == std::vector<std::string>{std::format("data {} 17=61 18=0", me)}, "her settings");
+            // Hurt: the health, then the data at the next entity update.
+            f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+            f.game->tick();
+            (void)packets(f, *alice);
+            f.game->submit(1, I{server::intent::Command{"effect give alice minecraft:instant_damage 1 0"}});
+            f.game->tick();
+            f.game->tick();
+            a = packets(f, *alice);
+            require(index(a, "health 14") < index(a, std::format("data {} 9=14", me)) && index(a, std::format("data {} 9=14", me)) < static_cast<std::ptrdiff_t>(a.size()),
+                    "the health, then its data");
+            // A respawn: the abilities, the respawn, the position, the operator level, the commands, the first data, the attributes, the health.
+            f.game->submit(1, I{server::intent::Command{"kill"}});
+            for (int k = 0; k < 3; ++k) f.game->tick();
+            (void)packets(f, *alice);
+            (void)packets(f, *bob);
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            f.game->tick();
+            a = packets(f, *alice);
+            // An immediate respawn: her client drops bob before the respawn and sees him again after; he sees her body go and her come back.
+            require(index(a, std::format("removed {}", him)) < index(a, "respawn") && index(a, "respawn") < index(a, std::format("spawn {}", him)) &&
+                        index(a, std::format("spawn {}", him)) < static_cast<std::ptrdiff_t>(a.size()),
+                    "she drops bob, respawns, sees him again");
+            const auto b = packets(f, *bob);
+            require(index(b, std::format("removed {}", me)) < index(b, std::format("spawn {}", me)) && index(b, std::format("spawn {}", me)) < static_cast<std::ptrdiff_t>(b.size()),
+                    "bob sees her body go and her come back");
+            std::vector<std::string> order;
+            for (const auto& t : a)
+                if (t == "abilities" || t == "respawn" || t.starts_with("position") || t == std::format("status {} 28", me) || t == "commands" ||
+                    t.starts_with(std::format("data {} ", me)) || t == std::format("attributes {}", me) || t.starts_with("health"))
+                    order.push_back(t.starts_with("position") ? "position" : t);
+            require(order == std::vector<std::string>{"abilities", "respawn", "position", std::format("status {} 28", me), "commands",
+                                                      std::format("data {} 9=20 17=61 18=0", me), std::format("attributes {}", me), "health 20"},
+                    "the respawn's order");
+        }
+        {
+            // With spawnRadius 10: four new players within 10 blocks of the spawn's center, on the floor, not all at the center.
+            auto config = offline_config();
+            config.initial_game_rules["spawnRadius"] = 10;
+            GameFixture f(config);
+            seen.clear(); // the peers' ids again
+            int centered = 0;
+            for (std::uint64_t k = 1; k <= 4; ++k) {
+                auto peer = f.join(k, std::format("p{}", k));
+                const auto a = packets(f, *peer);
+                const auto position = std::ranges::find_if(a, [](const auto& t) { return t.starts_with("position "); });
+                require(position != a.end(), "a position");
+                double x = 0, y = 0, z = 0;
+                std::sscanf(position->c_str(), "position %lf %lf %lf", &x, &y, &z);
+                require(std::abs(x - 0.5) <= 10.0 && std::abs(z - 0.5) <= 10.0 && y == -60.0 && x - std::floor(x) == 0.5 && z - std::floor(z) == 0.5,
+                        "within 10 blocks, on the floor, at a block's center: " + *position);
+                centered += x == 0.5 && z == 0.5 ? 1 : 0;
+            }
+            require(centered < 4, "not all at the center");
         }
     });
 
@@ -3603,6 +3770,8 @@ int main() {
             require(data.has_value(), "the absorption");
             auto d = data->reader();
             (void)d.varint();
+            // The player's first data: the health, then the absorption (client/player_data).
+            require(d.u8().value() == 9 && d.varint().value() == 3 && d.f32().value() > 0.0f, "the health first");
             require(d.u8().value() == 15 && d.varint().value() == 3 && d.f32().value() == 8.0f, "absorption 8");
             const auto attributes = c.until(State::play, "update_attributes");
             require(attributes.has_value(), "the attributes");

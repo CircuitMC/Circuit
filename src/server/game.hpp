@@ -35,6 +35,9 @@ struct JoinRequest {
     std::vector<ProfileProperty> properties;
     std::int32_t view_distance{};
     bool verified{};
+    // The client's settings: the skin parts it shows and its main hand (1 right).
+    std::uint8_t skin_parts{};
+    std::uint8_t main_hand{1};
 };
 
 class Game {

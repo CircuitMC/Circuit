@@ -94,6 +94,8 @@ private:
     std::unique_ptr<auth::Cfb8> in_cipher_, out_cipher_;
     bool verified_{};
     std::int32_t view_distance_{8};
+    std::uint8_t skin_parts_{};
+    std::uint8_t main_hand_{1};
     bool joined_{};
     std::chrono::steady_clock::time_point started_;
     std::optional<std::int64_t> keep_alive_pending_;
