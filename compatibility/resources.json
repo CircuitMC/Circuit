@@ -4529,12 +4529,14 @@
           "placement/official_items",
           "trace/loot_rolls",
           "trace/loot_single",
-          "trace/loot_many"
+          "trace/loot_many",
+          "client/drown"
         ],
-        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do; grown at least once, hurts survival players who moved across it since their last tick (sweet_berry_bush, 1), the velocity told 0 (client/drown); keeps the distance fallen at 0 (minecraft.wiki; not recorded)",
         "deviations": [
           "does not grow",
-          "without data packs it drops nothing, since its loot rolls random numbers"
+          "without data packs it drops nothing, since its loot rolls random numbers",
+          "it does not slow players (the client slows itself) or other entities"
         ]
       },
       "carrots": {
@@ -4844,16 +4846,17 @@
       "cactus": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Stands on a cactus or sand with nothing solid or lava beside it and no liquid above, and breaks with its drop a tick after an update finds it unsupported, as both official servers do; placed by players where it stands; hurts the items whose boxes reach into its cell, a point of health at each move",
+        "note": "Stands on a cactus or sand with nothing solid or lava beside it and no liquid above, and breaks with its drop a tick after an update finds it unsupported, as both official servers do; placed by players where it stands; hurts the items whose boxes reach into its cell, a point of health at each move; hurts survival players whose box meets its cell (cactus, 1, armor reducing it) as both official servers do (client/drown)",
         "cases": [
           "collision/plants",
           "collision/plant_contexts",
           "trace/plant_supports",
-          "trace/cactus_damage"
+          "trace/cactus_damage",
+          "client/drown"
         ],
         "deviations": [
           "does not grow",
-          "hurts only items"
+          "hurts only items and players"
         ]
       },
       "lily_pad": {
@@ -5105,6 +5108,17 @@
           "client/fire"
         ],
         "note": "Hurts a player standing on it without sneaking (hot_floor) as both official servers do (recorded on its middle; its edge by minecraft.wiki); its bubble columns and other entities on it are not modeled"
+      },
+      "powder_snow": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "Freezes survival players whose box meets it and who wear no leather armor (the frozen ticks, the powder_snow slowness, freeze damage when fully frozen), as both official servers do; flowing water and lava wash it away as on both official servers (flow reports)",
+        "deviations": [
+          "it does not slow or hold up players (the client does), and a burning player does not melt it"
+        ]
       }
     },
     "item": {
@@ -6482,8 +6496,11 @@
       },
       "leather_boots": {
         "impl": "partial",
-        "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
+        "evidence": "compared",
+        "note": "Worn with its armor 1, toughness 0 and equip_leather sound as both official servers show them (client/drown, from the creative inventory), and keeps its wearer from freezing in powder snow as they do; the other leather pieces against freezing by the same rule",
+        "cases": [
+          "client/drown"
+        ]
       },
       "chainmail_helmet": {
         "impl": "partial",
@@ -6619,12 +6636,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/armor"
+          "client/armor",
+          "client/drown"
         ],
-        "note": "As both official servers wear it: put on by use, swapped for a leather helmet, and taken off by clicks (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its water breathing is not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use, swapped for a leather helmet, and taken off by clicks (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces; worn, water breathing for 10 seconds each tick the eyes are out of water (client/drown)"
       },
       "elytra": {
         "impl": "partial",
@@ -7071,6 +7086,46 @@
           "client/fire"
         ],
         "note": "Magma blocks stood on without sneaking: 1, armor reducing it"
+      },
+      "drown": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "Drowning: 2 as the air supply would reach -20, after entity event 67 on 1.21.8; no velocity (no_impact); armor does not reduce it"
+      },
+      "in_wall": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "Suffocation: 1 with the eyes inside a redstone conductor's collision shape (stone recorded, glass not)"
+      },
+      "cactus": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "A cactus's cell met: 1, armor reducing it"
+      },
+      "freeze": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "Fully frozen in powder snow: 1 each 40th tick of the player's age"
+      },
+      "sweet_berry_bush": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "A sweet berry bush grown at least once, moved across: 1, armor reducing it"
       }
     },
     "biome": {
@@ -7306,9 +7361,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/attributes"
+          "client/attributes",
+          "client/drown"
         ],
-        "note": "Sent with sprinting's and the effects' modifiers; only the client uses it"
+        "note": "Sent with sprinting's, the effects' and powder snow's (powder_snow, -0.05 times the share frozen) modifiers; only the client uses it"
       },
       "attack_speed": {
         "impl": "partial",
@@ -7401,6 +7457,17 @@
           "client/armor"
         ],
         "note": "A player's, from netherite armor; not sent, as on both official servers (client/armor); there is no knockback to resist"
+      },
+      "oxygen_bonus": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/drown"
+        ],
+        "note": "A player's from the first tick they lose air, sent without modifiers, as both official servers do",
+        "deviations": [
+          "the respiration enchantment's modifier is not modeled"
+        ]
       }
     }
   }

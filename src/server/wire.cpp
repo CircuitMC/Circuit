@@ -485,6 +485,9 @@ Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, 
     case PlayerSound::hurt_on_fire: id = v772 ? 1178 : 1138; break;
     case PlayerSound::generic_burn: id = v772 ? 611 : 598; break;
     case PlayerSound::extinguish_fire: id = v772 ? 616 : 603; break;
+    case PlayerSound::hurt_drown: id = v772 ? 1176 : 1136; break;
+    case PlayerSound::hurt_freeze: id = v772 ? 1177 : 1137; break;
+    case PlayerSound::hurt_sweet_berry_bush: id = v772 ? 1179 : 1139; break;
     // The same on both protocols.
     case PlayerSound::equip_chain: id = 67; break;
     case PlayerSound::equip_diamond: id = 68; break;
@@ -686,6 +689,7 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
         case attr::Attribute::max_absorption: return later ? 18 : 17;
         case attr::Attribute::max_health: return later ? 19 : 18;
         case attr::Attribute::movement_speed: return later ? 22 : 21;
+        case attr::Attribute::oxygen_bonus: return later ? 23 : 22;
         case attr::Attribute::safe_fall_distance: return later ? 24 : 23;
         }
         return 0;
@@ -702,7 +706,7 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
     return packet(id_->update_attributes, w);
 }
 Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
-    const auto& [flags, pose, health, particles, ambient, absorption, skin_parts, main_hand, living] = d;
+    const auto& [flags, pose, health, particles, ambient, absorption, skin_parts, main_hand, living, air, frozen] = d;
     // Particle type ids (PrismarineJS minecraft-data particles.json, MIT):
     // the same on both protocols up to infested, the items' and omens' one
     // higher on 772.
@@ -719,7 +723,9 @@ Bytes Wire::player_data(std::int32_t id, const PlayerData& d) const {
     Writer w;
     w.varint(id);
     if (flags) w.u8(0).varint(0).u8(*flags); // index 0 (shared flags), type Byte
+    if (air) w.u8(1).varint(1).varint(*air); // index 1 (air supply), type VarInt
     if (pose) w.u8(6).varint(21).varint(*pose); // index 6 (pose), type Pose
+    if (frozen) w.u8(7).varint(1).varint(*frozen); // index 7 (frozen ticks), type VarInt
     if (living) w.u8(8).varint(0).u8(*living); // index 8 (living flags), type Byte
     if (health) w.u8(9).varint(3).f32(*health); // index 9 (health), type Float
     if (particles) {

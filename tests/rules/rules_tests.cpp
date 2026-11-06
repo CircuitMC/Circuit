@@ -3281,6 +3281,31 @@ int main() {
         require(hurts == 14, std::format("{} hurts", hurts));
     });
 
+    suite.run("breath and frost count as both official servers count them (client/drown)", [] {
+        namespace dm = circuit::gameplay::damage;
+        // Under water from 300: -19 after 319 ticks, the drowning at the
+        // 320th (0 again), then every 20 ticks; out of water 4 a tick.
+        dm::Breath b{dm::max_air, false};
+        int ticks = 0;
+        while (!b.drowns) b = dm::breathe(b.air, true), ++ticks;
+        require(ticks == 320 && b.air == 0, std::format("drowned after {} ticks at {}", ticks, b.air));
+        ticks = 0;
+        do b = dm::breathe(b.air, true), ++ticks;
+        while (!b.drowns);
+        require(ticks == 20 && b.air == 0, "every 20 ticks after");
+        require(dm::breathe(0, false).air == 4 && dm::breathe(298, false).air == 300 && dm::breathe(-19, false).air == -15
+                    && !dm::breathe(-19, false).drowns && dm::breathe(-19, true).drowns,
+                "back 4 a tick, to 300");
+        // Frozen ticks: 1 a tick to 140, 2 a tick down to 0; the slowness to the float.
+        require(dm::frost(0, true) == 1 && dm::frost(139, true) == 140 && dm::frost(140, true) == 140 && dm::frost(140, false) == 138
+                    && dm::frost(1, false) == 0 && dm::frost(0, false) == 0,
+                "frozen ticks");
+        require(dm::frost_slowness(1) == -0.0003571428533177823 && dm::frost_slowness(140) == -0.05000000074505806
+                    && dm::frost_slowness(138) == -0.04928571358323097 && dm::frost_slowness(7) == -0.002500000176951289
+                    && dm::frost_slowness(36) == -0.012857143767178059,
+                "the powder snow's slowness");
+    });
+
     suite.run("comparators read dispensers as containers of nine slots", [] {
         Sim s;
         s.tick(with_floor(floor(-3, 6, -1, 2), {place({0, 0, 0}, blocks::dispenser(D::up)), place({1, 0, 0}, blocks::comparator(D::east)),

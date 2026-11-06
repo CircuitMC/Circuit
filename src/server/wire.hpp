@@ -325,7 +325,7 @@ public:
     enum class PlayerSound : std::uint8_t {
         hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen,
         equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra,
-        hurt_on_fire, generic_burn, extinguish_fire
+        hurt_on_fire, generic_burn, extinguish_fire, hurt_drown, hurt_freeze, hurt_sweet_berry_bush
     };
     enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
     Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,
@@ -380,12 +380,13 @@ public:
                             std::uint8_t flags) const;
     Bytes remove_mob_effect(std::int32_t entity, std::int32_t effect) const;
     // A player's entity data, each entry when given, in index order: its
-    // shared flags (index 0), its pose (6), its living flags (8), its health
-    // (9), its effect particles (10), whether they are ambient (11), its
-    // absorption (15), the skin parts it shows (17) and its main hand (18).
+    // shared flags (index 0), its air supply (1), its pose (6), its frozen
+    // ticks (7), its living flags (8), its health (9), its effect particles
+    // (10), whether they are ambient (11), its absorption (15), the skin
+    // parts it shows (17) and its main hand (18).
     struct PlayerData {
         std::optional<std::uint8_t> flags;
-        std::optional<std::int32_t> pose; // index 6: 0 standing, 5 crouching
+        std::optional<std::int32_t> pose; // index 6: 0 standing, 3 crawling, 5 crouching
         std::optional<float> health;
         std::optional<std::vector<gameplay::effects::Particle>> particles;
         std::optional<bool> ambient;
@@ -393,13 +394,16 @@ public:
         std::optional<std::uint8_t> skin_parts;
         std::optional<std::uint8_t> main_hand;
         std::optional<std::uint8_t> living; // index 8: 1 using an item, 2 in the off hand
+        std::optional<std::int32_t> air;    // index 1
+        std::optional<std::int32_t> frozen; // index 7
     };
     Bytes player_data(std::int32_t id, const PlayerData& d) const;
     // The entries status effects decide.
     Bytes effect_metadata(std::int32_t id, std::optional<std::uint8_t> flags,
                           const std::optional<std::vector<gameplay::effects::Particle>>& particles, std::optional<bool> ambient,
                           std::optional<float> absorption = std::nullopt) const {
-        return player_data(id, {flags, std::nullopt, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt, std::nullopt});
+        return player_data(id, {flags, std::nullopt, std::nullopt, particles, ambient, absorption, std::nullopt, std::nullopt, std::nullopt,
+                                std::nullopt, std::nullopt});
     }
     // A player's attributes (client/attributes), in the order given: each
     // with a player's base and its modifiers; those the official servers

@@ -29,9 +29,10 @@ enum class Attribute : std::uint8_t {
     max_absorption,
     max_health,
     movement_speed,
+    oxygen_bonus,
     safe_fall_distance,
 };
-inline constexpr std::size_t count = 12;
+inline constexpr std::size_t count = 13;
 // The name without its namespace, and an attribute by name (with or without "minecraft:").
 std::string_view name(Attribute a) noexcept;
 std::optional<Attribute> by_name(std::string_view name) noexcept;

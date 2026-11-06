@@ -26,6 +26,7 @@ constexpr std::array<Entry, count> entries{{
     {"max_absorption", 0.0, 0.0, 2048.0, true},
     {"max_health", 20.0, 1.0, 1024.0, true},
     {"movement_speed", static_cast<double>(0.1f), 0.0, 1024.0, true},
+    {"oxygen_bonus", 0.0, 0.0, 1024.0, true},
     {"safe_fall_distance", 3.0, -1024.0, 1024.0, true},
 }};
 

@@ -2,9 +2,10 @@
 #pragma once
 #include <cstdint>
 
-// How damage to players is reduced and how players burn, as both official
-// servers do it (client/fire; minecraft.wiki "Armor", "Durability",
-// "Resistance", "Fire", "Lava").
+// How damage to players is reduced and how players burn, drown and freeze,
+// as both official servers do it (client/fire, client/drown;
+// minecraft.wiki "Armor", "Durability", "Resistance", "Fire", "Lava",
+// "Damage").
 namespace circuit::gameplay::damage {
 
 // What armor leaves of damage: its points take 4% each, less 2% per point
@@ -34,5 +35,24 @@ struct Burn {
     bool hurts{};
 };
 Burn burn(std::int32_t ticks) noexcept;
+
+// Breath. A player's air supply is 300 ticks. A tick it is `losing` (under
+// water and unable to breathe there) takes one; at -20 the player drowns
+// (a hurt) and it is 0 again. A tick it is not adds four, up to 300.
+inline constexpr std::int32_t max_air = 300;
+struct Breath {
+    std::int32_t air{max_air};
+    bool drowns{};
+};
+Breath breathe(std::int32_t air, bool losing) noexcept;
+
+// Frost. A player's frozen ticks go up by one a tick while `freezing` (in
+// powder snow and able to freeze), to 140, where the player is fully frozen;
+// down by two a tick otherwise, to 0. The slowness they give: an amount
+// added to the movement speed, -0.05 when fully frozen (the target
+// versions' float arithmetic, widened).
+inline constexpr std::int32_t frozen_max = 140;
+std::int32_t frost(std::int32_t ticks, bool freezing) noexcept;
+double frost_slowness(std::int32_t ticks) noexcept;
 
 } // namespace circuit::gameplay::damage

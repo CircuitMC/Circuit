@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// How damage to players is reduced and how players burn (client/fire).
+// How damage to players is reduced and how players burn (client/fire),
+// drown and freeze (client/drown).
 #include <circuit/gameplay/damage.hpp>
 #include <algorithm>
 
@@ -44,6 +45,28 @@ Burn burn(std::int32_t ticks) noexcept {
     const bool hurts = ticks % 20 == 0;
     --ticks;
     return {ticks == 0 ? not_burning : ticks, hurts};
+}
+
+// client/drown: 300 to -19 a tick at a time under water, the drowning hurt
+// as it would reach -20 (then 0, told as 0 at the next tick); 4 a tick
+// back out of water and with water breathing under it.
+Breath breathe(std::int32_t air, bool losing) noexcept {
+    if (!losing) return {std::min(air + 4, max_air), false};
+    if (--air <= -20) return {0, true};
+    return {air, false};
+}
+
+// client/drown: 1 to 140 a tick in powder snow, 138 down to 0 by two out of
+// it; leather boots keep it at 0.
+std::int32_t frost(std::int32_t ticks, bool freezing) noexcept {
+    return freezing ? std::min(ticks + 1, frozen_max) : std::max(ticks - 2, 0);
+}
+
+// client/drown: -0.0003571428533177823 at 1 tick, -0.05000000074505806 at
+// 140: -0.05 times the share frozen, in floats.
+double frost_slowness(std::int32_t ticks) noexcept {
+    const float share = static_cast<float>(std::clamp(ticks, 0, frozen_max)) / static_cast<float>(frozen_max);
+    return static_cast<double>(-0.05f * share);
 }
 
 } // namespace circuit::gameplay::damage

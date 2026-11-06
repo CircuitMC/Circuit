@@ -12,9 +12,11 @@ using gameplay::physics::flatten;
 } // namespace
 
 
-Aabb player_box(Vec3 feet, bool crouching) noexcept {
+Aabb player_box(Vec3 feet, bool crouching) noexcept { return player_box(feet, crouching ? crouching_height : standing_height); }
+
+Aabb player_box(Vec3 feet, double height) noexcept {
     const double half = player_width / 2.0;
-    return {feet.x - half, feet.y, feet.z - half, feet.x + half, feet.y + (crouching ? crouching_height : standing_height), feet.z + half};
+    return {feet.x - half, feet.y, feet.z - half, feet.x + half, feet.y + height, feet.z + half};
 }
 
 std::vector<Collider> colliders(const Aabb& area, const ShapeLookup& lookup) {

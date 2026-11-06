@@ -179,6 +179,25 @@ struct Player {
     // at the next tick, after the hurt's velocity (client/fire).
     std::optional<std::uint64_t> wear_tick;
     bool wear_seen{};
+    // Breath and frost (client/drown): the air supply (entity data 1) and
+    // the frozen ticks (entity data 7), with what was last told of them;
+    // whether the box met powder snow at the last tick.
+    std::int32_t air{gameplay::damage::max_air};
+    std::int32_t frozen_ticks{};
+    std::int32_t told_air{gameplay::damage::max_air};
+    std::int32_t told_frozen{};
+    bool in_snow{};
+    // The pose the space around the player forced at their last tick
+    // (client/drown: crawling, 3, with a block at the head; crouching, 5,
+    // where only a crouching player fits, by minecraft.wiki), if any.
+    std::optional<std::int32_t> forced_pose;
+    // Since the player's last tick: teleported, or moved inside a sweet
+    // berry bush (a hurt's velocity is then told as 0: client/drown);
+    // teleported; and where the player was at it.
+    bool stopped{};
+    bool teleported{};
+    Vec3 tick_pos;
+    bool tick_in_lava{}; // in lava at the end of the player's last tick (a hurt's velocity)
     std::int32_t dead_ticks{}; // since death; at 20 the body goes (client/player_data)
     // The client's settings the entity data shows: the skin parts (index 17)
     // and the main hand (18, 1 right); and what was last told of the
@@ -306,6 +325,8 @@ struct SavedPlayer {
     std::vector<std::string> attributes; // those the player has, by name
     float absorption{};
     std::int32_t fire_ticks{-20};
+    std::int32_t air{gameplay::damage::max_air};
+    std::int32_t frozen_ticks{};
 };
 
 void write_strings(protocol::Writer& w, const std::vector<std::string>& v) {
@@ -326,7 +347,7 @@ std::optional<std::vector<std::string>> read_strings(protocol::Reader& r) {
 
 std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players) {
     protocol::Writer w;
-    w.varint(7).varint(static_cast<std::int32_t>(players.size()));
+    w.varint(8).varint(static_cast<std::int32_t>(players.size()));
     for (const auto& [uuid, p] : players) {
         w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held).f32(p.health)
             .varint(p.food).f32(p.saturation).f32(p.exhaustion);
@@ -350,10 +371,11 @@ std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players
                 w.varint(l.amplifier).varint(l.duration).u8(static_cast<std::uint8_t>((l.ambient ? 1 : 0) | (l.particles ? 2 : 0) | (l.icon ? 4 : 0)));
         }
         // The attributes the player has, by name, and the absorption; the
-        // remaining fire ticks.
+        // remaining fire ticks; the air supply and the frozen ticks.
         write_strings(w, p.attributes);
         w.f32(p.absorption);
         w.varint(p.fire_ticks);
+        w.varint(p.air).varint(p.frozen_ticks);
     }
     return w.take();
 }
@@ -362,8 +384,9 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
     const auto version = r.varint();
     const auto count = r.length(1u << 20, 30);
     // Version 2 had no health, version 3 no recipe book, version 4 no
-    // effects, version 5 no attributes or absorption, version 6 no fire ticks.
-    if (!version || *version < 2 || *version > 7 || !count) return std::nullopt;
+    // effects, version 5 no attributes or absorption, version 6 no fire
+    // ticks, version 7 no air supply or frozen ticks.
+    if (!version || *version < 2 || *version > 8 || !count) return std::nullopt;
     std::map<Uuid, SavedPlayer> out;
     for (std::size_t i = 0; i < *count; ++i) {
         SavedPlayer p;
@@ -434,6 +457,12 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
             const auto fire = r.varint();
             if (!fire) return std::nullopt;
             p.fire_ticks = *fire;
+        }
+        if (*version >= 8) {
+            const auto air = r.varint(), frozen = r.varint();
+            if (!air || !frozen) return std::nullopt;
+            p.air = *air;
+            p.frozen_ticks = *frozen;
         }
         out[*uuid] = std::move(p);
     }
@@ -713,7 +742,7 @@ struct Game::Impl final : GameServices {
         for (const auto& i : p.attributes) attributes.emplace_back(gameplay::attributes::name(i.attribute));
         return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion, saved_book(p.book),
                 p.dead ? std::vector<gameplay::effects::Effect>{} : p.effects, std::move(attributes), p.dead ? 0.0f : p.absorption,
-                p.dead ? -20 : p.fire_ticks};
+                p.dead ? -20 : p.fire_ticks, p.dead ? gameplay::damage::max_air : p.air, p.dead ? 0 : p.frozen_ticks};
     }
     // A recipe book by ids, and back (ids the data packs no longer have are left out).
     SavedBook saved_book(const PlayerBook& b) const {
@@ -1133,6 +1162,10 @@ struct Game::Impl final : GameServices {
             // versions keep it).
             p.fire_ticks = std::clamp(s.fire_ticks, -20, 32767);
             p.burning = p.fire_ticks > 0;
+            // Their breath and frost (minecraft.wiki "Entity format": Air,
+            // TicksFrozen).
+            p.air = std::clamp(s.air, -19, gameplay::damage::max_air);
+            p.frozen_ticks = std::clamp(s.frozen_ticks, 0, gameplay::damage::frozen_max);
         } else {
             p.pos = spawn_point();
         }
@@ -1272,8 +1305,12 @@ struct Game::Impl final : GameServices {
         }
     }
 
-    void teleport(Player& p, Vec3 to) {
+    // A teleport stops the player: a hurt's velocity is 0 and blocks are not
+    // touched until the player's tick (client/drown); a correction of a
+    // refused move (`stops` false) puts the player back where they were.
+    void teleport(Player& p, Vec3 to, bool stops = true) {
         p.pos = to;
+        if (stops) p.stopped = p.teleported = true;
         // A dead player's body moves with them for those who see it (a
         // living player's client moves after confirming).
         if (p.dead) p.moved = true;
@@ -1622,7 +1659,7 @@ struct Game::Impl final : GameServices {
     std::pair<contracts::Vec3, contracts::Vec3> throw_from(const Player& p) const {
         constexpr double rad = 3.14159265358979323846 / 180.0;
         const double yaw = p.yaw * rad, pitch = p.pitch * rad;
-        return {{p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62) - 0.3, p.pos.z},
+        return {{p.pos.x, p.pos.y + eye_height(p) - 0.3, p.pos.z},
                 {-std::sin(yaw) * std::cos(pitch) * 0.3, -std::sin(pitch) * 0.3 + 0.1, std::cos(yaw) * std::cos(pitch) * 0.3}};
     }
 
@@ -1800,7 +1837,7 @@ struct Game::Impl final : GameServices {
         const double dx = to.x - p.pos.x, dy = to.y - p.pos.y, dz = to.z - p.pos.z;
         if (dx * dx + dy * dy + dz * dz > max_move_squared) {
             log_warn(std::format("{} moved too quickly ({:.1f} blocks); corrected", p.name, std::sqrt(dx * dx + dy * dy + dz * dz)));
-            teleport(p, p.pos);
+            teleport(p, p.pos, false);
             return;
         }
         // Positions outside loaded chunks are refused, so players cannot move
@@ -1808,19 +1845,19 @@ struct Game::Impl final : GameServices {
         const auto chunk = chunk_at(to);
         if (!engine->view().block(overworld, {static_cast<std::int32_t>(std::floor(to.x)), bundle.world.min_y,
                                   static_cast<std::int32_t>(std::floor(to.z))})) {
-            teleport(p, p.pos);
+            teleport(p, p.pos, false);
             return;
         }
         bool landed_on_block = false;
         if (p.game_mode != spectator) {
             const auto look = shapes();
-            const auto from = movement::player_box(p.pos, p.sneaking);
+            const auto from = box_of(p, p.pos);
             const auto moved = movement::collide(from, {dx, dy, dz}, was_on_ground, look);
             const double ex = to.x - (p.pos.x + moved.x), ez = to.z - (p.pos.z + moved.z);
             const bool wrongly = p.game_mode == survival && ex * ex + ez * ez > 0.0625;
-            if ((wrongly && !movement::collides(from, look)) || movement::collides_with_anything_new(from, movement::player_box(to, p.sneaking), look)) {
+            if ((wrongly && !movement::collides(from, look)) || movement::collides_with_anything_new(from, box_of(p, to), look)) {
                 log_warn(std::format("{} moved wrongly; corrected", p.name));
-                teleport(p, p.pos);
+                teleport(p, p.pos, false);
                 return;
             }
             landed_on_block = dy < 0.0 && moved.y != dy;
@@ -1830,12 +1867,15 @@ struct Game::Impl final : GameServices {
             static const auto levitation = gameplay::effects::id("levitation");
             const bool levitating = std::ranges::any_of(p.effects, [](const auto& e) { return e.id == levitation; });
             p.floating = p.game_mode == survival && !config.allow_flight && dy >= -0.03125 && !landed_on_block && !levitating
-                         && movement::no_blocks_around(movement::player_box(to, p.sneaking), look);
+                         && movement::no_blocks_around(box_of(p, to), look);
         }
         // Leaving the ground upwards is a jump.
         if (was_on_ground && !m.on_ground && dy > 0.0) exhaust(p, p.sprinting ? 0.2f : 0.05f);
         p.pos = to;
         if (m.position) p.moved = true;
+        // A move inside a sweet berry bush stops the player (client/drown:
+        // the hurts of one walked through tell a velocity of 0).
+        if ((dx != 0.0 || dy != 0.0 || dz != 0.0) && in_bush(p, false)) p.stopped = true;
         move_exhaustion(p, dx, dy, dz);
         fall(p, dy, m.on_ground);
         if (chunk.x != p.center.x || chunk.z != p.center.z) {
@@ -1852,14 +1892,14 @@ struct Game::Impl final : GameServices {
     // the saturation effect.
 
     // Whether the player's box touches water.
-    bool in_water(const Player& p) const { return fluid_in(movement::player_box(p.pos, p.sneaking)); }
+    bool in_water(const Player& p) const { return fluid_in(box_of(p, p.pos)); }
     bool fluid_in(const movement::Aabb& player_box) const {
         const auto box = player_box.deflate(0.001);
         for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
             for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
                 for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
                     const BlockPos c{x, y, z};
-                    const auto h = gameplay::fluid_height(at(c), at(c.relative(contracts::Direction::up)));
+                    const auto h = gameplay::fluid_height(block_now(c), block_now(c.relative(contracts::Direction::up)));
                     if (h > 0.0f && c.y + static_cast<double>(h) >= box.min_y) return true;
                 }
         return false;
@@ -1868,12 +1908,12 @@ struct Game::Impl final : GameServices {
     // Whether the player's box touches lava, by its height in each cell as
     // fluid_in reads water.
     bool in_lava(const Player& p) const {
-        const auto box = movement::player_box(p.pos, p.sneaking).deflate(0.001);
+        const auto box = box_of(p, p.pos).deflate(0.001);
         for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
             for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
                 for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
                     const BlockPos c{x, y, z};
-                    const auto h = gameplay::lava_height(at(c), at(c.relative(contracts::Direction::up)));
+                    const auto h = gameplay::lava_height(block_now(c), block_now(c.relative(contracts::Direction::up)));
                     if (h > 0.0f && c.y + static_cast<double>(h) >= box.min_y) return true;
                 }
         return false;
@@ -1889,14 +1929,23 @@ struct Game::Impl final : GameServices {
             const auto x = static_cast<std::int32_t>(std::floor(p.pos.x)), z = static_cast<std::int32_t>(std::floor(p.pos.z));
             const auto top = bundle.world.min_y + bundle.world.height;
             for (auto by = static_cast<std::int32_t>(std::floor(y)); by < top; ++by) {
-                const auto b = at({x, by, z});
+                const auto b = block_now({x, by, z});
                 if (b.is_air()) continue;
                 if (b.is(BlockType::water) || gameplay::is_lava(b) || gameplay::waterlogged_block(b)) return false;
                 if (!gameplay::physics::collision_boxes(b, bundle.schema.content_release).empty()) return false;
             }
             return true;
         };
-        return open_above(p.pos.y) || open_above(p.pos.y + (p.sneaking ? 1.5 : 1.8));
+        return open_above(p.pos.y) || open_above(p.pos.y + body_height(p));
+    }
+    // A block as a player's tick sees it: with the blocks this tick's
+    // commands set (the rules apply them at its end), as the official
+    // servers apply a command's blocks before the players' tick
+    // (client/drown: water and powder snow taken away as a hurt comes, the
+    // air and frozen ticks at once as a tick sooner).
+    BlockState block_now(BlockPos b) const {
+        if (const auto it = pending_setblocks.find(b); it != pending_setblocks.end()) return it->second;
+        return at(b);
     }
     // A block's registry name, without the namespace ("" for blocks the
     // registry does not name).
@@ -1949,25 +1998,182 @@ struct Game::Impl final : GameServices {
     // nothing (Circuit's choice); creative players take no damage and do
     // not burn.
     bool touches(const Player& p) const { return !p.dead && p.game_mode != spectator && p.game_mode != creative; }
-    void touch_blocks(Player& p) {
-        p.in_fire = false;
-        if (!touches(p)) return;
-        const auto box = movement::player_box(p.pos, p.sneaking).deflate(1e-5);
-        bool soul = false;
+    // The cells a player's box meets (shrunk by 1e-5: a box against a block's
+    // side does not meet it).
+    template <typename F>
+    void each_cell_met(const Player& p, F&& f) const {
+        const auto box = box_of(p, p.pos).deflate(1e-5);
         for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
             for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
-                for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
-                    const auto name = block_name(at({x, y, z}));
-                    if (name == "fire") p.in_fire = true;
-                    else if (name == "soul_fire") p.in_fire = soul = true;
-                }
+                for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z)
+                    f(BlockPos{x, y, z});
+    }
+    // Whether the player's box meets a sweet berry bush (one that has grown
+    // at least once, with `grown`).
+    bool in_bush(const Player& p, bool grown) const {
+        bool met = false;
+        each_cell_met(p, [&](BlockPos c) {
+            const auto s = block_now(c);
+            if (block_name(s) == "sweet_berry_bush" && (!grown || block_property(s, "age") > 0)) met = true;
+        });
+        return met;
+    }
+    // Contacts: fire, a cactus's cell (client/drown: one at 10.705 hurt, its
+    // box a sixteenth further), a sweet berry bush grown at least once while
+    // moving across it (client/drown: walked through, not stood in), powder
+    // snow (for the frost), and a magma block stood on without sneaking.
+    void touch_blocks(Player& p) {
+        p.in_fire = false;
+        p.in_snow = false;
+        // A player teleported in this tick touches nothing until the next
+        // (client/drown: teleported beside a cactus, the first hurt in the
+        // tick after the teleport).
+        if (!touches(p) || p.teleported) return;
+        bool soul = false, cactus = false, bush = false;
+        each_cell_met(p, [&](BlockPos c) {
+            const auto s = block_now(c);
+            const auto name = block_name(s);
+            if (name == "fire") p.in_fire = true;
+            else if (name == "soul_fire") p.in_fire = soul = true;
+            else if (name == "cactus") cactus = true;
+            else if (name == "sweet_berry_bush" && block_property(s, "age") > 0) bush = true;
+            else if (name == "powder_snow") p.in_snow = true;
+        });
         if (p.in_fire) {
             p.fire_ticks = gameplay::damage::touch_fire(p.fire_ticks, random_draw() < 0.5f);
             hurt(p, soul ? 2.0f : 1.0f, soul ? Harm::soul_fire : Harm::in_fire);
         } else if (p.fire_ticks < 0) {
             p.fire_ticks = gameplay::damage::not_burning;
         }
-        if (!p.dead && p.on_ground && !p.sneaking && block_name(at(standing_on(p))) == "magma_block") hurt(p, 1.0f, Harm::hot_floor);
+        if (cactus && !p.dead) hurt(p, 1.0f, Harm::cactus);
+        if (bush && !p.dead && (p.pos.x != p.tick_pos.x || p.pos.z != p.tick_pos.z)) hurt(p, 1.0f, Harm::sweet_berry_bush);
+        if (!p.dead && p.on_ground && !p.sneaking && block_name(block_now(standing_on(p))) == "magma_block") hurt(p, 1.0f, Harm::hot_floor);
+    }
+    // A block property's number (0 for a block without it).
+    static int block_property(BlockState s, std::string_view key) {
+        const auto state = gameplay::physics::registry_state_of(s);
+        if (!state) return 0;
+        for (const auto& [k, v] : gameplay::registry::properties(*state))
+            if (k == key) return v == "true" ? 1 : v == "false" ? 0 : std::stoi(std::string(v));
+        return 0;
+    }
+
+    // ---- poses, breath and frost (client/drown) -----------------------------
+    // A player's pose: forced by the space around them, else crouching while
+    // the shift key is down (but for a spectator or a flyer); its box and
+    // eye height (minecraft.wiki "Player": 1.8 and 1.62 standing, 1.5 and
+    // 1.27 crouching, 0.6 and 0.4 crawling).
+    std::int32_t pose_of(const Player& p) const {
+        if (p.forced_pose) return *p.forced_pose;
+        return p.sneaking && p.game_mode != spectator && !p.flying ? 5 : 0;
+    }
+    // The box follows the forced pose, else the shift key (as before poses
+    // were forced, also for flyers).
+    static double pose_height(std::int32_t pose) { return pose == 3 ? 0.6 : pose == 5 ? movement::crouching_height : movement::standing_height; }
+    static double body_height(const Player& p) {
+        return p.forced_pose ? pose_height(*p.forced_pose) : p.sneaking ? movement::crouching_height : movement::standing_height;
+    }
+    static double eye_height(const Player& p) {
+        const auto h = body_height(p);
+        return h == pose_height(3) ? 0.4 : h == movement::crouching_height ? 1.27 : 1.62;
+    }
+    static movement::Aabb box_of(const Player& p, Vec3 at) { return movement::player_box(at, body_height(p)); }
+    // At the end of a player's tick, the pose the space forces: where the
+    // standing box meets a block's collision shape, crouching if that fits
+    // (minecraft.wiki "Sneaking": a player under a 1.5-block ceiling stays
+    // crouched; not recorded), else crawling if that does (client/drown:
+    // stone at the head of a player in a pit, crawling at the next entity
+    // update; stone at the feet and head, no pose).
+    void decide_pose(Player& p) {
+        p.forced_pose.reset();
+        if (p.dead || p.game_mode == spectator || p.flying) return;
+        const movement::ShapeLookup look = [this](BlockPos b) -> movement::BlockShape {
+            const auto v = block_now(b);
+            if (v.is_air()) return {};
+            return {false, gameplay::physics::collision_boxes(v, bundle.schema.content_release)};
+        };
+        const auto fits = [&](double height) { return !movement::collides(movement::player_box(p.pos, height).deflate(1e-7), look); };
+        if (fits(movement::standing_height)) return;
+        if (fits(movement::crouching_height)) p.forced_pose = 5;
+        else if (fits(pose_height(3))) p.forced_pose = 3;
+    }
+    // Suffocation: the eyes inside the collision shape of a block that
+    // conducts redstone (client/drown: stone hurts every 10 ticks, glass
+    // not; minecraft.wiki "Damage": the eyeline inside certain blocks;
+    // Circuit takes the conductors for them).
+    bool eyes_in_wall(const Player& p) const {
+        if (p.game_mode == spectator) return false;
+        const Vec3 eye{p.pos.x, p.pos.y + eye_height(p), p.pos.z};
+        const BlockPos cell{static_cast<std::int32_t>(std::floor(eye.x)), static_cast<std::int32_t>(std::floor(eye.y)),
+                            static_cast<std::int32_t>(std::floor(eye.z))};
+        const auto s = block_now(cell);
+        if (s.is_air() || !gameplay::redstone_conductor(s)) return false;
+        for (const auto& b : gameplay::physics::collision_boxes(s, bundle.schema.content_release))
+            if (eye.x > cell.x + b.min_x && eye.x < cell.x + b.max_x && eye.y > cell.y + b.min_y && eye.y < cell.y + b.max_y
+                && eye.z > cell.z + b.min_z && eye.z < cell.z + b.max_z)
+                return true;
+        return false;
+    }
+    // Breath (client/drown): with the eyes under water a player who cannot
+    // breathe there (survival, without water breathing or conduit power)
+    // loses air, and as it runs out drowns: on 1.21.8 entity event 67 (the
+    // bubbles, also with drowningDamage off) before the hurt; otherwise the
+    // air comes back. The oxygen bonus attribute, which the official
+    // servers consult as air is lost, is the player's from the first time
+    // (sent without modifiers; the respiration enchantment that adds to it
+    // is not modeled).
+    void breathe(Player& p) {
+        static const auto water_breathing = gameplay::effects::id("water_breathing"), conduit = gameplay::effects::id("conduit_power");
+        const bool breathes = (water_breathing && effect_amplifier(p, *water_breathing)) || (conduit && effect_amplifier(p, *conduit));
+        const bool losing = touches(p) && !breathes && eyes_in_water(p);
+        if (losing && std::ranges::find(p.attributes, gameplay::attributes::Attribute::oxygen_bonus, &gameplay::attributes::Instance::attribute)
+                          == p.attributes.end()) {
+            attribute(p, gameplay::attributes::Attribute::oxygen_bonus);
+            p.attributes_changed.insert(gameplay::attributes::Attribute::oxygen_bonus);
+        }
+        const auto b = gameplay::damage::breathe(p.air, losing);
+        p.air = b.air;
+        if (!b.drowns) return;
+        if (wire.protocol() >= 772) {
+            const auto bubbles = wire.entity_event(p.entity_id, 67);
+            p.peer->send(bubbles);
+            for (const auto viewer : p.seen_by)
+                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(bubbles);
+        }
+        hurt(p, 2.0f, Harm::drown);
+    }
+    // The turtle shell worn (as the last tick ended: client/drown, its water
+    // breathing at the tick after it went on) gives 10 seconds of water
+    // breathing, without particles, each tick the eyes are out of water.
+    void turtle_shell(Player& p) {
+        static const auto water_breathing = gameplay::effects::id("water_breathing");
+        static const auto shell = gameplay::items::by_name("minecraft:turtle_helmet");
+        const auto& head = p.equipped[static_cast<std::size_t>(gameplay::equipment::Slot::head)];
+        if (!water_breathing || !shell || head.empty() || head.item != *shell || eyes_in_water(p)) return;
+        give_effect(p, *water_breathing, {0, 200, false, false, true});
+    }
+    // Frost (client/drown): in powder snow a player who can freeze (survival,
+    // wearing no leather armor) freezes; fully frozen, a hurt each 40 ticks
+    // of their age (as natural regeneration counts it). The slowness goes
+    // to the movement speed as `powder_snow`, again each tick the frozen
+    // ticks change and every second tick while they stay (the official
+    // servers' cadence at 140, in step with the hurts), and goes with them.
+    void freeze(Player& p) {
+        using gameplay::attributes::Attribute;
+        bool leather = false;
+        for (const auto slot : {gameplay::equipment::Slot::head, gameplay::equipment::Slot::chest, gameplay::equipment::Slot::legs,
+                                gameplay::equipment::Slot::feet}) {
+            const auto& worn = p.equipped[static_cast<std::size_t>(slot)];
+            const auto* piece = worn.empty() ? nullptr : gameplay::equipment::wearable(worn.item);
+            if (piece && piece->slot == slot && piece->sound == gameplay::equipment::EquipSound::leather) leather = true;
+        }
+        const auto was = p.frozen_ticks;
+        p.frozen_ticks = gameplay::damage::frost(p.frozen_ticks, p.in_snow && touches(p) && !leather);
+        if (p.frozen_ticks > 0 && (p.frozen_ticks != was || p.ticks_alive % 2 == 0))
+            add_modifier(p, Attribute::movement_speed, {"powder_snow", gameplay::damage::frost_slowness(p.frozen_ticks), gameplay::attributes::Operation::add_value}, true);
+        else if (p.frozen_ticks == 0 && was > 0)
+            remove_modifier(p, Attribute::movement_speed, "powder_snow");
+        if (p.frozen_ticks >= gameplay::damage::frozen_max && p.ticks_alive % 40 == 0) hurt(p, 1.0f, Harm::freeze);
     }
     // The block a player on the ground stands on: the one under the middle
     // of their feet if it bears them, else the nearest under their box that
@@ -1976,11 +2182,11 @@ struct Game::Impl final : GameServices {
     BlockPos standing_on(const Player& p) const {
         const auto y = static_cast<std::int32_t>(std::floor(p.pos.y - 0.2));
         const BlockPos middle{static_cast<std::int32_t>(std::floor(p.pos.x)), y, static_cast<std::int32_t>(std::floor(p.pos.z))};
-        const auto bears = [&](BlockPos b) { return !gameplay::physics::collision_boxes(at(b), bundle.schema.content_release).empty(); };
+        const auto bears = [&](BlockPos b) { return !gameplay::physics::collision_boxes(block_now(b), bundle.schema.content_release).empty(); };
         if (bears(middle)) return middle;
         std::optional<BlockPos> best;
         double nearest = 0.0;
-        const auto box = movement::player_box(p.pos, p.sneaking).deflate(1e-5);
+        const auto box = box_of(p, p.pos).deflate(1e-5);
         for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
             for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
                 const BlockPos b{x, y, z};
@@ -2049,7 +2255,14 @@ struct Game::Impl final : GameServices {
     // that lands too, 1.21.4 does not (client/falls). Water and flying reset
     // it.
     void fall(Player& p, double dy, bool on_ground) {
-        if (p.game_mode == spectator || p.flying || in_water(p)) {
+        // Slow falling keeps the distance at 0 while the player moves down
+        // (client/drown: a fall of 10 blocks with it hurt nothing; minecraft.wiki
+        // "Slow Falling": a fall after the effect ends counts from there),
+        // and so does a sweet berry bush (minecraft.wiki "Sweet Berry Bush";
+        // not recorded).
+        static const auto slow_falling = gameplay::effects::id("slow_falling");
+        const bool slowed = slow_falling && effect_amplifier(p, *slow_falling) && dy < 0.0;
+        if (p.game_mode == spectator || p.flying || in_water(p) || slowed || in_bush(p, false)) {
             p.fall_distance = 0.0;
             return;
         }
@@ -2070,42 +2283,59 @@ struct Game::Impl final : GameServices {
         const auto damage = wire.protocol() >= 772 ? std::floor(beyond) : std::ceil(beyond);
         if (damage <= 0.0 || p.game_mode != survival) return;
         // The fall's sound comes first, for the others nearby (client/effects_heal:
-        // 7 points gave big_fall; 4 or less gives small_fall).
+        // 7 points gave big_fall; 4 or less gives small_fall), also with
+        // fallDamage off, when the hurt does not come (client/drown).
         sound_around(p, damage > 4.0 ? Wire::PlayerSound::big_fall : Wire::PlayerSound::small_fall, 1.0f);
         hurt(p, static_cast<float>(damage), Harm::fall, distance);
     }
 
-    enum class Harm : std::uint8_t { fall, void_, starve, kill, magic, wither, in_fire, soul_fire, on_fire, lava, hot_floor };
+    enum class Harm : std::uint8_t {
+        fall, void_, starve, kill, magic, wither, in_fire, soul_fire, on_fire, lava, hot_floor, drown, in_wall, cactus, freeze, sweet_berry_bush
+    };
     // What a damage type does, from the official data packs (both versions
     // alike): its name, death message key, exhaustion, whether armor (not in
     // bypasses_armor) and the resistance effect (not in bypasses_resistance
     // or bypasses_effects: the void, /kill, starvation) reduce it, whether it
     // is fire (is_fire: fire resistance keeps it off; netherite does not wear
-    // by it), and the hurt sound those nearby hear (its effects: burning
-    // gives hurt_on_fire; client/fire).
+    // by it), whether it moves the player (all but no_impact, drowning: no
+    // velocity is told), the game rule that turns it off (fallDamage,
+    // fireDamage for fire, drowningDamage, freezeDamage: client/drown), and
+    // the hurt sound those nearby hear (its effects: burning gives
+    // hurt_on_fire, client/fire; drowning hurt_drown, freezing hurt_freeze
+    // and poking hurt_sweet_berry_bush, client/drown).
     struct HarmType {
         const char* name;
         const char* death;
         float exhaustion;
-        bool armor, resistance, fire;
+        bool armor, resistance, fire, impact;
+        const char* rule;
         Wire::PlayerSound sound;
     };
     static const HarmType& harm_type(Harm h) {
         using enum Wire::PlayerSound;
-        static const std::array<HarmType, 11> types{{
-            {"minecraft:fall", "death.attack.fall", 0.0f, false, true, false, hurt},
-            {"minecraft:out_of_world", "death.attack.outOfWorld", 0.0f, false, false, false, hurt},
-            {"minecraft:starve", "death.attack.starve", 0.0f, false, false, false, hurt},
-            {"minecraft:generic_kill", "death.attack.genericKill", 0.0f, false, false, false, hurt},
-            {"minecraft:magic", "death.attack.magic", 0.0f, false, true, false, hurt},
-            {"minecraft:wither", "death.attack.wither", 0.0f, false, true, false, hurt},
-            {"minecraft:in_fire", "death.attack.inFire", 0.1f, true, true, true, hurt_on_fire},
-            {"minecraft:in_fire", "death.attack.inFire", 0.1f, true, true, true, hurt_on_fire},
-            {"minecraft:on_fire", "death.attack.onFire", 0.0f, false, true, true, hurt_on_fire},
-            {"minecraft:lava", "death.attack.lava", 0.1f, true, true, true, hurt_on_fire},
-            {"minecraft:hot_floor", "death.attack.hotFloor", 0.1f, true, true, true, hurt_on_fire},
+        static const std::array<HarmType, 16> types{{
+            {"minecraft:fall", "death.attack.fall", 0.0f, false, true, false, true, "fallDamage", hurt},
+            {"minecraft:out_of_world", "death.attack.outOfWorld", 0.0f, false, false, false, true, nullptr, hurt},
+            {"minecraft:starve", "death.attack.starve", 0.0f, false, false, false, true, nullptr, hurt},
+            {"minecraft:generic_kill", "death.attack.genericKill", 0.0f, false, false, false, true, nullptr, hurt},
+            {"minecraft:magic", "death.attack.magic", 0.0f, false, true, false, true, nullptr, hurt},
+            {"minecraft:wither", "death.attack.wither", 0.0f, false, true, false, true, nullptr, hurt},
+            {"minecraft:in_fire", "death.attack.inFire", 0.1f, true, true, true, true, "fireDamage", hurt_on_fire},
+            {"minecraft:in_fire", "death.attack.inFire", 0.1f, true, true, true, true, "fireDamage", hurt_on_fire},
+            {"minecraft:on_fire", "death.attack.onFire", 0.0f, false, true, true, true, "fireDamage", hurt_on_fire},
+            {"minecraft:lava", "death.attack.lava", 0.1f, true, true, true, true, "fireDamage", hurt_on_fire},
+            {"minecraft:hot_floor", "death.attack.hotFloor", 0.1f, true, true, true, true, "fireDamage", hurt_on_fire},
+            {"minecraft:drown", "death.attack.drown", 0.0f, false, true, false, false, "drowningDamage", hurt_drown},
+            {"minecraft:in_wall", "death.attack.inWall", 0.0f, false, true, false, true, nullptr, hurt},
+            {"minecraft:cactus", "death.attack.cactus", 0.1f, true, true, false, true, nullptr, hurt},
+            {"minecraft:freeze", "death.attack.freeze", 0.0f, false, true, false, true, "freezeDamage", hurt_freeze},
+            {"minecraft:sweet_berry_bush", "death.attack.sweetBerryBush", 0.1f, true, true, false, true, nullptr, hurt_sweet_berry_bush},
         }};
         return types[static_cast<std::size_t>(h)];
+    }
+    // Whether a game rule that turns damage off leaves it on.
+    bool harm_allowed(const HarmType& type) const {
+        return !type.rule || gameplay::game_rule_value(bundle, rules, type.rule) != 0;
     }
 
     // A player's own sound, for the other players within 16 blocks (the
@@ -2157,6 +2387,7 @@ struct Game::Impl final : GameServices {
         if (harm != Harm::void_ && harm != Harm::kill && p.game_mode != survival) return false;
         if (harm == Harm::void_ && p.game_mode == spectator) return false;
         const auto& type = harm_type(harm);
+        if (!harm_allowed(type)) return false;
         static const auto fire_resistance = gameplay::effects::id("fire_resistance"), resistance = gameplay::effects::id("resistance");
         if (type.fire && fire_resistance && effect_amplifier(p, *fire_resistance)) return false;
         float applied = amount;
@@ -2189,8 +2420,9 @@ struct Game::Impl final : GameServices {
         for (const auto viewer : p.seen_by)
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
         // Then the others nearby hear the hurt or the death; the hurt player's
-        // velocity is told at the next entity update (client/effects_heal).
-        p.hurt_marked = true;
+        // velocity is told at the next entity update (client/effects_heal),
+        // but for drowning (client/drown).
+        if (type.impact) p.hurt_marked = true;
         if (p.health <= 0.0f) {
             sound_around(p, Wire::PlayerSound::death, voice_pitch());
             die(p, harm, fall_distance);
@@ -2215,6 +2447,19 @@ struct Game::Impl final : GameServices {
         p.wear_tick = tick_count;
     }
     bool wear_held(const Player& p) const { return p.wear_tick == tick_count && !p.wear_seen; }
+    // The wear held back in the last tick goes after its velocity, before
+    // the players' tick: the own armor slots and what others see of them
+    // (client/fire: before the extinguish sound of water a command set as
+    // the hurt came).
+    void release_wear() {
+        for (auto& [id, p] : players) {
+            if (!p.wear_tick || *p.wear_tick + 1 != tick_count) continue;
+            if (!p.window) sync_inventory(p);
+            if (p.wear_seen || !p.equipment_known) continue;
+            sound_equipment(p); // a piece put on in the held tick (not recorded)
+            show_equipment(p, equipment_now(p));
+        }
+    }
     // The velocity of the players hurt since the last entity update, to
     // them and to those who see them: the server's, a player standing still
     // (client/effects_heal), or at the bottom of lava (client/fire; a hurt
@@ -2224,8 +2469,11 @@ struct Game::Impl final : GameServices {
             if (!p.hurt_marked) continue;
             p.hurt_marked = false;
             if (p.dead && p.dead_ticks >= 20) continue; // the body went
-            // In lava, as the player stands at its bottom (client/fire).
-            const auto motion = wire.entity_motion(p.entity_id, {0.0, in_lava(p) ? -0.02 : -0.0784, 0.0});
+            // In lava at the player's last tick, as the player stands at its
+            // bottom (client/fire: also when a command took the lava away
+            // since); none after a teleport or a move through a sweet berry
+            // bush since the player's last tick (client/drown).
+            const auto motion = wire.entity_motion(p.entity_id, {0.0, p.stopped ? 0.0 : p.tick_in_lava ? -0.02 : -0.0784, 0.0});
             p.peer->send(motion);
             for (const auto viewer : p.seen_by)
                 if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(motion);
@@ -2365,6 +2613,10 @@ struct Game::Impl final : GameServices {
         p.fire_ticks = -20;
         p.in_fire = false;
         p.burning = false;
+        p.air = p.told_air = gameplay::damage::max_air;
+        p.frozen_ticks = p.told_frozen = 0;
+        p.in_snow = false;
+        p.forced_pose.reset();
         p.fall_distance = 0.0;
         p.floating = false;
         p.floating_ticks = 0;
@@ -2424,16 +2676,18 @@ struct Game::Impl final : GameServices {
         return now;
     }
     void equipment_sounds() {
+        for (auto& [id, p] : players)
+            if (p.equipment_known && !wear_held(p)) sound_equipment(p);
+    }
+    // The equip sounds of the pieces put on since the equipment was last seen.
+    void sound_equipment(Player& p) {
         using gameplay::equipment::Slot;
-        for (auto& [id, p] : players) {
-            if (!p.equipment_known || wear_held(p)) continue;
-            const auto now = equipment_now(p);
-            const auto& was = p.equipped;
-            for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
-                if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item)) continue;
-                if (const auto* worn = gameplay::equipment::wearable(now[k].item); worn && worn->slot == static_cast<Slot>(k))
-                    sound_around_at(p, equip_sound(worn->sound), 1.0f, 1.0f, Wire::SoundCategory::player, true);
-            }
+        const auto now = equipment_now(p);
+        const auto& was = p.equipped;
+        for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
+            if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item)) continue;
+            if (const auto* worn = gameplay::equipment::wearable(now[k].item); worn && worn->slot == static_cast<Slot>(k))
+                sound_around_at(p, equip_sound(worn->sound), 1.0f, 1.0f, Wire::SoundCategory::player, true);
         }
     }
     void look_at_equipment() {
@@ -2698,7 +2952,7 @@ struct Game::Impl final : GameServices {
             sound_around_at(p, use_sound_of(*c), volume, voice_pitch(), Wire::SoundCategory::player, false);
         }
         if (u.left > 0) return;
-        const contracts::Vec3 eye{p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62), p.pos.z};
+        const contracts::Vec3 eye{p.pos.x, p.pos.y + eye_height(p), p.pos.z};
         if (const auto admission = queue.admit(contracts::ConsumeItem{key_of(p), u.slot, now, p.game_mode == creative, eye}, overworld)) {
             u.consuming = *admission;
         } else {
@@ -2890,6 +3144,8 @@ struct Game::Impl final : GameServices {
         Wire::PlayerData d;
         if (p.told_flags != 0) d.flags = p.told_flags;
         if (p.told_pose != 0) d.pose = p.told_pose;
+        if (p.told_air != gameplay::damage::max_air) d.air = p.told_air;
+        if (p.told_frozen != 0) d.frozen = p.told_frozen;
         if (p.told_living != 0) d.living = p.told_living;
         const auto health = p.told_health.value_or(p.health);
         if (health != 1.0f) d.health = health; // a new living entity's is 1
@@ -2945,8 +3201,16 @@ struct Game::Impl final : GameServices {
             if (!p.fresh) {
                 if (const auto flags = shared_flags(p); flags != p.told_flags) d.flags = flags;
                 if (const auto pose = pose_of(p); pose != p.told_pose) d.pose = pose;
+                // The air supply and frozen ticks as the player's last tick
+                // left them (client/drown).
+                if (p.air != p.told_air) d.air = p.air;
+                if (p.frozen_ticks != p.told_frozen) d.frozen = p.frozen_ticks;
             }
-            if (!d.flags && !d.pose && !d.health && !d.particles && !d.ambient && !d.absorption && !d.skin_parts && !d.main_hand) continue;
+            if (!d.flags && !d.pose && !d.health && !d.particles && !d.ambient && !d.absorption && !d.skin_parts && !d.main_hand && !d.air
+                && !d.frozen)
+                continue;
+            if (d.air) p.told_air = *d.air;
+            if (d.frozen) p.told_frozen = *d.frozen;
             if (d.flags) p.told_flags = *d.flags;
             if (d.pose) p.told_pose = *d.pose;
             if (d.health) p.told_health = *d.health;
@@ -2966,7 +3230,6 @@ struct Game::Impl final : GameServices {
     std::uint8_t shared_flags(const Player& p) const {
         return static_cast<std::uint8_t>(p.effect_view.flags | (p.game_mode == spectator ? 0x20 : 0) | (p.sneaking ? 0x02 : 0) | (p.burning ? 0x01 : 0));
     }
-    std::int32_t pose_of(const Player& p) const { return p.sneaking && p.game_mode != spectator && !p.flying ? 5 : 0; }
     // A new entity's first data (joined or respawned): its health, its
     // absorption, the skin parts it shows and a left main hand (by the same
     // rule; not recorded), to the
@@ -2978,6 +3241,8 @@ struct Game::Impl final : GameServices {
         Wire::PlayerData d;
         if (const auto flags = shared_flags(p); flags != 0) d.flags = flags;
         if (const auto pose = pose_of(p); pose != 0) d.pose = pose;
+        if (p.air != gameplay::damage::max_air) d.air = p.air;
+        if (p.frozen_ticks != 0) d.frozen = p.frozen_ticks;
         d.health = p.health;
         if (p.absorption > 0.0f) d.absorption = p.absorption;
         if (p.skin_parts != 0) d.skin_parts = p.skin_parts;
@@ -2987,6 +3252,8 @@ struct Game::Impl final : GameServices {
         p.told_main_arm = p.main_arm;
         p.told_flags = d.flags.value_or(0);
         p.told_pose = d.pose.value_or(0);
+        p.told_air = d.air.value_or(gameplay::damage::max_air);
+        p.told_frozen = d.frozen.value_or(0);
         const auto data = wire.player_data(p.entity_id, d);
         p.peer->send(data);
         for (const auto viewer : p.seen_by)
@@ -3011,7 +3278,7 @@ struct Game::Impl final : GameServices {
         const gameplay::effects::Level level{levels >= 4 && primary == secondary ? 1 : 0, (9 + levels * 2) * 20, true, true, true};
         for (auto& [id, p] : players) {
             if (p.dead || p.vitals_pending || p.game_mode == spectator) continue;
-            if (!movement::player_box(p.pos, p.sneaking).intersects(area)) continue;
+            if (!box_of(p, p.pos).intersects(area)) continue;
             give_effect(p, static_cast<std::uint8_t>(primary - 1), level);
             if (levels >= 4 && secondary != 0 && secondary != primary)
                 give_effect(p, static_cast<std::uint8_t>(secondary - 1), {0, level.duration, true, true, true});
@@ -3209,6 +3476,7 @@ struct Game::Impl final : GameServices {
     void update_vitals(bool world_runs) {
         std::vector<std::uint64_t> kicked;
         tell_hurt_velocities();
+        release_wear();
         for (auto& [id, p] : players) {
             if (!p.dead) {
                 if (p.floating && ++p.floating_ticks > 80) {
@@ -3224,6 +3492,13 @@ struct Game::Impl final : GameServices {
                 if (p.hurt_cooldown > 0) --p.hurt_cooldown;
                 fire_tick(p);
                 if (!p.dead && p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
+                // Suffocation, breath, the turtle shell and frost
+                // (client/drown), then the pose the space forces.
+                if (!p.dead && eyes_in_wall(p)) hurt(p, 1.0f, Harm::in_wall);
+                if (!p.dead) breathe(p);
+                if (!p.dead) turtle_shell(p);
+                if (!p.dead) freeze(p);
+                decide_pose(p);
                 // The effects act before hunger takes the tick's exhaustion
                 // (client/eat: the last food a hunger effect takes goes
                 // before the effect's removal). Hunger in every mode (only
@@ -3232,9 +3507,12 @@ struct Game::Impl final : GameServices {
                 hunger(p);
                 end_cooldowns(p);
                 tick_use(p);
+                p.tick_pos = p.pos;
+                p.tick_in_lava = in_lava(p);
             } else if (world_runs && p.dead && ++p.dead_ticks == 20) {
                 body_goes(p);
             }
+            p.stopped = p.teleported = false;
             if (!p.vitals_pending) send_vitals(p, true);
             send_living(p);
         }
@@ -3242,7 +3520,7 @@ struct Game::Impl final : GameServices {
     }
 
     bool in_reach(const Player& p, BlockPos b) const {
-        const double eye = p.pos.y + (p.sneaking ? 1.27 : 1.62);
+        const double eye = p.pos.y + eye_height(p);
         const auto axis = [](double v, double low) { return v < low ? low - v : (v > low + 1.0 ? v - low - 1.0 : 0.0); };
         const double dx = axis(p.pos.x, b.x), dy = axis(eye, b.y), dz = axis(p.pos.z, b.z);
         const double reach = p.game_mode == creative ? creative_reach : survival_reach;
@@ -3251,7 +3529,7 @@ struct Game::Impl final : GameServices {
 
     // Within the interaction range plus `extra` (containers stay open up to 4 further).
     bool in_reach_plus(const Player& p, BlockPos b, double extra) const {
-        const double eye = p.pos.y + (p.sneaking ? 1.27 : 1.62);
+        const double eye = p.pos.y + eye_height(p);
         const auto axis = [](double v, double low) { return v < low ? low - v : (v > low + 1.0 ? v - low - 1.0 : 0.0); };
         const double dx = axis(p.pos.x, b.x), dy = axis(eye, b.y), dz = axis(p.pos.z, b.z);
         const double reach = (p.game_mode == creative ? creative_reach : survival_reach) + extra;
@@ -3353,10 +3631,10 @@ struct Game::Impl final : GameServices {
     // Whether water covers the player's eyes, as the target version decides
     // it: the fluid in the cell 1/9 below the eyes reaches above that point.
     bool eyes_in_water(const Player& p) const {
-        const double y = p.pos.y + (p.sneaking ? 1.27 : 1.62) - 1.0 / 9.0;
+        const double y = p.pos.y + eye_height(p) - 1.0 / 9.0;
         const BlockPos cell{static_cast<std::int32_t>(std::floor(p.pos.x)), static_cast<std::int32_t>(std::floor(y)),
                             static_cast<std::int32_t>(std::floor(p.pos.z))};
-        const auto height = gameplay::fluid_height(at(cell), at(cell.relative(contracts::Direction::up)));
+        const auto height = gameplay::fluid_height(block_now(cell), block_now(cell.relative(contracts::Direction::up)));
         return height > 0.0f && cell.y + static_cast<double>(height) > y;
     }
 
@@ -3539,7 +3817,7 @@ struct Game::Impl final : GameServices {
             p.yaw = std::fmod(u.yaw, 360.0f);
             p.pitch = std::clamp(u.pitch, -90.0f, 90.0f);
         }
-        contracts::PlayerUseItem use{key_of(p), slot, {p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62), p.pos.z}, p.yaw, p.pitch,
+        contracts::PlayerUseItem use{key_of(p), slot, {p.pos.x, p.pos.y + eye_height(p), p.pos.z}, p.yaw, p.pitch,
                                      p.game_mode == creative ? creative_view : survival_view, p.game_mode == survival, std::nullopt};
         if (used_on && used_on->tick == tick_count.load() && used_on->hand == u.hand) use.hit = used_on->hit;
         if (const auto admission = queue.admit(use, overworld)) p.hand_actions.push_back({*admission, slot, false, {}});

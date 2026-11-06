@@ -31,6 +31,8 @@ inline constexpr double crouching_height = 1.5;
 inline constexpr double step_height = 0.6;
 
 [[nodiscard]] Aabb player_box(Vec3 feet, bool crouching) noexcept;
+// A player's box of a given height (a pose's: standing, crouching, crawling).
+[[nodiscard]] Aabb player_box(Vec3 feet, double height) noexcept;
 
 // The collision boxes, in world coordinates, of the blocks whose shapes
 // intersect the queried area.
