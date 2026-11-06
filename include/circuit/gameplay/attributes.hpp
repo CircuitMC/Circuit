@@ -18,17 +18,20 @@ namespace circuit::gameplay::attributes {
 // In the registry's order, the same on both versions (their ids differ: the
 // wire adapter maps them).
 enum class Attribute : std::uint8_t {
+    armor,
+    armor_toughness,
     attack_damage,
     attack_speed,
     block_interaction_range,
     entity_interaction_range,
+    knockback_resistance,
     luck,
     max_absorption,
     max_health,
     movement_speed,
     safe_fall_distance,
 };
-inline constexpr std::size_t count = 9;
+inline constexpr std::size_t count = 12;
 // The name without its namespace, and an attribute by name (with or without "minecraft:").
 std::string_view name(Attribute a) noexcept;
 std::optional<Attribute> by_name(std::string_view name) noexcept;
@@ -36,7 +39,9 @@ std::optional<Attribute> by_name(std::string_view name) noexcept;
 // 0.1 as a float, widened).
 double base(Attribute a) noexcept;
 // Whether the official servers send the attribute to clients. Attack damage
-// they keep to themselves: strength and weakness send no attributes.
+// and knockback resistance they keep to themselves: strength and weakness
+// send no attributes, and netherite armor's knockback resistance is not
+// sent (client/armor).
 bool synced(Attribute a) noexcept;
 
 enum class Operation : std::uint8_t { add_value, add_multiplied_base, add_multiplied_total };

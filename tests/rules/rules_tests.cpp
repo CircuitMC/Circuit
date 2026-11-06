@@ -13,6 +13,7 @@
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/effects.hpp>
+#include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/potions.hpp>
@@ -3129,6 +3130,93 @@ int main() {
         for (int i = 0; i < 4; ++i) t.tick();
         const auto td = t.oracle.dump();
         require(td.overworld().entities.empty(), "with tntExplodes off the TNT stays");
+    });
+
+    suite.run("dispensers put armor on a player in front when its slot is empty, and eject it otherwise (client/armor2)", [] {
+        using circuit::contracts::PlayerPresence;
+        using circuit::gameplay::EntityKind;
+        // sam, a spectator, comes first by key and is passed over.
+        const PlayerKey sam{4, 1}, alex{4, 2};
+        Sim s;
+        std::vector<CommandBody> build = floor(-3, 6, -1, 3);
+        build.push_back(place({0, 0, 0}, blocks::dispenser(D::east)));
+        s.tick(build);
+        const auto slot = [&](PlayerKey who, std::size_t i) {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, who, &PlayerInventory::player);
+            return it == d.players.end() ? ItemStack{} : it->slots[i];
+        };
+        const auto items_out = [&] {
+            const auto d = s.oracle.dump();
+            return std::ranges::count_if(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::item; });
+        };
+        const auto held = [&] {
+            const auto d = s.oracle.dump();
+            for (const auto& [pos, be] : d.overworld().block_entities)
+                if (pos == BlockPos{0, 0, 0}) return be.slots[0];
+            return ItemStack{};
+        };
+        std::size_t events = 0;
+        const auto fire = [&](std::uint16_t item) {
+            s.tick({insert({0, 0, 0}, 0, item, 1)});
+            s.tick({place({-1, 0, 0}, blocks::redstone_block())});
+            for (int i = 0; i < 5; ++i) {
+                s.tick();
+                for (const auto& r : s.last)
+                    if (r.kind == circuit::contracts::TraceKind::level_event && r.pos == BlockPos{0, 0, 0}) ++events;
+            }
+            s.tick({place({-1, 0, 0}, blocks::air())});
+            s.tick();
+        };
+        s.tick({PlayerPresence{sam, at_block(1.5, 0.0, 0.5), true}, PlayerPresence{alex, at_block(1.4, 0.0, 0.5)}});
+        fire(items::iron_helmet);
+        require(slot(alex, 5) == ItemStack{items::iron_helmet, 1} && slot(sam, 5).empty() && items_out() == 0 && held().empty() && events == 2,
+                "put on in the dispenser's tick, the spectator passed over, with its sound and smoke");
+        // Another, with a helmet worn: ejected.
+        fire(items::iron_helmet);
+        require(items_out() == 1 && held().empty() && events == 4, "ejected with the slot filled");
+        // Nobody in front: ejected.
+        s.tick({PlayerPresence{alex, at_block(4.5, 0.0, 0.5)}});
+        const auto boots = *circuit::gameplay::items::by_name("minecraft:diamond_boots");
+        fire(boots);
+        require(items_out() == 2 && slot(alex, 8).empty(), "nobody in front");
+    });
+
+    suite.run("armor is put on by use, swapping with what is worn, the carved pumpkin not (client/armor, client/armor3)", [] {
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        const PlayerKey alex{4, 2};
+        Sim s;
+        const auto slot = [&](std::size_t i) {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            return it == d.players.end() ? ItemStack{} : it->slots[i];
+        };
+        const auto item = [](std::string_view name) { return *circuit::gameplay::items::by_name(name); };
+        const auto use = [&](std::uint8_t at, bool survival) { return PlayerUseItem{alex, at, {0.5, 1.62, 0.5}, 0.0f, 0.0f, 4.5, survival, std::nullopt}; };
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_helmet, 1}}, SetPlayerSlot{alex, 37, {item("minecraft:leather_helmet"), 1}},
+                SetPlayerSlot{alex, 38, {item("minecraft:carved_pumpkin"), 1}}, SetPlayerSlot{alex, 45, {item("minecraft:elytra"), 1}}});
+        s.tick({use(36, true)});
+        require(slot(5) == ItemStack{items::iron_helmet, 1} && slot(36).empty(), "put on");
+        s.tick({use(37, false)});
+        require(slot(5) == ItemStack{item("minecraft:leather_helmet"), 1} && slot(37) == ItemStack{items::iron_helmet, 1}, "swapped, in creative mode too");
+        // In creative mode with nothing worn there, a copy goes on (client/armor3).
+        const auto boots = item("minecraft:iron_boots");
+        s.tick({SetPlayerSlot{alex, 39, {boots, 1}}});
+        s.tick({use(39, false)});
+        require(slot(8) == ItemStack{boots, 1} && slot(39) == ItemStack{boots, 1}, "a copy in creative mode");
+        s.tick({use(38, true)});
+        require(slot(38) == ItemStack{item("minecraft:carved_pumpkin"), 1}, "the pumpkin stays");
+        s.tick({use(45, true)});
+        require(slot(6) == ItemStack{item("minecraft:elytra"), 1} && slot(45).empty(), "from the off hand");
+        namespace eq = circuit::gameplay::equipment;
+        const auto* netherite = eq::wearable(item("minecraft:netherite_chestplate"));
+        require(netherite && netherite->slot == eq::Slot::chest && netherite->armor == 8.0f && netherite->toughness == 3.0f
+                    && netherite->knockback_resistance == 0.1f,
+                "netherite: 8 armor, 3 toughness, 0.1 knockback resistance");
+        const auto sword = eq::weapon(item("minecraft:iron_sword"));
+        require(sword && sword->damage == 5.0f && sword->speed == -2.4f && !eq::weapon(items::stone), "an iron sword's modifiers");
+        require(eq::armor_modifier(eq::Slot::feet) == "armor.boots" && eq::inventory_slot(eq::Slot::mainhand, 3) == 39, "ids and slots");
     });
 
     suite.run("comparators read dispensers as containers of nine slots", [] {
@@ -6664,7 +6752,8 @@ int main() {
         namespace at = circuit::gameplay::attributes;
         namespace fx = circuit::gameplay::effects;
         require(at::by_name("minecraft:movement_speed") == at::Attribute::movement_speed && at::by_name("luck") == at::Attribute::luck
-                    && !at::by_name("armor") && at::name(at::Attribute::safe_fall_distance) == "safe_fall_distance",
+                    && at::by_name("armor") == at::Attribute::armor && !at::by_name("scale")
+                    && at::name(at::Attribute::safe_fall_distance) == "safe_fall_distance",
                 "names");
         // The values as the official servers print them (shortest round trip).
         const auto text = [](double v) { return std::format("{}", v); };
@@ -6672,7 +6761,9 @@ int main() {
                     && at::base(at::Attribute::block_interaction_range) == 4.5 && at::base(at::Attribute::entity_interaction_range) == 3.0
                     && at::base(at::Attribute::max_health) == 20.0 && at::base(at::Attribute::safe_fall_distance) == 3.0,
                 "a player's bases");
-        require(!at::synced(at::Attribute::attack_damage) && at::synced(at::Attribute::max_health), "attack damage is not sent");
+        require(!at::synced(at::Attribute::attack_damage) && !at::synced(at::Attribute::knockback_resistance) && at::synced(at::Attribute::max_health)
+                    && at::synced(at::Attribute::armor) && at::synced(at::Attribute::armor_toughness),
+                "attack damage and knockback resistance are not sent (client/armor)");
         const auto modifier = [&](std::string_view effect, std::int32_t amplifier) {
             const auto m = at::effect_modifier(*fx::id(effect), amplifier);
             return m ? std::format("{} {} {} {}", at::name(m->attribute), m->modifier.id, text(m->modifier.amount),

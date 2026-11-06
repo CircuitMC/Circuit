@@ -132,13 +132,13 @@ public:
     }
     void remove_entity(EntityId id) override { lv().entities.erase(id); }
 
+    // Serial: every phase may use them (the engine's other phases only in the
+    // region holding the level's random, which runs its roots in this order).
     const PlayerInventory* peek_player(contracts::PlayerKey player) override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: player inventories outside the command phase");
         const auto it = o_.players_.find(player);
         return it == o_.players_.end() ? nullptr : &it->second;
     }
     PlayerInventory& player(contracts::PlayerKey player) override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: player inventories outside the command phase");
         auto [it, fresh] = o_.players_.try_emplace(player);
         if (fresh) it->second.player = player;
         return it->second;

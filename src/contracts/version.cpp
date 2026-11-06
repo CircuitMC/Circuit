@@ -487,15 +487,15 @@ constexpr std::array reference_v4_mechanisms{
         "the container in front or eject the item; dispensers eject items without a use, with the observed "
         "position, motion and draws, prime TNT (keep it when tntExplodes is off), empty water and lava buckets "
         "into blocks that hold water, air and what fluids replace, fill buckets from fluid sources, powder snow and "
-        "blocks holding water, set minecarts on rails, and eject equipment, as there are no entities to equip; "
+        "blocks holding water, set minecarts on rails, put armor and elytras on the first player by key but spectators in front whose slot "
+        "for it is empty (client/armor2) or eject them, and eject other equipment; "
         "comparators read them and hoppers fill and empty them (dispensers, dispensers_more, dispenser_cases, "
         "dispenser_items, dispenser_tnt_rule, dispenser_buckets); flint and steel sets fire, lights campfires and "
         "candles or primes TNT in front, and shears take a full hive's honeycomb, wearing by one (dispenser_flint, "
         "dispenser_shears). Gaps: projectiles and fire charges, "
         "bone meal, shears on mobs, boats on water, bottles, honeycomb, glowstone and water bottles at their targets, "
-        "golem and wither heads, buckets of fish, axolotls, tadpoles and powder snow, minecarts and mobs, and "
-        "equipping players are not modeled: those "
-        "items stay."},
+        "golem and wither heads, buckets of fish, axolotls, tadpoles and powder snow, minecarts and mobs are not "
+        "modeled: those items stay; heads and saddles eject where the target versions equip entities with them."},
     MechanismEntry{"shears", l0_exact, l2_declared_deviation, harness_trace,
         "Shears as both official servers use them (shears_use, shears_break, dispenser_shears; client/shears_items): "
         "used on a pumpkin it becomes a carved pumpkin facing the face used (from above or below, the player), with "

@@ -210,7 +210,9 @@ struct BlockHit {
 // clicking it, absent when it meets none within reach. An empty bucket
 // takes the first fluid source on the view before that block, or from the
 // block; a filled one pours into the block or beside it. In survival the
-// bucket changes in the hand.
+// bucket changes in the hand. A piece of armor or an elytra is put on,
+// swapping with what is worn in its slot, in every game mode; outside
+// survival with nothing worn there a copy goes on and the hand keeps it.
 struct PlayerUseItem {
     PlayerKey player;
     std::uint8_t slot{}; // the using hand's inventory slot (36-44 or 45)

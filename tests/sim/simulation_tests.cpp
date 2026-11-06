@@ -1299,6 +1299,74 @@ int main() {
         }
     });
 
+    suite.run("dispensers in separate regions put armor on players in tick order", [&] {
+        using circuit::contracts::InsertItem;
+        using circuit::contracts::PlayerPresence;
+        const PlayerKey alex{4, 2}, sam{4, 3};
+        // Two dispensers 128 blocks apart in separate regions, each before a
+        // player: a helmet goes on, and a second, over it, is ejected. At the
+        // chunk edges a dispenser faces the next column, and its change of
+        // contents updates there after the helmet went on: the region
+        // conflicts and the attempt, with the player's slot, is taken back.
+        struct Variant {
+            const char* name;
+            std::array<BlockPos, 2> dispensers;
+            Direction facing;
+        };
+        for (const auto& v : {Variant{"at chunk edges", {{{15, 1, 8}, {143, 1, 8}}}, D::east},
+                              Variant{"inside their columns", {{{8, 1, 8}, {136, 1, 8}}}, D::south}}) {
+            const std::array<PlayerKey, 2> players{alex, sam};
+            std::vector<std::vector<CommandBody>> ticks{{ticket(1, {0, 0}, 1), ticket(2, {8, 0}, 1), SetGameRule{"randomTickSpeed", 0}}};
+            {
+                auto& setup = ticks.emplace_back();
+                for (std::size_t k = 0; k < 2; ++k) {
+                    const auto at = v.dispensers[k];
+                    const auto front = at.relative(v.facing);
+                    setup.push_back(place(at, blocks::dispenser(v.facing)));
+                    setup.push_back(PlayerPresence{players[k], {front.x + 0.5, static_cast<double>(front.y), front.z + 0.5}, false, true, 0});
+                }
+            }
+            const auto fire = [&](std::uint16_t item) {
+                auto& fill = ticks.emplace_back();
+                for (const auto at : v.dispensers) fill.push_back(InsertItem{at, 0, ItemStack{item, 1}});
+                auto& on = ticks.emplace_back();
+                for (const auto at : v.dispensers) on.push_back(place({at.x, at.y + 1, at.z}, blocks::redstone_block()));
+                ticks.resize(ticks.size() + 6);
+                auto& off = ticks.emplace_back();
+                for (const auto at : v.dispensers) off.push_back(place({at.x, at.y + 1, at.z}, blocks::air()));
+                ticks.emplace_back();
+            };
+            fire(items::iron_helmet);
+            const std::size_t first = 5; // power placed in tick 4 fires in tick 7, its commands observed a tick later
+            fire(items::iron_helmet);
+            for (auto options : {pool(4), pool(4, LayoutPolicy::single_region), seeded({.seed = 3}, LayoutPolicy::perturbed, 3)}) {
+                const bool separate = options.layout == LayoutPolicy::adaptive;
+                Engine engine(bundle(), 7, std::move(options));
+                Oracle oracle(bundle(), 7);
+                Admissions admit;
+                std::uint64_t aborts = 0;
+                bool conflicted = false;
+                for (std::size_t t = 0; t < ticks.size(); ++t) {
+                    if (t == first) aborts = engine.stats().conflict_aborts;
+                    const auto commands = admit(ticks[t]);
+                    engine.advance(commands);
+                    oracle.advance(commands);
+                    require(!first_divergence(engine.trace(), oracle.trace()) && first_difference(engine.dump(), oracle.dump()).empty(),
+                            std::format("{}: tick {} matches the oracle", v.name, t + 1));
+                    conflicted = conflicted || engine.stats().conflict_aborts > aborts;
+                }
+                if (separate && v.facing == D::east) require(conflicted, std::format("{}: the regions conflict after the helmet went on", v.name));
+                const auto d = engine.dump();
+                for (const auto who : players) {
+                    const auto it = std::ranges::find(d.players, who, &PlayerInventory::player);
+                    require(it != d.players.end() && it->slots[5] == ItemStack{items::iron_helmet, 1}, std::format("{}: a helmet on each player", v.name));
+                }
+                const auto ejected = std::ranges::count_if(d.overworld().entities, [](const auto& e) { return e.stack.item == items::iron_helmet; });
+                require(ejected == 2, std::format("{}: the second helmets ejected", v.name));
+            }
+        }
+    });
+
     suite.run("commands in levels that do not exist are refused", [&] {
         Engine engine(bundle(), 1, pool(1));
         Oracle oracle(bundle(), 1);

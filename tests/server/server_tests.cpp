@@ -3714,6 +3714,313 @@ int main() {
         }
     });
 
+    suite.run("players wear armor and hold items as both official servers show them", [] {
+        // circuit-clienttest/armor.js: alice in survival, bob in creative beside
+        // her; both versions alike but for the attributes' ids.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            GameFixture f(version, offline_config());
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = name;
+            }
+            // Since the last call, as text; attributes by name with their modifiers.
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                const auto stack = [&](protocol::Reader& in) {
+                    const auto count = in.varint().value();
+                    if (count == 0) return std::string("empty");
+                    const auto item = tables.item_name(in.varint().value()).value_or("?").substr(10);
+                    (void)in.varint(), (void)in.varint(); // no components
+                    return std::format("{}*{}", item, count);
+                };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        (void)in.i32(), (void)in.i32(), (void)in.i32();
+                        out.push_back(std::format("sound {} category {} volume {}", sound, category, in.f32().value()));
+                    } else if (pk->id == id("set_equipment")) {
+                        std::string line = std::format("equipment {}", who(in.varint().value()));
+                        for (bool more = true; more;) {
+                            const auto slot = in.u8().value();
+                            more = (slot & 0x80) != 0;
+                            line += std::format(" {}:{}", slot & 0x7F, stack(in));
+                        }
+                        out.push_back(line);
+                    } else if (pk->id == id("update_attributes")) {
+                        std::string line = std::format("attributes {}", who(in.varint().value()));
+                        for (auto n = in.varint().value(); n > 0; --n) {
+                            const auto attribute = in.varint().value();
+                            line += std::format(" [{} {}", attribute, in.f64().value());
+                            for (auto m = in.varint().value(); m > 0; --m) {
+                                const auto modifier = in.string().value();
+                                const auto amount = in.f64().value();
+                                (void)in.u8();
+                                line += std::format(" {{{} {}}}", modifier.substr(10), amount);
+                            }
+                            line += "]";
+                        }
+                        out.push_back(line);
+                    } else if (pk->id == id("entity_event")) {
+                        const auto e = in.i32().value();
+                        const auto event = static_cast<int>(in.i8().value());
+                        if (event < 24 || event > 28) out.push_back(std::format("status {} {}", who(e), event));
+                    } else if (pk->id == id("animate")) {
+                        const auto e = in.varint().value();
+                        out.push_back(std::format("animation {} {}", who(e), static_cast<int>(in.u8().value())));
+                    } else if (pk->id == id("container_set_content")) {
+                        if (in.varint().value() == 0) out.emplace_back("whole window");
+                    } else if (pk->id == id("add_entity")) {
+                        out.push_back(std::format("spawned {}", who(in.varint().value())));
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            std::int32_t sequence = 0;
+            const auto use = [&](std::int32_t hand) { f.game->submit(1, I{server::intent::Use{hand, ++sequence, 0.0f, 0.0f}}); };
+            const auto hold = [&](std::int16_t slot) { f.game->submit(1, I{server::intent::HeldSlot{slot}}); };
+            const auto put = [&](std::int16_t slot, std::string_view name, std::int32_t count = 1) {
+                f.game->submit(1, I{server::intent::CreativeSlot{slot, count, tables.item_id(name).value(), 0}});
+            };
+            const bool v772 = std::string_view(version) == "1.21.8";
+            const auto armor = std::format("{}", 0), toughness = std::format("{}", 1), speed = std::format("{}", 4);
+            (void)v772;
+            command(1, "tp 8.5 -60 8.5");
+            command(2, "tp 8.5 -60 11.5");
+            put(36, "minecraft:iron_helmet");
+            put(37, "minecraft:diamond_chestplate");
+            put(38, "minecraft:iron_sword");
+            put(39, "minecraft:leather_helmet");
+            put(40, "minecraft:stone", 3);
+            put(41, "minecraft:carved_pumpkin");
+            ticks(2);
+            command(1, "gamemode survival");
+            ticks(3);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            // The iron helmet by use: its sound, the whole window, then (at the
+            // next tick's start) the attributes; bob gets the slots that changed.
+            use(0);
+            ticks(1);
+            auto a = packets(*alice);
+            auto b = packets(*bob);
+            const auto iron = "sound 72 category 7 volume 1";
+            require(a == std::vector<std::string>{iron, "whole window"}, std::format("{}: the helmet put on", version));
+            require(b == std::vector<std::string>{iron, "equipment alice 0:empty 5:iron_helmet*1"}, std::format("{}: what bob gets", version));
+            ticks(1);
+            const auto helmet = std::format("attributes alice [{} 0 {{armor.helmet 2}}] [{} 0 {{armor.helmet 0}}]", armor, toughness);
+            a = packets(*alice);
+            b = packets(*bob);
+            require(a == std::vector<std::string>{helmet} && b == std::vector<std::string>{helmet},
+                    std::format("{}: armor 2, toughness 0: {} / {}", version, a.empty() ? "" : a[0], b.empty() ? "" : b[0]));
+            // The diamond chestplate, from another hotbar slot: the hand's change, then the use.
+            hold(1);
+            ticks(1);
+            require(packets(*bob) == std::vector<std::string>{"equipment alice 0:diamond_chestplate*1"}, std::format("{}: held", version));
+            use(0);
+            ticks(2);
+            (void)packets(*alice);
+            b = packets(*bob);
+            require(b.size() == 3 && b[0] == "sound 68 category 7 volume 1" && b[1] == "equipment alice 0:empty 4:diamond_chestplate*1"
+                        && b[2] == std::format("attributes alice [{} 0 {{armor.helmet 2}} {{armor.chestplate 8}}] [{} 0 {{armor.helmet 0}} {{armor.chestplate 2}}]",
+                                               armor, toughness),
+                    std::format("{}: the chestplate", version));
+            // A sword held: its attack speed (its attack damage is not sent).
+            hold(2);
+            ticks(2);
+            const auto sword = std::format("attributes alice [{} 4 {{base_attack_speed {}}}]", speed, static_cast<double>(-2.4f));
+            require(packets(*alice) == std::vector<std::string>{sword}, std::format("{}: the sword's attack speed", version));
+            require(packets(*bob) == std::vector<std::string>{"equipment alice 0:iron_sword*1", sword}, std::format("{}: and bob's", version));
+            // Swung: bob sees it, alice does not.
+            f.game->submit(1, I{server::intent::Swing{0}});
+            f.game->submit(1, I{server::intent::Swing{1}});
+            ticks(1);
+            require(packets(*alice).empty() && packets(*bob) == std::vector<std::string>{"animation alice 0", "animation alice 3"},
+                    std::format("{}: the swings", version));
+            // The swap key: event 55 for bob, not the slots; the sword's speed gone.
+            f.game->submit(1, I{server::intent::Dig{6, {0, 0, 0}, 0, 0}});
+            ticks(2);
+            b = packets(*bob);
+            require(b == std::vector<std::string>{"status alice 55", std::format("attributes alice [{} 4]", speed)}, std::format("{}: hands swapped", version));
+            // The leather helmet by use, for the iron one: the iron helmet to the hand, the new modifier last.
+            hold(3);
+            ticks(1);
+            (void)packets(*bob);
+            use(0);
+            ticks(2);
+            b = packets(*bob);
+            require(b.size() == 3 && b[0] == "sound 73 category 7 volume 1" && b[1] == "equipment alice 0:iron_helmet*1 5:leather_helmet*1"
+                        && b[2] == std::format("attributes alice [{} 0 {{armor.chestplate 8}} {{armor.helmet 1}}] [{} 0 {{armor.chestplate 2}} {{armor.helmet 0}}]",
+                                               armor, toughness),
+                    std::format("{}: swapped: {}", version, b.size()));
+            // A carved pumpkin is not put on by use.
+            hold(5);
+            ticks(1);
+            (void)packets(*bob);
+            use(0);
+            ticks(2);
+            require(packets(*bob).empty(), std::format("{}: the pumpkin stays in the hand", version));
+            // One of a held stack thrown: its count for bob.
+            hold(4);
+            ticks(1);
+            (void)packets(*bob);
+            f.game->submit(1, I{server::intent::Dig{4, {0, 0, 0}, 0, 0}});
+            ticks(1);
+            b = packets(*bob);
+            require(std::ranges::count(b, std::string("equipment alice 0:stone*2")) == 1, std::format("{}: one thrown", version));
+            // Bob far away and back: alice appears with her attributes, then all she holds and wears.
+            command(2, "tp 300 -60 300");
+            ticks(5);
+            command(2, "tp 8.5 -60 11.5");
+            ticks(5);
+            b = packets(*bob);
+            const auto spawned = std::ranges::find(b, std::string("spawned alice"));
+            const auto worn = std::ranges::find(b, std::string("equipment alice 0:stone*2 1:iron_sword*1 4:diamond_chestplate*1 5:leather_helmet*1"));
+            const auto attributes = std::ranges::find_if(b, [](const std::string& l) { return l.starts_with("attributes alice"); });
+            require(spawned != b.end() && attributes != b.end() && worn != b.end() && spawned < attributes && attributes < worn,
+                    std::format("{}: alice appears", version));
+        }
+    });
+
+    suite.run("dispensers and clicks put armor on as both official servers show it", [] {
+        // circuit-clienttest/armor2.js and armor.js's clicks: alice in survival
+        // before a dispenser facing her, bob in creative beside her.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            GameFixture f(version, offline_config());
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = name;
+            }
+            std::int32_t window = -1;
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::string("an entity"); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        out.push_back(std::format("sound {} category {}", sound, category));
+                    } else if (pk->id == id("level_event")) {
+                        const auto event = in.i32().value();
+                        (void)in.position();
+                        out.push_back(std::format("level event {} data {}", event, in.i32().value()));
+                    } else if (pk->id == id("set_equipment")) {
+                        std::string line = std::format("equipment {}", who(in.varint().value()));
+                        for (bool more = true; more;) {
+                            const auto slot = in.u8().value();
+                            more = (slot & 0x80) != 0;
+                            const auto count = in.varint().value();
+                            if (count == 0) {
+                                line += std::format(" {}:empty", slot & 0x7F);
+                            } else {
+                                line += std::format(" {}:{}", slot & 0x7F, tables.item_name(in.varint().value()).value_or("?").substr(10));
+                                (void)in.varint(), (void)in.varint();
+                            }
+                        }
+                        out.push_back(line);
+                    } else if (pk->id == id("add_entity")) {
+                        out.push_back(std::format("spawned {}", who(in.varint().value())));
+                    } else if (pk->id == id("open_screen")) {
+                        window = in.varint().value();
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            const auto put = [&](std::int16_t slot, std::string_view name) {
+                f.game->submit(1, I{server::intent::CreativeSlot{slot, 1, tables.item_id(name).value(), 0}});
+            };
+            const auto click = [&](std::int32_t in, std::int16_t slot, std::int32_t mode) {
+                f.game->submit(1, I{server::intent::ContainerClick{in, 0, slot, 0, mode, {}, std::nullopt}});
+                ticks(1);
+            };
+            command(1, "tp 8.5 -60 8.5");
+            command(2, "tp 8.5 -60 11.5");
+            command(1, "setblock 8 -60 7 minecraft:dispenser[facing=south,triggered=false]");
+            put(36, "minecraft:iron_helmet");
+            put(37, "minecraft:iron_helmet");
+            put(38, "minecraft:diamond_boots");
+            ticks(3);
+            (void)packets(*alice);
+            // Two helmets into the dispenser through its window (in creative mode).
+            f.game->submit(1, I{server::intent::UseOn{0, {8, -60, 7}, 1, 0.5f, 1.0f, 0.5f, false, 1}});
+            ticks(1);
+            (void)packets(*alice);
+            require(window > 0, std::format("{}: the dispenser's window", version));
+            click(window, 36, 1);
+            click(window, 37, 1);
+            f.game->submit(1, I{server::intent::ContainerClose{window}});
+            command(1, "gamemode survival");
+            ticks(3);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            const auto power = [&](bool on) {
+                command(1, on ? "setblock 9 -60 7 minecraft:redstone_block" : "setblock 9 -60 7 minecraft:air");
+                ticks(on ? 6 : 2);
+            };
+            // The helmet goes on: its sound, then the dispenser's sound and smoke (facing south: 3), then bob's equipment.
+            power(true);
+            auto a = packets(*alice);
+            auto b = packets(*bob);
+            const std::vector<std::string> put_on{"sound 72 category 7", "level event 1000 data 0", "level event 2000 data 3"};
+            require(a.size() >= 3 && std::vector(a.begin(), a.begin() + 3) == put_on, std::format("{}: the helmet goes on", version));
+            require(b.size() >= 4 && std::vector(b.begin(), b.begin() + 3) == put_on && b[3] == "equipment alice 5:iron_helmet",
+                    std::format("{}: what bob gets", version));
+            power(false);
+            // The second, with a helmet worn: ejected, the item before the dispenser's sound and smoke.
+            (void)packets(*bob);
+            power(true);
+            b = packets(*bob);
+            require(b.size() >= 3 && b[0] == "spawned an entity" && b[1] == "level event 1000 data 0" && b[2] == "level event 2000 data 3",
+                    std::format("{}: ejected", version));
+            power(false);
+            // Boots put on by clicks: their sound and the equipment; taken off: no sound.
+            ticks(60);
+            (void)packets(*alice);
+            (void)packets(*bob);
+            click(0, 38, 0);
+            click(0, 8, 0);
+            b = packets(*bob);
+            require(b == std::vector<std::string>{"sound 68 category 7", "equipment alice 2:diamond_boots"}, std::format("{}: boots on", version));
+            click(0, 8, 0);
+            click(0, 20, 0);
+            b = packets(*bob);
+            require(b == std::vector<std::string>{"equipment alice 2:empty"}, std::format("{}: boots off, without a sound", version));
+        }
+    });
+
     suite.run("players eat and drink as both official servers show it", [] {
         // circuit-clienttest/eat.js: alice in survival, bob in creative beside
         // her; both versions alike but for the ids.
@@ -4191,6 +4498,9 @@ int main() {
                     std::format("{}: interactions passed over, read whole", version));
             const auto teleport = parse("teleport_to_entity", Writer().uuid({1, 2}));
             require(teleport && std::holds_alternative<server::intent::TeleportToEntity>(*teleport), std::format("{}: the spectator menu's teleport", version));
+            const auto swing = parse("swing", Writer().varint(1));
+            require(swing && std::holds_alternative<server::intent::Swing>(*swing) && std::get<server::intent::Swing>(*swing).hand == 1,
+                    std::format("{}: an arm's swing (client/armor)", version));
         }
     });
 

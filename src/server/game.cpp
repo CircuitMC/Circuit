@@ -8,6 +8,7 @@
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/effects.hpp>
+#include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/food.hpp>
 #include <circuit/gameplay/potions.hpp>
@@ -195,6 +196,13 @@ struct Player {
     std::uint8_t living{};
     std::uint8_t told_living{};
     std::map<std::uint16_t, std::uint64_t> cooldowns;
+    // What the player holds and wears, by equipment slot, as last looked at
+    // (client/armor): its attribute modifiers and what those who see the
+    // player are told follow it; not looked at yet after joining or
+    // respawning (that look adds the modifiers, without sounds or equipment
+    // packets: the player appears to others with it).
+    std::array<contracts::ItemStack, gameplay::equipment::slot_count> equipped{};
+    bool equipment_known{};
     // A spectator's camera: the entity whose view it follows (client/spectators).
     std::optional<std::int32_t> camera;
     // A new entity's first data is due (`fresh`); once sent, it and the tick
@@ -1695,7 +1703,11 @@ struct Game::Impl final : GameServices {
         const auto inv = view.player(key);
         if (!inv || !*inv) return;
         for (auto r = std::next(applied); r != trace.end(); ++r) {
-            if (r->kind == contracts::TraceKind::command_applied || r->kind == contracts::TraceKind::command_rejected) break;
+            // The close's own changes: up to the next command, within the
+            // command phase (a dispenser's armor in a later phase is not one).
+            if (r->kind == contracts::TraceKind::command_applied || r->kind == contracts::TraceKind::command_rejected
+                || r->key.phase != contracts::Phase::commands)
+                break;
             if (r->kind != contracts::TraceKind::player_slot_changed || r->a != key.hi || r->b != key.lo) continue;
             const auto slot = static_cast<std::int32_t>(r->c >> 48);
             const std::int32_t index = slot >= 36 && slot <= 44 ? slot - 36 : slot >= 9 && slot <= 35 ? slot : slot >= 5 && slot <= 8 ? 44 - slot : slot == 45 ? 40 : -1;
@@ -2100,6 +2112,8 @@ struct Game::Impl final : GameServices {
         p.floating = false;
         p.floating_ticks = 0;
         p.living = p.told_living = 0; // a new entity's
+        p.equipped = {};
+        p.equipment_known = false;
         // A new entity: its first data, then its attributes (without
         // modifiers), at the next entity update, the health after them
         // (client/player_data, client/attribute_join).
@@ -2135,6 +2149,109 @@ struct Game::Impl final : GameServices {
         p.peer->send(wire.chunk_center(chunk.x, chunk.z));
         sync_inventory(p);
         p.moved = true;
+    }
+
+    // ---- equipment ----------------------------------------------------------
+    // As both official servers show it (client/armor, client/armor2): after
+    // the rules' tick (and in a tick without the world, for the hotbar slot
+    // held), what each player holds and wears is looked at. A piece put on in
+    // an armor slot (not taken off) plays its sound to the player and the
+    // others within 16 blocks, before the tick's level events; then the
+    // armor's and the main hand weapon's attribute modifiers follow (sent at
+    // the next tick's start), and those who see the player get the slots that
+    // changed, or entity event 55 for the hands swapped.
+    std::array<contracts::ItemStack, gameplay::equipment::slot_count> equipment_now(const Player& p) const {
+        std::array<contracts::ItemStack, gameplay::equipment::slot_count> now;
+        for (std::size_t k = 0; k < now.size(); ++k)
+            now[k] = slot_of(p, gameplay::equipment::inventory_slot(static_cast<gameplay::equipment::Slot>(k), static_cast<std::uint8_t>(p.held)));
+        return now;
+    }
+    void equipment_sounds() {
+        using gameplay::equipment::Slot;
+        for (auto& [id, p] : players) {
+            if (!p.equipment_known) continue;
+            const auto now = equipment_now(p);
+            const auto& was = p.equipped;
+            for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
+                if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item)) continue;
+                if (const auto* worn = gameplay::equipment::wearable(now[k].item); worn && worn->slot == static_cast<Slot>(k))
+                    sound_around_at(p, equip_sound(worn->sound), 1.0f, 1.0f, Wire::SoundCategory::player, true);
+            }
+        }
+    }
+    void look_at_equipment() {
+        using gameplay::equipment::Slot;
+        for (auto& [id, p] : players) {
+            const auto now = equipment_now(p);
+            if (!p.equipment_known) {
+                p.equipment_known = true;
+                for (std::size_t k = 0; k < now.size(); ++k) equipment_attributes(p, static_cast<Slot>(k), now[k]);
+                p.equipped = now;
+                continue;
+            }
+            if (now == p.equipped) continue;
+            const auto& was = p.equipped;
+            for (std::size_t k = 0; k < now.size(); ++k)
+                if (!(now[k] == was[k])) equipment_attributes(p, static_cast<Slot>(k), now[k]);
+            const bool swapped = !(now[0] == was[0]) && now[0] == was[1] && now[1] == was[0];
+            std::vector<std::pair<std::uint8_t, WireStack>> changed;
+            for (std::size_t k = swapped ? 2 : 0; k < now.size(); ++k)
+                if (!(now[k] == was[k])) changed.emplace_back(static_cast<std::uint8_t>(k), wire_stack(now[k]));
+            for (const auto viewer : p.seen_by)
+                if (const auto v = players.find(viewer); v != players.end()) {
+                    if (swapped) v->second.peer->send(wire.entity_event(p.entity_id, 55));
+                    if (!changed.empty()) v->second.peer->send(wire.set_equipment(p.entity_id, changed));
+                }
+            p.equipped = now;
+        }
+    }
+    static Wire::PlayerSound equip_sound(gameplay::equipment::EquipSound s) {
+        using enum gameplay::equipment::EquipSound;
+        switch (s) {
+        case leather: return Wire::PlayerSound::equip_leather;
+        case chain: return Wire::PlayerSound::equip_chain;
+        case iron: return Wire::PlayerSound::equip_iron;
+        case gold: return Wire::PlayerSound::equip_gold;
+        case diamond: return Wire::PlayerSound::equip_diamond;
+        case netherite: return Wire::PlayerSound::equip_netherite;
+        case turtle: return Wire::PlayerSound::equip_turtle;
+        case elytra: return Wire::PlayerSound::equip_elytra;
+        default: return Wire::PlayerSound::equip_generic;
+        }
+    }
+    // The modifiers of what a slot holds now, the old ones taken away: a
+    // weapon's or tool's attack damage and speed in the main hand, a piece
+    // of armor's armor and toughness (netherite's knockback resistance too)
+    // in its armor slot, each added again, last, when the slot changed.
+    void equipment_attributes(Player& p, gameplay::equipment::Slot s, const contracts::ItemStack& now) {
+        using gameplay::attributes::Attribute;
+        using gameplay::attributes::Operation;
+        using gameplay::equipment::Slot;
+        if (s == Slot::offhand) return;
+        if (s == Slot::mainhand) {
+            if (const auto w = now.empty() ? std::nullopt : gameplay::equipment::weapon(now.item)) {
+                add_modifier(p, Attribute::attack_damage, {"base_attack_damage", static_cast<double>(w->damage), Operation::add_value}, true);
+                add_modifier(p, Attribute::attack_speed, {"base_attack_speed", static_cast<double>(w->speed), Operation::add_value}, true);
+            } else {
+                remove_modifier(p, Attribute::attack_damage, "base_attack_damage");
+                remove_modifier(p, Attribute::attack_speed, "base_attack_speed");
+            }
+            return;
+        }
+        const auto id = gameplay::equipment::armor_modifier(s);
+        const auto* worn = now.empty() ? nullptr : gameplay::equipment::wearable(now.item);
+        const bool armor = worn && worn->slot == s && (worn->armor > 0.0f || worn->toughness > 0.0f);
+        if (armor) {
+            add_modifier(p, Attribute::armor, {id, static_cast<double>(worn->armor), Operation::add_value}, true);
+            add_modifier(p, Attribute::armor_toughness, {id, static_cast<double>(worn->toughness), Operation::add_value}, true);
+        } else {
+            remove_modifier(p, Attribute::armor, id);
+            remove_modifier(p, Attribute::armor_toughness, id);
+        }
+        if (armor && worn->knockback_resistance > 0.0f)
+            add_modifier(p, Attribute::knockback_resistance, {id, static_cast<double>(worn->knockback_resistance), Operation::add_value}, true);
+        else
+            remove_modifier(p, Attribute::knockback_resistance, id);
     }
 
     // ---- status effects -----------------------------------------------------
@@ -3153,8 +3270,9 @@ struct Game::Impl final : GameServices {
         // (client/knowledge_books).
         static const auto knowledge = gameplay::items::by_name("minecraft:knowledge_book");
         const bool knowledge_book = knowledge && item == *knowledge;
+        const auto* worn = gameplay::equipment::wearable(item);
         if (item != gameplay::items::bucket && item != gameplay::items::water_bucket && item != gameplay::items::lava_bucket
-            && item != gameplay::items::map && !knowledge_book)
+            && item != gameplay::items::map && !knowledge_book && !(worn && worn->swappable))
             return;
         if (knowledge_book) learn_from_book(p, slot_of(p, slot));
         if (std::isfinite(u.yaw) && std::isfinite(u.pitch)) {
@@ -3210,6 +3328,14 @@ struct Game::Impl final : GameServices {
     }
 
     void handle(Player& p, intent::Sneak& s) { p.sneaking = s.sneaking; }
+    // An arm's swing, for those who see the player (client/armor: 0 the main
+    // arm, 3 the off arm; not to the player).
+    void handle(Player& p, intent::Swing& s) {
+        if (p.dead || (s.hand != 0 && s.hand != 1)) return;
+        const auto packet = wire.animate(p.entity_id, s.hand == 0 ? 0 : 3);
+        for (const auto viewer : p.seen_by)
+            if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(packet);
+    }
     // Sprinting is faster (client/attributes).
     void handle(Player& p, intent::Sprint& s) {
         if (p.dead || p.sprinting == s.sprinting) return;
@@ -4208,9 +4334,21 @@ struct Game::Impl final : GameServices {
                 if (p.sent.erase(c)) forget(p, c);
     }
 
+    // The level events the rules played, to players within 64 blocks, after
+    // the entities that appeared in the tick (client/armor2: an item a
+    // dispenser ejects appears before its sound and smoke).
+    void publish_level_events() {
+        for (const auto& r : engine->trace()) {
+            if (r.dimension != overworld || r.kind != contracts::TraceKind::level_event) continue;
+            const auto packet = wire.level_event(static_cast<std::int32_t>(r.a), wire_pos(r.pos), static_cast<std::int32_t>(r.b));
+            for (auto& [id, p] : players) {
+                const double dx = p.pos.x - (r.pos.x + 0.5), dy = p.pos.y - (r.pos.y + 0.5), dz = p.pos.z - (r.pos.z + 0.5);
+                if (dx * dx + dy * dy + dz * dz < 4096.0) p.peer->send(packet);
+            }
+        }
+    }
     // Block events that ran: chests' lids, to players within 64 blocks that
-    // have the chunk, as the official servers send them; and level events,
-    // to players within 64 blocks.
+    // have the chunk, as the official servers send them.
     void publish_block_events() {
         for (const auto& r : engine->trace()) {
             if (r.dimension != overworld) continue;
@@ -4226,14 +4364,6 @@ struct Game::Impl final : GameServices {
             }
             if (r.kind == contracts::TraceKind::beacon_effects) {
                 give_beacon_effects(r.pos, static_cast<std::uint8_t>(r.a), static_cast<std::uint8_t>(r.b), static_cast<std::uint8_t>(r.c));
-                continue;
-            }
-            if (r.kind == contracts::TraceKind::level_event) {
-                const auto packet = wire.level_event(static_cast<std::int32_t>(r.a), wire_pos(r.pos), static_cast<std::int32_t>(r.b));
-                for (auto& [id, p] : players) {
-                    const double dx = p.pos.x - (r.pos.x + 0.5), dy = p.pos.y - (r.pos.y + 0.5), dz = p.pos.z - (r.pos.z + 0.5);
-                    if (dx * dx + dy * dy + dz * dz < 4096.0) p.peer->send(packet);
-                }
                 continue;
             }
             if (r.kind == contracts::TraceKind::block_event_queued) {
@@ -4644,6 +4774,11 @@ struct Game::Impl final : GameServices {
                     o.peer->send(shown_data(p));
                     if (std::ranges::any_of(p.attributes, [](const auto& i) { return gameplay::attributes::synced(i.attribute); }))
                         o.peer->send(wire.update_attributes(p.entity_id, p.attributes));
+                    // Then what it holds and wears, each slot that holds something (client/armor).
+                    std::vector<std::pair<std::uint8_t, WireStack>> held;
+                    for (std::size_t k = 0; k < p.equipped.size(); ++k)
+                        if (!p.equipped[k].empty()) held.emplace_back(static_cast<std::uint8_t>(k), wire_stack(p.equipped[k]));
+                    if (!held.empty()) o.peer->send(wire.set_equipment(p.entity_id, held));
                     if (p.fresh_data && p.fresh_data_tick == tick_count) o.peer->send(*p.fresh_data);
                 } else if (!visible && p.seen_by.erase(oid)) {
                     o.peer->send(wire.remove_entities({p.entity_id}));
@@ -4749,6 +4884,10 @@ struct Game::Impl final : GameServices {
         // A frozen world has no triggers: those who joined get them now (a
         // paused one resumes when a player joins).
         for (auto& [id, p] : players) send_joining_vitals(p);
+        if (!run) { // the hotbar slot held changes without the world
+            equipment_sounds();
+            look_at_equipment();
+        }
         publish_light();
         publish_chunks();
         publish_players();
@@ -4794,11 +4933,14 @@ struct Game::Impl final : GameServices {
         pending_day_time.reset();
         pending_setblocks.clear();
         publish_weather();
+        equipment_sounds(); // before the level events (client/armor2)
         publish_blocks();
         publish_block_events();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();
+        publish_level_events();
         finish_uses();
+        look_at_equipment();
         publish_inventories();
         const auto ns = static_cast<std::uint64_t>(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - started_at).count());

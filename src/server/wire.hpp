@@ -138,6 +138,10 @@ struct Attack {
 struct TeleportToEntity {
     Uuid target;
 };
+// The player swings an arm (0 the main hand, 1 the off hand).
+struct Swing {
+    std::int32_t hand{};
+};
 // The name typed into the open anvil window.
 struct RenameItem {
     std::string name;
@@ -198,7 +202,7 @@ using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, 
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
                             intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
                             intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe, intent::EditBook,
-                            intent::SetBeacon, intent::ClientInformation, intent::Attack, intent::TeleportToEntity>;
+                            intent::SetBeacon, intent::ClientInformation, intent::Attack, intent::TeleportToEntity, intent::Swing>;
 
 class Wire {
 public:
@@ -290,6 +294,11 @@ public:
     Bytes set_camera(std::int32_t entity) const;
     // An item cooldown group's cooldown (an item's id on both protocols), in ticks.
     Bytes cooldown(std::string_view group, std::int32_t ticks) const;
+    // What an entity wears and holds, by equipment slot (0 the main hand, 1
+    // the off hand, 2 the feet to 5 the head), the slots given in order.
+    Bytes set_equipment(std::int32_t entity, std::span<const std::pair<std::uint8_t, WireStack>> slots) const;
+    // An entity's animation (animate): 0 swinging the main arm, 3 the off arm.
+    Bytes animate(std::int32_t entity, std::uint8_t animation) const;
     Bytes player_info_remove(const std::vector<Uuid>& players) const;
     Bytes spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
                        std::int32_t data, Vec3 velocity = {}) const;
@@ -312,9 +321,10 @@ public:
     // falls beyond and within 4 blocks of damage (category player); eating,
     // drinking and drinking honey, a burp, an ominous bottle's disposal, a
     // chorus fruit's teleport and the omens' coming, in the category given
-    // (client/eat).
+    // (client/eat); a piece of armor put on (client/armor).
     enum class PlayerSound : std::uint8_t {
-        hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen
+        hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen,
+        equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra
     };
     enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
     Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,

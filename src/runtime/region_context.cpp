@@ -37,6 +37,11 @@ void RegionContext::rollback() {
         world_.last_map_id = *std::exchange(map_snapshot_, std::nullopt);
         world_.maps.erase(world_.maps.upper_bound(world_.last_map_id), world_.maps.end());
     }
+    for (auto& [key, was] : player_snapshots_) {
+        if (was) world_.players.insert_or_assign(key, std::move(*was));
+        else world_.players.erase(key);
+    }
+    player_snapshots_.clear();
     trace.clear();
     entity_moves.clear();
     interactions.clear();
@@ -384,16 +389,29 @@ void RegionContext::remove_entity(EntityId id) {
     entity_moves[id] = std::nullopt;
 }
 
-// Player inventories are level-wide state; only the serial command phase
-// touches them.
+// Player inventories are world-wide state: the serial command phase uses
+// them freely, a level's other phases only while the root's region holds the
+// level's random pseudo column, as the level random (so one region at a time
+// does, in root order); a change is undone with the attempt.
+void RegionContext::use_players() {
+    if (phase_ == Phase::commands) return;
+    const auto k = random_key(dimension());
+    if (!unchecked_ && region_ != all_regions && regions_.owner.at(k) != region_) throw ForeignAccess{k};
+    interactions.insert(std::minmax(key(home_), k));
+}
+
 const gameplay::PlayerInventory* RegionContext::peek_player(contracts::PlayerKey player) {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: player inventories outside the command phase");
+    use_players();
     const auto it = world_.players.find(player);
     return it == world_.players.end() ? nullptr : &it->second;
 }
 
 gameplay::PlayerInventory& RegionContext::player(contracts::PlayerKey player) {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: player inventories outside the command phase");
+    use_players();
+    if (phase_ != Phase::commands && region_ != all_regions && !player_snapshots_.contains(player)) {
+        const auto was = world_.players.find(player);
+        player_snapshots_[player] = was == world_.players.end() ? std::nullopt : std::optional(was->second);
+    }
     auto [it, fresh] = world_.players.try_emplace(player);
     if (fresh) it->second.player = player;
     return it->second;

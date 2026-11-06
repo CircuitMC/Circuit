@@ -6,6 +6,7 @@
 // protocol pages and compared with the official server through a protocol
 // client).
 #include "internal.hpp"
+#include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <algorithm>
 #include <array>
@@ -17,14 +18,8 @@ constexpr std::int16_t outside = -999;
 
 // The armor slot of the own window an item may be worn in, or 0.
 std::uint8_t armor_slot(std::uint16_t item) {
-    const auto* info = items::info(item);
-    if (!info) return 0;
-    const std::string_view n = info->name;
-    if (n.ends_with("_helmet") || n == "minecraft:carved_pumpkin" || n.ends_with("_head") || n.ends_with("_skull")) return 5;
-    if (n.ends_with("_chestplate") || n == "minecraft:elytra") return 6;
-    if (n.ends_with("_leggings")) return 7;
-    if (n.ends_with("_boots")) return 8;
-    return 0;
+    const auto* worn = equipment::wearable(item);
+    return worn ? equipment::inventory_slot(worn->slot, 0) : std::uint8_t{0};
 }
 bool offhand_item(std::uint16_t item) { return item == items::shield; }
 

@@ -19,10 +19,18 @@
 // 0.103365. A dispenser primes TNT at the cell in front (unless tntExplodes
 // is off: then it keeps it), empties a water bucket into the cell in front
 // and fills a bucket from it, and sets a minecart on a rail in front or
-// below the cell in front. Items that equip or saddle entities eject, as
-// there are no entities for them; items of other uses stay unless the rules
-// know their use fails (see `Use`).
+// below the cell in front. Armor and the elytra go onto a player whose box
+// meets the cell in front with the slot they go in empty, or eject
+// (client/armor2: one survival player in front); Circuit passes spectators
+// over, takes the first player by key and tests a standing player's box
+// (crouching ones are lower), none of which was recorded. Heads and saddles
+// eject, their use on entities not modeled; items of other uses stay unless
+// the rules know their use fails (see `Use`). A dispenser that ejects an item through `dispense_from` or puts
+// armor on plays level events 1000 (its sound) and 2000 (smoke, the
+// facing's index) at itself (client/armor2); its other uses, its minecarts
+// ejected off rails and droppers send none.
 #include "internal.hpp"
+#include <circuit/gameplay/equipment.hpp>
 #include <array>
 #include <cmath>
 #include <string>
@@ -44,7 +52,7 @@ constexpr double eject_spread = 0.0172275 * 6;
 // they act on, which the rules do not model either: boats on water,
 // bottles at water or a full hive, honeycomb at copper that is not waxed,
 // glowstone at a respawn anchor, a potion with data at dirt.
-enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion, bone_meal, flint, shears };
+enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion, bone_meal, flint, shears, equip };
 
 Use classify(std::string_view name) {
     static constexpr std::array<std::string_view, 29> kept{
@@ -69,7 +77,37 @@ Use classify(std::string_view name) {
     if (name.ends_with("_spawn_egg") || name.ends_with("shulker_box")) return Use::keep;
     for (const auto k : kept)
         if (name == k) return Use::keep;
+    if (const auto id = items::by_name("minecraft:" + std::string(name)))
+        if (const auto* worn = equipment::wearable(*id); worn && worn->swappable) return Use::equip;
     return Use::eject;
+}
+
+// A piece of armor put on the first player by key but spectators whose box
+// meets the cell in front with the slot it goes in empty. The dispenser's
+// tick holds the level's random, so it may change player inventories.
+bool equip_dispensed(RuleContext& ctx, BlockPos front, const ItemStack& stack) {
+    const auto* worn = equipment::wearable(stack.item);
+    if (!worn) return false;
+    const auto slot = equipment::inventory_slot(worn->slot, 0);
+    for (const auto& p : ctx.presences()) {
+        if (p.spectator) continue;
+        const bool meets = p.position.x + 0.3 > front.x && p.position.x - 0.3 < front.x + 1.0 && p.position.y + 1.8 > front.y
+                        && p.position.y < front.y + 1.0 && p.position.z + 0.3 > front.z && p.position.z - 0.3 < front.z + 1.0;
+        if (!meets) continue;
+        if (const auto* inv = ctx.peek_player(p.player); inv && !inv->slots[slot].empty()) continue;
+        auto& inv = ctx.player(p.player);
+        auto one = stack;
+        one.count = 1;
+        inv.slots[slot] = one;
+        record_slot(ctx, inv, slot);
+        return true;
+    }
+    return false;
+}
+// The dispenser's sound and smoke.
+void dispensed(RuleContext& ctx, BlockPos pos, Direction facing) {
+    ctx.record(TraceKind::level_event, pos, 1000, 0);
+    ctx.record(TraceKind::level_event, pos, 2000, static_cast<std::uint64_t>(facing));
 }
 
 Use use_of(std::uint16_t item) {
@@ -270,10 +308,19 @@ void dispense_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t
     case Use::boat: case Use::bottle: case Use::honeycomb: case Use::glowstone: case Use::potion:
         if (has_target(ctx, use, front, stack)) return;
         break;
+    case Use::equip:
+        // The players in front, wherever the cell is (above the world too).
+        if (ctx.chunk_generation(contracts::chunk_of(front)) && equip_dispensed(ctx, front, stack)) {
+            set_slot(ctx, pos, slot, less_one(stack));
+            dispensed(ctx, pos, facing);
+            return;
+        }
+        break;
     case Use::eject: break;
     }
     eject(ctx, pos, facing, stack);
     set_slot(ctx, pos, slot, less_one(stack));
+    dispensed(ctx, pos, facing);
 }
 } // namespace
 

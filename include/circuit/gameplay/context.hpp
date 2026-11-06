@@ -159,8 +159,11 @@ public:
     virtual void relocate_entity(EntityId id, Vec3 position) = 0;
     virtual void remove_entity(EntityId id) = 0;
 
-    // Player inventories, in the command phase only (other phases throw). The
-    // reference stays valid until the current root finishes.
+    // Player inventories. The command phase uses them freely; a level's
+    // other phases only for a root whose region holds the level's random
+    // pseudo column (as level_random; a dispenser putting armor on a player),
+    // so that one region at a time does, in root order. The reference stays
+    // valid until the current root finishes.
     virtual const PlayerInventory* peek_player(contracts::PlayerKey player) = 0;
     virtual PlayerInventory& player(contracts::PlayerKey player) = 0; // created empty when absent
     // Maps: a map's data, a map to change (explore_held_maps), every map's

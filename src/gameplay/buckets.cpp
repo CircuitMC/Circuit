@@ -25,6 +25,7 @@
 // (where it does not fit, it drops at the player). A creative player keeps
 // the empty bucket and gets the filled one unless they have one already.
 #include "internal.hpp"
+#include <circuit/gameplay/equipment.hpp>
 #include <cmath>
 #include <numbers>
 #include <string>
@@ -233,6 +234,24 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
             if (--slot.count == 0) slot = {};
             record_slot(ctx, inv, c.slot);
         };
+    // Armor and the elytra are put on, swapping with what is worn (in
+    // creative mode too); in creative mode with nothing worn there, a copy
+    // goes on and the hand keeps the piece (client/armor, client/armor3).
+    if (const auto* worn = equipment::wearable(held.item); worn && worn->swappable && !held.empty()) {
+        const auto to = equipment::inventory_slot(worn->slot, 0);
+        return [&ctx, c, to] {
+            auto& inv = ctx.player(c.player);
+            if (inv.slots[c.slot] == inv.slots[to]) return;
+            if (!c.survival && inv.slots[to].empty()) {
+                inv.slots[to] = inv.slots[c.slot];
+                record_slot(ctx, inv, to);
+                return;
+            }
+            std::swap(inv.slots[c.slot], inv.slots[to]);
+            record_slot(ctx, inv, c.slot);
+            record_slot(ctx, inv, to);
+        };
+    }
     if (held.item == items::bucket && !held.empty()) {
         // The view goes as far as the block it meets.
         auto to = end(c.reach);

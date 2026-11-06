@@ -1503,13 +1503,15 @@
             "trace/dispensers_more",
             "trace/dispenser_cases",
             "trace/dispenser_items",
-            "trace/dispenser_tnt_rule"
+            "trace/dispenser_tnt_rule",
+            "client/armor2"
           ],
           "deviations": [
             "dispensed projectiles, fire, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay",
-            "equipping players is not modeled"
+            "armor goes onto the first player by key but spectators whose standing box meets the cell in front (a crouching player's lower box is not used), and also onto a dead player who has not respawned (none of it recorded); heads and saddles still eject",
+            "level events are sent for items a dispenser ejects (not minecarts off rails) and armor put on only, not for droppers, the other uses or a dispenser that fails"
           ],
-          "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails and eject equipment"
+          "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails, put armor and elytras on the player in front whose slot for it is empty (else eject them), with their sound and smoke (level events 1000 and 2000)"
         },
         {
           "id": "crafter",
@@ -2301,8 +2303,15 @@
           "id": "armor_and_shields",
           "name": "Armor protection, toughness and shields",
           "milestone": "C6",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/armor"
+          ],
+          "note": "Armor's points, toughness and netherite's knockback resistance as attribute modifiers of each armor slot, as both official servers send them; every damage Circuit deals (falls, the void, starvation, /kill, magic and wither) is in the bypasses_armor damage type tag, so armor reduces none of it",
+          "deviations": [
+            "armor's damage reduction, its wear when hurt, protection enchantments and shields are not modeled"
+          ]
         },
         {
           "id": "effects",
@@ -2345,7 +2354,7 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "only players have attributes, and only those Circuit models: the movement and attack speed, the attack damage, both reaches, luck, the maximum health and absorption and the safe fall distance",
+            "only players have attributes, and only those Circuit models: the armor and its toughness, the movement and attack speed, the attack damage, both reaches, knockback resistance, luck, the maximum health and absorption and the safe fall distance",
             "the movement and attack speed, the reaches and luck only reach the client: Circuit's movement checks do not use the speed, and it has no attacks or rolls with luck",
             "a packet's attributes come in id order; the official servers' order varies from run to run",
             "players' health and skin entity data (indexes 9 and 17), which the official servers send around the attributes on joining, to those who see a player and when the health changes, are not sent"
@@ -2353,9 +2362,10 @@
           "cases": [
             "client/attributes",
             "client/attribute_rules",
-            "client/attribute_join"
+            "client/attribute_join",
+            "client/armor"
           ],
-          "note": "A player's attributes as both official servers keep and send them: the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage by minecraft.wiki, which the official servers do not send) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied"
+          "note": "A player's attributes as both official servers keep and send them: the armor slots' armor, toughness and knockback resistance and the main hand weapon's or tool's attack damage and speed (client/armor; added again, last, whenever the slot's stack changes, its wear included); the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage by minecraft.wiki, which the official servers do not send) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied"
         }
       ]
     },
@@ -2455,9 +2465,15 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
-            "client/windows"
+            "client/windows",
+            "client/armor",
+            "client/armor2",
+            "client/armor3"
           ],
-          "note": "Armor slots accept armor; no protection"
+          "note": "Armor slots accept armor; armor and elytras put on by use from either hand (swapping with what is worn, in creative mode too, where with nothing worn a copy goes on; not a carved pumpkin or a zombie head), by clicks and by dispensers, with their equip sounds (not when taken off; the creative inventory's and a pumpkin's or head's worn by clicks not recorded); what a player holds and wears shown to others when it changes (the hands swapped as entity event 55) and when the player appears; the attributes armor and held weapons give",
+          "deviations": [
+            "curse of binding, the turtle shell's water breathing, the elytra's gliding, leather armor against freezing, golden armor with piglins, and armor's protection and wear are not modeled"
+          ]
         }
       ]
     },
@@ -3006,12 +3022,14 @@
           "milestone": "C10",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility; the living flags of an item in use (8)",
+          "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility; the living flags of an item in use (8); players' equipment (when it changes and with a player who appears), arm swings (animations 0 and 3) and the hands swapped (entity event 55)",
           "cases": [
             "client/player_data",
             "client/effects_heal",
             "client/spectators",
-            "client/eat"
+            "client/eat",
+            "client/armor",
+            "client/armor2"
           ]
         },
         {

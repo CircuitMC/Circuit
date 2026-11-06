@@ -26,7 +26,7 @@ struct Wire::Ids {
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
         update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion,
-        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity, cooldown;
+        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity, cooldown, set_equipment, animate, sb_swing;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -127,6 +127,9 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_client_information = sb(State::play, "client_information");
     ids->set_camera = cb(State::play, "set_camera");
     ids->cooldown = cb(State::play, "cooldown");
+    ids->set_equipment = cb(State::play, "set_equipment");
+    ids->animate = cb(State::play, "animate");
+    ids->sb_swing = sb(State::play, "swing");
     ids->sb_interact = sb(State::play, "interact");
     ids->sb_teleport_to_entity = sb(State::play, "teleport_to_entity");
     ids->disconnect = cb(State::play, "disconnect");
@@ -371,6 +374,17 @@ Bytes Wire::player_info_game_mode(Uuid player, std::int32_t game_mode) const {
 }
 Bytes Wire::set_camera(std::int32_t entity) const { return packet(id_->set_camera, Writer().varint(entity)); }
 Bytes Wire::cooldown(std::string_view group, std::int32_t ticks) const { return packet(id_->cooldown, Writer().string(group).varint(ticks)); }
+Bytes Wire::set_equipment(std::int32_t entity, std::span<const std::pair<std::uint8_t, WireStack>> slots) const {
+    Writer w;
+    w.varint(entity);
+    // Each slot with the top bit set while another follows.
+    for (std::size_t k = 0; k < slots.size(); ++k) {
+        w.u8(static_cast<std::uint8_t>(slots[k].first | (k + 1 < slots.size() ? 0x80 : 0)));
+        slot(w, slots[k].second);
+    }
+    return packet(id_->set_equipment, w);
+}
+Bytes Wire::animate(std::int32_t entity, std::uint8_t animation) const { return packet(id_->animate, Writer().varint(entity).u8(animation)); }
 Bytes Wire::player_info_remove(const std::vector<Uuid>& players) const {
     Writer w;
     w.varint(static_cast<std::int32_t>(players.size()));
@@ -468,6 +482,16 @@ Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, 
     case PlayerSound::bad_omen: id = v772 ? 1724 : 1648; break;
     case PlayerSound::trial_omen: id = v772 ? 1725 : 1649; break;
     case PlayerSound::raid_omen: id = v772 ? 1726 : 1650; break;
+    // The same on both protocols.
+    case PlayerSound::equip_chain: id = 67; break;
+    case PlayerSound::equip_diamond: id = 68; break;
+    case PlayerSound::equip_elytra: id = 69; break;
+    case PlayerSound::equip_generic: id = 70; break;
+    case PlayerSound::equip_gold: id = 71; break;
+    case PlayerSound::equip_iron: id = 72; break;
+    case PlayerSound::equip_leather: id = 73; break;
+    case PlayerSound::equip_netherite: id = 74; break;
+    case PlayerSound::equip_turtle: id = 75; break;
     }
     const auto fixed = [](double v) { return static_cast<std::int32_t>(v * 8.0); };
     Writer w;
@@ -648,10 +672,13 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
     const auto id = [&](attr::Attribute a) -> std::int32_t {
         const bool later = protocol_ >= 772;
         switch (a) {
+        case attr::Attribute::armor: return 0;
+        case attr::Attribute::armor_toughness: return 1;
         case attr::Attribute::attack_damage: return 2;
         case attr::Attribute::attack_speed: return 4;
         case attr::Attribute::block_interaction_range: return 6;
         case attr::Attribute::entity_interaction_range: return later ? 10 : 9;
+        case attr::Attribute::knockback_resistance: return later ? 16 : 15;
         case attr::Attribute::luck: return later ? 17 : 16;
         case attr::Attribute::max_absorption: return later ? 18 : 17;
         case attr::Attribute::max_health: return later ? 19 : 18;
@@ -954,6 +981,10 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_teleport_to_entity) {
         TRY(target, r.uuid());
         return done(intent::TeleportToEntity{*target});
+    }
+    if (id == i.sb_swing) {
+        TRY(hand, r.varint());
+        return done(intent::Swing{*hand});
     }
     if (id == i.sb_client_information) {
         // Locale, view distance, chat mode and colors, then what matters here;

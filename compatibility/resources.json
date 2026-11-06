@@ -189,17 +189,18 @@
       "dispenser": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Fired 4 ticks after power reaches it or the block above it, from a random filled slot; ejects items, primes TNT, pours and fills water buckets, sets minecarts on rails, ejects equipment; read by comparators, filled and emptied by hoppers",
+        "note": "Fired 4 ticks after power reaches it or the block above it, from a random filled slot; ejects items, primes TNT, pours and fills water buckets, sets minecarts on rails, puts armor and elytras on the player in front whose slot for it is empty (else ejects them), with its sound and smoke (level events 1000 and 2000) when it ejects an item or puts armor on; read by comparators, filled and emptied by hoppers",
         "cases": [
           "trace/dispensers",
           "trace/dispensers_more",
           "trace/dispenser_cases",
           "trace/dispenser_items",
-          "trace/dispenser_tnt_rule"
+          "trace/dispenser_tnt_rule",
+          "client/armor2"
         ],
         "deviations": [
           "projectiles, fire, bone meal, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, minecarts other than the empty one, spawn eggs, armor stands and shulker boxes are not dispensed: they stay",
-          "does not equip players"
+          "heads and saddles eject; armor goes onto the first player by key but spectators (not recorded); the level events of its other uses are not sent"
         ]
       },
       "dropper": {
@@ -5281,69 +5282,79 @@
       "wooden_pickaxe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed, harvest tier and wear"
+        "note": "Dig speed, harvest tier and wear; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "stone_pickaxe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed, harvest tier and wear"
+        "note": "Dig speed, harvest tier and wear; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "iron_pickaxe": {
         "impl": "partial",
-        "evidence": "documented",
-        "note": "Dig speed, harvest tier and wear"
+        "evidence": "compared",
+        "note": "Dig speed, harvest tier and wear; held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor)",
+        "cases": [
+          "client/armor"
+        ]
       },
       "golden_pickaxe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed, harvest tier and wear"
+        "note": "Dig speed, harvest tier and wear; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "diamond_pickaxe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed, harvest tier and wear"
+        "note": "Dig speed, harvest tier and wear; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "netherite_pickaxe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed, harvest tier and wear"
+        "note": "Dig speed, harvest tier and wear; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "wooden_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "stone_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "iron_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "golden_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "diamond_axe": {
         "impl": "partial",
-        "evidence": "documented",
-        "note": "Dig speed and wear on chests"
+        "evidence": "compared",
+        "note": "Dig speed and wear on chests; held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor)",
+        "cases": [
+          "client/armor"
+        ]
       },
       "netherite_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
       },
       "diamond_helmet": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Worn in the head slot; no protection",
+        "note": "Worn in the head slot (client/windows); put on by use over an iron helmet in creative mode, swapped (client/armor3), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
         "cases": [
-          "client/windows"
+          "client/windows",
+          "client/armor3"
+        ],
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
         ]
       },
       "redstone_torch": {
@@ -6442,6 +6453,410 @@
         "deviations": [
           "the stack's own food, consumable, use remainder and use cooldown components are not read"
         ]
+      },
+      "leather_helmet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: put on by use, swapped for the iron helmet (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "leather_chestplate": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "leather_leggings": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "leather_boots": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "chainmail_helmet": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "chainmail_chestplate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: shift-clicked on (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "chainmail_leggings": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "chainmail_boots": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "iron_helmet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor",
+          "client/armor2",
+          "client/armor3"
+        ],
+        "note": "As both official servers wear it: put on by use and swapped off by a leather helmet's use (client/armor), put on by a dispenser and ejected by one over a worn helmet (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "iron_chestplate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor2"
+        ],
+        "note": "As both official servers wear it: put on by use from the off hand (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "iron_leggings": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "iron_boots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "As both official servers wear it: put on by use from the off hand in creative mode with nothing worn, a copy going on (client/armor3), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ],
+        "cases": [
+          "client/armor3"
+        ]
+      },
+      "golden_helmet": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "golden_chestplate": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "golden_leggings": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "golden_boots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: put on by use, in survival and creative mode (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "diamond_chestplate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: put on by use and swapped for an elytra (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "diamond_leggings": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "diamond_boots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor",
+          "client/armor2"
+        ],
+        "note": "As both official servers wear it: put on by clicks and by a dispenser (client/armor, client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "netherite_helmet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: put on by clicks into the empty head slot after the worn helmet was taken off, a shift-click while a helmet is worn moving it to the hotbar instead (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "netherite_chestplate": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "netherite_leggings": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: put on by use (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "netherite_boots": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
+        "deviations": [
+          "its protection and wear when hurt are not modeled"
+        ]
+      },
+      "turtle_helmet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "As both official servers wear it: put on by use, swapped for a leather helmet, and taken off by clicks (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "its protection and wear when hurt are not modeled",
+          "its water breathing is not modeled"
+        ]
+      },
+      "elytra": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor",
+          "client/armor2"
+        ],
+        "note": "As both official servers wear it: put on by use, swapped for a chestplate; ejected by a dispenser over a chestplate (client/armor, client/armor2), with its sound, shown to others; the other ways of wearing it as the recorded pieces",
+        "deviations": [
+          "gliding and its wear are not modeled"
+        ]
+      },
+      "wooden_sword": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "wooden_shovel": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "wooden_hoe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "stone_sword": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "stone_shovel": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "stone_hoe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "iron_sword": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ],
+        "cases": [
+          "client/armor"
+        ]
+      },
+      "iron_shovel": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "iron_hoe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "golden_sword": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "golden_shovel": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "golden_hoe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "diamond_sword": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "diamond_shovel": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "diamond_hoe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "netherite_sword": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "netherite_shovel": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "netherite_hoe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "trident": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
+      },
+      "mace": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "deviations": [
+          "attacks are not modeled"
+        ]
       }
     },
     "entity": {
@@ -6924,9 +7339,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/attributes"
+          "client/attributes",
+          "client/armor"
         ],
-        "note": "Sent with haste's and mining fatigue's modifiers; only the client uses it"
+        "note": "Sent with haste's and mining fatigue's modifiers and the held weapon's or tool's (client/armor); only the client uses it"
       },
       "block_interaction_range": {
         "impl": "partial",
@@ -6983,7 +7399,31 @@
       "attack_damage": {
         "impl": "partial",
         "evidence": "none",
-        "note": "Strength's and weakness's modifiers are kept; the official servers do not send it, and there are no attacks"
+        "note": "Strength's and weakness's modifiers and the held weapon's or tool's are kept; the official servers do not send it, and there are no attacks"
+      },
+      "armor": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "A player's, from the armor worn, sent as both official servers send it; it reduces no damage yet (every damage Circuit deals bypasses armor)"
+      },
+      "armor_toughness": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "A player's, from the armor worn, sent as both official servers send it; it reduces no damage yet"
+      },
+      "knockback_resistance": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/armor"
+        ],
+        "note": "A player's, from netherite armor; not sent, as on both official servers (client/armor); there is no knockback to resist"
       }
     }
   }

@@ -140,7 +140,9 @@ struct WorldStore {
     std::array<const gameplay::LightField*, contracts::dimension_count> light{};
     std::function<const gameplay::LightField*(contracts::DimensionId)> light_now;
     gameplay::TicketSet tickets;
-    std::map<contracts::PlayerKey, gameplay::PlayerInventory> players; // changed in the command phase only
+    // Changed by the command phase and, in a level's other phases, only by the
+    // region holding the level's random pseudo column (RegionContext::use_players).
+    std::map<contracts::PlayerKey, gameplay::PlayerInventory> players;
     std::int32_t last_map_id{-1};                                       // see WorldDump::last_map_id
     std::map<std::int32_t, gameplay::MapData> maps;                      // see RegionContext::use_maps
 

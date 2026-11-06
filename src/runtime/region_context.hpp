@@ -4,6 +4,7 @@
 #include <circuit/gameplay/context.hpp>
 #include <array>
 #include <deque>
+#include <map>
 #include <optional>
 
 namespace circuit::runtime::detail {
@@ -117,6 +118,7 @@ protected:
     gameplay::RandomSequence& random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) override;
 
 private:
+    void use_players();
     Provisional stage(Counter counter, std::uint32_t seq, EntityId entity = {});
     ChunkData* loaded_in_world(BlockPos pos) const;
     [[nodiscard]] ChunkKey key(ChunkPos c) const noexcept { return {dimension(), c}; }
@@ -146,6 +148,9 @@ private:
     std::array<std::optional<std::map<std::string, gameplay::RandomSequence>>, contracts::dimension_count> sequence_snapshots_;
     // The world's last map id before this attempt first added a map.
     std::optional<std::int32_t> map_snapshot_;
+    // Outside the command phase, each player inventory as it was before the
+    // attempt first changed it (none: the player had none).
+    std::map<contracts::PlayerKey, std::optional<gameplay::PlayerInventory>> player_snapshots_;
     void use_maps();
     // Each level's light as this context first read it outside the phases
     // that publish it (WorldStore::light_now).

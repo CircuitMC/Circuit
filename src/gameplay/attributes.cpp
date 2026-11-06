@@ -15,10 +15,13 @@ struct Entry {
     bool synced;
 };
 constexpr std::array<Entry, count> entries{{
+    {"armor", 0.0, 0.0, 30.0, true},
+    {"armor_toughness", 0.0, 0.0, 20.0, true},
     {"attack_damage", 1.0, 0.0, 2048.0, false},
     {"attack_speed", 4.0, 0.0, 1024.0, true},
     {"block_interaction_range", 4.5, 0.0, 64.0, true},
     {"entity_interaction_range", 3.0, 0.0, 64.0, true},
+    {"knockback_resistance", 0.0, 0.0, 1.0, false},
     {"luck", 0.0, -1024.0, 1024.0, true},
     {"max_absorption", 0.0, 0.0, 2048.0, true},
     {"max_health", 20.0, 1.0, 1024.0, true},
