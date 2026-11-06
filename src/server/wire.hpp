@@ -324,7 +324,8 @@ public:
     // (client/eat); a piece of armor put on (client/armor).
     enum class PlayerSound : std::uint8_t {
         hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen,
-        equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra
+        equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra,
+        hurt_on_fire, generic_burn, extinguish_fire
     };
     enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
     Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,

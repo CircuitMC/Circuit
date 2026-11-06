@@ -442,6 +442,19 @@ struct ConsumeItem {
     bool operator==(const ConsumeItem&) const = default;
 };
 
+// A player is hurt by damage that armor reduces (client/fire): each piece
+// worn in an armor slot (5-8) that wears when its wearer is hurt (armor and
+// the turtle shell; not the elytra) loses `amount` durability, breaking at
+// its durability; with `fire` (damage of the is_fire tag) the pieces that
+// resist fire (netherite) are left alone.
+inline constexpr std::int32_t max_armor_wear = 1 << 20;
+struct WearArmor {
+    PlayerKey player;
+    std::int32_t amount{1};
+    bool fire{};
+    bool operator==(const WearArmor&) const = default;
+};
+
 // A player swaps the stacks of the main hand (`slot`, a hotbar slot) and the
 // off hand (the swap key).
 struct SwapHands {
@@ -489,7 +502,7 @@ using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, Remo
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
                                  SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands,
-                                 SetBeacon, ConsumeItem>;
+                                 SetBeacon, ConsumeItem, WearArmor>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

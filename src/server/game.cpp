@@ -7,6 +7,8 @@
 #include "world_meta.hpp"
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/gameplay/attributes.hpp>
+#include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/damage.hpp>
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/experience.hpp>
@@ -165,6 +167,18 @@ struct Player {
     std::int32_t hurt_cooldown{};
     float last_hurt{};
     bool hurt_marked{}; // hurt since its velocity was last told
+    // Burning (client/fire): the remaining fire ticks (-20 when not on fire:
+    // a player in fire catches it once they reach 0), whether the player
+    // touched fire in the last tick, and the on-fire flag the player's last
+    // tick decided (told at the next entity update).
+    std::int32_t fire_ticks{-20};
+    bool in_fire{};
+    bool burning{};
+    // The tick in which a hurt wore the player's armor: its slots, and
+    // (`wear_seen`: but for 1.21.4's lava) what others see of it, are told
+    // at the next tick, after the hurt's velocity (client/fire).
+    std::optional<std::uint64_t> wear_tick;
+    bool wear_seen{};
     std::int32_t dead_ticks{}; // since death; at 20 the body goes (client/player_data)
     // The client's settings the entity data shows: the skin parts (index 17)
     // and the main hand (18, 1 right); and what was last told of the
@@ -291,6 +305,7 @@ struct SavedPlayer {
     std::vector<gameplay::effects::Effect> effects;
     std::vector<std::string> attributes; // those the player has, by name
     float absorption{};
+    std::int32_t fire_ticks{-20};
 };
 
 void write_strings(protocol::Writer& w, const std::vector<std::string>& v) {
@@ -311,7 +326,7 @@ std::optional<std::vector<std::string>> read_strings(protocol::Reader& r) {
 
 std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players) {
     protocol::Writer w;
-    w.varint(6).varint(static_cast<std::int32_t>(players.size()));
+    w.varint(7).varint(static_cast<std::int32_t>(players.size()));
     for (const auto& [uuid, p] : players) {
         w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held).f32(p.health)
             .varint(p.food).f32(p.saturation).f32(p.exhaustion);
@@ -334,9 +349,11 @@ std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players
             for (const auto& l : e.levels)
                 w.varint(l.amplifier).varint(l.duration).u8(static_cast<std::uint8_t>((l.ambient ? 1 : 0) | (l.particles ? 2 : 0) | (l.icon ? 4 : 0)));
         }
-        // The attributes the player has, by name, and the absorption.
+        // The attributes the player has, by name, and the absorption; the
+        // remaining fire ticks.
         write_strings(w, p.attributes);
         w.f32(p.absorption);
+        w.varint(p.fire_ticks);
     }
     return w.take();
 }
@@ -345,8 +362,8 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
     const auto version = r.varint();
     const auto count = r.length(1u << 20, 30);
     // Version 2 had no health, version 3 no recipe book, version 4 no
-    // effects, version 5 no attributes or absorption.
-    if (!version || *version < 2 || *version > 6 || !count) return std::nullopt;
+    // effects, version 5 no attributes or absorption, version 6 no fire ticks.
+    if (!version || *version < 2 || *version > 7 || !count) return std::nullopt;
     std::map<Uuid, SavedPlayer> out;
     for (std::size_t i = 0; i < *count; ++i) {
         SavedPlayer p;
@@ -412,6 +429,11 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
             if (!attributes || !absorption) return std::nullopt;
             p.attributes = std::move(*attributes);
             p.absorption = *absorption;
+        }
+        if (*version >= 7) {
+            const auto fire = r.varint();
+            if (!fire) return std::nullopt;
+            p.fire_ticks = *fire;
         }
         out[*uuid] = std::move(p);
     }
@@ -690,7 +712,8 @@ struct Game::Impl final : GameServices {
         std::vector<std::string> attributes;
         for (const auto& i : p.attributes) attributes.emplace_back(gameplay::attributes::name(i.attribute));
         return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion, saved_book(p.book),
-                p.dead ? std::vector<gameplay::effects::Effect>{} : p.effects, std::move(attributes), p.dead ? 0.0f : p.absorption};
+                p.dead ? std::vector<gameplay::effects::Effect>{} : p.effects, std::move(attributes), p.dead ? 0.0f : p.absorption,
+                p.dead ? -20 : p.fire_ticks};
     }
     // A recipe book by ids, and back (ids the data packs no longer have are left out).
     SavedBook saved_book(const PlayerBook& b) const {
@@ -1106,6 +1129,10 @@ struct Game::Impl final : GameServices {
             if (s.food >= 0 && s.food <= 20) p.food = s.food;
             if (std::isfinite(s.saturation)) p.saturation = std::clamp(s.saturation, 0.0f, static_cast<float>(p.food));
             if (std::isfinite(s.exhaustion)) p.exhaustion = std::clamp(s.exhaustion, 0.0f, 40.0f);
+            // Still burning when it left (a short's range, as the target
+            // versions keep it).
+            p.fire_ticks = std::clamp(s.fire_ticks, -20, 32767);
+            p.burning = p.fire_ticks > 0;
         } else {
             p.pos = spawn_point();
         }
@@ -1432,6 +1459,11 @@ struct Game::Impl final : GameServices {
             mirror();
             return;
         }
+        // A hurt's armor wear goes to the player at the next tick, after the
+        // hurt's velocity (client/fire).
+        if (!p.window && p.wear_tick == tick_count)
+            for (std::size_t i = 5; i <= 8; ++i)
+                if (p.remote[i]) slots[i] = *p.remote[i];
         for (; resends > 0; --resends) {
             p.peer->send(wire.container_slot(id, ++state, 0, slots[0]));
             p.remote[0] = slots[0];
@@ -1833,6 +1865,168 @@ struct Game::Impl final : GameServices {
         return false;
     }
 
+    // Whether the player's box touches lava, by its height in each cell as
+    // fluid_in reads water.
+    bool in_lava(const Player& p) const {
+        const auto box = movement::player_box(p.pos, p.sneaking).deflate(0.001);
+        for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
+            for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
+                for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
+                    const BlockPos c{x, y, z};
+                    const auto h = gameplay::lava_height(at(c), at(c.relative(contracts::Direction::up)));
+                    if (h > 0.0f && c.y + static_cast<double>(h) >= box.min_y) return true;
+                }
+        return false;
+    }
+    // Whether rain falls on the player (client/fire: put out as it starts
+    // raining): the rain shown (a level above 0.2), at the block of the
+    // player's feet or of the top of their box, with nothing above it that
+    // stops movement or holds a fluid (Circuit's rule: a player under a roof
+    // was not recorded). Every column is plains, where it rains.
+    bool in_rain(const Player& p) const {
+        if (!engine->weather().rain_visible()) return false;
+        const auto open_above = [&](double y) {
+            const auto x = static_cast<std::int32_t>(std::floor(p.pos.x)), z = static_cast<std::int32_t>(std::floor(p.pos.z));
+            const auto top = bundle.world.min_y + bundle.world.height;
+            for (auto by = static_cast<std::int32_t>(std::floor(y)); by < top; ++by) {
+                const auto b = at({x, by, z});
+                if (b.is_air()) continue;
+                if (b.is(BlockType::water) || gameplay::is_lava(b) || gameplay::waterlogged_block(b)) return false;
+                if (!gameplay::physics::collision_boxes(b, bundle.schema.content_release).empty()) return false;
+            }
+            return true;
+        };
+        return open_above(p.pos.y) || open_above(p.pos.y + (p.sneaking ? 1.5 : 1.8));
+    }
+    // A block's registry name, without the namespace ("" for blocks the
+    // registry does not name).
+    static std::string_view block_name(BlockState s) {
+        const auto state = gameplay::physics::registry_state_of(s);
+        const auto block = state ? gameplay::registry::block_of(*state) : std::nullopt;
+        return block ? gameplay::registry::game_name(*block) : std::string_view{};
+    }
+
+    // Burning (client/fire): a hurt (on_fire) when the remaining fire ticks
+    // are a multiple of 20 (none in lava: only lava's hurts there), and their
+    // count down. Creative and spectator players do not burn (bob in creative
+    // mode in fire was never shown burning; spectators by Circuit's choice).
+    void burn_tick(Player& p) {
+        if (p.game_mode == creative || p.game_mode == spectator) p.fire_ticks = gameplay::damage::not_burning;
+        const auto b = gameplay::damage::burn(p.fire_ticks);
+        p.fire_ticks = b.ticks;
+        if (b.hurts && !in_lava(p)) hurt(p, 1.0f, Harm::on_fire);
+    }
+    // The on-fire flag, from the fire ticks left (told at the next entity
+    // update).
+    void decide_burning(Player& p) { p.burning = !p.dead && p.fire_ticks > 0; }
+    // A player's tick of fire (client/fire), in each version's order:
+    // 1.21.8 burns, decides the flag, then takes the blocks touched, lava
+    // and water; 1.21.4 takes water first (a burning hurt due as the player
+    // enters it does not come), burns, takes lava, then decides the flag (a
+    // tick sooner after lava) and takes the blocks. Either way the burning
+    // after lava hurts first 21 ticks after its last tick there.
+    void fire_tick(Player& p) {
+        if (wire.protocol() >= 772) {
+            burn_tick(p);
+            decide_burning(p);
+            touch_blocks(p);
+            touch_lava(p);
+            touch_water(p);
+        } else {
+            touch_water(p);
+            burn_tick(p);
+            touch_lava(p);
+            decide_burning(p);
+            touch_blocks(p);
+        }
+        // Lava halves the distance fallen each tick (minecraft.wiki "Damage";
+        // not recorded).
+        if (!p.dead && in_lava(p)) p.fall_distance *= 0.5;
+    }
+    // What a player touches (client/fire): fire (1, soul fire 2 by
+    // minecraft.wiki "Soul Fire"; catching fire as gameplay::damage counts
+    // it) and a magma block stood on without sneaking (1). Spectators touch
+    // nothing (Circuit's choice); creative players take no damage and do
+    // not burn.
+    bool touches(const Player& p) const { return !p.dead && p.game_mode != spectator && p.game_mode != creative; }
+    void touch_blocks(Player& p) {
+        p.in_fire = false;
+        if (!touches(p)) return;
+        const auto box = movement::player_box(p.pos, p.sneaking).deflate(1e-5);
+        bool soul = false;
+        for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
+            for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
+                for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
+                    const auto name = block_name(at({x, y, z}));
+                    if (name == "fire") p.in_fire = true;
+                    else if (name == "soul_fire") p.in_fire = soul = true;
+                }
+        if (p.in_fire) {
+            p.fire_ticks = gameplay::damage::touch_fire(p.fire_ticks, random_draw() < 0.5f);
+            hurt(p, soul ? 2.0f : 1.0f, soul ? Harm::soul_fire : Harm::in_fire);
+        } else if (p.fire_ticks < 0) {
+            p.fire_ticks = gameplay::damage::not_burning;
+        }
+        if (!p.dead && p.on_ground && !p.sneaking && block_name(at(standing_on(p))) == "magma_block") hurt(p, 1.0f, Harm::hot_floor);
+    }
+    // The block a player on the ground stands on: the one under the middle
+    // of their feet if it bears them, else the nearest under their box that
+    // does (minecraft.wiki "Magma Block": its edge hurts since 1.20; how the
+    // official servers pick among several was not recorded).
+    BlockPos standing_on(const Player& p) const {
+        const auto y = static_cast<std::int32_t>(std::floor(p.pos.y - 0.2));
+        const BlockPos middle{static_cast<std::int32_t>(std::floor(p.pos.x)), y, static_cast<std::int32_t>(std::floor(p.pos.z))};
+        const auto bears = [&](BlockPos b) { return !gameplay::physics::collision_boxes(at(b), bundle.schema.content_release).empty(); };
+        if (bears(middle)) return middle;
+        std::optional<BlockPos> best;
+        double nearest = 0.0;
+        const auto box = movement::player_box(p.pos, p.sneaking).deflate(1e-5);
+        for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
+            for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
+                const BlockPos b{x, y, z};
+                if (!bears(b)) continue;
+                const double dx = x + 0.5 - p.pos.x, dz = z + 0.5 - p.pos.z, d = dx * dx + dz * dz;
+                if (!best || d < nearest) best = b, nearest = d;
+            }
+        return best.value_or(middle);
+    }
+    // Lava (client/fire): 4, with its burn sound for all nearby, the player
+    // too (on 1.21.8 a death by it is followed by the extinguish sound, as
+    // an earlier form of the probe recorded once; 1.21.4's not recorded),
+    // and 15 seconds of burning.
+    void touch_lava(Player& p) {
+        if (!touches(p) || !in_lava(p)) return;
+        if (hurt(p, 4.0f, Harm::lava)) {
+            sound_near(p, wire.player_sound(Wire::PlayerSound::generic_burn, p.pos, 0.4f, 2.0f + random_draw() * 0.4f,
+                                            static_cast<std::int64_t>(sound_seed++)), true);
+            if (p.dead && wire.protocol() >= 772) extinguish_sound(p);
+        }
+        if (!p.dead) p.fire_ticks = gameplay::damage::touch_lava(p.fire_ticks);
+    }
+    // Water puts the fire out, and so does rain (rain_on_players).
+    void touch_water(Player& p) {
+        if (touches(p) && p.fire_ticks > 0 && in_water(p)) extinguish(p);
+    }
+    // Put out, with the extinguish sound: on 1.21.8 for the player and the
+    // others within 16 blocks, on 1.21.4 for the others (client/fire).
+    void extinguish(Player& p) {
+        p.fire_ticks = gameplay::damage::not_burning;
+        extinguish_sound(p);
+    }
+    void extinguish_sound(Player& p) {
+        const auto a = random_draw();
+        const auto pitch = 1.6f + (a - random_draw()) * 0.4f;
+        sound_near(p, wire.player_sound(Wire::PlayerSound::extinguish_fire, p.pos, 0.7f, pitch, static_cast<std::int64_t>(sound_seed++)),
+                   wire.protocol() >= 772);
+    }
+    // Rain puts burning players out once the tick's weather is published, as
+    // the official servers do in the tick it starts to show (client/fire:
+    // the extinguish sound after start_raining, the flag two ticks later).
+    void rain_on_players() {
+        for (auto& [id, p] : players)
+            if (touches(p) && p.fire_ticks > 0 && in_rain(p)) extinguish(p);
+    }
+
     // Exhaustion from actions; players in creative and spectator mode do not tire.
     void exhaust(Player& p, float amount) {
         if (p.game_mode != survival || p.dead) return;
@@ -1881,7 +2075,38 @@ struct Game::Impl final : GameServices {
         hurt(p, static_cast<float>(damage), Harm::fall, distance);
     }
 
-    enum class Harm : std::uint8_t { fall, void_, starve, kill, magic, wither };
+    enum class Harm : std::uint8_t { fall, void_, starve, kill, magic, wither, in_fire, soul_fire, on_fire, lava, hot_floor };
+    // What a damage type does, from the official data packs (both versions
+    // alike): its name, death message key, exhaustion, whether armor (not in
+    // bypasses_armor) and the resistance effect (not in bypasses_resistance
+    // or bypasses_effects: the void, /kill, starvation) reduce it, whether it
+    // is fire (is_fire: fire resistance keeps it off; netherite does not wear
+    // by it), and the hurt sound those nearby hear (its effects: burning
+    // gives hurt_on_fire; client/fire).
+    struct HarmType {
+        const char* name;
+        const char* death;
+        float exhaustion;
+        bool armor, resistance, fire;
+        Wire::PlayerSound sound;
+    };
+    static const HarmType& harm_type(Harm h) {
+        using enum Wire::PlayerSound;
+        static const std::array<HarmType, 11> types{{
+            {"minecraft:fall", "death.attack.fall", 0.0f, false, true, false, hurt},
+            {"minecraft:out_of_world", "death.attack.outOfWorld", 0.0f, false, false, false, hurt},
+            {"minecraft:starve", "death.attack.starve", 0.0f, false, false, false, hurt},
+            {"minecraft:generic_kill", "death.attack.genericKill", 0.0f, false, false, false, hurt},
+            {"minecraft:magic", "death.attack.magic", 0.0f, false, true, false, hurt},
+            {"minecraft:wither", "death.attack.wither", 0.0f, false, true, false, hurt},
+            {"minecraft:in_fire", "death.attack.inFire", 0.1f, true, true, true, hurt_on_fire},
+            {"minecraft:in_fire", "death.attack.inFire", 0.1f, true, true, true, hurt_on_fire},
+            {"minecraft:on_fire", "death.attack.onFire", 0.0f, false, true, true, hurt_on_fire},
+            {"minecraft:lava", "death.attack.lava", 0.1f, true, true, true, hurt_on_fire},
+            {"minecraft:hot_floor", "death.attack.hotFloor", 0.1f, true, true, true, hurt_on_fire},
+        }};
+        return types[static_cast<std::size_t>(h)];
+    }
 
     // A player's own sound, for the other players within 16 blocks (the
     // player's client plays its own).
@@ -1912,23 +2137,44 @@ struct Game::Impl final : GameServices {
         return (a - random_draw()) * 0.2f + 1.0f;
     }
 
+    // The amplifier of an effect a player has (its level shown), if any.
+    static std::optional<std::int32_t> effect_amplifier(const Player& p, std::uint8_t id) {
+        const auto it = std::ranges::find(p.effects, id, &gameplay::effects::Effect::id);
+        if (it == p.effects.end() || it->levels.empty()) return std::nullopt;
+        return it->levels.front().amplifier;
+    }
     // Damage: creative and spectator players take none but from the void
-    // (spectators not even that). Within the first 10 ticks of the 20-tick
-    // hurt cooldown, damage counts only by how much it exceeds the last.
-    // These damage types cost no exhaustion.
-    void hurt(Player& p, float amount, Harm harm, double fall_distance = 0.0) {
-        if (p.dead || amount <= 0.0f) return;
+    // (spectators not even that); fire resistance keeps fire's off. Within
+    // the first 10 ticks of the 20-tick hurt cooldown, damage counts only by
+    // how much it exceeds the last. Then, as both official servers reduce it
+    // (client/fire; minecraft.wiki "Armor", "Resistance"): armor wears by a
+    // quarter of it (at least one) and takes away what its points and
+    // toughness allow, resistance 20% a level, absorption what it holds.
+    // Damage of the types that tire costs that exhaustion. Whether it hurt.
+    bool hurt(Player& p, float amount, Harm harm, double fall_distance = 0.0) {
+        if (p.dead || amount <= 0.0f) return false;
         // `/kill` reaches players in every game mode.
-        if (harm != Harm::void_ && harm != Harm::kill && p.game_mode != survival) return;
-        if (harm == Harm::void_ && p.game_mode == spectator) return;
+        if (harm != Harm::void_ && harm != Harm::kill && p.game_mode != survival) return false;
+        if (harm == Harm::void_ && p.game_mode == spectator) return false;
+        const auto& type = harm_type(harm);
+        static const auto fire_resistance = gameplay::effects::id("fire_resistance"), resistance = gameplay::effects::id("resistance");
+        if (type.fire && fire_resistance && effect_amplifier(p, *fire_resistance)) return false;
         float applied = amount;
         if (p.hurt_cooldown > 10) {
-            if (amount <= p.last_hurt) return;
+            if (amount <= p.last_hurt) return false;
             applied = amount - p.last_hurt;
         } else {
             p.hurt_cooldown = 20;
         }
         p.last_hurt = amount;
+        if (type.armor) {
+            wear_armor(p, applied, type.fire, harm == Harm::lava && wire.protocol() < 772);
+            const auto armor = static_cast<float>(std::floor(attribute_value(p, gameplay::attributes::Attribute::armor)));
+            const auto toughness = static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::armor_toughness));
+            applied = gameplay::damage::after_armor(applied, armor, toughness);
+        }
+        if (const auto level = resistance ? effect_amplifier(p, *resistance) : std::nullopt; level && type.resistance)
+            applied = gameplay::damage::after_resistance(applied, *level);
         // Absorption takes the damage first.
         if (p.absorption > 0.0f) {
             const auto absorbed = std::min(p.absorption, applied);
@@ -1936,14 +2182,9 @@ struct Game::Impl final : GameServices {
             applied -= absorbed;
             p.absorption_dirty = true;
         }
+        if (applied > 0.0f) exhaust(p, type.exhaustion);
         p.health = std::max(0.0f, p.health - applied);
-        const auto name = harm == Harm::fall    ? "minecraft:fall"
-                        : harm == Harm::void_   ? "minecraft:out_of_world"
-                        : harm == Harm::kill    ? "minecraft:generic_kill"
-                        : harm == Harm::magic   ? "minecraft:magic"
-                        : harm == Harm::wither  ? "minecraft:wither"
-                                                : "minecraft:starve";
-        const auto event = wire.damage_event(p.entity_id, registry_index(registries, "minecraft:damage_type", name).value_or(0));
+        const auto event = wire.damage_event(p.entity_id, registry_index(registries, "minecraft:damage_type", type.name).value_or(0));
         p.peer->send(event);
         for (const auto viewer : p.seen_by)
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
@@ -1953,20 +2194,38 @@ struct Game::Impl final : GameServices {
         if (p.health <= 0.0f) {
             sound_around(p, Wire::PlayerSound::death, voice_pitch());
             die(p, harm, fall_distance);
-            return;
+            return true;
         }
-        sound_around(p, Wire::PlayerSound::hurt, voice_pitch());
+        sound_around(p, type.sound, voice_pitch());
+        return true;
     }
+    // Armor worn down by a hurt: each piece a quarter of the damage, at least
+    // one (minecraft.wiki "Durability"; client/fire), by the rules in the
+    // hurt's tick; its slots are told at the next tick, and so is what others
+    // see of it unless `seen_now` (1.21.4 shows a lava hurt's wear to others
+    // in its tick, before the burning's flag: client/fire).
+    void wear_armor(Player& p, float amount, bool fire, bool seen_now) {
+        bool worn = false;
+        for (std::uint8_t slot = 5; slot <= 8 && !worn; ++slot)
+            worn = gameplay::equipment::worn_down(slot_of(p, slot), 1, fire).has_value();
+        if (!worn) return;
+        admit(contracts::WearArmor{key_of(p), std::min(gameplay::damage::armor_wear(amount), contracts::max_armor_wear), fire});
+        if (p.wear_tick != tick_count) p.wear_seen = seen_now;
+        else p.wear_seen = p.wear_seen && seen_now;
+        p.wear_tick = tick_count;
+    }
+    bool wear_held(const Player& p) const { return p.wear_tick == tick_count && !p.wear_seen; }
     // The velocity of the players hurt since the last entity update, to
     // them and to those who see them: the server's, a player standing still
-    // (client/effects_heal; a hurt player in the air or moving was not
-    // recorded).
+    // (client/effects_heal), or at the bottom of lava (client/fire; a hurt
+    // player in the air, moving or in water was not recorded).
     void tell_hurt_velocities() {
         for (auto& [id, p] : players) {
             if (!p.hurt_marked) continue;
             p.hurt_marked = false;
             if (p.dead && p.dead_ticks >= 20) continue; // the body went
-            const auto motion = wire.entity_motion(p.entity_id, {0.0, -0.0784, 0.0});
+            // In lava, as the player stands at its bottom (client/fire).
+            const auto motion = wire.entity_motion(p.entity_id, {0.0, in_lava(p) ? -0.02 : -0.0784, 0.0});
             p.peer->send(motion);
             for (const auto viewer : p.seen_by)
                 if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(motion);
@@ -1992,12 +2251,7 @@ struct Game::Impl final : GameServices {
         // crafting table's grid with the rest.
         p.window.reset();
         admit(contracts::PlayerDeath{key_of(p), contracts::Vec3{p.pos.x, p.pos.y + 1.32, p.pos.z}});
-        const auto key = harm == Harm::void_ ? "death.attack.outOfWorld"
-                         : harm == Harm::starve ? "death.attack.starve"
-                         : harm == Harm::kill ? "death.attack.genericKill"
-                         : harm == Harm::magic ? "death.attack.magic"
-                         : harm == Harm::wither ? "death.attack.wither"
-                         : fall_distance > 5.0 ? "death.fell.accident.generic" : "death.attack.fall";
+        const auto key = harm == Harm::fall && fall_distance > 5.0 ? "death.fell.accident.generic" : harm_type(harm).death;
         auto with = nbt::Tag::list(nbt::TagType::compound);
         with.push(display_name(p));
         auto text = nbt::Tag::compound();
@@ -2108,6 +2362,9 @@ struct Game::Impl final : GameServices {
         p.hurt_cooldown = 0;
         p.last_hurt = 0.0f;
         p.hurt_marked = false;
+        p.fire_ticks = -20;
+        p.in_fire = false;
+        p.burning = false;
         p.fall_distance = 0.0;
         p.floating = false;
         p.floating_ticks = 0;
@@ -2169,7 +2426,7 @@ struct Game::Impl final : GameServices {
     void equipment_sounds() {
         using gameplay::equipment::Slot;
         for (auto& [id, p] : players) {
-            if (!p.equipment_known) continue;
+            if (!p.equipment_known || wear_held(p)) continue;
             const auto now = equipment_now(p);
             const auto& was = p.equipped;
             for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
@@ -2180,30 +2437,31 @@ struct Game::Impl final : GameServices {
         }
     }
     void look_at_equipment() {
+        for (auto& [id, p] : players)
+            if (!wear_held(p)) show_equipment(p, equipment_now(p));
+    }
+    void show_equipment(Player& p, const std::array<contracts::ItemStack, gameplay::equipment::slot_count>& now) {
         using gameplay::equipment::Slot;
-        for (auto& [id, p] : players) {
-            const auto now = equipment_now(p);
-            if (!p.equipment_known) {
-                p.equipment_known = true;
-                for (std::size_t k = 0; k < now.size(); ++k) equipment_attributes(p, static_cast<Slot>(k), now[k]);
-                p.equipped = now;
-                continue;
-            }
-            if (now == p.equipped) continue;
-            const auto& was = p.equipped;
-            for (std::size_t k = 0; k < now.size(); ++k)
-                if (!(now[k] == was[k])) equipment_attributes(p, static_cast<Slot>(k), now[k]);
-            const bool swapped = !(now[0] == was[0]) && now[0] == was[1] && now[1] == was[0];
-            std::vector<std::pair<std::uint8_t, WireStack>> changed;
-            for (std::size_t k = swapped ? 2 : 0; k < now.size(); ++k)
-                if (!(now[k] == was[k])) changed.emplace_back(static_cast<std::uint8_t>(k), wire_stack(now[k]));
-            for (const auto viewer : p.seen_by)
-                if (const auto v = players.find(viewer); v != players.end()) {
-                    if (swapped) v->second.peer->send(wire.entity_event(p.entity_id, 55));
-                    if (!changed.empty()) v->second.peer->send(wire.set_equipment(p.entity_id, changed));
-                }
+        if (!p.equipment_known) {
+            p.equipment_known = true;
+            for (std::size_t k = 0; k < now.size(); ++k) equipment_attributes(p, static_cast<Slot>(k), now[k]);
             p.equipped = now;
+            return;
         }
+        if (now == p.equipped) return;
+        const auto& was = p.equipped;
+        for (std::size_t k = 0; k < now.size(); ++k)
+            if (!(now[k] == was[k])) equipment_attributes(p, static_cast<Slot>(k), now[k]);
+        const bool swapped = !(now[0] == was[0]) && now[0] == was[1] && now[1] == was[0];
+        std::vector<std::pair<std::uint8_t, WireStack>> changed;
+        for (std::size_t k = swapped ? 2 : 0; k < now.size(); ++k)
+            if (!(now[k] == was[k])) changed.emplace_back(static_cast<std::uint8_t>(k), wire_stack(now[k]));
+        for (const auto viewer : p.seen_by)
+            if (const auto v = players.find(viewer); v != players.end()) {
+                if (swapped) v->second.peer->send(wire.entity_event(p.entity_id, 55));
+                if (!changed.empty()) v->second.peer->send(wire.set_equipment(p.entity_id, changed));
+            }
+        p.equipped = now;
     }
     static Wire::PlayerSound equip_sound(gameplay::equipment::EquipSound s) {
         using enum gameplay::equipment::EquipSound;
@@ -2700,12 +2958,13 @@ struct Game::Impl final : GameServices {
                 if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(data);
         }
     }
-    // A player's shared flags: the effects' (invisibility, glowing), a
-    // spectator's invisibility, and the shift key (client/spectators). And its
+    // A player's shared flags: burning (client/fire), the effects'
+    // (invisibility, glowing), a spectator's invisibility, and the shift key
+    // (client/spectators). And its
     // pose: crouching while the shift key is down, but for a spectator or a
     // flyer.
     std::uint8_t shared_flags(const Player& p) const {
-        return static_cast<std::uint8_t>(p.effect_view.flags | (p.game_mode == spectator ? 0x20 : 0) | (p.sneaking ? 0x02 : 0));
+        return static_cast<std::uint8_t>(p.effect_view.flags | (p.game_mode == spectator ? 0x20 : 0) | (p.sneaking ? 0x02 : 0) | (p.burning ? 0x01 : 0));
     }
     std::int32_t pose_of(const Player& p) const { return p.sneaking && p.game_mode != spectator && !p.flying ? 5 : 0; }
     // A new entity's first data (joined or respawned): its health, its
@@ -2963,7 +3222,8 @@ struct Game::Impl final : GameServices {
             if (world_runs && !p.dead) {
                 ++p.ticks_alive;
                 if (p.hurt_cooldown > 0) --p.hurt_cooldown;
-                if (p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
+                fire_tick(p);
+                if (!p.dead && p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
                 // The effects act before hunger takes the tick's exhaustion
                 // (client/eat: the last food a hunger effect takes goes
                 // before the effect's removal). Hunger in every mode (only
@@ -4933,6 +5193,7 @@ struct Game::Impl final : GameServices {
         pending_day_time.reset();
         pending_setblocks.clear();
         publish_weather();
+        rain_on_players();
         equipment_sounds(); // before the level events (client/armor2)
         publish_blocks();
         publish_block_events();

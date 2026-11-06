@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <circuit/contracts/ids.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -22,7 +23,10 @@ std::uint8_t inventory_slot(Slot s, std::uint8_t held) noexcept;
 
 enum class EquipSound : std::uint8_t { generic, leather, chain, iron, gold, diamond, netherite, turtle, elytra };
 // An item worn in an armor slot: the slot, what it gives there and its
-// sound; `swappable` when using it puts it on, swapping it with what is worn.
+// sound; `swappable` when using it puts it on, swapping it with what is worn;
+// `wears` when it loses durability as its wearer is hurt (client/fire: an
+// iron helmet and a diamond chestplate; minecraft.wiki "Durability": armor
+// and the turtle shell, not the elytra).
 struct Wearable {
     Slot slot{};
     float armor{};
@@ -30,8 +34,13 @@ struct Wearable {
     float knockback_resistance{};
     EquipSound sound{};
     bool swappable{};
+    bool wears{};
 };
 const Wearable* wearable(std::uint16_t item);
+// A piece worn in an armor slot after a hurt wears it by `amount` (`fire`:
+// damage of the is_fire tag, which leaves netherite alone): its stack, empty
+// once broken at its durability; nullopt when it does not wear.
+std::optional<contracts::ItemStack> worn_down(const contracts::ItemStack& piece, std::int32_t amount, bool fire);
 // The attribute modifier id of an armor slot's item ("armor.helmet" to
 // "armor.boots").
 std::string_view armor_modifier(Slot s) noexcept;

@@ -276,4 +276,11 @@ bool fluid_flows_into(BlockState s, bool lava) { return detail::holds(lava ? det
 bool is_lava(BlockState s) { return detail::lava_level(s) >= 0; }
 bool is_lava_source(BlockState s) { return detail::lava_level(s) == 0; }
 BlockState lava_source() { return detail::lava_state(0); }
+float lava_height(BlockState s, BlockState above) {
+    if (!is_lava(s)) return 0.0f;
+    if (is_lava(above)) return 1.0f;
+    const int level = detail::lava_level(s);
+    const int amount = level <= 0 || level >= 8 ? 8 : 8 - level;
+    return static_cast<float>(amount) / 9.0f;
+}
 } // namespace circuit::gameplay

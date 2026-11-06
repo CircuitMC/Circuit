@@ -482,6 +482,9 @@ Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, 
     case PlayerSound::bad_omen: id = v772 ? 1724 : 1648; break;
     case PlayerSound::trial_omen: id = v772 ? 1725 : 1649; break;
     case PlayerSound::raid_omen: id = v772 ? 1726 : 1650; break;
+    case PlayerSound::hurt_on_fire: id = v772 ? 1178 : 1138; break;
+    case PlayerSound::generic_burn: id = v772 ? 611 : 598; break;
+    case PlayerSound::extinguish_fire: id = v772 ? 616 : 603; break;
     // The same on both protocols.
     case PlayerSound::equip_chain: id = 67; break;
     case PlayerSound::equip_diamond: id = 68; break;

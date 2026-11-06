@@ -1403,6 +1403,17 @@
       "location": "external: circuit-clienttest/packet-probe.js with weather-compare.txt, weather-join2.txt and (official only) weather-probe.txt, weather-timers.txt and weather-clear1.txt; Circuit's side also in tests/server/server_tests.cpp",
       "status": "passing",
       "description": "16 /weather commands and a doWeatherCycle change, each from settled levels (rain, clear spells ending in thunderstorms, the cycle stopped, malformed durations), and a player joining in the rain: Circuit's 1,348 replies and game events per segment, every rain and thunder level value included, are identical with each official server's. The official servers' saved level data showed what each command does to the timers"
+    },
+    {
+      "id": "client/fire",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/fire.js",
+      "status": "passing",
+      "description": "Two players: a survival player in a pit into which fire, lava and water are set and under which a magma block replaces the netherrack floor: fire taken away after two hurts and once she burns, her burning, fire resistance and resistance II in fire, an iron helmet, a diamond chestplate and netherite boots against fire, a magma block (sneaking on it too) and lava, water putting her out, burning to death after lava and rain putting her out; the other, in creative mode, stands in fire; each step's health, damage events, velocity, entity statuses, effects, slot changes and equipment, both players' shared flags, sounds (but block fall sounds and the splash into water) and death messages; Circuit and both official servers give identical output"
     }
   ]
 }

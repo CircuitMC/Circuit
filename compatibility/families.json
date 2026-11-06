@@ -963,12 +963,15 @@
             "trace/flint_and_steel_use",
             "trace/fire_charge_use",
             "trace/dispenser_flint",
-            "client/fire_items"
+            "client/fire_items",
+            "client/fire"
           ],
-          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer; items and arrows in fire, soul fire and lava burn, by each version's timing in lava; lava sets fire beside the blocks it ignites in its random ticks, as the official 1.21.8 server does draw for draw; flint and steel and fire charges set fire beside the face used (where it can stay) and light campfires and candles, and flint and steel in dispensers sets fire in front, as both official servers do",
+          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer; items and arrows in fire, soul fire and lava burn, by each version's timing in lava; lava sets fire beside the blocks it ignites in its random ticks, as the official 1.21.8 server does draw for draw; flint and steel and fire charges set fire beside the face used (where it can stay) and light campfires and candles, and flint and steel in dispensers sets fire in front, as both official servers do; players in fire catch fire from their 20th tick in it, burn (a hurt every 20 fire ticks, the on-fire flag), are set burning by lava for 15 seconds and put out by water and rain (1.21.8 with the extinguish sound for all, 1.21.4 for the others), as both official servers do",
           "deviations": [
-            "rain and humid biomes do not put it out sooner",
-            "entities other than items and arrows are not hurt or set burning",
+            "rain and humid biomes do not put fire blocks out sooner",
+            "entities other than items, arrows and players are not hurt or set burning",
+            "a player's fire ticks grow by one or two a tick in fire after catching it, by Circuit's own draws (the official servers' draws were not recorded tick by tick)",
+            "rain reaches a player with nothing above their feet or head that stops movement or holds a fluid (Circuit's rule; a player under a roof was not recorded)",
             "lightning does not set fire",
             "nether portals are not lit (C7)"
           ]
@@ -2265,13 +2268,16 @@
             "client/vitals",
             "client/attribute_rules",
             "client/falls",
-            "client/effects_heal"
+            "client/effects_heal",
+            "client/fire"
           ],
-          "note": "Falls (beyond the safe fall distance: on 1.21.8 with the move that lands, rounded down; on 1.21.4 without it, rounded up), the void, starvation and the effects' magic and wither damage; absorption takes damage first; the damage event, the hurt, death and fall sounds for the others nearby and the velocity at the next entity update, as both official servers send them",
+          "note": "Falls (beyond the safe fall distance: on 1.21.8 with the move that lands, rounded down; on 1.21.4 without it, rounded up), the void, starvation, the effects' magic and wither damage, fire (in_fire), burning (on_fire), lava and magma blocks (hot_floor); fire resistance keeps fire's damage off; armor wears and reduces the damage it reduces (not the bypasses_armor tag's), resistance takes 20% a level, absorption takes damage first; damage that tires costs its exhaustion; the damage event, the hurt sound by the damage type's effects (hurt_on_fire for the burning types), death and fall sounds for the others nearby and the velocity at the next entity update, as both official servers send them",
           "deviations": [
-            "the velocity told is that of a player standing still (players hurt in the air or moving were not recorded)",
+            "the velocity told is that of a player standing still, or at the bottom of lava (players hurt in the air, moving or in water were not recorded)",
             "the fall sound of the block landed on is not played",
-            "the hurt and death sounds' pitches come from Circuit's own draws"
+            "the hurt and death sounds' pitches come from Circuit's own draws",
+            "drowning, suffocation, cactus, sweet berry bushes, freezing, campfires and the fireDamage game rule are not modeled",
+            "a magma block hurts a player standing on its edge by the nearest block under them that bears them (minecraft.wiki; not recorded); lava halves the distance fallen each tick by minecraft.wiki (not recorded)"
           ]
         },
         {
@@ -2306,11 +2312,13 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
-            "client/armor"
+            "client/armor",
+            "client/fire"
           ],
-          "note": "Armor's points, toughness and netherite's knockback resistance as attribute modifiers of each armor slot, as both official servers send them; every damage Circuit deals (falls, the void, starvation, /kill, magic and wither) is in the bypasses_armor damage type tag, so armor reduces none of it",
+          "note": "Armor's points, toughness and netherite's knockback resistance as attribute modifiers of each armor slot, as both official servers send them; damage armor reduces (not in the bypasses_armor damage type tag: fire, lava and magma blocks so far) is reduced by the documented formula, to the float as both official servers reduce it, and wears each piece worn by a quarter of it, at least one (netherite not by fire), through the rules at the next tick, breaking it at its durability",
           "deviations": [
-            "armor's damage reduction, its wear when hurt, protection enchantments and shields are not modeled"
+            "a piece's breaking has no sound or entity event (not modeled, as for tools; not recorded), and the unbreakable component is not honored",
+            "protection enchantments, unbreaking and shields are not modeled"
           ]
         },
         {
@@ -2320,7 +2328,7 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "resistance and slow falling change nothing (fall damage is taken in full), nor do fire resistance and water breathing, the omens (but for the sound each makes when it comes) and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
+            "slow falling changes nothing (fall damage is taken in full), nor do water breathing, the omens (but for the sound each makes when it comes) and the effects that act on death or when hurt; of the attributes effects change, the movement and attack speed and luck only reach the client",
             "amplifiers above 28 of instant health and damage double without the official servers' integer overflow (not recorded)",
             "only players have effects; /effect takes players by name, @s, @p, @a and @e",
             "of the shared flags sprinting's is not sent yet",
@@ -2336,9 +2344,10 @@
             "client/effect_edges",
             "client/attributes",
             "client/effects_heal",
-            "client/eat"
+            "client/eat",
+            "client/fire"
           ],
-          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none; the effects that heal, hurt or feed act by the time their shown level has left before each tick and their amplifier: instant health and damage, hunger and saturation every tick they last, regeneration, poison and wither every 50, 25 and 40 ticks halved per level, through the hurt cooldown; absorption ends once its absorption is used up, and an omen that comes plays its sound to everyone nearby; foods, potions and ominous bottles give effects (eating_and_drinking)"
+          "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none; the effects that heal, hurt or feed act by the time their shown level has left before each tick and their amplifier: instant health and damage, hunger and saturation every tick they last, regeneration, poison and wither every 50, 25 and 40 ticks halved per level, through the hurt cooldown; absorption ends once its absorption is used up, and an omen that comes plays its sound to everyone nearby; foods, potions and ominous bottles give effects (eating_and_drinking); resistance takes 20% of damage a level and fire resistance keeps off fire's, as both official servers reduce it"
         },
         {
           "id": "enchantment_effects",
@@ -2468,11 +2477,12 @@
             "client/windows",
             "client/armor",
             "client/armor2",
-            "client/armor3"
+            "client/armor3",
+            "client/fire"
           ],
           "note": "Armor slots accept armor; armor and elytras put on by use from either hand (swapping with what is worn, in creative mode too, where with nothing worn a copy goes on; not a carved pumpkin or a zombie head), by clicks and by dispensers, with their equip sounds (not when taken off; the creative inventory's and a pumpkin's or head's worn by clicks not recorded); what a player holds and wears shown to others when it changes (the hands swapped as entity event 55) and when the player appears; the attributes armor and held weapons give",
           "deviations": [
-            "curse of binding, the turtle shell's water breathing, the elytra's gliding, leather armor against freezing, golden armor with piglins, and armor's protection and wear are not modeled"
+            "curse of binding, the turtle shell's water breathing, the elytra's gliding, leather armor against freezing and golden armor with piglins are not modeled"
           ]
         }
       ]

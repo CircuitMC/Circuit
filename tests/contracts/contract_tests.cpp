@@ -194,6 +194,8 @@ int main() {
         // Items eaten and drunk (tag 42), from a hotbar slot and the off hand.
         log.ticks.push_back({15, {{48, ConsumeItem{alex, 36, {7, 2, 0}, false, {0.5, -58.38, 0.5}}},
                                   {49, ConsumeItem{alex, offhand_slot, {9, 1, 3}, true, {-1.25, 70.0, 3.5}}}}});
+        // Armor worn down by hurts (tag 43), by fire and by other damage.
+        log.ticks.push_back({16, {{50, WearArmor{alex, 1, true}}, {51, WearArmor{alex, max_armor_wear, false}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -240,6 +242,14 @@ int main() {
             one.ticks.push_back({1, {{1, ConsumeItem{alex, slot, {7, 1, 0}, false, {}}}}});
             const auto encoded = encode_replay(one);
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "a consumption's slot is range-checked");
+        }
+
+        // A WearArmor's amount is 1 to max_armor_wear.
+        for (const std::int32_t amount : {0, -3, max_armor_wear + 1}) {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            one.ticks.push_back({1, {{1, WearArmor{alex, amount, false}}}});
+            const auto encoded = encode_replay(one);
+            require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "armor wear is range-checked");
         }
 
         // Where a use clicked and the player's yaw (tag 25) round-trip; a tag

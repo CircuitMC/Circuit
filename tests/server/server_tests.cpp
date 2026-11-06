@@ -7,6 +7,7 @@
 #include "../../src/server/command_reader.hpp"
 #include "../../src/server/game.hpp"
 #include "../../src/server/server_data.hpp"
+#include <circuit/gameplay/damage.hpp>
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/loot.hpp>
 #include <circuit/gameplay/physics.hpp>
@@ -3574,6 +3575,317 @@ int main() {
             b = packets(*bob);
             require(std::ranges::none_of(b, [](const auto& t) { return t.starts_with("damage") || t.starts_with("health"); }),
                     std::format("{}: a creative player is not hurt", version));
+        }
+    });
+
+    suite.run("players burn in fire and lava, armor and resistance reducing it, as both official servers show it", [] {
+        // circuit-clienttest/fire.js: alice in survival in a pit with a
+        // netherrack floor into which fire, lava and water are set; bob in
+        // creative mode watching.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            GameFixture f(version, offline_config());
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            const bool v772 = std::string_view(version) == "1.21.8";
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = name;
+            }
+            // Since the last call, as text: damage events, sounds, the shared
+            // flags, health, velocity, the own window's slots, death messages.
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("set_health")) {
+                        out.push_back(std::format("health {}", in.f32().value()));
+                    } else if (pk->id == id("damage_event")) {
+                        const auto e = in.varint().value();
+                        out.push_back(std::format("damage {} {}", who(e), in.varint().value()));
+                    } else if (pk->id == id("set_entity_motion")) {
+                        const auto e = in.varint().value();
+                        (void)in.i16();
+                        out.push_back(std::format("velocity {} {}", who(e), in.i16().value()));
+                    } else if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        (void)in.i32(), (void)in.i32(), (void)in.i32();
+                        out.push_back(std::format("sound {} {} {}", sound, category, in.f32().value()));
+                    } else if (pk->id == id("set_entity_data")) {
+                        const auto e = in.varint().value();
+                        if (in.u8().value() == 0 && in.varint().value() == 0) out.push_back(std::format("flags {} {}", who(e), in.u8().value()));
+                    } else if (pk->id == id("container_set_slot")) {
+                        if (in.varint().value() != 0) continue;
+                        (void)in.varint();
+                        const auto slot = in.i16().value();
+                        const auto count = in.varint().value();
+                        std::string line = std::format("slot {}", slot);
+                        if (count > 0) {
+                            line += " " + std::string(tables.item_name(in.varint().value()).value_or("?").substr(10));
+                            if (in.varint().value() == 1) {
+                                (void)in.varint(); // removed
+                                (void)in.varint(); // the damage component
+                                line += std::format(" damage {}", in.varint().value());
+                            }
+                        }
+                        out.push_back(line);
+                    } else if (pk->id == id("player_combat_kill")) {
+                        out.emplace_back("death screen");
+                    } else if (pk->id == id("system_chat")) {
+                        // The death message's translation key, read from its bytes.
+                        const std::string text(reinterpret_cast<const char*>(r.packets[at].data()), r.packets[at].size());
+                        if (const auto k = text.find("death."); k != std::string::npos) {
+                            auto e = k;
+                            while (e < text.size() && (std::isalnum(static_cast<unsigned char>(text[e])) || text[e] == '.')) ++e;
+                            out.push_back("message " + text.substr(k, e - k));
+                        }
+                    } else if (pk->id == id("set_equipment")) {
+                        out.push_back(std::format("equipment {}", who(in.varint().value())));
+                    }
+                }
+                return out;
+            };
+            const auto has = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::find(v, x) != v.end(); };
+            const auto count = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::count(v, x); };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            // One tick: what each got in it.
+            const auto tick = [&] {
+                f.game->tick();
+                return std::pair{packets(*alice), packets(*bob)};
+            };
+            const auto ticks = [&](int n) {
+                std::pair<std::vector<std::string>, std::vector<std::string>> all;
+                for (int k = 0; k < n; ++k) {
+                    auto [a, b] = tick();
+                    all.first.insert(all.first.end(), a.begin(), a.end());
+                    all.second.insert(all.second.end(), b.begin(), b.end());
+                }
+                return all;
+            };
+            const auto hurt_on_fire = std::format("sound {} 7 1", v772 ? 1178 : 1138);
+            const auto burn = std::format("sound {} 7 0.4", v772 ? 611 : 598);
+            const auto extinguish = std::format("sound {} 7 0.7", v772 ? 616 : 603);
+            for (const auto* c : {"gamerule doFireTick false", "gamerule naturalRegeneration false", "difficulty normal", "setblock 8 -62 8 netherrack", "setblock 8 -61 8 air", "tp 8.5 -61 8.5", "gamemode survival"})
+                command(1, c);
+            command(2, "tp 8.5 -60 12.5");
+            (void)ticks(5);
+
+            // Fire: a hurt (in_fire, 21) at once and 10 ticks later; at the
+            // 20th tick in it the burning's first (on_fire, 31) instead, and
+            // the flag in the next.
+            command(1, "setblock 8 -61 8 fire");
+            std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> timeline;
+            for (int k = 0; k < 24; ++k) timeline.push_back(tick());
+            std::size_t t0 = 0;
+            while (t0 < timeline.size() && !has(timeline[t0].first, "damage alice 21")) ++t0;
+            require(t0 + 22 < timeline.size(), std::format("{}: the first hurt in fire", version));
+            require(has(timeline[t0].first, "health 19") && has(timeline[t0].second, "damage alice 21") && has(timeline[t0].second, hurt_on_fire),
+                    std::format("{}: the hurt, bob's sound", version));
+            require(has(timeline[t0 + 10].first, "damage alice 21") && has(timeline[t0 + 20].first, "damage alice 31")
+                        && !has(timeline[t0 + 20].first, "damage alice 21") && has(timeline[t0 + 21].first, "flags alice 1")
+                        && has(timeline[t0 + 21].second, "flags alice 1") && !has(timeline[t0 + 20].first, "flags alice 1"),
+                    std::format("{}: catching fire at the 20th tick", version));
+            // Out of it at once: seven more hurts, then the flag goes.
+            command(1, "setblock 8 -61 8 air");
+            auto [a, b] = ticks(200);
+            require(count(a, "damage alice 31") == 7 && has(a, "flags alice 0") && count(b, hurt_on_fire) == 7 && has(a, "health 12"),
+                    std::format("{}: burning out of fire ({} hurts; {})", version, count(a, "damage alice 31"), [&] {
+                        std::string t;
+                        for (const auto& x : a) if (!x.starts_with("velocity")) t += x + "; ";
+                        return t;
+                    }()));
+
+            // Fire resistance: in fire without hurts, shown burning.
+            command(1, "effect give alice minecraft:instant_health 1 3");
+            command(1, "effect give alice minecraft:fire_resistance 100 0");
+            (void)ticks(2);
+            command(1, "setblock 8 -61 8 fire");
+            std::tie(a, b) = ticks(25);
+            command(1, "setblock 8 -61 8 air");
+            auto [a2, b2] = ticks(200);
+            require(!std::ranges::any_of(a, [](const auto& x) { return x.starts_with("damage"); }) && has(a, "flags alice 1") && has(a2, "flags alice 0")
+                        && !std::ranges::any_of(a2, [](const auto& x) { return x.starts_with("damage"); }),
+                    std::format("{}: fire resistance", version));
+            command(1, "effect clear alice minecraft:fire_resistance");
+
+            // Resistance II: 0.6 of each.
+            command(1, "effect give alice minecraft:resistance 100 1");
+            (void)ticks(25);
+            command(1, "setblock 8 -61 8 fire");
+            std::tie(a, b) = ticks(3);
+            command(1, "setblock 8 -61 8 air");
+            require(has(a, "damage alice 21") && has(a, std::format("health {}", 20.0f - 0.6f)), std::format("{}: resistance", version));
+            command(1, "effect clear alice minecraft:resistance");
+            command(1, "effect give alice minecraft:instant_health 1 3");
+            (void)ticks(25);
+
+            // Armor: an iron helmet, a diamond chestplate, netherite boots.
+            command(1, "gamemode creative");
+            (void)ticks(1);
+            for (const auto& [slot, item] : {std::pair<std::int16_t, std::string_view>{5, "minecraft:iron_helmet"},
+                                             {6, "minecraft:diamond_chestplate"}, {8, "minecraft:netherite_boots"}})
+                f.game->submit(1, I{server::intent::CreativeSlot{slot, 1, tables.item_id(item).value(), 0}});
+            (void)ticks(1);
+            command(1, "gamemode survival");
+            (void)ticks(3);
+            command(1, "setblock 8 -61 8 fire");
+            std::tie(a, b) = ticks(3);
+            command(1, "setblock 8 -61 8 air");
+            std::tie(a2, b2) = ticks(2);
+            require(has(a, "damage alice 21") && has(a, std::format("health {}", 19.507692337036133f)), std::format("{}: armor's reduction", version));
+            a.insert(a.end(), a2.begin(), a2.end());
+            require(has(a, "slot 5 iron_helmet damage 1") && has(a, "slot 6 diamond_chestplate damage 1")
+                        && !std::ranges::any_of(a, [](const auto& x) { return x.starts_with("slot 8"); }),
+                    std::format("{}: armor wears, not netherite by fire", version));
+            (void)ticks(25);
+
+            // Lava: 4 reduced by the armor, its burn sound for all, the
+            // velocity at the bottom of lava, the flag a tick later on 1.21.8;
+            // water in its place puts the fire out.
+            command(1, "effect give alice minecraft:instant_health 1 3");
+            (void)ticks(25);
+            command(1, "setblock 8 -61 8 lava");
+            timeline.clear();
+            for (int k = 0; k < 6; ++k) timeline.push_back(tick());
+            std::size_t l = 0;
+            while (l < timeline.size() && !has(timeline[l].first, "damage alice 24")) ++l;
+            require(l + 3 < timeline.size(), std::format("{}: a lava hurt", version));
+            require(has(timeline[l].first, burn) && has(timeline[l].first, std::format("health {}", 20.0f - 2.1169229f))
+                        && has(timeline[l].second, hurt_on_fire) && has(timeline[l].second, burn) && has(timeline[l + 1].first, "velocity alice -160"),
+                    std::format("{}: the lava hurt", version));
+            require(has(timeline[v772 ? l + 2 : l + 1].first, "flags alice 1") && !has(timeline[v772 ? l + 1 : l].first, "flags alice 1"),
+                    std::format("{}: the flag after lava", version));
+            // The armor it wore: bob sees it in the hurt's tick on 1.21.4, at
+            // the next on 1.21.8; alice's slots come at the next on both.
+            require(has(timeline[v772 ? l + 1 : l].second, "equipment alice") && !has(timeline[v772 ? l : l + 1].second, "equipment alice")
+                        && has(timeline[l + 1].first, "slot 5 iron_helmet damage 2") && !has(timeline[l].first, "slot 5 iron_helmet damage 2"),
+                    std::format("{}: the lava's wear (alice {} / {}; bob {} / {})", version, [&] { std::string t; for (const auto& x : timeline[l].first) t += x + "; "; return t; }(),
+                                [&] { std::string t; for (const auto& x : timeline[l + 1].first) t += x + "; "; return t; }(),
+                                [&] { std::string t; for (const auto& x : timeline[l].second) t += x + "; "; return t; }(),
+                                [&] { std::string t; for (const auto& x : timeline[l + 1].second) t += x + "; "; return t; }()));
+            command(1, "setblock 8 -61 8 water[level=0]");
+            std::tie(a, b) = ticks(4);
+            const auto text = [](const std::vector<std::string>& v) {
+                std::string t;
+                for (const auto& x : v) t += x + "; ";
+                return t;
+            };
+            require(has(a, extinguish) == v772 && has(b, extinguish) && has(a, "flags alice 0"),
+                    std::format("{}: water puts it out (alice: {} bob: {}; {})", version, text(a), text(b), f.at({8, -61, 8})));
+            command(1, "setblock 8 -61 8 air");
+            (void)ticks(25);
+
+            // Burning with armor on: 1 a hurt, no wear.
+            command(1, "effect give alice minecraft:instant_health 1 3");
+            (void)ticks(25);
+            command(1, "setblock 8 -61 8 lava");
+            (void)ticks(2);
+            command(1, "setblock 8 -61 8 air");
+            (void)ticks(25);
+            {
+                timeline.clear();
+                for (int k = 0; k < 21; ++k) timeline.push_back(tick());
+                std::size_t h = 0;
+                while (h < timeline.size() && !has(timeline[h].first, "damage alice 31")) ++h;
+                require(h < timeline.size(), std::format("{}: a burning hurt with armor", version));
+                // Full health, lava's 4 reduced by the armor, then two burning
+                // hurts of 1 each, not reduced.
+                const float expect = 20.0f - circuit::gameplay::damage::after_armor(4.0f, 13.0f, 5.0f) - 1.0f - 1.0f;
+                bool worn = false;
+                for (std::size_t k = h; k < timeline.size(); ++k)
+                    worn = worn || std::ranges::any_of(timeline[k].first, [](const auto& x) { return x.starts_with("slot "); });
+                require(has(timeline[h].first, std::format("health {}", expect)) && !worn, std::format("{}: burning not reduced, no wear", version));
+                // The next burning hurt is due 20 ticks after this one: water
+                // set to be there in its tick. 1.21.8 hurts, then puts her
+                // out (the flag two ticks later); 1.21.4 puts her out first.
+                const auto past = static_cast<int>(timeline.size() - 1 - h); // ticks run since the hurt
+                (void)ticks(18 - past);
+                command(1, "setblock 8 -61 8 water[level=0]");
+                timeline.clear();
+                for (int k = 0; k < 4; ++k) timeline.push_back(tick());
+                const auto& due = timeline[1];
+                require(has(due.first, "damage alice 31") == v772 && has(due.second, extinguish) && has(due.first, extinguish) == v772,
+                        std::format("{}: water as a burning hurt is due", version));
+                require(has(timeline[v772 ? 3 : 2].first, "flags alice 0") && !has(timeline[v772 ? 2 : 1].first, "flags alice 0"),
+                        std::format("{}: the flag after water", version));
+                command(1, "setblock 8 -61 8 air");
+                (void)ticks(2);
+            }
+
+            // Rain puts her out (the sound for bob; for alice too on 1.21.8).
+            command(1, "setblock 8 -61 8 lava");
+            (void)ticks(2);
+            command(1, "setblock 8 -61 8 air");
+            (void)ticks(25);
+            command(1, "weather rain");
+            std::tie(a, b) = ticks(40);
+            require(has(a, "flags alice 0") && has(b, extinguish) && has(a, extinguish) == v772, std::format("{}: rain puts her out", version));
+            command(1, "weather clear");
+            (void)ticks(40);
+
+            // A magma block under her: a hurt (hot_floor, 20) every 10
+            // ticks while she stands, none while she sneaks.
+            command(1, "effect give alice minecraft:instant_health 1 3");
+            f.game->submit(1, I{server::intent::Move{std::nullopt, std::nullopt, true}});
+            (void)ticks(25);
+            command(1, "setblock 8 -62 8 magma_block");
+            std::tie(a, b) = ticks(25);
+            require(count(a, "damage alice 20") == 3 && has(b, hurt_on_fire), std::format("{}: magma", version));
+            f.game->submit(1, I{server::intent::Sneak{true}});
+            (void)ticks(15);
+            std::tie(a, b) = ticks(30);
+            require(count(a, "damage alice 20") == 0, std::format("{}: none while sneaking", version));
+            f.game->submit(1, I{server::intent::Sneak{false}});
+            std::tie(a, b) = ticks(5);
+            require(count(a, "damage alice 20") == 1, std::format("{}: standing up", version));
+            command(1, "setblock 8 -62 8 netherrack");
+            (void)ticks(2);
+
+            // bob in creative mode in fire: never shown burning, never hurt.
+            command(1, "setblock 8 -60 12 fire");
+            std::tie(a, b) = ticks(40);
+            command(1, "setblock 8 -60 12 air");
+            require(!has(b, "flags bob 1") && !std::ranges::any_of(b, [](const auto& x) { return x.starts_with("damage bob"); }),
+                    std::format("{}: creative bob in fire", version));
+
+            // Burning across a rejoin: the flag with her first data, the burning going on.
+            command(1, "setblock 8 -61 8 lava");
+            (void)ticks(2);
+            command(1, "setblock 8 -61 8 air");
+            (void)ticks(5);
+            f.game->leave(1);
+            f.game->tick();
+            alice = f.join(1, "alice");
+            {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(alice->mutex);
+                for (const auto& bytes : alice->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) names[pk->fields.i32().value()] = "alice";
+            }
+            seen[1] = 0;
+            require(has(packets(*alice), "flags alice 1"), std::format("{}: shown burning on rejoining", version));
+            std::tie(a, b) = ticks(30);
+            require(count(a, "damage alice 31") >= 1, std::format("{}: burning after a rejoin", version));
+
+            // Burning to death after lava (from 4 health: burnt, death.attack.onFire).
+            command(1, "effect give alice minecraft:instant_health 1 3");
+            (void)ticks(25);
+            command(1, "setblock 8 -61 8 lava");
+            (void)ticks(3);
+            command(1, "setblock 8 -61 8 air");
+            command(1, "effect give alice minecraft:instant_damage 1 1");
+            std::tie(a, b) = ticks(320);
+            require(has(a, "death screen") && has(a, "health 0") && has(a, "message death.attack.onFire"), std::format("{}: burnt to death", version));
         }
     });
 

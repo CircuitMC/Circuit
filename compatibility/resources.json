@@ -224,9 +224,10 @@
         ],
         "cases": [
           "trace/fluid_washes",
-          "collision/flows"
+          "collision/flows",
+          "client/fire"
         ],
-        "note": "Spreads, falls and drains as both official servers do, washing away the blocks they let it (with their drops)"
+        "note": "Spreads, falls and drains as both official servers do, washing away the blocks they let it (with their drops); puts burning players out (client/fire)"
       },
       "lava": {
         "impl": "partial",
@@ -237,12 +238,13 @@
           "trace/lava_edges",
           "trace/fluid_sources",
           "trace/fluid_washes",
-          "collision/flows"
+          "collision/flows",
+          "client/fire"
         ],
         "deviations": [
-          "the Nether's lava, the fire it starts and entities in lava are not modeled"
+          "the Nether's lava, the fire it starts and entities in lava other than items, arrows and players are not modeled"
         ],
-        "note": "Spreads, falls, recedes and hardens into obsidian, cobblestone, stone and basalt as both official servers do"
+        "note": "Spreads, falls, recedes and hardens into obsidian, cobblestone, stone and basalt as both official servers do; players in it are hurt and set burning as both official servers do (client/fire)"
       },
       "wheat": {
         "impl": "partial",
@@ -274,7 +276,7 @@
       "fire": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Stays on a sturdy top or beside a flammable block, with the faces of its flammable neighbors when nothing below bears or feeds it; ages, burns out, burns its neighbors and spreads in its block ticks, on 1.21.8 only near players unless allowFireTicksAwayFromPlayer, as both official servers do",
+        "note": "Stays on a sturdy top or beside a flammable block, with the faces of its flammable neighbors when nothing below bears or feeds it; ages, burns out, burns its neighbors and spreads in its block ticks, on 1.21.8 only near players unless allowFireTicksAwayFromPlayer, as both official servers do; players in it are hurt and catch fire as both official servers do (client/fire)",
         "cases": [
           "collision/fire",
           "trace/fire_basics",
@@ -284,11 +286,12 @@
           "trace/fire_log",
           "trace/fire_tnt",
           "trace/fire_wool",
-          "trace/fire_spread"
+          "trace/fire_spread",
+          "client/fire"
         ],
         "deviations": [
           "rain and humid biomes do not put it out sooner",
-          "hurts and ignites only items and arrows"
+          "hurts and ignites only items, arrows and players"
         ]
       },
       "snow": {
@@ -5094,6 +5097,14 @@
           "placement/official_items"
         ],
         "note": "Placed by players as both official servers place it; its window copies, zooms and locks filled maps as both official servers do (client/maps)"
+      },
+      "magma_block": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/fire"
+        ],
+        "note": "Hurts a player standing on it without sneaking (hot_floor) as both official servers do (recorded on its middle; its edge by minecraft.wiki); its bubble columns and other entities on it are not modeled"
       }
     },
     "item": {
@@ -5352,9 +5363,6 @@
         "cases": [
           "client/windows",
           "client/armor3"
-        ],
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
         ]
       },
       "redstone_torch": {
@@ -6460,42 +6468,27 @@
         "cases": [
           "client/armor"
         ],
-        "note": "As both official servers wear it: put on by use, swapped for the iron helmet (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use, swapped for the iron helmet (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "leather_chestplate": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "leather_leggings": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "leather_boots": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "chainmail_helmet": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "chainmail_chestplate": {
         "impl": "partial",
@@ -6503,26 +6496,17 @@
         "cases": [
           "client/armor"
         ],
-        "note": "As both official servers wear it: shift-clicked on (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: shift-clicked on (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "chainmail_leggings": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "chainmail_boots": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "iron_helmet": {
         "impl": "partial",
@@ -6530,12 +6514,10 @@
         "cases": [
           "client/armor",
           "client/armor2",
-          "client/armor3"
+          "client/armor3",
+          "client/fire"
         ],
-        "note": "As both official servers wear it: put on by use and swapped off by a leather helmet's use (client/armor), put on by a dispenser and ejected by one over a worn helmet (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use and swapped off by a leather helmet's use (client/armor), put on by a dispenser and ejected by one over a worn helmet (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces; wears by one at each hurt of fire, lava or a magma block (client/fire)"
       },
       "iron_chestplate": {
         "impl": "partial",
@@ -6543,26 +6525,17 @@
         "cases": [
           "client/armor2"
         ],
-        "note": "As both official servers wear it: put on by use from the off hand (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use from the off hand (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "iron_leggings": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "iron_boots": {
         "impl": "partial",
         "evidence": "compared",
         "note": "As both official servers wear it: put on by use from the off hand in creative mode with nothing worn, a copy going on (client/armor3), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ],
         "cases": [
           "client/armor3"
         ]
@@ -6570,26 +6543,17 @@
       "golden_helmet": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "golden_chestplate": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "golden_leggings": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "golden_boots": {
         "impl": "partial",
@@ -6597,29 +6561,21 @@
         "cases": [
           "client/armor"
         ],
-        "note": "As both official servers wear it: put on by use, in survival and creative mode (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use, in survival and creative mode (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "diamond_chestplate": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/armor"
+          "client/armor",
+          "client/fire"
         ],
-        "note": "As both official servers wear it: put on by use and swapped for an elytra (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use and swapped for an elytra (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces; wears by one at each hurt of fire, lava or a magma block (client/fire)"
       },
       "diamond_leggings": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "diamond_boots": {
         "impl": "partial",
@@ -6628,10 +6584,7 @@
           "client/armor",
           "client/armor2"
         ],
-        "note": "As both official servers wear it: put on by clicks and by a dispenser (client/armor, client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by clicks and by a dispenser (client/armor, client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "netherite_helmet": {
         "impl": "partial",
@@ -6639,18 +6592,12 @@
         "cases": [
           "client/armor"
         ],
-        "note": "As both official servers wear it: put on by clicks into the empty head slot after the worn helmet was taken off, a shift-click while a helmet is worn moving it to the hotbar instead (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by clicks into the empty head slot after the worn helmet was taken off, a shift-click while a helmet is worn moving it to the hotbar instead (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "netherite_chestplate": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself"
       },
       "netherite_leggings": {
         "impl": "partial",
@@ -6658,17 +6605,14 @@
         "cases": [
           "client/armor"
         ],
-        "note": "As both official servers wear it: put on by use (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
-        ]
+        "note": "As both official servers wear it: put on by use (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
       },
       "netherite_boots": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself",
-        "deviations": [
-          "its protection and wear when hurt are not modeled"
+        "note": "Worn with the armor, toughness and sound of minecraft.wiki, as the recorded pieces are (client/armor); not recorded itself; not worn by fire, lava or magma blocks (client/fire)",
+        "cases": [
+          "client/fire"
         ]
       },
       "turtle_helmet": {
@@ -6679,7 +6623,6 @@
         ],
         "note": "As both official servers wear it: put on by use, swapped for a leather helmet, and taken off by clicks (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
         "deviations": [
-          "its protection and wear when hurt are not modeled",
           "its water breathing is not modeled"
         ]
       },
@@ -7096,6 +7039,38 @@
           "client/effects_heal"
         ],
         "note": "The wither effect"
+      },
+      "in_fire": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/fire"
+        ],
+        "note": "Fire blocks: 1, armor reducing it, counting toward catching fire; soul fire's 2 (minecraft.wiki) not recorded"
+      },
+      "on_fire": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/fire"
+        ],
+        "note": "Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it"
+      },
+      "lava": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/fire"
+        ],
+        "note": "Lava: 4, armor reducing it, with the burn sound; 15 seconds of burning"
+      },
+      "hot_floor": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/fire"
+        ],
+        "note": "Magma blocks stood on without sneaking: 1, armor reducing it"
       }
     },
     "biome": {
@@ -7405,17 +7380,19 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/armor"
+          "client/armor",
+          "client/fire"
         ],
-        "note": "A player's, from the armor worn, sent as both official servers send it; it reduces no damage yet (every damage Circuit deals bypasses armor)"
+        "note": "A player's, from the armor worn, sent as both official servers send it; it reduces the damage armor reduces (fire, lava, magma blocks) as both official servers reduce it"
       },
       "armor_toughness": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/armor"
+          "client/armor",
+          "client/fire"
         ],
-        "note": "A player's, from the armor worn, sent as both official servers send it; it reduces no damage yet"
+        "note": "A player's, from the armor worn, sent as both official servers send it; it lessens the reduction's fall with stronger hits (client/fire: 2 and 5 toughness)"
       },
       "knockback_resistance": {
         "impl": "partial",

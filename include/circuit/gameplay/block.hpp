@@ -467,6 +467,10 @@ inline bool is_solid(BlockState s) noexcept {
 bool is_lava(BlockState s);
 bool is_lava_source(BlockState s);
 BlockState lava_source();
+// Height of lava in a cell, in blocks, as fluid_height gives water's: 1
+// under lava, else its amount (8 for sources and falling lava, 8 - level
+// when flowing) / 9; 0 for other blocks.
+float lava_height(BlockState s, BlockState above);
 // Whether a block other than water holds water as a property (waterlogged):
 // its water has fluid ticks of the block's type (nature.cpp).
 bool waterlogged_block(BlockState s);

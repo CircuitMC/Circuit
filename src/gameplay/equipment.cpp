@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // What players wear and hold (client/armor).
 #include <circuit/gameplay/equipment.hpp>
+#include "internal.hpp"
 #include <circuit/contracts/commands.hpp>
 #include <circuit/gameplay/items.hpp>
 #include <array>
@@ -21,33 +22,35 @@ struct Worn {
 // of the recorded pieces), the turtle shell, the elytra, and what is worn on
 // the head without armor and not put on by use (client/armor: a carved
 // pumpkin over a worn helmet; client/armor2: a carved pumpkin and a zombie
-// head with nothing on the head; the other heads by the same rule).
+// head with nothing on the head; the other heads by the same rule); which
+// wear as their wearer is hurt (minecraft.wiki "Durability": armor; the
+// elytra's durability goes by gliding).
 const std::array<Worn, 34> worn{{
-    {"leather_helmet", {head, 1, 0, 0, leather, true}},
-    {"leather_chestplate", {chest, 3, 0, 0, leather, true}},
-    {"leather_leggings", {legs, 2, 0, 0, leather, true}},
-    {"leather_boots", {feet, 1, 0, 0, leather, true}},
-    {"chainmail_helmet", {head, 2, 0, 0, chain, true}},
-    {"chainmail_chestplate", {chest, 5, 0, 0, chain, true}},
-    {"chainmail_leggings", {legs, 4, 0, 0, chain, true}},
-    {"chainmail_boots", {feet, 1, 0, 0, chain, true}},
-    {"iron_helmet", {head, 2, 0, 0, iron, true}},
-    {"iron_chestplate", {chest, 6, 0, 0, iron, true}},
-    {"iron_leggings", {legs, 5, 0, 0, iron, true}},
-    {"iron_boots", {feet, 2, 0, 0, iron, true}},
-    {"golden_helmet", {head, 2, 0, 0, gold, true}},
-    {"golden_chestplate", {chest, 5, 0, 0, gold, true}},
-    {"golden_leggings", {legs, 3, 0, 0, gold, true}},
-    {"golden_boots", {feet, 1, 0, 0, gold, true}},
-    {"diamond_helmet", {head, 3, 2, 0, diamond, true}},
-    {"diamond_chestplate", {chest, 8, 2, 0, diamond, true}},
-    {"diamond_leggings", {legs, 6, 2, 0, diamond, true}},
-    {"diamond_boots", {feet, 3, 2, 0, diamond, true}},
-    {"netherite_helmet", {head, 3, 3, 0.1f, netherite, true}},
-    {"netherite_chestplate", {chest, 8, 3, 0.1f, netherite, true}},
-    {"netherite_leggings", {legs, 6, 3, 0.1f, netherite, true}},
-    {"netherite_boots", {feet, 3, 3, 0.1f, netherite, true}},
-    {"turtle_helmet", {head, 2, 0, 0, turtle, true}},
+    {"leather_helmet", {head, 1, 0, 0, leather, true, true}},
+    {"leather_chestplate", {chest, 3, 0, 0, leather, true, true}},
+    {"leather_leggings", {legs, 2, 0, 0, leather, true, true}},
+    {"leather_boots", {feet, 1, 0, 0, leather, true, true}},
+    {"chainmail_helmet", {head, 2, 0, 0, chain, true, true}},
+    {"chainmail_chestplate", {chest, 5, 0, 0, chain, true, true}},
+    {"chainmail_leggings", {legs, 4, 0, 0, chain, true, true}},
+    {"chainmail_boots", {feet, 1, 0, 0, chain, true, true}},
+    {"iron_helmet", {head, 2, 0, 0, iron, true, true}},
+    {"iron_chestplate", {chest, 6, 0, 0, iron, true, true}},
+    {"iron_leggings", {legs, 5, 0, 0, iron, true, true}},
+    {"iron_boots", {feet, 2, 0, 0, iron, true, true}},
+    {"golden_helmet", {head, 2, 0, 0, gold, true, true}},
+    {"golden_chestplate", {chest, 5, 0, 0, gold, true, true}},
+    {"golden_leggings", {legs, 3, 0, 0, gold, true, true}},
+    {"golden_boots", {feet, 1, 0, 0, gold, true, true}},
+    {"diamond_helmet", {head, 3, 2, 0, diamond, true, true}},
+    {"diamond_chestplate", {chest, 8, 2, 0, diamond, true, true}},
+    {"diamond_leggings", {legs, 6, 2, 0, diamond, true, true}},
+    {"diamond_boots", {feet, 3, 2, 0, diamond, true, true}},
+    {"netherite_helmet", {head, 3, 3, 0.1f, netherite, true, true}},
+    {"netherite_chestplate", {chest, 8, 3, 0.1f, netherite, true, true}},
+    {"netherite_leggings", {legs, 6, 3, 0.1f, netherite, true, true}},
+    {"netherite_boots", {feet, 3, 3, 0.1f, netherite, true, true}},
+    {"turtle_helmet", {head, 2, 0, 0, turtle, true, true}},
     {"elytra", {chest, 0, 0, 0, elytra, true}},
     {"carved_pumpkin", {head, 0, 0, 0, generic, false}},
     {"skeleton_skull", {head, 0, 0, 0, generic, false}},
@@ -107,6 +110,18 @@ const Wearable* wearable(std::uint16_t item) {
     static const auto map = by_id(worn);
     const auto it = map.find(item);
     return it == map.end() ? nullptr : &it->second->wearable;
+}
+
+std::optional<contracts::ItemStack> worn_down(const contracts::ItemStack& piece, std::int32_t amount, bool fire) {
+    const auto* worn = wearable(piece.item);
+    const auto most = items::max_damage(piece); // the stack's own (its max_damage component)
+    if (piece.empty() || !worn || !worn->wears || most <= 0 || amount < 1) return std::nullopt;
+    if (fire && detail::fire_resistant(piece)) return std::nullopt;
+    const auto damage = static_cast<std::int64_t>(piece.damage) + amount;
+    if (damage >= most) return contracts::ItemStack{};
+    auto out = piece;
+    out.damage = static_cast<std::uint16_t>(damage);
+    return out;
 }
 
 std::string_view armor_modifier(Slot s) noexcept {

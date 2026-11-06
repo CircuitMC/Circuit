@@ -13,6 +13,7 @@
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/effects.hpp>
+#include <circuit/gameplay/damage.hpp>
 #include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/game_data.hpp>
@@ -3217,6 +3218,67 @@ int main() {
         const auto sword = eq::weapon(item("minecraft:iron_sword"));
         require(sword && sword->damage == 5.0f && sword->speed == -2.4f && !eq::weapon(items::stone), "an iron sword's modifiers");
         require(eq::armor_modifier(eq::Slot::feet) == "armor.boots" && eq::inventory_slot(eq::Slot::mainhand, 3) == 39, "ids and slots");
+    });
+
+    suite.run("armor wears as its wearer is hurt, netherite not by fire, breaking at its durability (client/fire)", [] {
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::contracts::WearArmor;
+        const PlayerKey alex{4, 2};
+        Sim s;
+        const auto slot = [&](std::size_t i) {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            return it == d.players.end() ? ItemStack{} : it->slots[i];
+        };
+        const auto item = [](std::string_view name) { return *circuit::gameplay::items::by_name(name); };
+        const auto chest = item("minecraft:diamond_chestplate"), boots = item("minecraft:netherite_boots");
+        s.tick({SetPlayerSlot{alex, 5, {items::iron_helmet, 1}}, SetPlayerSlot{alex, 6, {chest, 1}}, SetPlayerSlot{alex, 8, {boots, 1}}});
+        s.tick({WearArmor{alex, 1, true}});
+        require(slot(5) == ItemStack{items::iron_helmet, 1, 1} && slot(6) == ItemStack{chest, 1, 1} && slot(8) == ItemStack{boots, 1},
+                "fire wears the helmet and the chestplate by one, not netherite");
+        s.tick({WearArmor{alex, 2, false}});
+        require(slot(5).damage == 3 && slot(6).damage == 3 && slot(8).damage == 2, "other damage wears netherite too");
+        // An iron helmet lasts 165: it breaks at its durability.
+        s.tick({WearArmor{alex, 162, false}});
+        require(slot(5).empty() && slot(6).damage == 165 && slot(8).damage == 164, "the helmet broke");
+        // The elytra does not wear by hurts; a carved pumpkin has no durability.
+        s.tick({SetPlayerSlot{alex, 6, {item("minecraft:elytra"), 1}}, SetPlayerSlot{alex, 5, {item("minecraft:carved_pumpkin"), 1}}});
+        s.tick({WearArmor{alex, 1, false}});
+        require(slot(6) == ItemStack{item("minecraft:elytra"), 1} && slot(5) == ItemStack{item("minecraft:carved_pumpkin"), 1}, "elytra, pumpkin");
+        s.tick({WearArmor{alex, 0, false}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "no wear of nothing");
+    });
+
+    suite.run("damage reductions and burning count as both official servers count them (client/fire)", [] {
+        namespace dm = circuit::gameplay::damage;
+        // 13 armor and 5 toughness (an iron helmet, a diamond chestplate and
+        // netherite boots); 10 and 2; the healths the recordings show.
+        require(20.0f - dm::after_armor(1.0f, 13.0f, 5.0f) == 19.507692337036133f, "1 by 13 and 5");
+        require(20.0f - dm::after_armor(4.0f, 13.0f, 5.0f) == 17.88307762145996f, "4 by 13 and 5");
+        require(20.0f - dm::after_armor(1.0f, 10.0f, 2.0f) == 19.384000778198242f, "1 by 10 and 2");
+        require(dm::after_armor(100.0f, 30.0f, 0.0f) == 100.0f * (1.0f - 6.0f / 25.0f) && dm::after_armor(1.0f, 30.0f, 20.0f) == 1.0f * (1.0f - 20.0f / 25.0f),
+                "a fifth of the points at least, 80% at most");
+        require(20.0f - dm::after_resistance(1.0f, 1) == 19.399999618530273f && dm::after_resistance(5.0f, 4) == 0.0f && dm::after_resistance(5.0f, 9) == 0.0f,
+                "resistance");
+        require(dm::armor_wear(1.0f) == 1 && dm::armor_wear(4.0f) == 1 && dm::armor_wear(7.9f) == 1 && dm::armor_wear(8.0f) == 2, "wear");
+        // Twenty ticks in fire from -20 catch fire for 160 ticks; then one or two more a tick.
+        std::int32_t t = dm::not_burning;
+        for (int k = 0; k < 19; ++k) t = dm::touch_fire(t, true);
+        require(t == -1, "19 ticks in fire");
+        t = dm::touch_fire(t, false);
+        require(t == 160 && dm::touch_fire(t, false) == 161 && dm::touch_fire(t, true) == 162, "the 20th catches fire");
+        require(dm::touch_lava(dm::not_burning) == 300 && dm::touch_lava(400) == 400, "lava");
+        const auto b = dm::burn(160);
+        require(b.hurts && b.ticks == 159 && !dm::burn(159).hurts && dm::burn(1).ticks == dm::not_burning && !dm::burn(-20).hurts,
+                "burning hurts at multiples of 20 and goes out at 0");
+        // Burning from lava, out of it at once: 14 hurts (minecraft.wiki "Lava").
+        int hurts = 0;
+        for (t = dm::burn(300).ticks; t > 0;) {
+            const auto next = dm::burn(t);
+            hurts += next.hurts ? 1 : 0;
+            t = next.ticks;
+        }
+        require(hurts == 14, std::format("{} hurts", hurts));
     });
 
     suite.run("comparators read dispensers as containers of nine slots", [] {

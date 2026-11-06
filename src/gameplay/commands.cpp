@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 #include <circuit/gameplay/experience.hpp>
+#include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/food.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <functional>
@@ -607,6 +608,26 @@ Plan plan(RuleContext& ctx, const contracts::ConsumeItem& c) {
             detail::spawn_dropped(ctx, {static_cast<std::int32_t>(std::floor(at.x)), static_cast<std::int32_t>(std::floor(at.y)),
                                         static_cast<std::int32_t>(std::floor(at.z))},
                                   at, {}, rest, 40);
+        }
+    };
+}
+
+// Armor worn down by a hurt (client/fire: an iron helmet and a diamond
+// chestplate lose one each by a hit of 1 or of 4, netherite boots none by
+// fire; minecraft.wiki "Durability": a quarter of the damage, at least one,
+// gone at the piece's durability). Its breaking makes no sound here (as
+// tools' breaking does not yet).
+Plan plan(RuleContext& ctx, const contracts::WearArmor& c) {
+    if (c.amount < 1 || c.amount > contracts::max_armor_wear) return std::unexpected(ErrorCode::invalid_argument);
+    return [&ctx, c] {
+        const auto* inventory = ctx.peek_player(c.player);
+        if (!inventory) return;
+        for (std::uint8_t slot = 5; slot <= 8; ++slot) {
+            const auto after = equipment::worn_down(inventory->slots[slot], c.amount, c.fire);
+            if (!after) continue;
+            auto& inv = ctx.player(c.player);
+            inv.slots[slot] = *after;
+            detail::record_slot(ctx, inv, slot);
         }
     };
 }
