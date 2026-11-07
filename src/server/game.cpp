@@ -244,6 +244,7 @@ struct Player {
         std::int32_t ticks{};
         std::int32_t left{};
         std::optional<std::uint64_t> consuming;
+        bool shield{}; // a shield raised (client/shield): held until let go, never used up
     };
     std::optional<Using> using_item;
     std::uint8_t living{};
@@ -2427,6 +2428,15 @@ struct Game::Impl final : GameServices {
         if (!harm_allowed(type)) return false;
         static const auto fire_resistance = gameplay::effects::id("fire_resistance"), resistance = gameplay::effects::id("resistance");
         if (type.fire && fire_resistance && effect_amplifier(p, *fire_resistance)) return false;
+        if (by && harm == Harm::player_attack && blocking(p)) {
+            if (facing(p, *by)) {
+                block(p, amount, *by);
+                return false;
+            }
+            // 1.21.8 knocks a holder hit from behind 0.5 towards the attacker
+            // first, as a blocked attack does (client/shield; 1.21.4 not).
+            if (wire.protocol() >= 772) knock(p, 0.5, by->pos.x - p.pos.x, by->pos.z - p.pos.z);
+        }
         float applied = amount;
         const bool fresh = p.hurt_cooldown <= 10;
         if (!fresh) {
@@ -2453,6 +2463,7 @@ struct Game::Impl final : GameServices {
         }
         if (applied > 0.0f) exhaust(p, type.exhaustion);
         p.health = std::max(0.0f, p.health - applied);
+        if (by) p.attacked = true; // the health told after the attack's wear (client/combat, client/shield)
         if (!fresh) {
             // A death this way makes no sound (not recorded).
             if (p.health <= 0.0f) die(p, harm, fall_distance, by);
@@ -2464,7 +2475,6 @@ struct Game::Impl final : GameServices {
         for (const auto viewer : p.seen_by)
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
         if (by) {
-            p.attacked = true;
             p.peer->send(wire.hurt_animation(p.entity_id, gameplay::damage::hurt_angle(by->pos.x - p.pos.x, by->pos.z - p.pos.z, p.yaw)));
             knock(p, 0.4, p.pos.x - by->pos.x, p.pos.z - by->pos.z);
         }
@@ -2783,6 +2793,12 @@ struct Game::Impl final : GameServices {
         using gameplay::equipment::Slot;
         const auto now = equipment_now(p);
         const auto& was = p.equipped;
+        // A shield put into the off hand (client/shield: equip_generic; not
+        // in the main hand), before the armor's.
+        static const auto shield = gameplay::items::by_name("minecraft:shield");
+        if (const auto& o = now[std::size_t(Slot::offhand)], &w = was[std::size_t(Slot::offhand)];
+            shield && !o.empty() && o.item == *shield && (w.empty() || w.item != o.item))
+            sound_around_at(p, Wire::PlayerSound::equip_generic, 1.0f, 1.0f, Wire::SoundCategory::player, true);
         for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
             if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item)) continue;
             if (const auto* worn = gameplay::equipment::wearable(now[k].item); worn && worn->slot == static_cast<Slot>(k))
@@ -3040,6 +3056,86 @@ struct Game::Impl final : GameServices {
         p.using_item = Player::Using{hand, slot, stack, c.ticks, c.ticks, std::nullopt};
         p.living = static_cast<std::uint8_t>(1 | (hand == 1 ? 2 : 0));
     }
+    // A shield raised (client/shield: the living flags, 1 and the off hand's
+    // 2; none while its cooldown lasts), blocking once raised 5 ticks
+    // (minecraft.wiki "Shield"; recorded: 2 ticks none, 12 blocked).
+    static constexpr std::int32_t shield_raise = 72000;
+    void raise_shield(Player& p, std::int32_t hand, std::uint8_t slot) {
+        const auto stack = slot_of(p, slot);
+        if (p.cooldowns.contains(stack.item)) return;
+        p.using_item = Player::Using{hand, slot, stack, shield_raise, shield_raise, std::nullopt, true};
+        p.living = static_cast<std::uint8_t>(1 | (hand == 1 ? 2 : 0));
+    }
+    // Raised 5 ticks and still there: the slot holding it, a main-hand
+    // shield's slot still the main hand (a shield swapped, dropped or
+    // switched away blocks no more, before its use ends at the tick).
+    bool blocking(const Player& p) const {
+        if (!p.using_item || !p.using_item->shield || p.using_item->ticks - p.using_item->left < 5) return false;
+        const auto& u = *p.using_item;
+        const auto now = slot_of(p, u.slot);
+        return !now.empty() && now.item == u.stack.item && (u.hand == 1 || u.slot == main_hand(p));
+    }
+    // Whether what hurts stands before a player (the half of the horizontal
+    // plane they face: minecraft.wiki "Shield"; client/shield: an attacker
+    // before and behind).
+    static bool facing(const Player& p, const Player& from) {
+        const double yaw = p.yaw * std::numbers::pi / 180.0;
+        return (from.pos.x - p.pos.x) * -std::sin(yaw) + (from.pos.z - p.pos.z) * std::cos(yaw) > 0.0;
+    }
+    static bool holds_axe(const contracts::ItemStack& held) {
+        if (held.empty()) return false;
+        const auto* info = gameplay::items::info(held.item);
+        return info && std::string_view(info->name).ends_with("_axe");
+    }
+    // An attack a raised shield blocked (client/shield; both versions alike
+    // but for the sounds and the disabling's damage event): an axe disables the shield for 100 ticks (its
+    // cooldown told at once) and lowers it; 1.21.8 plays `item.shield.break`
+    // (volume 0.8) and sends the damage event, 1.21.4 sends entity events 30
+    // and 29; otherwise 1.21.8 plays `item.shield.block`, 1.21.4 sends entity
+    // event 29 (the pitch between 0.8 and 1.2 by minecraft.wiki, Circuit's
+    // draw). The shield wears by 1 and the damage (rounded down) from 3
+    // damage (minecraft.wiki; recorded: 1 none, 6 and 9 worn), told at the
+    // next tick; its holder is knocked 0.5 towards the
+    // attacker, then 0.4 away (told to the others only); the hurt cooldown
+    // starts as by a hurt of nothing; the others hear the hurt sound.
+    void block(Player& p, float amount, const Player& by) {
+        const auto u = *p.using_item;
+        const bool v772 = wire.protocol() >= 772;
+        const auto to_all = [&](const Bytes& packet) {
+            p.peer->send(packet);
+            for (const auto viewer : p.seen_by)
+                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(packet);
+        };
+        const bool disables = holds_axe(slot_of(by, main_hand(by)));
+        if (disables) {
+            p.cooldowns[u.stack.item] = tick_count.load() + 100;
+            if (const auto* info = gameplay::items::info(u.stack.item)) p.peer->send(wire.cooldown(info->name, 100));
+            if (v772) {
+                sound_around_at(p, Wire::PlayerSound::shield_break, 0.8f, 0.8f + random_draw() * 0.4f, Wire::SoundCategory::player, true);
+                to_all(wire.damage_event(p.entity_id, registry_index(registries, "minecraft:damage_type", "minecraft:player_attack").value_or(0),
+                                         by.entity_id, by.entity_id));
+            } else {
+                to_all(wire.entity_event(p.entity_id, 30));
+                to_all(wire.entity_event(p.entity_id, 29));
+            }
+        } else if (v772) {
+            sound_around_at(p, Wire::PlayerSound::shield_block, 1.0f, 0.8f + random_draw() * 0.4f, Wire::SoundCategory::player, true);
+        } else {
+            to_all(wire.entity_event(p.entity_id, 29));
+        }
+        if (amount >= 3.0f && p.game_mode != creative) {
+            admit(contracts::WearHeld{key_of(p), u.slot, u.stack.item, std::min(1 + static_cast<std::int32_t>(std::floor(amount)), contracts::max_held_wear)});
+            hold_wear(p, std::uint64_t{1} << u.slot, false);
+        }
+        knock(p, 0.5, by.pos.x - p.pos.x, by.pos.z - p.pos.z);
+        knock(p, 0.4, p.pos.x - by.pos.x, p.pos.z - by.pos.z);
+        if (p.hurt_cooldown <= 10) {
+            p.hurt_cooldown = 20;
+            p.last_hurt = 0.0f;
+        }
+        if (disables) stop_use(p);
+        sound_around(p, Wire::PlayerSound::hurt, voice_pitch());
+    }
     // Cooldowns that ended, told as cooldowns of 0 ticks (client/eat).
     void end_cooldowns(Player& p) {
         for (auto it = p.cooldowns.begin(); it != p.cooldowns.end();) {
@@ -3057,6 +3153,12 @@ struct Game::Impl final : GameServices {
         if (!p.using_item || p.using_item->consuming) return;
         auto& u = *p.using_item;
         const auto now = slot_of(p, u.slot);
+        if (u.shield) {
+            // Raised while it is held there, as eating ends (not recorded).
+            if (now.empty() || now.item != u.stack.item || p.game_mode == spectator || (u.hand == 0 && u.slot != main_hand(p))) stop_use(p);
+            else if (u.left > 0) --u.left, u.stack = now;
+            return;
+        }
         const auto* c = gameplay::food::of(now.item);
         if (!c || now.empty() || now.item != u.stack.item || p.game_mode == spectator || (u.hand == 0 && u.slot != main_hand(p))) {
             stop_use(p);
@@ -3928,6 +4030,11 @@ struct Game::Impl final : GameServices {
         // Food and drink are held until eaten or drunk.
         if (const auto* c = gameplay::food::of(item)) {
             start_use(p, u.hand, slot, *c);
+            return;
+        }
+        // A shield is raised until let go (client/shield).
+        if (static const auto shield = gameplay::items::by_name("minecraft:shield"); shield && item == *shield) {
+            raise_shield(p, u.hand, slot);
             return;
         }
         // A written book opens for reading (client/books).

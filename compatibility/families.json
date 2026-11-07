@@ -2307,13 +2307,14 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
-            "client/combat"
+            "client/combat",
+            "client/shield"
           ],
           "note": "A player's attack on another within the entity interaction range and 3: the attack damage by the charge (the ticks since the last attack, swing or change of the main hand's item, in floats), nothing without damage; strong attacks (charge above 0.9): sprint knockback (its sound, 0.5 more, the sprint ended), critical hits (half as much again, their sound and animation), sweeps with a sword, also walking (each player near the target hurt for 1 and knocked along the attacker's facing, 1.21.8 and 1.21.4 in their own orders, also for a player in their hurt cooldown), the sweep sound and particle; the player_attack damage event naming the attacker, the hurt animation, the knockback away from the attacker told to the target in the attack, the nodamage, strong and weak sounds, the damage indicator particles, the weapon's wear outside creative mode; more damage within the hurt cooldown without the event or the hurt's knockback, a sprint's knockback then told to the others only; a player's velocity told to the others after a knockback or a jump when it changed; the arm's swing shown from halfway through the last (two in one tick both); the sprint flag; death.attack.player, as both official servers do",
           "deviations": [
             "the hurt animation's angle uses the exact arctangent; the official servers' differs in the float's last digits",
-            "attacks on other entities, shields, enchantments (knockback, sweeping edge, fire aspect), teams and the breaking of a weapon's sound are not modeled",
-            "the reach's margin of 3 is Circuit's choice between the recorded 4.7 (hit) and 6.7 (refused); the swing's length of 6 ticks is Circuit's within the recorded (2 ticks hidden, 4 shown); the sweep box by minecraft.wiki (one player inside and one beyond recorded); the weapons other than an iron sword, the critical hit's conditions but falling, the attacker's exhaustion, particles' range, jump boost's and sprinting's jump velocity, other game modes in sweeps and a target in the air or moving were not recorded"
+            "attacks on other entities, enchantments (knockback, sweeping edge, fire aspect), teams and the breaking of a weapon's sound are not modeled",
+            "the reach's margin of 3 is Circuit's choice between the recorded 4.7 (hit) and 6.7 (refused); the swing's length of 6 ticks is Circuit's within the recorded (2 ticks hidden, 4 shown); the sweep box by minecraft.wiki (one player inside and one beyond recorded); the weapons other than an iron sword and an iron axe (client/shield), the critical hit's conditions but falling, the attacker's exhaustion, particles' range, jump boost's and sprinting's jump velocity, other game modes in sweeps and a target in the air or moving were not recorded"
           ]
         },
         {
@@ -2324,12 +2325,14 @@
           "evidence": "compared",
           "cases": [
             "client/armor",
-            "client/fire"
+            "client/fire",
+            "client/shield"
           ],
-          "note": "Armor's points, toughness and netherite's knockback resistance as attribute modifiers of each armor slot, as both official servers send them; damage armor reduces (not in the bypasses_armor damage type tag: fire, lava, magma blocks, cacti and sweet berry bushes so far) is reduced by the documented formula, to the float as both official servers reduce it, and wears each piece worn by a quarter of it, at least one (netherite not by fire), through the rules at the next tick, breaking it at its durability",
+          "note": "Armor's points, toughness and netherite's knockback resistance as attribute modifiers of each armor slot, as both official servers send them; damage armor reduces (not in the bypasses_armor damage type tag: fire, lava, magma blocks, cacti and sweet berry bushes so far) is reduced by the documented formula, to the float as both official servers reduce it, and wears each piece worn by a quarter of it, at least one (netherite not by fire), through the rules at the next tick, breaking it at its durability; shields raised from either hand block players' attacks from the half their holder faces once raised 5 ticks (minecraft.wiki; recorded: 2 not, 12 blocking): no damage, 1.21.8's block sound or 1.21.4's entity event 29, the hurt sound for others, the shield worn by 1 and the damage from 3 (minecraft.wiki; recorded: 6 and 9 worn, 1 not), the holder knocked 0.5 towards the attacker then 0.4 away (told to the others only), the hurt cooldown started as by a hurt of nothing, the attack failing; axes disable them for 100 ticks (the cooldown, 1.21.8's break sound and damage event or 1.21.4's entity events 30 and 29, lowered); 1.21.8 knocks a holder hit from behind 0.5 towards the attacker first; the equip sound of a shield put into the off hand",
           "deviations": [
             "a piece's breaking has no sound or entity event (not modeled, as for tools; not recorded), and the unbreakable component is not honored",
-            "protection enchantments, unbreaking and shields are not modeled"
+            "protection enchantments and unbreaking are not modeled; shields block only players' attacks (not projectiles, explosions or mobs), every shield as the shield item (1.21.8's blocks_attacks component of a stack is not read), and the block and break sounds' pitch is Circuit's own draw",
+            "weak and critical hits on a raised shield, axes other than the iron axe, sweeps reaching a raised shield, the block and break sounds' range and a raised shield at death were not recorded"
           ]
         },
         {
@@ -2492,7 +2495,8 @@
             "client/armor2",
             "client/armor3",
             "client/fire",
-            "client/drown"
+            "client/drown",
+            "client/shield"
           ],
           "note": "Armor slots accept armor; armor and elytras put on by use from either hand (swapping with what is worn, in creative mode too, where with nothing worn a copy goes on; not a carved pumpkin or a zombie head), by clicks and by dispensers, with their equip sounds (also from the creative inventory; not when taken off; a pumpkin's or head's worn by clicks not recorded); what a player holds and wears shown to others when it changes (the hands swapped as entity event 55) and when the player appears; the attributes armor and held weapons give; the turtle shell's water breathing and leather armor keeping a player from freezing",
           "deviations": [

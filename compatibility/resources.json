@@ -5340,27 +5340,30 @@
       "wooden_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it disables a raised shield it hits for 100 ticks (as the iron axe: client/shield)"
       },
       "stone_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it disables a raised shield it hits for 100 ticks (as the iron axe: client/shield)"
       },
       "iron_axe": {
         "impl": "partial",
-        "evidence": "documented",
-        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
+        "evidence": "compared",
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it disables a raised shield it hits for 100 ticks (client/shield)",
+        "cases": [
+          "client/shield"
+        ]
       },
       "golden_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it disables a raised shield it hits for 100 ticks (as the iron axe: client/shield)"
       },
       "diamond_axe": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Dig speed and wear on chests; held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor)",
+        "note": "Dig speed and wear on chests; held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor); it disables a raised shield it hits for 100 ticks (as the iron axe: client/shield)",
         "cases": [
           "client/armor"
         ]
@@ -5368,7 +5371,7 @@
       "netherite_axe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)"
+        "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it disables a raised shield it hits for 100 ticks (as the iron axe: client/shield)"
       },
       "diamond_helmet": {
         "impl": "partial",
@@ -6762,6 +6765,17 @@
         "deviations": [
           "the mace's smash attack is not modeled"
         ]
+      },
+      "shield": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/shield"
+        ],
+        "note": "Raised from either hand (the living flags) until let go; blocks players' attacks from before its holder once raised 5 ticks (minecraft.wiki; recorded: 2 not, 12 blocking), worn by 1 and the damage from 3 (minecraft.wiki; recorded 6 and 9); disabled by axes for 100 ticks; its equip sound in the off hand; as both official servers do",
+        "deviations": [
+          "it blocks only players' attacks"
+        ]
       }
     },
     "entity": {
@@ -7334,6 +7348,15 @@
           "client/combat"
         ],
         "note": "The damage indicator and sweep particles of attacks only"
+      },
+      "play/clientbound/cooldown": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/eat",
+          "client/shield"
+        ],
+        "note": "The chorus fruit's and a disabled shield's cooldowns and their ends"
       }
     },
     "attribute": {

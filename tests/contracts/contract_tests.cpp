@@ -197,7 +197,7 @@ int main() {
         // Armor worn down by hurts (tag 43), by fire and by other damage.
         log.ticks.push_back({16, {{50, WearArmor{alex, 1, true}}, {51, WearArmor{alex, max_armor_wear, false}}}});
         // A held weapon worn by a hit (tag 44).
-        log.ticks.push_back({17, {{52, WearHeld{alex, 36, 812, 1}}, {53, WearHeld{alex, 44, 1, max_held_wear}}}});
+        log.ticks.push_back({17, {{52, WearHeld{alex, 36, 812, 1}}, {53, WearHeld{alex, 44, 1, max_held_wear}}, {54, WearHeld{alex, offhand_slot, 9, 7}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -253,8 +253,9 @@ int main() {
             const auto encoded = encode_replay(one);
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "armor wear is range-checked");
         }
-        // A WearHeld's slot is a hotbar slot and its amount 1 to max_held_wear.
-        for (const auto& [slot, amount] : {std::pair{std::uint8_t{35}, 1}, std::pair{std::uint8_t{45}, 1}, std::pair{std::uint8_t{36}, 0},
+        // A WearHeld's slot is a hotbar slot or the off hand and its amount 1
+        // to max_held_wear.
+        for (const auto& [slot, amount] : {std::pair{std::uint8_t{35}, 1}, std::pair{std::uint8_t{46}, 1}, std::pair{std::uint8_t{36}, 0},
                                            std::pair{std::uint8_t{36}, max_held_wear + 1}}) {
             ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
             one.ticks.push_back({1, {{1, WearHeld{alex, slot, 812, amount}}}});

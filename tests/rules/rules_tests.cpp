@@ -3379,8 +3379,13 @@ int main() {
         // An iron sword lasts 250.
         s.tick({WearHeld{alex, 36, sword, 249}});
         require(slot(36).empty(), "broken");
-        s.tick({WearHeld{alex, 45, sword, 1}});
-        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "not a hotbar slot");
+        s.tick({WearHeld{alex, 35, sword, 1}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "neither a hotbar slot nor the off hand");
+        // A shield in the off hand (client/shield).
+        const auto shield = item("minecraft:shield");
+        s.tick({SetPlayerSlot{alex, 45, {shield, 1}}});
+        s.tick({WearHeld{alex, 45, shield, 7}});
+        require(slot(45) == ItemStack{shield, 1, 7}, "the off hand's shield");
         s.tick({WearHeld{alex, 36, sword, 0}});
         require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "no wear of nothing");
     });

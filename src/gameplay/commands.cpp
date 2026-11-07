@@ -632,11 +632,12 @@ Plan plan(RuleContext& ctx, const contracts::WearArmor& c) {
     };
 }
 
-// A held item worn by a hit that hurt (client/combat: an iron sword loses
-// one a hit; minecraft.wiki "Durability"). Its breaking makes no sound here
-// (as armor's and tools' breaking does not yet).
+// A held item worn (client/combat: an iron sword loses one a hit that
+// hurt; client/shield: a shield 1 + the damage it blocked). Its breaking
+// makes no sound here (as armor's and tools' breaking does not yet).
 Plan plan(RuleContext& ctx, const contracts::WearHeld& c) {
-    if (c.slot < contracts::hotbar_first || c.slot >= contracts::hotbar_first + 9) return std::unexpected(ErrorCode::invalid_slot);
+    if ((c.slot < contracts::hotbar_first || c.slot >= contracts::hotbar_first + 9) && c.slot != contracts::offhand_slot)
+        return std::unexpected(ErrorCode::invalid_slot);
     if (c.amount < 1 || c.amount > contracts::max_held_wear) return std::unexpected(ErrorCode::invalid_argument);
     return [&ctx, c] {
         const auto* inventory = ctx.peek_player(c.player);

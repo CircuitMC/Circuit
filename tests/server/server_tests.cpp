@@ -4741,6 +4741,343 @@ int main() {
         }
     });
 
+    suite.run("players block attacks with shields as both official servers show it (client/shield)", [] {
+        // circuit-clienttest/shield.js: alice (8.5 -60 8.5, facing east) hits
+        // bob (10.5 -60 8.5, facing west), who raises a shield in his off
+        // hand, with carol beside him; all three in survival on a floor.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            GameFixture f(version, offline_config());
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            const bool v772 = std::string_view(version) == "1.21.8";
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            auto carol = f.join(3, "carol");
+            std::map<std::int32_t, std::string> names;
+            std::map<std::string, std::int32_t> ids;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}, std::pair{carol, "carol"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) {
+                        const auto e = pk->fields.i32().value();
+                        names[e] = name;
+                        ids[name] = e;
+                    }
+            }
+            // Since the last call, as text: health, damage events, velocities,
+            // sounds, entity events, the living flags, cooldowns and slots.
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("set_health")) {
+                        out.push_back(std::format("health {}", in.f32().value()));
+                    } else if (pk->id == id("damage_event")) {
+                        out.push_back(std::format("damage {}", who(in.varint().value())));
+                    } else if (pk->id == id("set_entity_motion")) {
+                        const auto e = in.varint().value();
+                        const auto x = in.i16().value(), y = in.i16().value(), z = in.i16().value();
+                        out.push_back(std::format("velocity {} {} {} {}", who(e), x, y, z));
+                    } else if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        (void)in.i32(), (void)in.i32(), (void)in.i32();
+                        out.push_back(std::format("sound {} category {} volume {}", sound, category, in.f32().value()));
+                    } else if (pk->id == id("set_equipment")) {
+                        out.push_back(std::format("equipment {}", who(in.varint().value())));
+                    } else if (pk->id == id("entity_event")) {
+                        const auto e = in.i32().value();
+                        if (const auto status = static_cast<int>(in.i8().value()); status < 24 || status > 28) out.push_back(std::format("status {} {}", who(e), status));
+                    } else if (pk->id == id("set_entity_data")) {
+                        const auto e = in.varint().value();
+                        const auto index = in.u8().value();
+                        if (in.varint().value() != 0) continue;
+                        if (index == 8) out.push_back(std::format("living {} {}", who(e), in.u8().value()));
+                        if (index == 0) out.push_back(std::format("flags {} {}", who(e), in.u8().value()));
+                    } else if (pk->id == id("cooldown")) {
+                        const auto group = in.string(32767).value();
+                        out.push_back(std::format("cooldown {} {}", group, in.varint().value()));
+                    } else if (pk->id == id("container_set_slot")) {
+                        if (in.varint().value() != 0) continue;
+                        (void)in.varint();
+                        const auto slot = in.i16().value();
+                        std::string line = std::format("slot {}", slot);
+                        if (in.varint().value() > 0) {
+                            (void)in.varint();
+                            if (in.varint().value() == 1) {
+                                (void)in.varint();
+                                (void)in.varint();
+                                line += std::format(" damage {}", in.varint().value());
+                            }
+                        }
+                        out.push_back(line);
+                    }
+                }
+                return out;
+            };
+            struct Seen {
+                std::vector<std::string> alice, bob, carol;
+            };
+            const auto tick = [&] {
+                f.game->tick();
+                return Seen{packets(*alice), packets(*bob), packets(*carol)};
+            };
+            const auto ticks = [&](int n) {
+                Seen all;
+                for (int k = 0; k < n; ++k) {
+                    auto t = tick();
+                    all.alice.insert(all.alice.end(), t.alice.begin(), t.alice.end());
+                    all.bob.insert(all.bob.end(), t.bob.begin(), t.bob.end());
+                    all.carol.insert(all.carol.end(), t.carol.begin(), t.carol.end());
+                }
+                return all;
+            };
+            const auto has = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::find(v, x) != v.end(); };
+            const auto starting = [](const std::vector<std::string>& v, std::string_view x) {
+                return std::ranges::count_if(v, [&](const auto& s) { return s.starts_with(x); });
+            };
+            const auto in_order = [](const std::vector<std::string>& v, std::initializer_list<std::string> want) {
+                auto at = v.begin();
+                for (const auto& w : want) {
+                    at = std::find(at, v.end(), w);
+                    if (at == v.end()) return false;
+                    ++at;
+                }
+                return true;
+            };
+            const auto text = [](const std::vector<std::string>& v) {
+                std::string t;
+                for (const auto& x : v) t += x + "; ";
+                return t;
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            const auto attack = [&] {
+                f.game->submit(1, I{server::intent::Attack{ids.at("bob")}});
+                f.game->submit(1, I{server::intent::Swing{0}});
+            };
+            std::int32_t sequence = 0;
+            const auto raise = [&](std::int32_t hand = 1) { f.game->submit(2, I{server::intent::Use{hand, ++sequence, 90.0f, 0.0f}}); };
+            const auto lower = [&] { f.game->submit(2, I{server::intent::Dig{5, {}, 0, 0}}); };
+            const auto give = [&](std::uint64_t who, std::int16_t slot, std::string_view item) {
+                command(who, "gamemode creative");
+                (void)tick();
+                f.game->submit(who, I{server::intent::CreativeSlot{slot, item.empty() ? 0 : 1, item.empty() ? 0 : tables.item_id(item).value(), 0}});
+                (void)tick();
+                command(who, "gamemode survival");
+                (void)tick();
+            };
+            const auto sound = [&](std::int32_t v772_id, std::int32_t v769_id, std::string_view volume = "1") {
+                return std::format("sound {} category 7 volume {}", v772 ? v772_id : v769_id, volume);
+            };
+            const auto hurt = sound(1175, 1135), nodamage = sound(1167, 1127), blocked = sound(1298, 1257), broken = sound(1299, 1258, "0.8"),
+                       equip = sound(70, 70), knockback = sound(1166, 1126);
+            const auto none_of = [&](const Seen& t, std::string_view x) { return !has(t.alice, x) && !has(t.bob, x) && !has(t.carol, x); };
+            for (const auto* c : {"gamerule naturalRegeneration false", "difficulty normal", "fill 4 -61 4 16 -61 12 dirt", "tp alice 8.5 -60 8.5 -90 0",
+                                  "gamemode survival"})
+                command(1, c);
+            command(2, "tp bob 10.5 -60 8.5 90 0");
+            command(2, "gamemode survival");
+            command(3, "tp carol 10.5 -60 9.5 90 0");
+            command(3, "gamemode survival");
+            (void)ticks(2);
+            f.game->submit(2, I{server::intent::Move{std::nullopt, std::pair{90.0f, 0.0f}, true}});
+            f.game->submit(3, I{server::intent::Move{std::nullopt, std::pair{90.0f, 0.0f}, true}});
+            // A shield into the off hand: the generic equip sound.
+            command(2, "gamemode creative");
+            (void)tick();
+            f.game->submit(2, I{server::intent::CreativeSlot{45, 1, tables.item_id("minecraft:shield").value(), 0}});
+            auto t = ticks(2);
+            require(has(t.alice, equip) && has(t.bob, equip), std::format("{}: the shield's equip sound: {}", version, text(t.alice)));
+            command(2, "gamemode survival");
+            (void)ticks(30);
+            const auto block_sign = v772 ? blocked : std::string("status bob 29");
+            // The fist on the raised shield: blocked, the shield not worn (1).
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(2);
+            require(in_order(t.alice, {block_sign, hurt, nodamage, "velocity bob 1200 3200 0"}) && has(t.bob, block_sign) && starting(t.bob, "slot 45") == 0,
+                    std::format("{}: the fist blocked: {} / {}", version, text(t.alice), text(t.bob)));
+            lower();
+            (void)ticks(30);
+            // A sword into the main hand: no equip sound.
+            command(1, "gamemode creative");
+            (void)tick();
+            f.game->submit(1, I{server::intent::CreativeSlot{36, 1, tables.item_id("minecraft:iron_sword").value(), 0}});
+            t = ticks(2);
+            require(none_of(t, equip), std::format("{}: no equip sound for the main hand", version));
+            command(1, "gamemode survival");
+            (void)ticks(30);
+
+            // Raised 2 ticks before the sword: not yet blocking.
+            raise();
+            t = tick();
+            require(has(t.alice, "living bob 3") && has(t.bob, "living bob 3"), std::format("{}: raised: {}", version, text(t.alice)));
+            (void)tick();
+            attack();
+            t = ticks(2);
+            require(has(t.alice, "damage bob") && has(t.bob, "velocity bob 3200 2886 0"), std::format("{}: too soon: {}", version, text(t.bob)));
+            lower();
+            t = tick();
+            require(has(t.alice, "living bob 2"), std::format("{}: lowered", version));
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            command(1, "effect give carol minecraft:instant_health 1 3");
+            (void)ticks(30);
+            // Raised: the sword blocked (the block's sound or entity event,
+            // the hurt sound for the others, nodamage, no damage event, his
+            // velocity to the others only, the shield's wear of 7).
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(2);
+            require(in_order(t.alice, {block_sign, hurt, nodamage}) && starting(t.alice, "damage") == 0 && starting(t.alice, "slot 36") == 0
+                        && has(t.bob, block_sign) && starting(t.bob, "velocity") == 0 && starting(t.bob, "health") == 0 && has(t.bob, "slot 45 damage 7")
+                        && none_of(t, equip),
+                    std::format("{}: blocked: {} / {}", version, text(t.alice), text(t.bob)));
+            // Lowered and hit again 6 ticks later: the hurt cooldown the block
+            // started; the weak damage taken silently, the health after the
+            // sword's wear others see.
+            lower();
+            (void)ticks(4);
+            attack();
+            t = tick();
+            require(starting(t.alice, "damage") == 0 && !has(t.alice, hurt) && starting(t.bob, "health") == 0,
+                    std::format("{}: after the block: {}", version, text(t.bob)));
+            t = tick();
+            require(in_order(t.bob, {"equipment alice", "health 17.502079"}) && has(t.alice, "slot 36 damage 2"),
+                    std::format("{}: the health after the wear: {}", version, text(t.bob)));
+            // Turned away by a teleport: hurt; 1.21.8 knocks him 0.5 towards
+            // her first.
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            command(2, "tp bob 10.5 -60 8.5 -90 0");
+            (void)ticks(30);
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(2);
+            require(has(t.alice, "damage bob") && has(t.bob, v772 ? "velocity bob 1200 3200 0" : "velocity bob 3200 2886 0"),
+                    std::format("{}: turned away: {}", version, text(t.bob)));
+            lower();
+            command(2, "tp bob 10.5 -60 8.5 90 0");
+            // Alice 2 west 1 south of him: blocked, his velocity to the others.
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            command(1, "tp alice 8.5 -60 9.5 -90 0");
+            (void)ticks(30);
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(2);
+            require(has(t.bob, block_sign) && has(t.carol, "velocity bob 1073 3200 -536"), std::format("{}: off his line: {}", version, text(t.carol)));
+            lower();
+            command(1, "tp alice 8.5 -60 8.5 -90 0");
+            // Sprinting on the raised shield: the knockback sound first, the
+            // sprint going on.
+            (void)ticks(30);
+            f.game->submit(1, I{server::intent::Sprint{true}});
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(3);
+            require(in_order(t.alice, {knockback, block_sign, hurt, nodamage}) && !has(t.bob, "flags alice 0"),
+                    std::format("{}: sprinting on it: {}", version, text(t.alice)));
+            f.game->submit(1, I{server::intent::Sprint{false}});
+            lower();
+            (void)tick();
+            // From behind (alice east of him): hurt; 1.21.8 knocks him 0.5
+            // towards her first.
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            command(1, "tp alice 12.5 -60 8.5 90 0");
+            (void)ticks(30);
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(2);
+            require(has(t.alice, "damage bob") && has(t.bob, v772 ? "velocity bob -1200 3200 0" : "velocity bob -3200 2886 0"),
+                    std::format("{}: from behind: {}", version, text(t.bob)));
+            lower();
+            command(1, "tp alice 8.5 -60 8.5 -90 0");
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            // An iron axe: the shield disabled (its cooldown first; 1.21.8 the
+            // break sound and the damage event, 1.21.4 entity events 30 and
+            // 29), lowered, worn by 10; raised again at once: not raised.
+            give(1, 36, "minecraft:iron_axe");
+            (void)ticks(30);
+            raise();
+            (void)ticks(12);
+            attack();
+            t = ticks(2);
+            require(v772 ? in_order(t.bob, {"cooldown minecraft:shield 100", broken, "damage bob", nodamage})
+                         : in_order(t.bob, {"cooldown minecraft:shield 100", "status bob 30", "status bob 29", nodamage}),
+                    std::format("{}: disabled: {}", version, text(t.bob)));
+            require(has(t.alice, "living bob 2") && has(t.bob, "slot 45 damage 31") && starting(t.bob, "health") == 0 && starting(t.alice, "slot 36") == 0,
+                    std::format("{}: lowered and worn: {}", version, text(t.bob)));
+            raise();
+            t = ticks(2);
+            require(!has(t.alice, "living bob 3"), std::format("{}: not raised within the cooldown", version));
+            t = ticks(100);
+            require(has(t.bob, "cooldown minecraft:shield 0"), std::format("{}: the cooldown's end", version));
+
+            // The shield in the main hand (its slot emptied in the off hand):
+            // no equip sound; raised (living 1), blocking, worn in its slot;
+            // lowered (0). Another hotbar slot lowers it (Circuit's choice, as
+            // eating ends).
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            give(1, 36, "minecraft:iron_sword");
+            command(2, "gamemode creative");
+            (void)tick();
+            f.game->submit(2, I{server::intent::CreativeSlot{45, 0, 0, 0}});
+            f.game->submit(2, I{server::intent::CreativeSlot{36, 1, tables.item_id("minecraft:shield").value(), 0}});
+            t = ticks(2);
+            require(none_of(t, equip), std::format("{}: no equip sound for a shield in the main hand", version));
+            command(2, "gamemode survival");
+            (void)ticks(30);
+            raise(0);
+            t = tick();
+            require(has(t.alice, "living bob 1"), std::format("{}: raised in the main hand: {}", version, text(t.alice)));
+            (void)ticks(11);
+            attack();
+            t = ticks(2);
+            require(has(t.bob, block_sign) && has(t.bob, "slot 36 damage 7") && starting(t.alice, "damage") == 0,
+                    std::format("{}: blocked from the main hand: {}", version, text(t.bob)));
+            lower();
+            t = tick();
+            require(has(t.alice, "living bob 0"), std::format("{}: lowered from the main hand", version));
+            // Another hotbar slot lowers it; an attack in that tick is not
+            // blocked (Circuit's choice: not recorded).
+            command(1, "effect give bob minecraft:instant_health 1 3");
+            (void)ticks(30);
+            raise(0);
+            (void)ticks(12);
+            f.game->submit(2, I{server::intent::HeldSlot{1}});
+            attack();
+            t = tick();
+            require(has(t.alice, "living bob 0") && has(t.alice, "damage bob") && !has(t.bob, block_sign),
+                    std::format("{}: another hotbar slot lowers it: {}", version, text(t.alice)));
+            f.game->submit(2, I{server::intent::HeldSlot{0}});
+            // Death lowers it at once (Circuit's choice: not recorded); after
+            // the respawn a sword hit is not blocked.
+            raise(0);
+            (void)ticks(12);
+            command(2, "kill");
+            t = ticks(2);
+            require(has(t.alice, "living bob 0") && has(t.bob, "living bob 0"), std::format("{}: lowered by death: {}", version, text(t.alice)));
+            f.game->submit(2, I{server::intent::ClientCommand{0}});
+            (void)ticks(40);
+            command(2, "tp bob 10.5 -60 8.5 90 0");
+            f.game->submit(2, I{server::intent::Move{std::nullopt, std::pair{90.0f, 0.0f}, true}});
+            (void)ticks(30);
+            attack();
+            t = ticks(2);
+            require(has(t.alice, "damage bob"), std::format("{}: not raised after death: {}", version, text(t.alice)));
+        }
+    });
+
     suite.run("players' entity data, operator level and where they appear as both official servers show them", [] {
         // circuit-clienttest/player-data.js, both versions alike.
         using I = server::Intent;

@@ -335,7 +335,7 @@ public:
         hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen,
         equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra,
         hurt_on_fire, generic_burn, extinguish_fire, hurt_drown, hurt_freeze, hurt_sweet_berry_bush,
-        attack_crit, attack_knockback, attack_nodamage, attack_strong, attack_sweep, attack_weak
+        attack_crit, attack_knockback, attack_nodamage, attack_strong, attack_sweep, attack_weak, shield_block, shield_break
     };
     enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
     Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,
