@@ -500,9 +500,12 @@ Plan plan(RuleContext& ctx, const contracts::PickUp& c) {
             auto& player = ctx.player(c.player);
             auto* orb = ctx.entity(c.entity);
             player.xp_ready = ctx.now() + 2;
+            const auto level = player.xp_level;
             experience::give_points(player, orb->experience);
             ctx.record(TraceKind::player_experience_changed, contracts::block_of(orb->position), c.player.hi, c.player.lo,
                        static_cast<std::uint64_t>(static_cast<std::uint32_t>(player.xp_total)));
+            if (const auto reached = experience::level_reached(level, player.xp_level, false))
+                ctx.record(TraceKind::player_level_reached, {}, c.player.hi, c.player.lo, static_cast<std::uint64_t>(reached));
             if (--orb->orbs > 0) return;
             ctx.record(TraceKind::entity_removed, contracts::block_of(orb->position), c.entity.value,
                        static_cast<std::uint64_t>(RemovalReason::picked_up));
@@ -653,6 +656,28 @@ Plan plan(RuleContext& ctx, const contracts::WearHeld& c) {
     };
 }
 
+// A player's experience lost at death (client/xp_death): 7 points a level,
+// at most 100 (none from a spectator or points alone), as orbs split as
+// every award of experience is, where they died; then their levels, points
+// and progress are gone.
+Plan plan(RuleContext& ctx, const contracts::LoseExperience& c) {
+    const auto* inv = ctx.peek_player(c.player);
+    const auto amount = inv && c.drops ? static_cast<std::int32_t>(std::min<std::int64_t>(std::int64_t{inv->xp_level} * 7, contracts::max_death_experience)) : 0;
+    const bool in_world = contracts::within_border(c.at) && ctx.world().contains_position_y(c.at.y)
+                          && ctx.chunk_generation(contracts::chunk_of(contracts::block_of(c.at))).has_value();
+    return [&ctx, c, amount, in_world] {
+        if (!ctx.peek_player(c.player)) return; // nothing to lose
+        if (amount > 0 && in_world) detail::award_experience(ctx, c.at, amount);
+        auto& player = ctx.player(c.player);
+        const auto before = player.xp_total;
+        player.xp_level = 0;
+        player.xp_total = 0;
+        player.xp_progress = 0.0f;
+        if (before != 0)
+            ctx.record(TraceKind::player_experience_changed, {}, c.player.hi, c.player.lo, 0);
+    };
+}
+
 // A book and quill edited or signed (the edit_book packet; client/books):
 // its pages set, or with a title a written book made of it; another stack in
 // the slot is left alone.
@@ -716,6 +741,7 @@ Plan plan(RuleContext& ctx, const contracts::ChangeExperience& c) {
     return [&ctx, c] {
         auto& player = ctx.player(c.player);
         const auto before = player.xp_total;
+        const auto level = player.xp_level;
         if (c.levels && c.set) player.xp_level = c.amount;
         else if (c.levels) experience::give_levels(player, c.amount);
         else if (c.set) experience::set_points(player, c.amount);
@@ -723,6 +749,9 @@ Plan plan(RuleContext& ctx, const contracts::ChangeExperience& c) {
         if (player.xp_total != before)
             ctx.record(TraceKind::player_experience_changed, {}, c.player.hi, c.player.lo,
                        static_cast<std::uint64_t>(static_cast<std::uint32_t>(player.xp_total)));
+        // Added levels or points (not set) may be the level-up sound's occasion.
+        if (const auto reached = c.set ? 0 : experience::level_reached(level, player.xp_level, c.levels))
+            ctx.record(TraceKind::player_level_reached, {}, c.player.hi, c.player.lo, static_cast<std::uint64_t>(reached));
     };
 }
 

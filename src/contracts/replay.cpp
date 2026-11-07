@@ -137,8 +137,10 @@ private:
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
 // (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes, 39 EditBook,
-// 40 SwapHands, 41 SetBeacon, 42 ConsumeItem, 43 WearArmor, 44 WearHeld.
+// 40 SwapHands, 41 SetBeacon, 42 ConsumeItem, 43 WearArmor, 44 WearHeld,
+// 45 LoseExperience.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<LoseExperience>(body)) return 45;
     if (std::holds_alternative<WearHeld>(body)) return 44;
     if (std::holds_alternative<WearArmor>(body)) return 43;
     if (std::holds_alternative<ConsumeItem>(body)) return 42;
@@ -338,6 +340,10 @@ void encode_command(Writer& w, const Command& c) {
             w.put(body.slot);
             w.put(body.item);
             w.put(body.amount);
+        } else if constexpr (std::is_same_v<T, LoseExperience>) {
+            w.player(body.player);
+            w.vec(body.at);
+            w.put(static_cast<std::uint8_t>(body.drops));
         } else if constexpr (std::is_same_v<T, SetBeacon>) {
             w.player(body.player);
             w.put(static_cast<std::uint8_t>(body.container.has_value()));
@@ -662,6 +668,14 @@ bool decode_command(Reader& r, Command& c) {
             return false;
         if (primary > 0) b.primary = primary - 1;
         if (secondary > 0) b.secondary = secondary - 1;
+        c.body = b;
+        return true;
+    }
+    case 45: {
+        LoseExperience b;
+        std::uint8_t drops{};
+        if (!r.player(b.player) || !r.vec(b.at) || !r.get(drops) || drops > 1) return false;
+        b.drops = drops == 1;
         c.body = b;
         return true;
     }

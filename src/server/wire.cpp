@@ -515,6 +515,7 @@ Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, 
     case PlayerSound::attack_weak: id = v772 ? 1170 : 1130; break;
     case PlayerSound::shield_block: id = v772 ? 1298 : 1257; break;
     case PlayerSound::shield_break: id = v772 ? 1299 : 1258; break;
+    case PlayerSound::levelup: id = v772 ? 1180 : 1140; break;
     // The same on both protocols.
     case PlayerSound::equip_chain: id = 67; break;
     case PlayerSound::equip_diamond: id = 68; break;

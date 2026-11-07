@@ -2048,7 +2048,7 @@
           "milestone": "C6",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, jump in lava, take in orbs of their value 40 ids apart every 20 ticks, move out of blocks (each version its own way) and go at age 6000, as both official servers do tick by tick; experience comes in orbs of the official values that join orbs nearby by a draw of 40; mined ores and sculk give theirs, Silk Touch none; players within 8 blocks draw orbs and take one every 2 ticks, gaining the official servers' levels, totals and progress",
+          "note": "Experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, jump in lava, take in orbs of their value 40 ids apart every 20 ticks, move out of blocks (each version its own way) and go at age 6000, as both official servers do tick by tick; experience comes in orbs of the official values that join orbs nearby by a draw of 40; mined ores and sculk give theirs, Silk Touch none; players within 8 blocks draw orbs and take one every 2 ticks, gaining the official servers' levels, totals and progress; a player who dies drops 7 points a level, at most 100; the level-up sound at multiples of 5 and the experience sent again after /xp and advancements",
           "cases": [
             "trace/orbs",
             "trace/orbs_merge",
@@ -2062,11 +2062,12 @@
             "trace/item_inside_ways",
             "trace/item_inside_piston",
             "client/orbs",
-            "client/furnace_xp"
+            "client/furnace_xp",
+            "client/xp_death"
           ],
           "deviations": [
             "how players draw orbs is not compared tick by tick",
-            "Mending and death drops of experience are not modeled",
+            "Mending is not modeled",
             "mobs, breeding, fishing and trading give no experience yet"
           ]
         }
@@ -2292,13 +2293,16 @@
             "client/vitals",
             "realclient/survival",
             "client/effects_heal",
-            "client/player_data"
+            "client/player_data",
+            "client/xp_death"
           ],
           "deviations": [
             "death drops spread in a fixed pattern",
+            "a dead player's orbs are given at their feet and the slots before the health for every death (recorded only the orbs' values and /kill's order)",
+            "a keepInventory death closes an open window as the player would, throwing what does not fit back (not recorded)",
             "where a player appears around the spawn is drawn from Circuit's own random (the official servers draw it from theirs), in at most 16 columns"
           ],
-          "note": "The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view (its health 0 and velocity told) until it goes after the death animation (entity event 60; Circuit takes 20 ticks) or the player respawns; the respawn's packets Circuit sends in the official order, with the operator level; new and respawning players placed in a random column within the spawnRadius game rule"
+          "note": "The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view (its health 0 and velocity told) until it goes after the death animation (entity event 60; Circuit takes 20 ticks) or the player respawns; the respawn's packets Circuit sends in the official order, with the operator level and the experience (after the first spawn position and after the health); the experience dropped after the items (7 points a level, at most 100, as orbs; none from points alone) and lost, told at the respawn; the inventory and the experience kept with keepInventory; the slots a death's drops empty before its health; the dead pick nothing up; new and respawning players placed in a random column within the spawnRadius game rule"
         },
         {
           "id": "melee_combat",

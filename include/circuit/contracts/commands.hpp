@@ -468,6 +468,19 @@ struct WearHeld {
     bool operator==(const WearHeld&) const = default;
 };
 
+// A player who died without keepInventory loses their experience
+// (client/xp_death): unless they were a spectator (`drops` false), 7 points
+// for each of their levels, at most 100, drop as orbs at `at` (the server
+// gives their feet: Circuit's choice), after the items; their levels, points
+// and progress are gone.
+inline constexpr std::int32_t max_death_experience = 100;
+struct LoseExperience {
+    PlayerKey player;
+    Vec3 at;
+    bool drops{};
+    bool operator==(const LoseExperience&) const = default;
+};
+
 // A player swaps the stacks of the main hand (`slot`, a hotbar slot) and the
 // off hand (the swap key).
 struct SwapHands {
@@ -515,7 +528,7 @@ using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, Remo
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
                                  SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands,
-                                 SetBeacon, ConsumeItem, WearArmor, WearHeld>;
+                                 SetBeacon, ConsumeItem, WearArmor, WearHeld, LoseExperience>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

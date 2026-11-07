@@ -2095,6 +2095,21 @@ int main() {
         require((unlocked == std::vector<std::string>{"add 0 1 805 3", "add 0 1 811 3", "add 0 1 148 3"}),
                 std::format("an oak log unlocks oak planks, oak wood and charcoal, each by its advancement, in their ids' order: {}",
                             unlocked.empty() ? "none" : unlocked.front()));
+        // The advancements completed send the experience again, unchanged,
+        // once (client/xp_death); then nothing more.
+        const auto experience_packets = [&](std::size_t from) {
+            const auto id = f.wire.ids().id(State::play, Bound::clientbound, "set_experience");
+            std::lock_guard lock(peer->mutex);
+            return std::ranges::count_if(std::span(peer->packets).subspan(from), [&](const auto& bytes) {
+                const auto pk = protocol::open_packet(bytes);
+                return pk && pk->id == id;
+            });
+        };
+        f.game->tick();
+        require(experience_packets(mark) == 1, "the experience again after the advancements");
+        mark = [&] { std::lock_guard lock(peer->mutex); return peer->packets.size(); }();
+        f.game->tick();
+        require(experience_packets(mark) == 0, "and not again");
         mark = [&] { std::lock_guard lock(peer->mutex); return peer->packets.size(); }();
         f.game->submit(1, server::Intent{server::intent::Command{"recipe take Chef minecraft:oak_planks"}});
         f.game->submit(1, server::Intent{server::intent::RecipeSeen{811}});
@@ -3887,6 +3902,39 @@ int main() {
             command(1, "effect give alice minecraft:instant_damage 1 1");
             std::tie(a, b) = ticks(320);
             require(has(a, "death screen") && has(a, "health 0") && has(a, "message death.attack.onFire"), std::format("{}: burnt to death", version));
+            // The armor the death drops: its emptied slots before the health
+            // of 0 (client/xp_death's order, Circuit's for every death).
+            const auto before = [](const std::vector<std::string>& v, std::string_view first, std::string_view then) {
+                const auto x = std::ranges::find(v, first), y = std::ranges::find(v, then);
+                return x != v.end() && y != v.end() && x < y;
+            };
+            require(before(a, "slot 5", "health 0") && before(a, "slot 6", "health 0"), std::format("{}: burnt, the slots first", version));
+            // Killed by lava, whose hurt wears the armor in the death's tick
+            // (its slots held to the next tick): still the slots first.
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            (void)ticks(2);
+            command(1, "tp 8.5 -61 8.5");
+            command(1, "gamemode creative");
+            (void)ticks(1);
+            for (const auto& [slot, item] : {std::pair<std::int16_t, std::string_view>{5, "minecraft:iron_helmet"},
+                                             {6, "minecraft:diamond_chestplate"}, {8, "minecraft:netherite_boots"}})
+                f.game->submit(1, I{server::intent::CreativeSlot{slot, 1, tables.item_id(item).value(), 0}});
+            (void)ticks(1);
+            command(1, "gamemode survival");
+            command(1, "effect give alice minecraft:instant_damage 1 1");
+            (void)ticks(25);
+            command(1, "effect give alice minecraft:instant_damage 1 0");
+            (void)ticks(25);
+            command(1, "setblock 8 -61 8 lava");
+            std::tie(a, b) = ticks(3);
+            command(1, "setblock 8 -61 8 air");
+            require(has(a, "message death.attack.lava") && before(a, "slot 5", "health 0") && before(a, "slot 6", "health 0")
+                        && before(a, "slot 8", "health 0"),
+                    std::format("{}: killed by lava, the worn slots first: {}", version, [&] {
+                        std::string t;
+                        for (const auto& x : a) if (!x.starts_with("velocity")) t += x + "; ";
+                        return t;
+                    }()));
         }
     });
 
@@ -5075,6 +5123,303 @@ int main() {
             attack();
             t = ticks(2);
             require(has(t.alice, "damage bob"), std::format("{}: not raised after death: {}", version, text(t.alice)));
+        }
+    });
+
+    suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {
+        // circuit-clienttest/xp-levelup.js: alice gains levels by /xp, bob
+        // listens 3 blocks away.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            GameFixture f(version, offline_config());
+            const bool v772 = std::string_view(version) == "1.21.8";
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            // Since the last call: the level-up sounds (volume) and, for
+            // alice, the experience packets (level, total).
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto heard = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("sound")) {
+                        const auto sound = in.varint().value() - 1, category = in.varint().value();
+                        const auto x = in.i32().value(), y = in.i32().value(), z = in.i32().value();
+                        const auto volume = in.f32().value();
+                        const auto pitch = in.f32().value();
+                        if (sound != (v772 ? 1180 : 1140)) continue;
+                        // Where: alice's place (0.5 -60 0.5, in eighths) or not.
+                        const bool hers = x == 4 && y == -480 && z == 4;
+                        out.push_back(std::format("levelup category {} volume {}{}{}", category, volume, pitch == 1.0f ? "" : " pitch?",
+                                                  hers ? "" : " elsewhere"));
+                    } else if (pk->id == id("set_experience")) {
+                        (void)in.f32();
+                        const auto level = in.varint().value();
+                        out.push_back(std::format("experience {} {}", level, in.varint().value()));
+                    }
+                }
+                return out;
+            };
+            const auto command = [&](std::string text) {
+                f.game->submit(1, I{server::intent::Command{std::move(text)}});
+                f.game->tick();
+                f.game->tick();
+            };
+            f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+            f.game->submit(2, I{server::intent::ConfirmTeleport{1}});
+            command("gamemode survival");
+            // alice at 0.5 -60 0.5, bob 3 blocks east.
+            command("tp alice 0.5 -60 0.5");
+            f.game->submit(1, I{server::intent::ConfirmTeleport{2}});
+            f.game->submit(2, I{server::intent::Command{"tp bob 3.5 -60 0.5"}});
+            f.game->tick();
+            f.game->submit(2, I{server::intent::ConfirmTeleport{2}});
+            f.game->tick();
+            (void)heard(*alice), (void)heard(*bob);
+            // Every /xp change is told, changed or not.
+            command("xp set alice 0 levels");
+            command("xp add alice 0 points");
+            require(heard(*alice) == std::vector<std::string>{"experience 0 0", "experience 0 0"}, std::format("{}: unchanged, told", version));
+            using V = std::vector<std::string>;
+            // Levels added to 3, then to 6 (passing 5): nothing; to 10: the
+            // sound for both, a 30th of 0.75 a level.
+            command("xp add alice 3 levels");
+            command("xp add alice 3 levels");
+            require(heard(*bob).empty(), "no multiple of 5 reached");
+            command("xp add alice 4 levels");
+            require(heard(*alice) == V{"experience 3 0", "experience 6 0", "levelup category 7 volume 0.25", "experience 10 0"}, std::format("{}: level 10", version));
+            require(heard(*bob) == V{"levelup category 7 volume 0.25"}, "bob hears it");
+            // Within 100 ticks, not again (100 ticks after it, level 15: none;
+            // 101, level 20: 0.5); a set, never.
+            for (int k = 0; k < 98; ++k) f.game->tick();
+            f.game->submit(1, I{server::intent::Command{"xp add alice 5 levels"}});
+            f.game->tick();
+            require(heard(*bob).empty(), "not again within 100 ticks");
+            f.game->submit(1, I{server::intent::Command{"xp add alice 5 levels"}});
+            f.game->tick();
+            require(heard(*bob) == V{"levelup category 7 volume 0.5"}, std::format("{}: 101 ticks after", version));
+            for (int k = 0; k < 100; ++k) f.game->tick();
+            command("xp set alice 25 levels");
+            require(heard(*bob).empty(), "a set to 25: none");
+            // Points: the first multiple of 5 passed (55 points to 5; 200 through 5 and 10 to 11).
+            command("xp set alice 0 levels");
+            command("xp add alice 55 points");
+            require(heard(*bob) == V{"levelup category 7 volume 0.125"}, std::format("{}: points to 5", version));
+            for (int k = 0; k < 101; ++k) f.game->tick();
+            command("xp set alice 0 levels");
+            command("xp set alice 0 points");
+            command("xp add alice 200 points");
+            require(heard(*bob) == V{"levelup category 7 volume 0.125"}, std::format("{}: points through 5 and 10", version));
+            for (int k = 0; k < 101; ++k) f.game->tick();
+            // Up to 30 and beyond: 0.75; taken away: nothing.
+            command("xp add alice 19 levels");
+            require(heard(*bob) == V{"levelup category 7 volume 0.75"}, std::format("{}: level 30", version));
+            for (int k = 0; k < 101; ++k) f.game->tick();
+            command("xp add alice 10 levels");
+            require(heard(*bob) == V{"levelup category 7 volume 0.75"}, "level 40");
+            for (int k = 0; k < 101; ++k) f.game->tick();
+            command("xp add alice -5 levels");
+            require(heard(*bob).empty(), "levels taken: none");
+        }
+    });
+
+    suite.run("players lose their experience at death as both official servers show it (client/xp_death)", [] {
+        // circuit-clienttest/xp-death.js: alice, in survival with experience
+        // and stone, dies by /kill; bob, a spectator, watches. Without keepInventory the
+        // stone, then 7 points a level (at most 100) as orbs drop where she
+        // stood, and the experience she is told comes only with the respawn,
+        // after the first spawn position and after the health; with it,
+        // nothing drops and she keeps her levels.
+        using I = server::Intent;
+        for (const auto* version : {"1.21.8", "1.21.4"}) {
+            GameFixture f(version, offline_config());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            const contracts::PlayerKey key{1, 1};
+            const auto stone = content().item_id("minecraft:stone").value();
+            // Alice's packets since the last call, by name: the death, the
+            // respawn, the position, the spawn position, the health, the
+            // experience (progress, level, total) and her own window's slots.
+            std::size_t seen = 0;
+            const auto packets = [&] {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                std::vector<std::string> out;
+                std::lock_guard lock(alice->mutex);
+                for (; seen < alice->packets.size(); ++seen) {
+                    auto pk = protocol::open_packet(alice->packets[seen]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("player_combat_kill")) out.push_back("death");
+                    else if (pk->id == id("respawn")) out.push_back("respawn");
+                    else if (pk->id == id("player_position")) out.push_back("position");
+                    else if (pk->id == id("set_default_spawn_position")) out.push_back("spawn");
+                    else if (pk->id == id("set_health")) out.push_back(std::format("health {}", in.f32().value()));
+                    else if (pk->id == id("container_set_slot")) {
+                        if (in.varint().value() != 0) continue;
+                        (void)in.varint();
+                        out.push_back(std::format("slot {}", in.i16().value()));
+                    } else if (pk->id == id("set_experience")) {
+                        const auto progress = in.f32().value();
+                        const auto level = in.varint().value();
+                        out.push_back(std::format("experience {} {} {}", progress, level, in.varint().value()));
+                    }
+                }
+                return out;
+            };
+            const auto experience = [&] {
+                const auto d = f.game->engine().dump();
+                const auto p = std::ranges::find_if(d.players, [&](const auto& inv) { return inv.player == key; });
+                return p == d.players.end() ? std::tuple{0, 0} : std::tuple{p->xp_level, p->xp_total};
+            };
+            // What is in the world: items by count, orbs by value, in order.
+            const auto entities = [&] {
+                std::vector<std::string> out;
+                const auto d = f.game->engine().dump(); // kept: overworld() refers into it
+                for (const auto& e : d.overworld().entities)
+                    out.push_back(e.kind == gameplay::EntityKind::experience_orb ? std::format("orb {}", e.experience) : std::format("item {}", e.stack.count));
+                return out;
+            };
+            f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+            f.game->submit(1, I{server::intent::CreativeSlot{36, 16, stone}});
+            f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+            f.game->submit(2, I{server::intent::Command{"gamemode spectator"}}); // beside her, not collecting
+            f.game->tick();
+            // 20 blocks from the spawn, where she respawns.
+            f.game->submit(1, I{server::intent::Command{"tp alice 20.5 -60 0.5"}});
+            f.game->tick();
+            f.game->submit(1, I{server::intent::ConfirmTeleport{2}});
+            f.game->submit(2, I{server::intent::Command{"tp bob 20.5 -60 3.5"}});
+            f.game->submit(1, I{server::intent::Command{"xp add alice 3 levels"}});
+            f.game->submit(1, I{server::intent::Command{"xp add alice 5 points"}});
+            f.game->tick();
+            f.game->tick();
+            require(experience() == std::tuple{3, 5}, "given");
+            (void)packets();
+            // The death: the stone, then 21 points as 17, 3 and 1; nothing
+            // told of the experience while dead.
+            f.game->submit(1, I{server::intent::Command{"kill"}});
+            for (int k = 0; k < 3; ++k) f.game->tick();
+            require(entities() == std::vector<std::string>{"item 16", "orb 17", "orb 3", "orb 1"},
+                    std::format("{}: the stone, then the orbs: {}", version, [&] { std::string t; for (const auto& e : entities()) t += e + ", "; return t; }()));
+            require(experience() == std::tuple{0, 0}, "the experience gone");
+            auto seen_now = packets();
+            require(std::ranges::count(seen_now, std::string("death")) == 1
+                        && std::ranges::none_of(seen_now, [](const auto& s) { return s.starts_with("experience"); }),
+                    std::format("{}: no experience while dead", version));
+            // The slot the drops empty, then the health of 0.
+            {
+                const auto slot = std::ranges::find(seen_now, std::string("slot 36"));
+                const auto health = std::ranges::find(seen_now, std::string("health 0"));
+                require(slot != seen_now.end() && health != seen_now.end() && slot < health,
+                        std::format("{}: the emptied slot, then the health", version));
+            }
+            // The respawn: the experience after the first spawn position and
+            // again after the health.
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            f.game->tick();
+            seen_now = packets();
+            const std::vector<std::string> respawned{"respawn", "position", "spawn", "experience 0 0 0", "spawn", "health 20", "experience 0 0 0"};
+            require(seen_now == respawned, std::format("{}: the respawn's experience, twice: {}", version, [&] { std::string t; for (const auto& e : seen_now) t += e + ", "; return t; }()));
+            for (int k = 0; k < 3; ++k) f.game->tick();
+            require(packets().empty(), "no more experience");
+            // Points alone drop nothing.
+            const auto before = entities().size();
+            f.game->submit(1, I{server::intent::ConfirmTeleport{3}});
+            f.game->submit(1, I{server::intent::Command{"xp add alice 5 points"}});
+            f.game->tick();
+            require(experience() == std::tuple{0, 5}, "points given");
+            (void)packets();
+            f.game->submit(1, I{server::intent::Command{"kill"}});
+            for (int k = 0; k < 3; ++k) f.game->tick();
+            require(entities().size() == before && experience() == std::tuple{0, 0}, std::format("{}: points alone lost", version));
+            seen_now = packets();
+            require(std::ranges::count(seen_now, std::string("death")) == 1
+                        && std::ranges::none_of(seen_now, [](const auto& s) { return s.starts_with("experience"); }),
+                    std::format("{}: points alone, nothing told while dead", version));
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            f.game->tick();
+            require(packets() == respawned, std::format("{}: points alone, the respawn", version));
+            // A creative player's experience drops too; the orbs come at the
+            // feet, below the items (thrown from 1.32 above them).
+            f.game->submit(1, I{server::intent::ConfirmTeleport{4}});
+            f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+            f.game->submit(1, I{server::intent::CreativeSlot{36, 16, stone}});
+            f.game->submit(1, I{server::intent::Command{"xp add alice 3 levels"}});
+            f.game->tick();
+            f.game->tick();
+            {
+                const auto from = f.game->engine().dump().overworld().entities.size();
+                f.game->submit(1, I{server::intent::Command{"kill"}});
+                f.game->tick();
+                const auto d = f.game->engine().dump();
+                const auto& all = d.overworld().entities;
+                std::vector<std::string> kinds;
+                double lowest_item = 1e9, highest_orb = -1e9;
+                for (std::size_t k = from; k < all.size(); ++k) {
+                    const bool orb = all[k].kind == gameplay::EntityKind::experience_orb;
+                    kinds.push_back(orb ? std::format("orb {}", all[k].experience) : std::format("item {}", all[k].stack.count));
+                    if (orb) highest_orb = std::max(highest_orb, all[k].position.y);
+                    else lowest_item = std::min(lowest_item, all[k].position.y);
+                }
+                require(kinds == std::vector<std::string>{"item 16", "orb 17", "orb 3", "orb 1"}, std::format("{}: a creative player's drops", version));
+                require(highest_orb < lowest_item - 0.5, std::format("{}: the orbs at the feet ({} against {})", version, highest_orb, lowest_item));
+            }
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            f.game->tick();
+            seen_now = packets();
+            // (she respawns where she died, and takes an orb at once)
+            require(!std::ranges::search(seen_now, respawned).empty(),
+                    std::format("{}: the creative player's experience gone: {}", version, [&] { std::string t; for (const auto& e : seen_now) t += e + ", "; return t; }()));
+            f.game->submit(1, I{server::intent::ConfirmTeleport{5}});
+            f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+            for (int k = 0; k < 6; ++k) f.game->tick(); // the rest of her orbs taken
+            // With keepInventory (20 blocks the other way): nothing drops, the
+            // levels and the stone stay and are told at the respawn; the stone
+            // carried at the death goes back into the inventory as the window
+            // closes.
+            f.game->submit(1, I{server::intent::Command{"tp alice -19.5 -60 0.5"}});
+            f.game->tick();
+            f.game->submit(1, I{server::intent::ConfirmTeleport{6}});
+            f.game->submit(1, I{server::intent::Command{"gamerule keepInventory true"}});
+            f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+            f.game->submit(1, I{server::intent::CreativeSlot{36, 16, stone}});
+            f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+            f.game->submit(1, I{server::intent::Command{"xp set alice 0 levels"}});
+            f.game->submit(1, I{server::intent::Command{"xp set alice 0 points"}});
+            f.game->tick();
+            f.game->submit(1, I{server::intent::Command{"xp add alice 3 levels"}});
+            f.game->tick();
+            f.game->submit(1, window_click(0, 36, 0, 0));
+            f.game->tick();
+            {
+                const auto d = f.game->engine().dump();
+                const auto p = std::ranges::find_if(d.players, [&](const auto& inv) { return inv.player == key; });
+                require(p != d.players.end() && p->cursor == contracts::ItemStack{static_cast<std::uint16_t>(stone), 16, 0} && p->slots[36].empty(),
+                        "the stone carried");
+            }
+            const auto before_keep = entities().size();
+            (void)packets();
+            f.game->submit(1, I{server::intent::Command{"kill"}});
+            for (int k = 0; k < 3; ++k) f.game->tick();
+            {
+                const auto d = f.game->engine().dump();
+                const auto p = std::ranges::find_if(d.players, [&](const auto& inv) { return inv.player == key; });
+                require(entities().size() == before_keep && p != d.players.end() && p->cursor.empty()
+                            && p->slots[36] == contracts::ItemStack{static_cast<std::uint16_t>(stone), 16, 0} && p->xp_level == 3,
+                        std::format("{}: keepInventory keeps the stone (put back from the cursor) and the levels", version));
+            }
+            require(std::ranges::none_of(packets(), [](const auto& s) { return s.starts_with("experience"); }), "nothing told while dead");
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            f.game->tick();
+            seen_now = packets();
+            // (the total keeps the 21 points she took from her orbs: /xp set leaves it)
+            require(seen_now == std::vector<std::string>{"respawn", "position", "spawn", "experience 0 3 21", "spawn", "health 20", "experience 0 3 21"},
+                    std::format("{}: keepInventory, the respawn: {}", version, [&] { std::string t; for (const auto& e : seen_now) t += e + ", "; return t; }()));
+            (void)bob;
         }
     });
 

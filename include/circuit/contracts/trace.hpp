@@ -49,6 +49,8 @@ enum class TraceKind : std::uint8_t {
     sound_played = 30,          // pos, a = the SoundEvent
     beacon_effects = 31,        // a beacon gives its powers to the players in range: pos, a = its levels, b = its primary power,
                                 // c = its secondary (each an effect id plus one, 0: none)
+    player_level_reached = 32,  // a gain of experience reached a multiple of 5 levels (the level-up sound's occasion):
+                                // a = player key high half, b = low half, c = the level
 };
 
 // Sounds the rules play (sound_played), whatever the protocol's sound ids.

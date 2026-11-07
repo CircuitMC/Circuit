@@ -84,6 +84,10 @@ struct Player {
     std::uint32_t ticket{}; // and ticket + 1: the loading and the simulation ticket
     std::optional<std::tuple<contracts::Vec3, bool, std::int32_t>> presence; // last sent (position, spectator, held)
     std::optional<std::tuple<float, std::int32_t, std::int32_t>> experience; // last sent (progress, level, total)
+    bool experience_after_health{}; // a respawn's experience, again after its health
+    std::size_t experience_advancements{}; // the recipe book's advancements done when the experience was last sent
+    std::optional<std::uint64_t> levelup_tick; // when the level-up sound last played (client/xp_death)
+    std::optional<std::uint64_t> death_drops; // a death's PlayerDeath (its admission): the health waits for its slots
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
     std::int32_t held{}; // hotbar slot 0-8; the inventory itself is simulation state
@@ -1773,6 +1777,12 @@ struct Game::Impl final : GameServices {
         }
         p.own.clear();
     }
+    // Whether the command of an admission was applied or refused this tick.
+    bool applied(std::uint64_t admission) const {
+        return std::ranges::any_of(engine->trace(), [&](const contracts::TraceRecord& r) {
+            return (r.kind == contracts::TraceKind::command_applied || r.kind == contracts::TraceKind::command_rejected) && r.a == admission;
+        });
+    }
     void admit_close(Player& p) {
         const auto [position, velocity] = throw_from(p);
         std::optional<BlockPos> container;
@@ -2586,9 +2596,9 @@ struct Game::Impl final : GameServices {
         if (!p.dead) p.health = std::min(max_health(p), p.health + amount);
     }
 
-    // Death: the inventory drops (a command, so that the rules account for
-    // every item), the client shows the death screen and everyone reads the
-    // death message.
+    // Death: the inventory drops, then the experience (commands, so that the
+    // rules account for every item and orb; with keepInventory neither), the
+    // client shows the death screen and everyone reads the death message.
     void die(Player& p, Harm harm, double fall_distance, const Player* by = nullptr) {
         p.dead = true;
         p.dead_ticks = 0;
@@ -2599,9 +2609,28 @@ struct Game::Impl final : GameServices {
         p.fall_distance = 0.0;
         // The window closes without telling the client (the death screen
         // replaces it), as on the official servers; the death drops an open
-        // crafting table's grid with the rest.
-        p.window.reset();
-        admit(contracts::PlayerDeath{key_of(p), contracts::Vec3{p.pos.x, p.pos.y + 1.32, p.pos.z}});
+        // crafting table's grid with the rest. Then the experience: the orbs
+        // where the player stands (their feet: Circuit's choice, the
+        // recordings show only the orbs' values), a spectator's none; the
+        // client is told the experience lost at the respawn (client/xp_death).
+        // With keepInventory the inventory and the experience stay; the window
+        // closes as the player closing it would, the grids and the carried
+        // stack going back into the inventory and what does not fit thrown
+        // (Circuit's choice: not recorded).
+        if (gameplay::game_rule_value(bundle, rules, "keepInventory") == 0) {
+            p.window.reset();
+            // The slots the drops empty go first, then the health
+            // (client/xp_death: /kill; Circuit's rule for every death).
+            const auto inv = engine->view().player(key_of(p));
+            const bool drops = inv && *inv && (!(*inv)->cursor.empty() || std::ranges::any_of((*inv)->slots, [](const auto& s) { return !s.empty(); }));
+            const auto death = queue.admit(contracts::PlayerDeath{key_of(p), contracts::Vec3{p.pos.x, p.pos.y + 1.32, p.pos.z}}, overworld);
+            if (!death) log_warn("game: command queue full; input dropped");
+            if (drops && death) p.death_drops = *death;
+            admit(contracts::LoseExperience{key_of(p), contracts::Vec3{p.pos.x, p.pos.y, p.pos.z}, p.game_mode != spectator});
+        } else {
+            admit_close(p);
+            p.window.reset();
+        }
         const auto key = harm == Harm::fall && fall_distance > 5.0 ? "death.fell.accident.generic" : harm_type(harm).death;
         auto with = nbt::Tag::list(nbt::TagType::compound);
         with.push(display_name(p));
@@ -2717,6 +2746,7 @@ struct Game::Impl final : GameServices {
         p.impulse.reset();
         p.told_velocity = {}; // a new entity's (client/combat)
         p.attacked = false;
+        p.death_drops.reset();
         p.attack_ticks = 0;
         p.swing_ticks.reset();
         p.fire_ticks = -20;
@@ -2741,11 +2771,12 @@ struct Game::Impl final : GameServices {
         p.told_main_arm = 1;
         p.respawn_attributes = true;
         p.dead_ticks = 0;
-        // The abilities, the respawn, the position, the spawn (twice), the
-        // operator level and its commands, the view's center and the
-        // inventory, as both official servers send them (client/player_data;
-        // they send no held slot, and the difficulty, world border and time
-        // again, which Circuit does not).
+        // The abilities, the respawn, the position, the spawn, the experience,
+        // the spawn again, the operator level and its commands, the view's
+        // center and the inventory, as both official servers send them
+        // (client/player_data, client/xp_death; they send no held slot, and the
+        // difficulty, world border, time and tick rate again and 1.21.8's
+        // waypoints, which Circuit does not).
         Wire::JoinGame j{p.entity_id, config.max_players, p.view_distance, config.simulation_distance, dimension_type, p.game_mode};
         p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
         p.peer->send(wire.respawn(j));
@@ -2760,6 +2791,10 @@ struct Game::Impl final : GameServices {
         teleport(p, to);
         const auto spawn = wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f);
         p.peer->send(spawn);
+        // The experience, told after the first spawn and again after the
+        // health, changed or not (client/xp_death).
+        send_experience(p);
+        p.experience_after_health = true;
         p.peer->send(spawn);
         p.peer->send(wire.game_event(13, 0.0f));
         p.peer->send(wire.entity_event(p.entity_id, 28));
@@ -3746,7 +3781,13 @@ struct Game::Impl final : GameServices {
                 body_goes(p);
             }
             p.stopped = p.teleported = false;
-            if (!p.vitals_pending && !std::exchange(p.attacked, false)) send_vitals(p, true);
+            // An attack's hold of the health (to the next tick) comes before
+            // the drops'; in a tick without the world, the drops wait and the
+            // health does not.
+            const bool held = std::exchange(p.attacked, false);
+            if (held || !world_runs || !p.dead) p.death_drops.reset();
+            if (!p.vitals_pending && !held && !p.death_drops) send_vitals(p, true);
+            if (!p.dead && std::exchange(p.experience_after_health, false)) send_experience(p);
             send_living(p);
         }
         for (const auto id : kicked) players.at(id).peer->kick("translate:multiplayer.disconnect.flying");
@@ -3908,7 +3949,8 @@ struct Game::Impl final : GameServices {
 
     // Players pick up the items their box, widened by 1 sideways and 0.5 up
     // and down, touches once the pickup delay is over. One player per item
-    // and tick, in player order.
+    // and tick, in player order; spectators and the dead pick up nothing (a
+    // dead player's orbs drop at their feet: client/xp_death).
     struct Pickup {
         std::uint64_t player;
         std::uint64_t entity;
@@ -3919,7 +3961,7 @@ struct Game::Impl final : GameServices {
         const auto view = engine->view();
         std::set<std::uint64_t> taken;
         for (auto& [id, p] : players) {
-            if (p.game_mode == spectator) continue;
+            if (p.game_mode == spectator || p.dead) continue;
             for (const auto& [entity_id, t] : tracked) {
                 if (taken.contains(entity_id)) continue;
                 const auto e = view.entity(overworld, EntityId{entity_id});
@@ -4910,6 +4952,8 @@ struct Game::Impl final : GameServices {
         if (action == "set" && !levels && amount >= gameplay::experience::needed(level))
             return message(p, "Cannot set experience points above the maximum points for the player's current level", "red");
         admit(contracts::ChangeExperience{key_of(*target), amount, levels, action == "set"});
+        // The experience goes to the player again, changed or not (client/xp_death).
+        target->experience.reset();
         send_translation(p, std::format("commands.experience.{}.{}.success.single", action, unit),
                          string_arguments({std::to_string(amount), target->name}));
     }
@@ -5471,7 +5515,16 @@ struct Game::Impl final : GameServices {
             send_put_back(p);
             send_ghosts(p);
             sync_inventory(p);
-            if (!p.vitals_pending) sync_experience(p);
+            // The drops applied: the health after their slots, at the next
+            // tick's vitals when the tick's wear holds slots back (armor worn
+            // by the deadly hurt) to go first then.
+            if (p.death_drops && applied(*p.death_drops)) {
+                p.death_drops.reset();
+                if (!p.vitals_pending && p.wear_tick != tick_count) send_vitals(p, true);
+            }
+            level_up(p);
+            // Not while dead: the experience lost is told at the respawn.
+            if (!p.vitals_pending && !p.dead) sync_experience(p);
             sync_maps(p);
             send_joining_data(p); // before the first tick's recipe book entries (client/player_data)
             update_recipe_book(p, engine->view());
@@ -5558,13 +5611,39 @@ struct Game::Impl final : GameServices {
         }
     }
     // A player's experience, when it changed (and once on joining).
-    void sync_experience(Player& p) {
+    std::tuple<float, std::int32_t, std::int32_t> experience_of(const Player& p) const {
         const auto view = engine->view();
         const auto inv = view.player(key_of(p));
-        const std::tuple<float, std::int32_t, std::int32_t> now =
-            inv && *inv ? std::tuple{(*inv)->xp_progress, (*inv)->xp_level, (*inv)->xp_total} : std::tuple{0.0f, 0, 0};
-        if (p.experience == now) return;
+        return inv && *inv ? std::tuple{(*inv)->xp_progress, (*inv)->xp_level, (*inv)->xp_total} : std::tuple{0.0f, 0, 0};
+    }
+    // The level-up sound (client/xp_death: xp-levelup.js; minecraft.wiki
+    // "Experience"): each gain the rules found reaching a multiple of 5 levels
+    // (player_level_reached: points on the way, added levels at their end,
+    // not /xp set), in the tick's order, plays entity.player.levelup at the
+    // player's place to them and those within 16 blocks, a 30th of 0.75 a
+    // level up to 30, unless it played in the last 100 ticks (recorded:
+    // twice within 1 s, once; the 100 ticks are minecraft.wiki's 5 s).
+    void level_up(Player& p) {
+        const auto key = key_of(p);
+        for (const auto& r : engine->trace()) {
+            if (r.kind != contracts::TraceKind::player_level_reached || r.a != key.hi || r.b != key.lo) continue;
+            if (p.levelup_tick && tick_count - *p.levelup_tick <= 100) continue;
+            p.levelup_tick = tick_count;
+            const float volume = static_cast<float>(std::min<std::uint64_t>(r.c, 30)) / 30.0f * 0.75f;
+            sound_near(p, wire.player_sound(Wire::PlayerSound::levelup, p.pos, volume, 1.0f, static_cast<std::int64_t>(sound_seed++)), true);
+        }
+    }
+    // An advancement completed (its rewards granted) and every /xp change
+    // send it again, changed or not (client/xp_death: the recipes the first
+    // stone unlocks; only the recipe book's advancements are modeled).
+    void sync_experience(Player& p) {
+        if (p.experience == experience_of(p) && p.book.done.size() == p.experience_advancements) return;
+        send_experience(p);
+    }
+    void send_experience(Player& p) {
+        const auto now = experience_of(p);
         p.experience = now;
+        p.experience_advancements = p.book.done.size();
         p.peer->send(wire.set_experience(std::get<0>(now), std::get<1>(now), std::get<2>(now)));
     }
 

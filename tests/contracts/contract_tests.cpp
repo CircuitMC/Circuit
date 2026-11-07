@@ -198,6 +198,8 @@ int main() {
         log.ticks.push_back({16, {{50, WearArmor{alex, 1, true}}, {51, WearArmor{alex, max_armor_wear, false}}}});
         // A held weapon worn by a hit (tag 44).
         log.ticks.push_back({17, {{52, WearHeld{alex, 36, 812, 1}}, {53, WearHeld{alex, 44, 1, max_held_wear}}, {54, WearHeld{alex, offhand_slot, 9, 7}}}});
+        // Experience lost at death (tag 45), dropped or not.
+        log.ticks.push_back({18, {{55, LoseExperience{alex, {40.5, -60.0, 8.5}, true}}, {56, LoseExperience{alex, {-0.25, 319.75, 1e7}, false}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -261,6 +263,15 @@ int main() {
             one.ticks.push_back({1, {{1, WearHeld{alex, slot, 812, amount}}}});
             const auto encoded = encode_replay(one);
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "held wear is range-checked");
+        }
+        // A LoseExperience's drops is 0 or 1.
+        {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            one.ticks.push_back({1, {{1, LoseExperience{alex, {0.5, 1.0, 0.5}, true}}}});
+            auto encoded = encode_replay(one);
+            require(encoded && encoded->back() == std::byte{1} && decode_replay(*encoded).has_value(), "drops 1");
+            encoded->back() = std::byte{2};
+            require(decode_replay(*encoded).error() == ErrorCode::malformed_record, "drops is a flag");
         }
 
         // Where a use clicked and the player's yaw (tag 25) round-trip; a tag

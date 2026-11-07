@@ -935,6 +935,113 @@ int main() {
         require(s.oracle.dump().players.empty() && s.oracle.dump().overworld().entities.size() == expected.size(), "lost below the world");
     });
 
+    suite.run("a dead player's experience drops as orbs after the items, 7 points a level up to 100", [] {
+        using circuit::contracts::ChangeExperience;
+        using circuit::contracts::LoseExperience;
+        using circuit::contracts::PlayerDeath;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::EntityKind;
+        Sim s;
+        const circuit::contracts::PlayerKey alex{3, 4};
+        s.tick(floor(0, 3, 0, 3));
+        const auto feet = at_block(1.5, 1.0, 1.5);
+        // What appeared since `from` entities: items by count, orbs by value
+        // (an orb launched from where the player stood).
+        const auto appeared = [&](std::size_t from) {
+            const auto d = s.oracle.dump();
+            std::vector<std::string> out;
+            for (std::size_t i = from; i < d.overworld().entities.size(); ++i) {
+                const auto& e = d.overworld().entities[i];
+                if (e.kind == EntityKind::experience_orb) {
+                    require(std::abs(e.position.x - feet.x) < 0.25 && std::abs(e.position.z - feet.z) < 0.25 && std::abs(e.position.y - feet.y) < 0.5 && e.orbs == 1,
+                            std::format("an orb where the player stood: {} {} {} ({})", e.position.x, e.position.y, e.position.z, e.orbs));
+                    out.push_back(std::format("orb {}", e.experience));
+                } else {
+                    out.push_back(std::format("item {}", e.stack.count));
+                }
+            }
+            return out;
+        };
+        const auto count = [&] { return s.oracle.dump().overworld().entities.size(); };
+        const auto experience = [&] {
+            const auto d = s.oracle.dump();
+            const auto p = std::ranges::find_if(d.players, [&](const auto& inv) { return inv.player == alex; });
+            return p == d.players.end() ? std::tuple{0, 0, 0.0f} : std::tuple{p->xp_level, p->xp_total, p->xp_progress};
+        };
+        // 3 levels and 5 points: 21 points, as 17, 3 and 1, after the items;
+        // the levels, points and progress gone.
+        s.tick({SetPlayerSlot{alex, 36, {items::stone, 16, 0}}, ChangeExperience{alex, 3, true, true}, ChangeExperience{alex, 5, false, false}});
+        require(std::get<0>(experience()) == 3 && std::get<1>(experience()) == 5 && std::get<2>(experience()) > 0.0f, "given");
+        auto from = count();
+        s.tick({PlayerDeath{alex, at_block(1.5, 2.32, 1.5)}, LoseExperience{alex, feet, true}});
+        require(appeared(from) == std::vector<std::string>{"item 16", "orb 17", "orb 3", "orb 1"}, "the items, then 21 points");
+        require(experience() == std::tuple{0, 0, 0.0f} && s.oracle.dump().players.empty(), "nothing left");
+        // 20 levels: 100 at most, as 73, 17, 7 and 3.
+        from = count();
+        s.tick({ChangeExperience{alex, 20, true, true}});
+        s.tick({LoseExperience{alex, feet, true}});
+        require(appeared(from) == std::vector<std::string>{"orb 73", "orb 17", "orb 7", "orb 3"}, "100 points");
+        // Points alone drop nothing, and are lost.
+        from = count();
+        s.tick({ChangeExperience{alex, 5, false, false}});
+        s.tick({LoseExperience{alex, feet, true}});
+        require(appeared(from).empty() && experience() == std::tuple{0, 0, 0.0f}, "points alone: lost");
+        // A spectator's levels drop nothing, and are lost.
+        s.tick({ChangeExperience{alex, 3, true, true}});
+        s.tick({LoseExperience{alex, feet, false}});
+        require(appeared(from).empty() && experience() == std::tuple{0, 0, 0.0f}, "a spectator's: lost");
+        // Below the world nothing drops; the levels are lost.
+        s.tick({ChangeExperience{alex, 3, true, true}});
+        s.tick({LoseExperience{alex, at_block(1.5, -200, 1.5), true}});
+        require(appeared(from).empty() && experience() == std::tuple{0, 0, 0.0f}, "below the world: lost");
+        // A player without a record loses nothing.
+        s.tick({LoseExperience{{9, 9}, feet, true}});
+        require(appeared(from).empty() && s.oracle.dump().players.empty(), "no record: nothing");
+    });
+
+    suite.run("gains of experience that reach a multiple of 5 levels are recorded (the level-up sound's occasion)", [] {
+        using circuit::contracts::ChangeExperience;
+        using circuit::gameplay::experience::level_reached;
+        // Points reach it on the way (the first counting); added levels must end on it.
+        static_assert(level_reached(0, 3, true) == 0 && level_reached(3, 6, true) == 0 && level_reached(6, 10, true) == 10);
+        static_assert(level_reached(0, 5, false) == 5 && level_reached(0, 6, false) == 5 && level_reached(0, 11, false) == 5);
+        static_assert(level_reached(5, 9, false) == 0 && level_reached(9, 10, false) == 10 && level_reached(40, 35, true) == 0);
+        static_assert(level_reached(2147483646, 2147483647, false) == 0);
+        Sim s;
+        const circuit::contracts::PlayerKey alex{3, 4};
+        const auto reached = [&] {
+            std::vector<std::uint64_t> out;
+            for (const auto& r : of_kind(s.last, TraceKind::player_level_reached)) {
+                require(r.a == alex.hi && r.b == alex.lo, "the player");
+                out.push_back(r.c);
+            }
+            return out;
+        };
+        s.tick({ChangeExperience{alex, 3, true, false}});
+        require(reached().empty(), "0 to 3 levels");
+        s.tick({ChangeExperience{alex, 3, true, false}});
+        require(reached().empty(), "3 to 6 levels: passing 5 is not enough");
+        s.tick({ChangeExperience{alex, 4, true, false}});
+        require(reached() == std::vector<std::uint64_t>{10}, "6 to 10 levels");
+        s.tick({ChangeExperience{alex, 20, true, true}});
+        require(reached().empty(), "a set: never");
+        s.tick({ChangeExperience{alex, 0, true, true}, ChangeExperience{alex, 200, false, false}});
+        require(reached() == std::vector<std::uint64_t>{5}, "200 points from 0: through 5 and 10 to 11, the first");
+        s.tick({ChangeExperience{alex, 28, true, true}, ChangeExperience{alex, 2, true, false}, ChangeExperience{alex, 5, true, false}});
+        require(reached() == std::vector<std::uint64_t>{30, 35}, "each gain by itself, in order");
+        s.tick({ChangeExperience{alex, -5, true, false}});
+        require(reached().empty(), "levels taken");
+        // An orb taken: its points, through level 5 from 0 (xp-death.js: the 73 orb).
+        s.tick(floor(-3, 3, -3, 3));
+        s.tick({ChangeExperience{alex, 0, true, true}, circuit::contracts::PlayerPresence{alex, {0.5, 0.0, 0.5}},
+                circuit::contracts::SummonEntity{"minecraft:experience_orb", {0.5, 0.0, 0.5}, {}, 80, 0, 73, 1, 0}});
+        const auto d = s.oracle.dump();
+        const auto orb = std::ranges::find_if(d.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::experience_orb; });
+        require(orb != d.overworld().entities.end(), "the orb");
+        s.tick({circuit::contracts::PickUp{alex, orb->id, 36, false}});
+        require(reached() == std::vector<std::uint64_t>{5}, "an orb's points through level 5");
+    });
+
     suite.run("ticket bounds are checked without overflow", [] {
         const auto& limits = bundle().limits;
         const std::int32_t limit = world_border / 16;
