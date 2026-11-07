@@ -1425,6 +1425,17 @@
       "location": "external: circuit-clienttest/drown.js; Circuit's side also in tests/server/server_tests.cpp",
       "status": "passing",
       "description": "Two players: a survival player in a pit into which water, stone and powder snow are set: drowning three times and her air coming back, water breathing (also given as the air runs out), the turtle shell, stone at her head (she crawls) and at her feet and head, a cactus beside her, a sweet berry bush stood in and walked through, powder snow until two freezing hurts and thawing, leather boots in it, a fall with and without slow falling, the game rules drowningDamage, freezeDamage, fallDamage and fireDamage off, and drowning to death; the other, in creative mode, watches; each step's health, damage events, velocity, entity statuses, effects, attributes, slot changes and equipment, her shared flags and pose, the lowest and last air and frozen ticks and powder snow slowness, sounds and death messages; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/combat",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/combat.js, and combat-timing.js for the charge (its results compared between the official servers and Circuit); Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "Three survival players: one attacks another, with the third beside him: with the fist at full charge, twice 2 and 12 ticks apart, harder within the hurt cooldown (strength II, and sprinting after a weak hit), two swings at once, an iron sword at full charge (sweeping the third), twice 4 ticks apart, a sweep reaching the third within her hurt cooldown, walking away, sprinting, falling (a critical hit), with strength II and weakness, in creative mode (with the fist and the sword) and against a target in creative mode, against an iron chestplate, 5 and 7 blocks away, and to the target's death; each step's health, damage events (cause, direct entity, source position), velocities, entity statuses, animations, hurt animations (to a thousandth of a degree), the shared flags, effects, slots, equipment, attributes, sounds, particles and death messages; Circuit and both official servers give identical output. The charge's timings (combat-timing.js) give the same values on both"
     }
   ]
 }

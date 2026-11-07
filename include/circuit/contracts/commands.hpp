@@ -455,6 +455,18 @@ struct WearArmor {
     bool operator==(const WearArmor&) const = default;
 };
 
+// A player's attack hurt what it hit (client/combat): the stack in `slot`
+// (the hotbar slot in the main hand then), while it is still of `item`,
+// loses `amount` durability if it has any, breaking at its durability.
+inline constexpr std::int32_t max_held_wear = 1 << 20;
+struct WearHeld {
+    PlayerKey player;
+    std::uint8_t slot{hotbar_first};
+    std::uint16_t item{};
+    std::int32_t amount{1};
+    bool operator==(const WearHeld&) const = default;
+};
+
 // A player swaps the stacks of the main hand (`slot`, a hotbar slot) and the
 // off hand (the swap key).
 struct SwapHands {
@@ -502,7 +514,7 @@ using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, Remo
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
                                  SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands,
-                                 SetBeacon, ConsumeItem, WearArmor>;
+                                 SetBeacon, ConsumeItem, WearArmor, WearHeld>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

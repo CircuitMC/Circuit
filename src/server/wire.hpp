@@ -253,8 +253,16 @@ public:
     Bytes respawn(const JoinGame& j) const;
     // The death screen, with the death message.
     Bytes combat_kill(std::int32_t entity_id, const protocol::nbt::Tag& message) const;
-    // An entity was hurt (red flash and sound), with the damage type's registry id.
-    Bytes damage_event(std::int32_t entity_id, std::int32_t damage_type) const;
+    // An entity was hurt (red flash and sound), with the damage type's
+    // registry id and the entities that caused and dealt it (none: -1).
+    Bytes damage_event(std::int32_t entity_id, std::int32_t damage_type, std::int32_t cause = -1, std::int32_t direct = -1) const;
+    // A hurt's animation for the one hurt (hurt_animation): the angle to
+    // what hurt them, less their yaw (client/combat).
+    Bytes hurt_animation(std::int32_t entity_id, float angle) const;
+    // Particles at a place (level_particles): `count` of them spread by
+    // `offset` at `speed`, or with a count of 0 one moving along `offset`.
+    enum class Particle : std::uint8_t { damage_indicator, sweep_attack };
+    Bytes particles(Particle particle, Vec3 at, Vec3 offset, float speed, std::int32_t count) const;
     Bytes game_event(std::uint8_t event, float value) const;
     Bytes player_abilities(std::uint8_t flags, float flying_speed, float fov_modifier) const;
     Bytes set_held_slot(std::int32_t slot) const;
@@ -297,7 +305,8 @@ public:
     // What an entity wears and holds, by equipment slot (0 the main hand, 1
     // the off hand, 2 the feet to 5 the head), the slots given in order.
     Bytes set_equipment(std::int32_t entity, std::span<const std::pair<std::uint8_t, WireStack>> slots) const;
-    // An entity's animation (animate): 0 swinging the main arm, 3 the off arm.
+    // An entity's animation (animate): 0 swinging the main arm, 3 the off
+    // arm, 4 a critical hit on it.
     Bytes animate(std::int32_t entity, std::uint8_t animation) const;
     Bytes player_info_remove(const std::vector<Uuid>& players) const;
     Bytes spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
@@ -325,7 +334,8 @@ public:
     enum class PlayerSound : std::uint8_t {
         hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen,
         equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra,
-        hurt_on_fire, generic_burn, extinguish_fire, hurt_drown, hurt_freeze, hurt_sweet_berry_bush
+        hurt_on_fire, generic_burn, extinguish_fire, hurt_drown, hurt_freeze, hurt_sweet_berry_bush,
+        attack_crit, attack_knockback, attack_nodamage, attack_strong, attack_sweep, attack_weak
     };
     enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
     Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,

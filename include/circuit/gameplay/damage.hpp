@@ -54,5 +54,34 @@ Breath breathe(std::int32_t air, bool losing) noexcept;
 inline constexpr std::int32_t frozen_max = 140;
 std::int32_t frost(std::int32_t ticks, bool freezing) noexcept;
 double frost_slowness(std::int32_t ticks) noexcept;
+// Melee (client/combat, combat-timing). An attack's charge: the whole ticks
+// since the attacker's last attack or swing, or since the tick their main
+// hand's item changed, plus a half, over the ticks a full charge takes (20
+// over the attack speed), at most 1 (the target versions' floats; with an
+// attack speed of 0 or less none, not recorded). The damage an attack keeps
+// of the attack damage by its charge: 0.2 plus 0.8 times its square. A
+// charge above 0.9 is a strong attack: sweeps, critical hits and the
+// sprint's knockback need one.
+float attack_charge(std::int32_t ticks, double attack_speed) noexcept;
+float charged_damage(float damage, float charge) noexcept;
+inline constexpr float strong_charge = 0.9f;
+// A knockback of `strength` along the horizontal direction (x, z) (for a
+// hurt, from what hurt to the one hurt): half the velocity before plus
+// `strength` along the direction; upwards, on the ground, half the vertical
+// velocity plus `strength`, at most 0.4 (in the air it stays: Circuit's
+// reading, not recorded).
+struct Velocity {
+    double x{}, y{}, z{};
+    bool operator==(const Velocity&) const = default;
+};
+Velocity knock(Velocity before, double strength, double x, double z, bool on_ground) noexcept;
+// The angle of a hurt's animation for the one hurt: the direction to what
+// hurt them (dx, dz) in degrees, less their yaw. The official servers'
+// arctangent is not the exact one (client/combat: -243.43496704101562 where
+// the exact one gives -243.4349365234375); Circuit takes the exact one.
+float hurt_angle(double dx, double dz, float yaw) noexcept;
+// The damage indicator particles a hurt shows: half the health it took,
+// rounded down.
+std::int32_t damage_indicators(float health_lost) noexcept;
 
 } // namespace circuit::gameplay::damage

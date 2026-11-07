@@ -632,6 +632,26 @@ Plan plan(RuleContext& ctx, const contracts::WearArmor& c) {
     };
 }
 
+// A held item worn by a hit that hurt (client/combat: an iron sword loses
+// one a hit; minecraft.wiki "Durability"). Its breaking makes no sound here
+// (as armor's and tools' breaking does not yet).
+Plan plan(RuleContext& ctx, const contracts::WearHeld& c) {
+    if (c.slot < contracts::hotbar_first || c.slot >= contracts::hotbar_first + 9) return std::unexpected(ErrorCode::invalid_slot);
+    if (c.amount < 1 || c.amount > contracts::max_held_wear) return std::unexpected(ErrorCode::invalid_argument);
+    return [&ctx, c] {
+        const auto* inventory = ctx.peek_player(c.player);
+        if (!inventory) return;
+        const auto& stack = inventory->slots[c.slot];
+        const auto most = items::max_damage(stack);
+        if (stack.empty() || stack.item != c.item || most <= 0) return;
+        auto& inv = ctx.player(c.player);
+        const auto damage = static_cast<std::int64_t>(stack.damage) + c.amount;
+        if (damage >= most) inv.slots[c.slot] = contracts::ItemStack{};
+        else inv.slots[c.slot].damage = static_cast<std::uint16_t>(damage);
+        detail::record_slot(ctx, inv, c.slot);
+    };
+}
+
 // A book and quill edited or signed (the edit_book packet; client/books):
 // its pages set, or with a title a written book made of it; another stack in
 // the slot is left alone.

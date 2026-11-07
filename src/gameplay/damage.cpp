@@ -3,6 +3,7 @@
 // drown and freeze (client/drown).
 #include <circuit/gameplay/damage.hpp>
 #include <algorithm>
+#include <cmath>
 
 namespace circuit::gameplay::damage {
 
@@ -67,6 +68,33 @@ std::int32_t frost(std::int32_t ticks, bool freezing) noexcept {
 double frost_slowness(std::int32_t ticks) noexcept {
     const float share = static_cast<float>(std::clamp(ticks, 0, frozen_max)) / static_cast<float>(frozen_max);
     return static_cast<double>(-0.05f * share);
+}
+
+// combat-timing: an iron sword (speed 4 - 2.4000000953674316) 12 ticks after
+// the last attack keeps 5.999999 of 6, the fist 0.208 in the same tick.
+float attack_charge(std::int32_t ticks, double attack_speed) noexcept {
+    if (attack_speed <= 0.0) return 0.0f; // a full charge never comes (not recorded)
+    const auto full = static_cast<float>(1.0 / attack_speed * 20.0);
+    return std::clamp((static_cast<float>(ticks) + 0.5f) / full, 0.0f, 1.0f);
+}
+
+float charged_damage(float damage, float charge) noexcept { return damage * (0.2f + charge * charge * 0.8f); }
+
+// client/combat: a standing player (velocity (0, -0.0784, 0)) hit from the
+// west moves (0.4, 0.3608, 0); a sprint's 0.5 after it, (0.7, 0.4, 0).
+Velocity knock(Velocity before, double strength, double x, double z, bool on_ground) noexcept {
+    const double length = std::sqrt(x * x + z * z);
+    if (strength <= 0.0 || length < 1.0e-4) return before;
+    const double dx = x / length * strength, dz = z / length * strength;
+    return {before.x / 2.0 + dx, on_ground ? std::min(0.4, before.y / 2.0 + strength) : before.y, before.z / 2.0 + dz};
+}
+
+float hurt_angle(double dx, double dz, float yaw) noexcept {
+    return static_cast<float>(std::atan2(dz, dx) * 57.2957763671875 - static_cast<double>(yaw));
+}
+
+std::int32_t damage_indicators(float health_lost) noexcept {
+    return health_lost <= 0.0f ? 0 : static_cast<std::int32_t>(health_lost * 0.5f);
 }
 
 } // namespace circuit::gameplay::damage

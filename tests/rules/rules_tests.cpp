@@ -3306,6 +3306,85 @@ int main() {
                 "the powder snow's slowness");
     });
 
+    suite.run("melee counts as both official servers count it, and as Circuit reads what was not recorded (client/combat, combat-timing)", [] {
+        namespace dm = circuit::gameplay::damage;
+        namespace eq = circuit::gameplay::equipment;
+        // The charge: the fist (attack speed 4) 0 to 5 ticks after the last
+        // attack, an iron sword (4 - 2.4000000953674316) 0, 10 to 13; the
+        // health left of 20 as recorded.
+        const auto left = [](float damage, std::int32_t ticks, double speed) {
+            return 20.0f - dm::charged_damage(damage, dm::attack_charge(ticks, speed));
+        };
+        require(left(1.0f, 0, 4.0) == 19.79199981689453f && left(1.0f, 1, 4.0) == 19.72800064086914f && left(1.0f, 2, 4.0) == 19.600000381469727f
+                    && left(1.0f, 3, 4.0) == 19.408000946044922f && left(1.0f, 4, 4.0) == 19.152000427246094f && left(1.0f, 5, 4.0) == 19.0f,
+                "the fist");
+        const double sword = 4.0 - 2.4000000953674316;
+        require(left(6.0f, 0, sword) == 18.792320251464844f && left(6.0f, 10, sword) == 15.41312026977539f && left(6.0f, 11, sword) == 14.73728084564209f
+                    && left(6.0f, 12, sword) == 14.000000953674316f && left(6.0f, 13, sword) == 14.0f,
+                "an iron sword");
+        require(dm::attack_charge(4, 4.0) <= dm::strong_charge && dm::attack_charge(5, 4.0) > dm::strong_charge && dm::attack_charge(10, sword) <= dm::strong_charge
+                    && dm::attack_charge(11, sword) > dm::strong_charge,
+                "strong attacks: the fist from 5 ticks, the sword from 11");
+        // Knockback, told in 1/8000: a standing player hit from the west
+        // (3200, 2886, 0); a sprint's 0.5 after it (5600, 3200, 0); carol
+        // swept from 2 west and 1 north, the attacker facing east: 1.21.8
+        // the hurt's then the facing's (4631, 3200, 715), 1.21.4 the other
+        // way (4462, 3200, 1431); in the air the vertical stays (Circuit's
+        // reading, not recorded).
+        const auto told = [](dm::Velocity v) {
+            const auto part = [](double x) { return static_cast<std::int32_t>(static_cast<std::int16_t>(x * 8000.0)); };
+            return std::array{part(v.x), part(v.y), part(v.z)};
+        };
+        const dm::Velocity standing{0.0, -0.0784, 0.0};
+        const auto hit = dm::knock(standing, 0.4, 2.0, 0.0, true);
+        require(told(hit) == std::array{3200, 2886, 0}, "a hit");
+        require(told(dm::knock(hit, 0.5, 1.0, 0.0, true)) == std::array{5600, 3200, 0}, "a sprint's");
+        require(told(dm::knock(dm::knock(standing, 0.4, 2.0, 1.0, true), 0.4, 1.0, 0.0, true)) == std::array{4631, 3200, 715}, "a sweep, 1.21.8");
+        require(told(dm::knock(dm::knock(standing, 0.4, 1.0, 0.0, true), 0.4, 2.0, 1.0, true)) == std::array{4462, 3200, 1431}, "a sweep, 1.21.4");
+        require(dm::knock(standing, 0.4, 1.0, 0.0, false).y == -0.0784 && dm::knock(standing, 0.0, 1.0, 0.0, true) == standing, "in the air; none");
+        // The hurt animation's angle (the exact arctangent); the damage
+        // indicator: half the health lost, rounded down.
+        require(dm::hurt_angle(-2.0, 0.0, 90.0f) == 89.99999237060547f && std::abs(dm::hurt_angle(-2.0, -1.0, 90.0f) + 243.435f) < 0.001f, "angles");
+        // An attack speed of 0 never charges (not recorded).
+        require(dm::attack_charge(1000, 0.0) == 0.0f && dm::attack_charge(1000, -1.0) == 0.0f && dm::attack_charge(20, 1.0e-9) < 1.0e-6f, "no attack speed");
+        require(dm::damage_indicators(6.0f) == 3 && dm::damage_indicators(5.28f) == 2 && dm::damage_indicators(1.0f) == 0 && dm::damage_indicators(9.0f) == 4
+                    && dm::damage_indicators(5.999999046325684f) == 2 && dm::damage_indicators(0.0f) == 0,
+                "damage indicators");
+        // The iron sword's wear recorded; the axe's, the trident's and the
+        // other swords' sweeps by minecraft.wiki ("Durability", "Sword").
+        const auto item = [](std::string_view name) { return *circuit::gameplay::items::by_name(name); };
+        require(eq::attack_wear(item("minecraft:iron_sword")) == 1 && eq::attack_wear(item("minecraft:iron_axe")) == 2 && eq::attack_wear(item("minecraft:trident")) == 1
+                    && eq::attack_wear(item("minecraft:stick")) == 0 && eq::sweeps(item("minecraft:netherite_sword")) && !eq::sweeps(item("minecraft:iron_axe")),
+                "weapons' wear and sweeps");
+    });
+
+    suite.run("a held weapon wears by a hit that hurt, breaking at its durability (client/combat)", [] {
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::contracts::WearHeld;
+        const PlayerKey alex{4, 2};
+        Sim s;
+        const auto slot = [&](std::size_t i) {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            return it == d.players.end() ? ItemStack{} : it->slots[i];
+        };
+        const auto item = [](std::string_view name) { return *circuit::gameplay::items::by_name(name); };
+        const auto sword = item("minecraft:iron_sword"), stick = item("minecraft:stick");
+        s.tick({SetPlayerSlot{alex, 36, {sword, 1}}, SetPlayerSlot{alex, 37, {stick, 1}}});
+        s.tick({WearHeld{alex, 36, sword, 1}});
+        require(slot(36) == ItemStack{sword, 1, 1}, "one");
+        // Another item in the slot, or one without durability, stays.
+        s.tick({WearHeld{alex, 36, stick, 1}, WearHeld{alex, 37, stick, 1}});
+        require(slot(36) == ItemStack{sword, 1, 1} && slot(37) == ItemStack{stick, 1}, "another item, no durability");
+        // An iron sword lasts 250.
+        s.tick({WearHeld{alex, 36, sword, 249}});
+        require(slot(36).empty(), "broken");
+        s.tick({WearHeld{alex, 45, sword, 1}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "not a hotbar slot");
+        s.tick({WearHeld{alex, 36, sword, 0}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "no wear of nothing");
+    });
+
     suite.run("comparators read dispensers as containers of nine slots", [] {
         Sim s;
         s.tick(with_floor(floor(-3, 6, -1, 2), {place({0, 0, 0}, blocks::dispenser(D::up)), place({1, 0, 0}, blocks::comparator(D::east)),

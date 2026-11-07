@@ -26,7 +26,8 @@ struct Wire::Ids {
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book,
         update_mob_effect, remove_mob_effect, update_attributes, sound, block_entity_data, sb_set_beacon, entity_event, set_entity_motion,
-        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity, cooldown, set_equipment, animate, sb_swing;
+        sb_client_information, set_camera, sb_interact, sb_teleport_to_entity, cooldown, set_equipment, animate, sb_swing,
+        hurt_animation, level_particles;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -129,6 +130,8 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->cooldown = cb(State::play, "cooldown");
     ids->set_equipment = cb(State::play, "set_equipment");
     ids->animate = cb(State::play, "animate");
+    ids->hurt_animation = cb(State::play, "hurt_animation");
+    ids->level_particles = cb(State::play, "level_particles");
     ids->sb_swing = sb(State::play, "swing");
     ids->sb_interact = sb(State::play, "interact");
     ids->sb_teleport_to_entity = sb(State::play, "teleport_to_entity");
@@ -287,9 +290,25 @@ Bytes Wire::combat_kill(std::int32_t entity_id, const nbt::Tag& message) const {
     nbt::write_network(w, message);
     return packet(id_->combat_kill, w);
 }
-Bytes Wire::damage_event(std::int32_t entity_id, std::int32_t damage_type) const {
-    // No causing or direct entity (ids + 1, 0 for none) and no source position.
-    return packet(id_->damage_event, Writer().varint(entity_id).varint(damage_type).varint(0).varint(0).boolean(false));
+Bytes Wire::damage_event(std::int32_t entity_id, std::int32_t damage_type, std::int32_t cause, std::int32_t direct) const {
+    // The causing and direct entities as ids + 1 (0 for none); no source
+    // position (client/combat: none for an attack).
+    return packet(id_->damage_event, Writer().varint(entity_id).varint(damage_type).varint(cause + 1).varint(direct + 1).boolean(false));
+}
+Bytes Wire::hurt_animation(std::int32_t entity_id, float angle) const {
+    return packet(id_->hurt_animation, Writer().varint(entity_id).f32(angle));
+}
+Bytes Wire::particles(Particle particle, Vec3 at, Vec3 offset, float speed, std::int32_t count) const {
+    // Particle type ids of each protocol (PrismarineJS minecraft-data
+    // particles.json, MIT; client/combat: damage_indicator and sweep_attack
+    // as both official servers send them). Neither long-distance nor always
+    // shown; the two particles carry no options.
+    const bool v772 = protocol_ >= 772;
+    const std::int32_t id = particle == Particle::damage_indicator ? 6 : v772 ? 64 : 63;
+    Writer w;
+    w.boolean(false).boolean(false).f64(at.x).f64(at.y).f64(at.z).f32(static_cast<float>(offset.x)).f32(static_cast<float>(offset.y))
+        .f32(static_cast<float>(offset.z)).f32(speed).i32(count).varint(id);
+    return packet(id_->level_particles, w);
 }
 Bytes Wire::game_event(std::uint8_t event, float value) const { return packet(id_->game_event, Writer().u8(event).f32(value)); }
 Bytes Wire::player_abilities(std::uint8_t flags, float flying_speed, float fov_modifier) const {
@@ -488,6 +507,12 @@ Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, 
     case PlayerSound::hurt_drown: id = v772 ? 1176 : 1136; break;
     case PlayerSound::hurt_freeze: id = v772 ? 1177 : 1137; break;
     case PlayerSound::hurt_sweet_berry_bush: id = v772 ? 1179 : 1139; break;
+    case PlayerSound::attack_crit: id = v772 ? 1165 : 1125; break;
+    case PlayerSound::attack_knockback: id = v772 ? 1166 : 1126; break;
+    case PlayerSound::attack_nodamage: id = v772 ? 1167 : 1127; break;
+    case PlayerSound::attack_strong: id = v772 ? 1168 : 1128; break;
+    case PlayerSound::attack_sweep: id = v772 ? 1169 : 1129; break;
+    case PlayerSound::attack_weak: id = v772 ? 1170 : 1130; break;
     // The same on both protocols.
     case PlayerSound::equip_chain: id = 67; break;
     case PlayerSound::equip_diamond: id = 68; break;

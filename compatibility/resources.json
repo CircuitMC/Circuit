@@ -6656,164 +6656,111 @@
       "wooden_sword": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks and sweeps as the iron sword does, wearing 1 a hit"
       },
       "wooden_shovel": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "wooden_hoe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "stone_sword": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks and sweeps as the iron sword does, wearing 1 a hit"
       },
       "stone_shovel": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "stone_hoe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "iron_sword": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ],
+        "note": "Held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor); its attacks as both official servers make them: charge, sweeps and a wear of 1 a hit (client/combat)",
         "cases": [
-          "client/armor"
+          "client/armor",
+          "client/combat"
         ]
       },
       "iron_shovel": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "iron_hoe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "golden_sword": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks and sweeps as the iron sword does, wearing 1 a hit"
       },
       "golden_shovel": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "golden_hoe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "diamond_sword": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks and sweeps as the iron sword does, wearing 1 a hit"
       },
       "diamond_shovel": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "diamond_hoe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "netherite_sword": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks and sweeps as the iron sword does, wearing 1 a hit"
       },
       "netherite_shovel": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "netherite_hoe": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
-        "deviations": [
-          "attacks are not modeled"
-        ]
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 2 a hit (minecraft.wiki)"
       },
       "trident": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 1 a hit (minecraft.wiki)",
         "deviations": [
-          "attacks are not modeled"
+          "the trident's throw and the mace's smash are not modeled"
         ]
       },
       "mace": {
         "impl": "partial",
         "evidence": "documented",
-        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor)",
+        "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 1 a hit (minecraft.wiki)",
         "deviations": [
-          "attacks are not modeled"
+          "the mace's smash attack is not modeled"
         ]
       }
     },
@@ -7126,6 +7073,14 @@
           "client/drown"
         ],
         "note": "A sweet berry bush grown at least once, moved across: 1, armor reducing it"
+      },
+      "player_attack": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/combat"
+        ],
+        "note": "A player's melee attack and its sweep: the damage event names the attacker, without a source position; armor reduces it; exhaustion 0.1; death.attack.player"
       }
     },
     "biome": {
@@ -7354,6 +7309,31 @@
         "cases": [
           "client/recipes"
         ]
+      },
+      "play/serverbound/interact": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/combat",
+          "client/spectators"
+        ],
+        "note": "Attacks on players (client/combat) and a spectator's camera (client/spectators); other interactions are not modeled"
+      },
+      "play/clientbound/hurt_animation": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/combat"
+        ],
+        "note": "To a player hurt by an attack, with the attacker's direction less the player's yaw (the exact arctangent)"
+      },
+      "play/clientbound/level_particles": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/combat"
+        ],
+        "note": "The damage indicator and sweep particles of attacks only"
       }
     },
     "attribute": {
@@ -7370,10 +7350,11 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
+          "client/armor",
           "client/attributes",
-          "client/armor"
+          "client/combat"
         ],
-        "note": "Sent with haste's and mining fatigue's modifiers and the held weapon's or tool's (client/armor); only the client uses it"
+        "note": "Sent with haste's and mining fatigue's modifiers and the held weapon's or tool's (client/armor); the ticks an attack takes to charge (client/combat)"
       },
       "block_interaction_range": {
         "impl": "partial",
@@ -7387,9 +7368,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/attributes"
+          "client/attributes",
+          "client/combat"
         ],
-        "note": "Sent with creative mode's modifier; there are no attacks"
+        "note": "Sent with creative mode's modifier; with 3 more, the reach of attacks (client/combat)"
       },
       "luck": {
         "impl": "partial",
@@ -7429,8 +7411,11 @@
       },
       "attack_damage": {
         "impl": "partial",
-        "evidence": "none",
-        "note": "Strength's and weakness's modifiers and the held weapon's or tool's are kept; the official servers do not send it, and there are no attacks"
+        "evidence": "compared",
+        "cases": [
+          "client/combat"
+        ],
+        "note": "Strength's and weakness's modifiers and the held weapon's or tool's; an attack's damage before its charge (client/combat); not sent, as on both official servers"
       },
       "armor": {
         "impl": "partial",
@@ -7456,7 +7441,7 @@
         "cases": [
           "client/armor"
         ],
-        "note": "A player's, from netherite armor; not sent, as on both official servers (client/armor); there is no knockback to resist"
+        "note": "A player's, from netherite armor; not sent, as on both official servers (client/armor); takes its share off the knockback of attacks (not recorded)"
       },
       "oxygen_bonus": {
         "impl": "partial",

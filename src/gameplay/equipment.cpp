@@ -141,4 +141,18 @@ std::optional<Weapon> weapon(std::uint16_t item) {
     return it->second->weapon;
 }
 
+std::int32_t attack_wear(std::uint16_t item) {
+    static const auto map = by_id(held);
+    const auto it = map.find(item);
+    if (it == map.end()) return 0;
+    const std::string_view name = it->second->item;
+    return name.ends_with("_sword") || name == "trident" || name == "mace" ? 1 : 2;
+}
+
+bool sweeps(std::uint16_t item) {
+    static const auto map = by_id(held);
+    const auto it = map.find(item);
+    return it != map.end() && it->second->item.ends_with("_sword");
+}
+
 } // namespace circuit::gameplay::equipment

@@ -141,6 +141,7 @@ Player inventories are simulation state, changed by commands in the command phas
 | `SwapHands` | Swaps the main hand's stack with the off hand's (the swap key) |
 | `ConsumeItem` | Uses up one of the food or drink in a hand's slot outside creative mode, while that slot holds its item, and leaves its bowl, bucket or glass bottle in its place or, with some of the stack left, in the inventory (thrown out without room) |
 | `WearArmor` | Wears each piece of armor worn that wears when its wearer is hurt (not the elytra; netherite not by fire) by an amount, breaking it at its durability |
+| `WearHeld` | Wears the item in a hotbar slot, while it is still the item a hit that hurt was dealt with, by an amount, breaking it at its durability |
 | `EditBook` | Sets the pages of the book and quill in a hotbar slot or the off hand, or signs it into a written book by the player (another stack there is left alone; the server gives the components' encoding) |
 | `ContainerClick` | One click in the player's own window or an open container's window |
 | `CloseContainer` | Returns the carried stack and the crafting grid to the inventory, or throws them |

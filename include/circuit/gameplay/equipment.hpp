@@ -52,5 +52,11 @@ struct Weapon {
     float speed{};
 };
 std::optional<Weapon> weapon(std::uint16_t item);
+// The durability a held item loses by a hit that hurts: swords, the trident
+// and the mace 1, axes, pickaxes, shovels and hoes 2 (minecraft.wiki
+// "Durability"; client/combat: an iron sword 1), other items none. Whether it
+// sweeps (swords: client/combat).
+std::int32_t attack_wear(std::uint16_t item);
+bool sweeps(std::uint16_t item);
 
 } // namespace circuit::gameplay::equipment
