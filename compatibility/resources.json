@@ -7471,11 +7471,158 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/drown"
+          "client/drown",
+          "client/ench_attributes",
+          "client/ench_air"
         ],
-        "note": "A player's from the first tick they lose air, sent without modifiers, as both official servers do",
+        "note": "A player's from the first tick they lose air or a respiration helmet gives it, sent as both official servers do; with a bonus each tick keeps the air with a chance of 1 - 1/(bonus + 1)",
         "deviations": [
-          "the respiration enchantment's modifier is not modeled"
+          "the chance is drawn from Circuit's own random"
+        ]
+      },
+      "burning_time": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Fire protection's modifier on each armor piece, sent as both official servers send it",
+        "deviations": [
+          "only reaches the client: its effect is not modeled yet"
+        ]
+      },
+      "explosion_knockback_resistance": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Blast protection's modifier, sent as both official servers send it",
+        "deviations": [
+          "only reaches the client: its effect is not modeled yet"
+        ]
+      },
+      "mining_efficiency": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes",
+          "client/ench_dig"
+        ],
+        "note": "Efficiency's modifier in the main hand (whatever the item), sent as both official servers send it; added to a tool's speed above 1 in digging"
+      },
+      "sneaking_speed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Swift sneak's modifier on leggings, sent as both official servers send it; the client uses it"
+      },
+      "submerged_mining_speed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes",
+          "client/ench_dig"
+        ],
+        "note": "Aqua affinity's modifier on a helmet, sent as both official servers send it; digging under water uses it"
+      },
+      "sweeping_damage_ratio": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Sweeping edge's modifier in the main hand, sent as both official servers send it",
+        "deviations": [
+          "only reaches the client: its effect is not modeled yet"
+        ]
+      },
+      "water_movement_efficiency": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Depth strider's modifier on boots, sent as both official servers send it; the client uses it"
+      }
+    },
+    "enchantment": {
+      "respiration": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes",
+          "client/ench_air"
+        ],
+        "note": "Its oxygen bonus modifier on a helmet (+1 a level), and the air kept by chance under water"
+      },
+      "aqua_affinity": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes",
+          "client/ench_dig"
+        ],
+        "note": "Its submerged mining speed modifier on a helmet (4 times the total), digging under water as fast as on land"
+      },
+      "efficiency": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes",
+          "client/ench_dig"
+        ],
+        "note": "Its mining efficiency modifier in the main hand (level squared and 1), added to a tool's speed above 1"
+      },
+      "depth_strider": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Its water movement efficiency modifier on boots; the client uses it"
+      },
+      "swift_sneak": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Its sneaking speed modifier on leggings; the client uses it"
+      },
+      "fire_protection": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Its burning time modifier on each armor piece",
+        "deviations": [
+          "its protection against fire and its shorter burning are not modeled yet"
+        ]
+      },
+      "blast_protection": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Its explosion knockback resistance modifier on each armor piece",
+        "deviations": [
+          "its protection against explosions and the knockback resistance in use are not modeled yet"
+        ]
+      },
+      "sweeping_edge": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_attributes"
+        ],
+        "note": "Its sweeping damage ratio modifier in the main hand",
+        "deviations": [
+          "sweeps do not use the ratio yet"
         ]
       }
     }

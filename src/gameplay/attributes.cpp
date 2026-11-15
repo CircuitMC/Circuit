@@ -20,14 +20,24 @@ constexpr std::array<Entry, count> entries{{
     {"attack_damage", 1.0, 0.0, 2048.0, false},
     {"attack_speed", 4.0, 0.0, 1024.0, true},
     {"block_interaction_range", 4.5, 0.0, 64.0, true},
+    // The enchantments' (client/ench_attributes: their bases as sent; the
+    // ranges by minecraft.wiki "Attribute").
+    {"burning_time", 1.0, 0.0, 1024.0, true},
+    {"explosion_knockback_resistance", 0.0, 0.0, 1.0, true},
     {"entity_interaction_range", 3.0, 0.0, 64.0, true},
     {"knockback_resistance", 0.0, 0.0, 1.0, false},
     {"luck", 0.0, -1024.0, 1024.0, true},
     {"max_absorption", 0.0, 0.0, 2048.0, true},
     {"max_health", 20.0, 1.0, 1024.0, true},
+    {"mining_efficiency", 0.0, 0.0, 1024.0, true},
+    {"movement_efficiency", 0.0, 0.0, 1.0, true},
     {"movement_speed", static_cast<double>(0.1f), 0.0, 1024.0, true},
     {"oxygen_bonus", 0.0, 0.0, 1024.0, true},
     {"safe_fall_distance", 3.0, -1024.0, 1024.0, true},
+    {"sneaking_speed", 0.3, 0.0, 1.0, true},
+    {"submerged_mining_speed", 0.2, 0.0, 20.0, true},
+    {"sweeping_damage_ratio", 0.0, 0.0, 1.0, true},
+    {"water_movement_efficiency", 0.0, 0.0, 1.0, true},
 }};
 
 // Each effect's modifier: its attribute, the amount per level and the operation.

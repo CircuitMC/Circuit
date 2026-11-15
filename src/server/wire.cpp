@@ -711,14 +711,22 @@ Bytes Wire::update_attributes(std::int32_t entity, std::span<const gameplay::att
         case attr::Attribute::attack_damage: return 2;
         case attr::Attribute::attack_speed: return 4;
         case attr::Attribute::block_interaction_range: return 6;
+        case attr::Attribute::burning_time: return 7;
+        case attr::Attribute::explosion_knockback_resistance: return later ? 9 : 8;
         case attr::Attribute::entity_interaction_range: return later ? 10 : 9;
         case attr::Attribute::knockback_resistance: return later ? 16 : 15;
         case attr::Attribute::luck: return later ? 17 : 16;
         case attr::Attribute::max_absorption: return later ? 18 : 17;
         case attr::Attribute::max_health: return later ? 19 : 18;
+        case attr::Attribute::mining_efficiency: return later ? 20 : 19;
+        case attr::Attribute::movement_efficiency: return later ? 21 : 20;
         case attr::Attribute::movement_speed: return later ? 22 : 21;
         case attr::Attribute::oxygen_bonus: return later ? 23 : 22;
         case attr::Attribute::safe_fall_distance: return later ? 24 : 23;
+        case attr::Attribute::sneaking_speed: return later ? 26 : 25;
+        case attr::Attribute::submerged_mining_speed: return later ? 29 : 28;
+        case attr::Attribute::sweeping_damage_ratio: return later ? 30 : 29;
+        case attr::Attribute::water_movement_efficiency: return later ? 32 : 31;
         }
         return 0;
     };

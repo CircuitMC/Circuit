@@ -19,13 +19,17 @@ bool harvests(BlockState s, const contracts::ItemStack& tool, const GameData* da
 struct DigEffects {
     std::int32_t haste{-1};
     std::int32_t fatigue{-1};
+    float efficiency{};       // the mining efficiency attribute (efficiency)
+    float submerged{0.2f};    // the submerged mining speed attribute (aqua affinity)
 };
 // Fraction of the block a player breaks per tick: the tool's speed when it
 // is effective on the block (1 otherwise), 20% faster per level of haste
 // and times 0.3, 0.09, 0.0027 or 0.00081 by the level of mining fatigue
 // (minecraft.wiki "Haste", "Mining Fatigue"; client/dig_effects: haste,
-// conduit power and fatigue as both official servers count them), divided
-// by five with the eyes in water and again off the ground, over the
+// conduit power and fatigue as both official servers count them), the
+// mining efficiency added to a speed above 1 first (efficiency;
+// client/ench_dig), times the submerged mining speed with the eyes in water
+// (0.2, aqua affinity's 1) and divided by five off the ground, over the
 // hardness and over 30 when the tool harvests the block, else 100. 1 or
 // more breaks the block at once.
 float destroy_progress(BlockState s, const contracts::ItemStack& tool, bool on_ground, bool eyes_in_water = false,

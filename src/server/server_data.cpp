@@ -3,6 +3,8 @@
 #include <circuit/server/data_report.hpp>
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/enchantments.hpp>
+#include <circuit/gameplay/equipment.hpp>
 #include <circuit/auth/json.hpp>
 #include <circuit/gameplay/potions.hpp>
 #include <circuit/protocol/content.hpp>
@@ -91,6 +93,122 @@ const std::string& ServerData::fingerprint() const {
     static const std::string none{"none"};
     return packs ? packs->fingerprint() : none;
 }
+
+namespace {
+// A level-based value of an enchantment's data (minecraft.wiki
+// "Enchantment definition"): a number, or a compound by its type.
+std::optional<gameplay::enchantments::LevelValue> level_value(const auth::Json& json) {
+    using gameplay::enchantments::LevelValue;
+    using Kind = LevelValue::Kind;
+    LevelValue v;
+    if (json.kind() == auth::Json::Kind::number) {
+        v.a = static_cast<float>(json.as_number());
+        return v;
+    }
+    const auto* type = json.find("type");
+    if (!type || type->kind() != auth::Json::Kind::string) return std::nullopt;
+    const auto number = [&](const char* key) -> std::optional<float> {
+        const auto* f = json.find(key);
+        if (!f || f->kind() != auth::Json::Kind::number) return std::nullopt;
+        return static_cast<float>(f->as_number());
+    };
+    const auto nested = [&](const char* key) -> bool {
+        const auto* f = json.find(key);
+        auto part = f ? level_value(*f) : std::nullopt;
+        if (!part) return false;
+        v.parts.push_back(std::move(*part));
+        return true;
+    };
+    const auto t = type->as_string();
+    if (t == "minecraft:constant" || t == "constant") {
+        const auto value = number("value");
+        if (!value) return std::nullopt;
+        v.a = *value;
+    } else if (t == "minecraft:linear" || t == "linear") {
+        const auto base = number("base"), per = number("per_level_above_first");
+        if (!base || !per) return std::nullopt;
+        v.kind = Kind::linear;
+        v.a = *base;
+        v.b = *per;
+    } else if (t == "minecraft:levels_squared" || t == "levels_squared") {
+        const auto added = number("added");
+        if (!added) return std::nullopt;
+        v.kind = Kind::levels_squared;
+        v.a = *added;
+    } else if (t == "minecraft:fraction" || t == "fraction") {
+        v.kind = Kind::fraction;
+        if (!nested("numerator") || !nested("denominator")) return std::nullopt;
+    } else if (t == "minecraft:clamped" || t == "clamped") {
+        const auto min = number("min"), max = number("max");
+        v.kind = Kind::clamped;
+        if (!min || !max || !nested("value")) return std::nullopt;
+        v.a = *min;
+        v.b = *max;
+    } else if (t == "minecraft:lookup" || t == "lookup") {
+        v.kind = Kind::lookup;
+        const auto* values = json.find("values");
+        if (!values || values->kind() != auth::Json::Kind::array || !nested("fallback")) return std::nullopt;
+        for (const auto& e : values->items()) {
+            if (e.kind() != auth::Json::Kind::number) return std::nullopt;
+            v.values.push_back(static_cast<float>(e.as_number()));
+        }
+    } else if (t == "minecraft:exponent" || t == "exponent") {
+        v.kind = Kind::exponent;
+        if (!nested("base") || !nested("power")) return std::nullopt;
+    } else {
+        return std::nullopt;
+    }
+    return v;
+}
+
+// An enchantment's slots and attribute modifiers (its minecraft:attributes
+// effects): refused when it names a slot group, attribute or value form
+// Circuit does not know.
+std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json) {
+    namespace en = gameplay::enchantments;
+    namespace at = gameplay::attributes;
+    en::Effects out;
+    if (const auto* slots = json.find("slots")) {
+        if (slots->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: slots are not a list", name));
+        for (const auto& group : slots->items()) {
+            const auto bits = group.kind() == auth::Json::Kind::string ? en::slot_group(group.as_string()) : std::nullopt;
+            if (!bits) return std::unexpected(std::format("enchantment {}: an unknown slot group", name));
+            out.slots = static_cast<std::uint8_t>(out.slots | *bits);
+        }
+    }
+    const auto* effects = json.find("effects");
+    const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;
+    if (!list) return out;
+    if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: attributes are not a list", name));
+    for (const auto& e : list->items()) {
+        const auto* attribute = e.find("attribute");
+        const auto* id = e.find("id");
+        const auto* amount = e.find("amount");
+        const auto* operation = e.find("operation");
+        const auto a = attribute && attribute->kind() == auth::Json::Kind::string ? at::by_name(attribute->as_string()) : std::nullopt;
+        if (!a) return std::unexpected(std::format("enchantment {}: an attribute Circuit does not model", name));
+        auto value = amount ? level_value(*amount) : std::nullopt;
+        if (!value || !id || id->kind() != auth::Json::Kind::string || !operation || operation->kind() != auth::Json::Kind::string)
+            return std::unexpected(std::format("enchantment {}: an attribute effect Circuit cannot read", name));
+        en::AttributeEffect effect;
+        effect.attribute = *a;
+        effect.amount = std::move(*value);
+        const auto op = operation->as_string();
+        if (op == "add_value") effect.operation = at::Operation::add_value;
+        else if (op == "add_multiplied_base") effect.operation = at::Operation::add_multiplied_base;
+        else if (op == "add_multiplied_total") effect.operation = at::Operation::add_multiplied_total;
+        else return std::unexpected(std::format("enchantment {}: an unknown attribute operation", name));
+        auto base = id->as_string();
+        if (base.find(':') != std::string::npos && !base.starts_with("minecraft:"))
+            return std::unexpected(std::format("enchantment {}: an attribute modifier outside the minecraft namespace", name));
+        if (base.starts_with("minecraft:")) base.erase(0, 10);
+        for (std::size_t s = 0; s < gameplay::equipment::slot_count; ++s)
+            effect.ids[s] = base + "/" + std::string(gameplay::equipment::slot_name(static_cast<gameplay::equipment::Slot>(s)));
+        out.attributes.push_back(std::move(effect));
+    }
+    return out;
+}
+} // namespace
 
 std::expected<ServerData, std::string> load_server_data(const contracts::VersionBundle& bundle, const data::PackOptions& options) {
     ServerData out;
@@ -299,6 +417,11 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                     std::ranges::sort(rules.exclusive);
                 }
                 game->enchantment_rules.emplace(*id, std::move(rules));
+                // What it does to players: its slots and attribute modifiers
+                // (refused when the data asks for what Circuit cannot do).
+                auto effects = enchantment_effects(name, *json);
+                if (!effects) return std::unexpected(effects.error());
+                if (!effects->attributes.empty()) game->enchantment_effects.emplace(*id, std::move(*effects));
             }
         }
         // Enchanting tables: the enchantments they offer, in the tag's order,

@@ -124,6 +124,18 @@ std::optional<contracts::ItemStack> worn_down(const contracts::ItemStack& piece,
     return out;
 }
 
+std::string_view slot_name(Slot s) noexcept {
+    switch (s) {
+    case mainhand: return "mainhand";
+    case offhand: return "offhand";
+    case feet: return "feet";
+    case legs: return "legs";
+    case chest: return "chest";
+    case head: return "head";
+    }
+    return {};
+}
+
 std::string_view armor_modifier(Slot s) noexcept {
     switch (s) {
     case head: return "armor.helmet";

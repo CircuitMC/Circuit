@@ -210,6 +210,11 @@ struct GameFixture {
     GameFixture(ServerConfig c, server::ServerData d) : data(std::move(d)), wire(772, data.components), config(std::move(c)) {
         game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, data);
     }
+    // On a target version, with the data a server of it loaded from data packs.
+    GameFixture(std::string_view v, ServerConfig c, server::ServerData d)
+        : version(v), data(std::move(d)), wire(version == "1.21.4" ? 769 : 772, data.components), config(std::move(c)) {
+        game = std::make_unique<server::Game>(config, bundle, wire, *protocol::ContentTables::for_protocol(wire.protocol()), mapping, data);
+    }
     ~GameFixture() { game->shutdown("test finished"); }
     std::shared_ptr<Recorder> join(std::uint64_t id, std::string name, std::int32_t view = 0) {
         auto peer = std::make_shared<Recorder>(id);
@@ -5124,6 +5129,231 @@ int main() {
             t = ticks(2);
             require(has(t.alice, "damage bob"), std::format("{}: not raised after death: {}", version, text(t.alice)));
         }
+    });
+
+    suite.run("enchantments give players attribute modifiers, and speed digging and keep air, as both official servers do (client/ench_attributes)", [] {
+        // circuit-clienttest/ench-attributes.js, ench-dig.js and ench-air.js;
+        // enchantments need the official data packs (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        using I = server::Intent;
+        bool ran = false;
+        for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            ran = true;
+            const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value() && d->game, d ? "no game data" : d.error());
+            const auto enchanted = d->game->enchanted;
+            GameFixture f(version, offline_config(), std::move(*d));
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            const bool v772 = std::string_view(version) == "1.21.8";
+            const auto item = [&](std::string_view name) { return tables.item_id(name).value(); };
+            const auto stack = [&](std::string_view name, std::vector<std::pair<std::string, std::int32_t>> levels, std::int16_t slot) {
+                auto patch = levels.empty() ? std::optional<contracts::ComponentPatch>(contracts::ComponentPatch{}) : enchanted(levels);
+                require(patch.has_value(), "enchanted");
+                return I{server::intent::CreativeSlot{slot, 1, item(name), 0, *patch}};
+            };
+            const auto entity_of = [&](Recorder& r) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r.mutex);
+                std::int32_t e = -1;
+                for (const auto& bytes : r.packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) e = pk->fields.i32().value();
+                return e;
+            };
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::int32_t entity = entity_of(*alice);
+            // The attribute packets of alice a client got since the last
+            // call: per packet, each attribute "id base [modifier amount
+            // operation ...]"; and the sounds it heard and alice's equipment
+            // it was sent.
+            std::map<std::uint64_t, std::size_t> seen;
+            const auto packets = [&](Recorder& r) {
+                const auto attributes = f.wire.ids().id(State::play, Bound::clientbound, "update_attributes");
+                const auto sound = f.wire.ids().id(State::play, Bound::clientbound, "sound");
+                const auto equipment = f.wire.ids().id(State::play, Bound::clientbound, "set_equipment");
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == sound) {
+                        out.push_back("sound");
+                        continue;
+                    }
+                    if (pk->id == equipment) {
+                        if (in.varint().value() == entity) out.push_back("equipment");
+                        continue;
+                    }
+                    if (pk->id != attributes || in.varint().value() != entity) continue;
+                    std::string line;
+                    for (auto n = in.varint().value(); n > 0; --n) {
+                        const auto id = in.varint().value();
+                        line += std::format("{} {}", id, in.f64().value());
+                        for (auto m = in.varint().value(); m > 0; --m) {
+                            const auto mid = in.string(32767).value();
+                            const auto amount = in.f64().value();
+                            line += std::format(" [{} {} {}]", mid, amount, static_cast<int>(in.u8().value()));
+                        }
+                        line += "; ";
+                    }
+                    out.push_back(line);
+                }
+                return out;
+            };
+            const auto joined = [](const std::vector<std::string>& v) {
+                std::string all;
+                for (const auto& p : v) all += p + "| ";
+                return all;
+            };
+            const auto step = [&](I intent) {
+                f.game->submit(1, std::move(intent));
+                for (int k = 0; k < 3; ++k) f.game->tick();
+                (void)packets(*bob);
+                return joined(packets(*alice));
+            };
+            const auto has = [](const std::string& all, std::string_view part) { return all.find(part) != std::string::npos; };
+            const auto id = [&](std::int32_t later, std::int32_t earlier) { return v772 ? later : earlier; };
+            f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+            f.game->submit(2, I{server::intent::ConfirmTeleport{1}});
+            (void)step(I{server::intent::Command{"gamemode creative"}});
+            // Each attribute's id, base and the modifier: its id with the
+            // slot, the level's amount in floats, its operation.
+            const std::vector<std::tuple<std::string_view, std::vector<std::pair<std::string, std::int32_t>>, std::int16_t, std::string>> pieces{
+                {"minecraft:iron_helmet", {{"minecraft:respiration", 3}}, 5, std::format("{} 0 [minecraft:enchantment.respiration/head 3 0]", id(23, 22))},
+                {"minecraft:iron_helmet", {{"minecraft:aqua_affinity", 1}}, 5, std::format("{} 0.2 [minecraft:enchantment.aqua_affinity/head 4 2]", id(29, 28))},
+                {"minecraft:iron_leggings", {{"minecraft:swift_sneak", 3}}, 7, std::format("{} 0.3 [minecraft:enchantment.swift_sneak/legs 0.45000001788139343 0]", id(26, 25))},
+                {"minecraft:iron_boots", {{"minecraft:depth_strider", 2}}, 8, std::format("{} 0 [minecraft:enchantment.depth_strider/feet 0.6666666865348816 0]", id(32, 31))},
+                {"minecraft:iron_chestplate", {{"minecraft:fire_protection", 2}}, 6, "7 1 [minecraft:enchantment.fire_protection/chest -0.30000001192092896 1]"},
+                {"minecraft:iron_boots", {{"minecraft:blast_protection", 4}}, 8, std::format("{} 0 [minecraft:enchantment.blast_protection/feet 0.6000000238418579 0]", id(9, 8))},
+                {"minecraft:iron_sword", {{"minecraft:sweeping_edge", 3}}, 36, std::format("{} 0 [minecraft:enchantment.sweeping_edge/mainhand 0.75 0]", id(30, 29))},
+                {"minecraft:stick", {{"minecraft:efficiency", 5}}, 36, std::format("{} 0 [minecraft:enchantment.efficiency/mainhand 26 0]", id(20, 19))},
+            };
+            for (const auto& [name, levels, slot, expected] : pieces) {
+                const auto all = step(stack(name, levels, slot));
+                require(has(all, expected), std::format("{}: {} expected; {}", version, expected, all));
+            }
+            // A slot emptied: its modifiers go.
+            auto all = step(I{server::intent::CreativeSlot{6, 0, 0}});
+            require(has(all, "7 1;") && !has(all, "fire_protection"), std::format("{}: the chestplate off: {}", version, all));
+            // The same item, enchanted otherwise: put on again, with its sound.
+            all = step(stack("minecraft:iron_helmet", {{"minecraft:respiration", 2}}, 5));
+            require(has(all, "sound") && has(all, std::format("{} 0.2;", id(29, 28))) && has(all, "[minecraft:enchantment.respiration/head 2 0]"),
+                    std::format("{}: another helmet: {}", version, all));
+            // In the enchantment's slots only.
+            all = step(stack("minecraft:iron_chestplate", {{"minecraft:swift_sneak", 1}}, 6));
+            require(!has(all, "swift_sneak/chest"), std::format("{}: swift sneak on a chestplate: {}", version, all));
+            all = step(stack("minecraft:diamond_pickaxe", {{"minecraft:efficiency", 5}}, 45));
+            require(!has(all, "efficiency/offhand"), std::format("{}: efficiency in the off hand: {}", version, all));
+            // A rejoin: the attributes without the modifiers of what she wears
+            // and holds, which follow in a later packet; bob sees her appear
+            // with her equipment.
+            f.game->leave(1);
+            f.game->tick();
+            (void)packets(*bob);
+            alice = f.join(1, "alice");
+            seen.erase(1);
+            entity = entity_of(*alice);
+            const auto first = packets(*alice);
+            const auto appeared = joined(packets(*bob));
+            require(!first.empty() && has(first.front(), std::format("{} 0;", id(23, 22))) && !has(joined(first), "enchantment."),
+                    std::format("{}: arriving without the modifiers: {}", version, joined(first)));
+            require(has(appeared, "equipment") && !has(appeared, "enchantment."), std::format("{}: bob sees her appear dressed: {}", version, appeared));
+            // In the next tick a helmet put on plays its sound, and the
+            // modifiers come.
+            f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+            all = step(stack("minecraft:iron_helmet", {{"minecraft:respiration", 3}}, 5));
+            require(has(all, "sound") && has(all, "[minecraft:enchantment.respiration/head 3 0]") && has(all, "[minecraft:enchantment.efficiency/mainhand 26 0]"),
+                    std::format("{}: then the modifiers: {}", version, all));
+
+            // Digging (ench-dig.js): obsidian with an efficiency V diamond
+            // pickaxe, finished after 40 ticks: at once; with a plain one not.
+            (void)step(I{server::intent::Command{"gamemode survival"}});
+            (void)step(I{server::intent::Command{"tp alice 0.5 -60 0.5"}});
+            f.game->submit(1, I{server::intent::ConfirmTeleport{2}});
+            (void)step(I{server::intent::Move{std::nullopt, std::nullopt, true}}); // on the ground
+            const auto dig = [&](std::int32_t x, std::int32_t ticks) {
+                f.game->submit(1, I{server::intent::Command{std::format("setblock {} -60 0 minecraft:obsidian", x)}});
+                f.game->tick();
+                f.game->submit(1, I{server::intent::Dig{0, {x, -60, 0}, 1, 1}});
+                for (int k = 0; k < ticks; ++k) f.game->tick();
+                f.game->submit(1, I{server::intent::Dig{2, {x, -60, 0}, 1, 2}});
+                f.game->tick();
+                f.game->tick();
+                return f.at({x, -60, 0});
+            };
+            (void)step(I{server::intent::Command{"gamemode creative"}});
+            (void)step(stack("minecraft:diamond_pickaxe", {{"minecraft:efficiency", 5}}, 36));
+            (void)step(I{server::intent::Command{"gamemode survival"}});
+            require(dig(2, 40) == "minecraft:air", std::format("{}: efficiency V digs obsidian in 40 ticks", version));
+            (void)step(I{server::intent::Command{"gamemode creative"}});
+            (void)step(stack("minecraft:diamond_pickaxe", {}, 36));
+            (void)step(I{server::intent::Command{"gamemode survival"}});
+            require(dig(3, 40) == "minecraft:obsidian", std::format("{}: a plain pickaxe does not", version));
+
+            // Respiration III (ench-air.js): under water without water
+            // breathing, about a quarter of the ticks lose air; without it
+            // every tick.
+            const auto air_lost = [&](std::int32_t ticks) {
+                const auto metadata = f.wire.ids().id(State::play, Bound::clientbound, "set_entity_data");
+                std::int32_t lowest = 300;
+                f.game->submit(1, I{server::intent::Command{"tp alice 11.5 -60 11.5"}});
+                for (int k = 0; k < ticks; ++k) f.game->tick();
+                f.game->submit(1, I{server::intent::Command{"tp alice 0.5 -60 0.5"}});
+                f.game->tick();
+                std::lock_guard lock(alice->mutex);
+                for (auto& at = seen[alice->peer_id]; at < alice->packets.size(); ++at) {
+                    auto pk = protocol::open_packet(alice->packets[at]);
+                    if (!pk || pk->id != metadata || pk->fields.varint().value() != entity) continue;
+                    if (pk->fields.u8().value() == 1 && pk->fields.varint().value() == 1) lowest = std::min(lowest, pk->fields.varint().value());
+                }
+                return 300 - lowest;
+            };
+            (void)step(I{server::intent::Command{"fill 10 -60 10 12 -58 12 minecraft:water[level=0]"}});
+            (void)step(I{server::intent::Command{"gamemode creative"}});
+            (void)step(I{server::intent::CreativeSlot{5, 0, 0}});
+            (void)step(I{server::intent::Command{"gamemode survival"}});
+            const auto plain = air_lost(120);
+            require(plain >= 118 && plain <= 121, std::format("{}: one air a tick without respiration: {}", version, plain));
+            for (int k = 0; k < 100; ++k) f.game->tick(); // breathe again
+            (void)step(I{server::intent::Command{"gamemode creative"}});
+            (void)step(stack("minecraft:iron_helmet", {{"minecraft:respiration", 3}}, 5));
+            (void)step(I{server::intent::Command{"gamemode survival"}});
+            const auto kept = air_lost(400);
+            require(kept >= 60 && kept <= 140, std::format("{}: respiration III loses about a quarter (100 of 400): {}", version, kept));
+        }
+        if (!ran) std::puts("  (no official server jar given: the enchantment checks did not run)");
+    });
+
+    suite.run("data packs whose enchantments ask for what Circuit cannot do are refused", [] {
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the enchantment refusal checks did not run)");
+            return;
+        }
+        const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
+        const auto pack = std::filesystem::temp_directory_path() / std::format("circuit-ench-pack-{}", ::getpid());
+        const auto attempt = [&](std::string_view definition) {
+            std::filesystem::remove_all(pack);
+            std::filesystem::create_directories(pack / "data/minecraft/enchantment");
+            std::ofstream(pack / "pack.mcmeta") << R"({"pack":{"pack_format":81,"description":"test"}})";
+            std::ofstream(pack / "data/minecraft/enchantment/respiration.json") << definition;
+            auto d = server::load_server_data(bundle, {jar, {pack}});
+            std::filesystem::remove_all(pack);
+            return d.has_value() ? std::string("loaded") : d.error();
+        };
+        const std::string head = R"({"description":"r","supported_items":"#minecraft:enchantable/head_armor","weight":2,"max_level":3,"min_cost":{"base":10,"per_level_above_first":10},"max_cost":{"base":40,"per_level_above_first":10},"anvil_cost":4,"slots":["head"],"effects":{"minecraft:attributes":[)";
+        const auto with = [&](std::string_view effect) { return head + std::string(effect) + "]}}"; };
+        require(attempt(with(R"({"id":"minecraft:enchantment.respiration","attribute":"minecraft:oxygen_bonus","amount":{"type":"minecraft:linear","base":1,"per_level_above_first":1},"operation":"add_value"})")) == "loaded",
+                "a definition like the official one loads");
+        require(attempt(with(R"({"id":"minecraft:enchantment.respiration","attribute":"minecraft:scale","amount":1,"operation":"add_value"})")).find("does not model") != std::string::npos,
+                "an attribute Circuit does not model");
+        require(attempt(with(R"({"id":"pack:bonus","attribute":"minecraft:oxygen_bonus","amount":1,"operation":"add_value"})")).find("namespace") != std::string::npos,
+                "a modifier outside the minecraft namespace");
+        require(attempt(with(R"({"id":"minecraft:enchantment.respiration","attribute":"minecraft:oxygen_bonus","amount":{"type":"minecraft:wavy"},"operation":"add_value"})")).find("cannot read") != std::string::npos,
+                "a value form Circuit does not know");
     });
 
     suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {

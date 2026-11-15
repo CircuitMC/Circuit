@@ -23,16 +23,24 @@ enum class Attribute : std::uint8_t {
     attack_damage,
     attack_speed,
     block_interaction_range,
+    burning_time,
+    explosion_knockback_resistance,
     entity_interaction_range,
     knockback_resistance,
     luck,
     max_absorption,
     max_health,
+    mining_efficiency,
+    movement_efficiency,
     movement_speed,
     oxygen_bonus,
     safe_fall_distance,
+    sneaking_speed,
+    submerged_mining_speed,
+    sweeping_damage_ratio,
+    water_movement_efficiency,
 };
-inline constexpr std::size_t count = 13;
+inline constexpr std::size_t count = 21;
 // The name without its namespace, and an attribute by name (with or without "minecraft:").
 std::string_view name(Attribute a) noexcept;
 std::optional<Attribute> by_name(std::string_view name) noexcept;

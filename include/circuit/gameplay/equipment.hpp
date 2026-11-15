@@ -44,6 +44,9 @@ std::optional<contracts::ItemStack> worn_down(const contracts::ItemStack& piece,
 // The attribute modifier id of an armor slot's item ("armor.helmet" to
 // "armor.boots").
 std::string_view armor_modifier(Slot s) noexcept;
+// The slot's name: mainhand, offhand, feet, legs, chest or head (what an
+// enchantment's modifier id ends in: client/ench_attributes).
+std::string_view slot_name(Slot s) noexcept;
 // What a weapon or tool gives in the main hand: the attack damage and speed
 // it adds to a hand's 1 and 4 (the base_attack_damage and base_attack_speed
 // modifiers).

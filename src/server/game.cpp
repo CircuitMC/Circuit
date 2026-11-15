@@ -85,6 +85,8 @@ struct Player {
     std::optional<std::tuple<contracts::Vec3, bool, std::int32_t>> presence; // last sent (position, spectator, held)
     std::optional<std::tuple<float, std::int32_t, std::int32_t>> experience; // last sent (progress, level, total)
     bool experience_after_health{}; // a respawn's experience, again after its health
+    // The modifiers each equipment slot's enchantments gave (their attribute and id).
+    std::array<std::vector<std::pair<gameplay::attributes::Attribute, std::string_view>>, gameplay::equipment::slot_count> enchanted{};
     std::size_t experience_advancements{}; // the recipe book's advancements done when the experience was last sent
     std::optional<std::uint64_t> levelup_tick; // when the level-up sound last played (client/xp_death)
     std::optional<std::uint64_t> death_drops; // a death's PlayerDeath (its admission): the health waits for its slots
@@ -257,10 +259,12 @@ struct Player {
     // What the player holds and wears, by equipment slot, as last looked at
     // (client/armor): its attribute modifiers and what those who see the
     // player are told follow it; not looked at yet after joining or
-    // respawning (that look adds the modifiers, without sounds or equipment
-    // packets: the player appears to others with it).
+    // respawning. The first look, in the arrival tick, has no sounds: the
+    // player appears to others with it; its modifiers come a tick later
+    // (`modifiers_due`; client/ench_attributes).
     std::array<contracts::ItemStack, gameplay::equipment::slot_count> equipped{};
     bool equipment_known{};
+    bool modifiers_due{};
     // What the attribute modifiers follow: the equipment as last looked
     // at, also while what others see of it is held back (client/combat: a
     // weapon worn by an attack and switched away in its tick).
@@ -2161,8 +2165,7 @@ struct Game::Impl final : GameServices {
     // bubbles, also with drowningDamage off) before the hurt; otherwise the
     // air comes back. The oxygen bonus attribute, which the official
     // servers consult as air is lost, is the player's from the first time
-    // (sent without modifiers; the respiration enchantment that adds to it
-    // is not modeled).
+    // (sent without modifiers when nothing gave it one).
     void breathe(Player& p) {
         static const auto water_breathing = gameplay::effects::id("water_breathing"), conduit = gameplay::effects::id("conduit_power");
         const bool breathes = (water_breathing && effect_amplifier(p, *water_breathing)) || (conduit && effect_amplifier(p, *conduit));
@@ -2172,6 +2175,12 @@ struct Game::Impl final : GameServices {
             attribute(p, gameplay::attributes::Attribute::oxygen_bonus);
             p.attributes_changed.insert(gameplay::attributes::Attribute::oxygen_bonus);
         }
+        // Respiration (its oxygen bonus): each tick a chance of 1 - 1/(bonus
+        // + 1) of keeping the air (minecraft.wiki "Respiration";
+        // client/ench_air: within the chance on both versions), drawn from
+        // Circuit's own random.
+        const auto bonus = losing ? attribute_value(p, gameplay::attributes::Attribute::oxygen_bonus) : 0.0;
+        if (bonus > 0.0 && static_cast<double>(random_draw()) >= 1.0 / (bonus + 1.0)) return;
         const auto b = gameplay::damage::breathe(p.air, losing);
         p.air = b.air;
         if (!b.drowns) return;
@@ -2722,6 +2731,7 @@ struct Game::Impl final : GameServices {
         p.sprinting = false;
         for (auto& i : p.attributes) i.modifiers.clear();
         p.attributes_changed.clear();
+        for (auto& given : p.enchanted) given.clear();
         p.attributes_decided.clear();
         p.arrival = Player::Arrival::again;
         // Those the client saw go before the respawn, and appear again after
@@ -2762,6 +2772,7 @@ struct Game::Impl final : GameServices {
         p.living = p.told_living = 0; // a new entity's
         p.equipped = p.attributed = {};
         p.equipment_known = false;
+        p.modifiers_due = false;
         // A new entity: its first data, then its attributes (without
         // modifiers), at the next entity update, the health after them
         // (client/player_data, client/attribute_join).
@@ -2834,14 +2845,35 @@ struct Game::Impl final : GameServices {
         if (const auto& o = now[std::size_t(Slot::offhand)], &w = was[std::size_t(Slot::offhand)];
             shield && !o.empty() && o.item == *shield && (w.empty() || w.item != o.item))
             sound_around_at(p, Wire::PlayerSound::equip_generic, 1.0f, 1.0f, Wire::SoundCategory::player, true);
+        // A piece put on: another item, or the same with other components
+        // (client/ench_attributes: an iron helmet for one enchanted
+        // otherwise); not the same piece worn down.
         for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
-            if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item)) continue;
+            if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item && was[k].components == now[k].components))
+                continue;
             if (const auto* worn = gameplay::equipment::wearable(now[k].item); worn && worn->slot == static_cast<Slot>(k))
                 sound_around_at(p, equip_sound(worn->sound), 1.0f, 1.0f, Wire::SoundCategory::player, true);
         }
     }
+    // A player's first look after joining or respawning waits for the tick
+    // after their arrival: the attributes they arrive with, and those the
+    // others see them appear with, have no modifiers of what they wear and
+    // hold, which follow (client/ench_attributes); what they wear and hold
+    // the others see as they appear (client/armor).
     void look_at_equipment() {
         for (auto& [id, p] : players) {
+            if (!p.equipment_known && p.arrival != Player::Arrival::none) {
+                p.equipment_known = true;
+                p.modifiers_due = true;
+                p.equipped = p.attributed = equipment_now(p);
+                continue;
+            }
+            if (p.modifiers_due && p.arrival == Player::Arrival::none) {
+                p.modifiers_due = false;
+                const auto now = equipment_now(p);
+                for (std::size_t k = 0; k < now.size(); ++k) equipment_attributes(p, static_cast<gameplay::equipment::Slot>(k), now[k]);
+                p.attributed = now;
+            }
             if (!wear_held(p)) show_equipment(p, equipment_now(p));
             else if (p.equipment_known) attribute_items(p, equipment_now(p));
         }
@@ -2866,12 +2898,6 @@ struct Game::Impl final : GameServices {
     }
     void show_equipment(Player& p, const std::array<contracts::ItemStack, gameplay::equipment::slot_count>& now) {
         using gameplay::equipment::Slot;
-        if (!p.equipment_known) {
-            p.equipment_known = true;
-            for (std::size_t k = 0; k < now.size(); ++k) equipment_attributes(p, static_cast<Slot>(k), now[k]);
-            p.equipped = p.attributed = now;
-            return;
-        }
         attribute_equipment(p, now);
         if (now == p.equipped) return;
         const auto& was = p.equipped;
@@ -2903,11 +2929,13 @@ struct Game::Impl final : GameServices {
     // The modifiers of what a slot holds now, the old ones taken away: a
     // weapon's or tool's attack damage and speed in the main hand, a piece
     // of armor's armor and toughness (netherite's knockback resistance too)
-    // in its armor slot, each added again, last, when the slot changed.
+    // in its armor slot, and its enchantments' for the slot, each added
+    // again, last, when the slot changed.
     void equipment_attributes(Player& p, gameplay::equipment::Slot s, const contracts::ItemStack& now) {
         using gameplay::attributes::Attribute;
         using gameplay::attributes::Operation;
         using gameplay::equipment::Slot;
+        enchantment_attributes(p, s, now);
         if (s == Slot::offhand) return;
         if (s == Slot::mainhand) {
             if (const auto w = now.empty() ? std::nullopt : gameplay::equipment::weapon(now.item)) {
@@ -2933,6 +2961,28 @@ struct Game::Impl final : GameServices {
             add_modifier(p, Attribute::knockback_resistance, {id, static_cast<double>(worn->knockback_resistance), Operation::add_value}, true);
         else
             remove_modifier(p, Attribute::knockback_resistance, id);
+    }
+
+    // The modifiers an item's enchantments give in a slot (client/ench_attributes,
+    // both versions alike): those of the enchantments whose slots hold it,
+    // whatever the item (efficiency on a stick held counts, swift sneak on a
+    // chestplate does not), each its effect's id with the slot appended and
+    // its amount at the level in single precision; the old item's taken away.
+    void enchantment_attributes(Player& p, gameplay::equipment::Slot s, const contracts::ItemStack& now) {
+        auto& given = p.enchanted[static_cast<std::size_t>(s)];
+        for (const auto& [attribute, id] : given) remove_modifier(p, attribute, id);
+        given.clear();
+        if (now.empty() || !data.game || !data.game->enchantments_of) return;
+        const auto bit = gameplay::enchantments::slot_bit(s);
+        for (const auto& [id, level] : data.game->enchantments_of(now.components, false)) {
+            const auto e = data.game->enchantment_effects.find(id);
+            if (e == data.game->enchantment_effects.end() || (e->second.slots & bit) == 0) continue;
+            for (const auto& a : e->second.attributes) {
+                const std::string_view id = a.ids[static_cast<std::size_t>(s)];
+                add_modifier(p, a.attribute, {id, static_cast<double>(a.amount.at(level)), a.operation}, true);
+                given.emplace_back(a.attribute, id);
+            }
+        }
     }
 
     // ---- status effects -----------------------------------------------------
@@ -3600,6 +3650,9 @@ struct Game::Impl final : GameServices {
             if (e.id == haste || e.id == conduit) out.haste = std::max(out.haste, amplifier);
             else if (e.id == fatigue) out.fatigue = amplifier;
         }
+        // The attributes enchantments give (client/ench_dig), in floats.
+        out.efficiency = static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::mining_efficiency));
+        out.submerged = static_cast<float>(attribute_value(p, gameplay::attributes::Attribute::submerged_mining_speed));
         return out;
     }
     // Creative mode reaches further.
@@ -3877,7 +3930,7 @@ struct Game::Impl final : GameServices {
         // Survival: the time a block takes follows the target version's
         // destroy progress; the client's finish is accepted at 70 % (network
         // delay), and an early finish completes once the progress is whole.
-        const auto progress = gameplay::destroy_progress(at(b), slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), nullptr, dig_effects(p));
+        const auto progress = gameplay::destroy_progress(at(b), slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), data.game.get(), dig_effects(p));
         if (d.status == 0) {
             if (progress >= 1.0f) {
                 admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});

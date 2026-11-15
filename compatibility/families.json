@@ -2279,7 +2279,7 @@
             "the velocity told is that of a player standing still, or at the bottom of lava, or 0 after a teleport or a move in a sweet berry bush (players hurt in the air, moving elsewhere or in water were not recorded)",
             "the fall sound of the block landed on is not played",
             "the hurt and death sounds' pitches come from Circuit's own draws",
-            "campfires, respiration and bubble columns' air are not modeled; the suffocating blocks are taken to be the redstone conductors (stone and glass recorded)",
+            "campfires and bubble columns' air are not modeled; the suffocating blocks are taken to be the redstone conductors (stone and glass recorded)",
             "a magma block hurts a player standing on its edge by the nearest block under them that bears them (minecraft.wiki; not recorded); lava halves the distance fallen each tick by minecraft.wiki (not recorded)"
           ]
         },
@@ -2372,8 +2372,19 @@
           "id": "enchantment_effects",
           "name": "Enchantment effects",
           "milestone": "C6",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/ench_attributes",
+            "client/ench_dig",
+            "client/ench_air"
+          ],
+          "deviations": [
+            "of the enchantments' effects only their attribute modifiers, efficiency's and aqua affinity's digging and respiration's air are modeled: protection, thorns, the weapons' enchantments, unbreaking, mending, the curses and the walking enchantments are not yet; burning time, explosion knockback resistance, sneaking speed, water movement efficiency and the sweeping damage ratio only reach the client",
+            "respiration's chance is drawn from Circuit's own random (the official servers draw from theirs)",
+            "the modifiers of what a joining or respawning player wears and holds follow a tick after their arrival (the official servers send them in a later packet; the tick was not recorded)"
+          ],
+          "note": "From the official data packs' definitions (refused when they ask for an attribute, operation, slot group or value form Circuit does not know, or a modifier outside the minecraft namespace): in an equipment slot its enchantment works in (whatever the item), an enchanted item gives the definition's attribute modifiers, their ids with the slot appended and their amounts the level-based values in single precision, taken away and added again last whenever the slot's stack changes, after the first look a tick after a join or respawn; the mining efficiency adds to a tool's speed above 1 and the submerged mining speed replaces 0.2 under water in digging; the oxygen bonus keeps the air by chance"
         },
         {
           "id": "attributes",
@@ -2382,7 +2393,7 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "only players have attributes, and only those Circuit models: the armor and its toughness, the movement and attack speed, the attack damage, both reaches, knockback resistance, luck, the maximum health and absorption and the safe fall distance",
+            "only players have attributes, and only those Circuit models: the armor and its toughness, the movement and attack speed, the attack damage, both reaches, knockback resistance, luck, the maximum health and absorption, the safe fall distance, the oxygen bonus, and those enchantments give (burning time, explosion knockback resistance, mining efficiency, sneaking speed, submerged mining speed, sweeping damage ratio, water movement efficiency)",
             "the movement speed and luck only reach the client, and Circuit's movement checks do not use the block reach (attacks use the attack damage and speed and the entity reach: client/combat)",
             "a packet's attributes come in id order; the official servers' order varies from run to run",
             "players' health and skin entity data (indexes 9 and 17), which the official servers send around the attributes on joining, to those who see a player and when the health changes, are not sent"
@@ -2392,9 +2403,10 @@
             "client/attribute_rules",
             "client/attribute_join",
             "client/armor",
-            "client/combat"
+            "client/combat",
+            "client/ench_attributes"
           ],
-          "note": "A player's attributes as both official servers keep and send them: the armor slots' armor, toughness and knockback resistance and the main hand weapon's or tool's attack damage and speed (client/armor; added again, last, whenever the slot's stack changes, its wear included); the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage, which the official servers do not send: seen in attacks' damage, client/combat) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied"
+          "note": "A player's attributes as both official servers keep and send them: the armor slots' armor, toughness and knockback resistance and the main hand weapon's or tool's attack damage and speed (client/armor; added again, last, whenever the slot's stack changes, its wear included); the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage, which the official servers do not send: seen in attacks' damage, client/combat) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied; the enchantments' modifiers in their slots (client/ench_attributes), which a join or respawn sends after the attributes the player arrives and appears with"
         }
       ]
     },

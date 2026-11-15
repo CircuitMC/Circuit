@@ -1438,6 +1438,39 @@
       "description": "Three survival players: one attacks another, with the third beside him: with the fist at full charge, twice 2 and 12 ticks apart, harder within the hurt cooldown (strength II, and sprinting after a weak hit), two swings at once, an iron sword at full charge (sweeping the third), twice 4 ticks apart, a sweep reaching the third within her hurt cooldown, walking away, sprinting, falling (a critical hit), with strength II and weakness, in creative mode (with the fist and the sword) and against a target in creative mode, against an iron chestplate, 5 and 7 blocks away, and to the target's death; each step's health, damage events (cause, direct entity, source position), velocities, entity statuses, animations, hurt animations (to a thousandth of a degree), the shared flags, effects, slots, equipment, attributes, sounds, particles and death messages; Circuit and both official servers give identical output. The charge's timings (combat-timing.js) give the same values on both"
     },
     {
+      "id": "client/ench_attributes",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-attributes.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "A creative player puts on and holds enchanted pieces and tools one change at a time (respiration, aqua affinity, both on one helmet, swift sneak, depth strider, fire and blast protection, fire protection on every piece and off again, efficiency held, switched away and back at levels I and V, in the off hand and on a stick, sweeping edge, a respiration helmet held), then in survival mode rejoins and respawns wearing them while another watches; the attribute packets of her each gets (modifiers in order) and the sounds she hears; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/ench_dig",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-dig.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "A survival player digs with raw packets, finishing after a set time: obsidian with a diamond pickaxe without enchantment and with efficiency I, II and V, stone with an efficiency V shovel, oak planks with an efficiency V stick, and under water on the ground oak planks by hand without and with an aqua affinity helmet; whether each block breaks at once or later (in tens of ticks); Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/ench_air",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-air.js; Circuit's side also in tests/server/server_tests.cpp",
+      "status": "passing",
+      "description": "A survival player stays under water for about 120 ticks without a helmet and with respiration III and I; whether the air lost is one a tick without it and within 4.5 standard deviations of respiration's chance with it (the draws are random); Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/xp_death",
       "kind": "black_box",
       "versions": [

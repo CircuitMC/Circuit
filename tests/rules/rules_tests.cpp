@@ -13,6 +13,7 @@
 #include <circuit/gameplay/attributes.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/effects.hpp>
+#include <circuit/gameplay/enchantments.hpp>
 #include <circuit/gameplay/damage.hpp>
 #include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/experience.hpp>
@@ -164,6 +165,50 @@ int main() {
         require(near(destroy_progress(registry_block("iron_ore"), {items::stone_pickaxe, 1, 0}, true), 4.0f / 3.0f / 30.0f), "stone pickaxe");
         require(destroy_progress(registry_block("bedrock"), {}, true) == 0.0f, "unbreakable");
         require(destroy_progress(registry_block("short_grass"), {}, true) >= 1.0f, "instant");
+        // Efficiency's mining efficiency adds to a tool's speed above 1, and
+        // aqua affinity's submerged mining speed replaces 0.2 with the eyes
+        // in water (client/ench_dig).
+        circuit::gameplay::DigEffects efficient;
+        efficient.efficiency = 26.0f;
+        require(near(destroy_progress(registry_block("iron_ore"), {items::stone_pickaxe, 1, 0}, true, false, nullptr, efficient), 30.0f / 3.0f / 30.0f),
+                "efficiency V on an effective tool");
+        require(near(destroy_progress(dirt, {}, true, false, nullptr, efficient), 1.0f / 0.5f / 30.0f), "not by hand");
+        require(near(destroy_progress(dirt, {items::iron_pickaxe, 1, 0}, true, false, nullptr, efficient), 1.0f / 0.5f / 30.0f), "not with a tool of speed 1");
+        circuit::gameplay::DigEffects aqua;
+        aqua.submerged = 1.0f;
+        require(near(destroy_progress(dirt, {}, true, true), 1.0f * 0.2f / 0.5f / 30.0f), "under water");
+        require(near(destroy_progress(dirt, {}, true, true, nullptr, aqua), 1.0f / 0.5f / 30.0f), "under water with aqua affinity");
+        require(near(destroy_progress(dirt, {}, false, true, nullptr, aqua), 1.0f / 5.0f / 0.5f / 30.0f), "but still slower off the ground");
+    });
+
+    suite.run("enchantments' level-based values and slots are worked out as the official data packs define them", [] {
+        // minecraft.wiki "Enchantment definition"; client/ench_attributes: the amounts in floats.
+        namespace en = circuit::gameplay::enchantments;
+        using Kind = en::LevelValue::Kind;
+        const auto linear = [](float base, float per) { return en::LevelValue{Kind::linear, base, per, {}, {}}; };
+        require(linear(0.33333334f, 0.33333334f).at(2) == 0.6666667f && static_cast<double>(linear(0.15f, 0.15f).at(3)) == 0.45000001788139343
+                    && static_cast<double>(linear(-0.15f, -0.15f).at(2)) == -0.30000001192092896 && linear(1, 1).at(3) == 3.0f,
+                "linear: depth strider II, swift sneak III, fire protection II, respiration III");
+        const en::LevelValue squared{Kind::levels_squared, 1.0f, 0.0f, {}, {}};
+        require(squared.at(1) == 2.0f && squared.at(5) == 26.0f, "efficiency I and V");
+        const en::LevelValue fraction{Kind::fraction, 0.0f, 0.0f, {linear(1, 1), linear(2, 1)}, {}};
+        require(fraction.at(1) == 0.5f && fraction.at(3) == 0.75f, "sweeping edge I and III");
+        const en::LevelValue zero{Kind::fraction, 0.0f, 0.0f, {linear(1, 1), en::LevelValue{}}, {}};
+        require(zero.at(2) == 0.0f, "a denominator of 0");
+        const en::LevelValue clamped{Kind::clamped, 0.0f, 1.0f, {linear(0.4f, 0.4f)}, {}};
+        require(clamped.at(1) == 0.4f && clamped.at(3) == 1.0f, "clamped");
+        const en::LevelValue lookup{Kind::lookup, 0.0f, 0.0f, {linear(10, 1)}, {5.0f, 7.0f}};
+        require(lookup.at(1) == 5.0f && lookup.at(2) == 7.0f && lookup.at(3) == 12.0f, "looked up, then the fallback");
+        const en::LevelValue exponent{Kind::exponent, 0.0f, 0.0f, {en::LevelValue{Kind::constant, 2.0f, 0.0f, {}, {}}, linear(1, 1)}, {}};
+        require(exponent.at(3) == 8.0f, "an exponent");
+        using circuit::gameplay::equipment::Slot;
+        require(en::slot_group("armor") == (en::slot_bit(Slot::feet) | en::slot_bit(Slot::legs) | en::slot_bit(Slot::chest) | en::slot_bit(Slot::head))
+                    && en::slot_group("minecraft:mainhand") == en::slot_bit(Slot::mainhand) && en::slot_group("any") == 0x3F
+                    && en::slot_group("hand") == (en::slot_bit(Slot::mainhand) | en::slot_bit(Slot::offhand)) && en::slot_group("body") == 0
+                    && !en::slot_group("tail"),
+                "slot groups");
+        require(circuit::gameplay::equipment::slot_name(Slot::head) == "head" && circuit::gameplay::equipment::slot_name(Slot::mainhand) == "mainhand",
+                "the slots' names in modifier ids");
     });
 
     suite.run("vertical slice: line and repeater across a chunk edge", [] {

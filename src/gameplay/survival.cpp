@@ -180,9 +180,10 @@ float destroy_progress(BlockState s, const contracts::ItemStack& tool, bool on_g
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
     float speed = t.kind != Tool::none && t.kind == effective_tool(s, data) ? t.speed : 1.0f;
     if (!tool.empty() && tool.item == items::shears) speed = shears_rule(s).speed;
+    if (speed > 1.0f) speed += effects.efficiency;
     if (effects.haste >= 0) speed *= 1.0f + static_cast<float>(effects.haste + 1) * 0.2f;
     if (effects.fatigue >= 0) speed *= effects.fatigue == 0 ? 0.3f : effects.fatigue == 1 ? 0.09f : effects.fatigue == 2 ? 0.0027f : 8.1e-4f;
-    if (eyes_in_water) speed *= 0.2f; // the submerged mining speed
+    if (eyes_in_water) speed *= effects.submerged;
     if (!on_ground) speed /= 5.0f;
     return speed / h / (harvests(s, tool, data) ? 30.0f : 100.0f);
 }
