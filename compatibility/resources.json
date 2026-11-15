@@ -7034,9 +7034,10 @@
         "evidence": "compared",
         "cases": [
           "client/fire",
-          "client/ench_fire"
+          "client/ench_fire",
+          "client/ench_combat"
         ],
-        "note": "Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it"
+        "note": "Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it; also after fire aspect's hits"
       },
       "lava": {
         "impl": "partial",
@@ -7101,9 +7102,10 @@
         "evidence": "compared",
         "cases": [
           "client/combat",
-          "client/ench_protect"
+          "client/ench_protect",
+          "client/ench_combat"
         ],
-        "note": "A player's melee attack and its sweep: the damage event names the attacker, without a source position; armor reduces it; exhaustion 0.1; death.attack.player"
+        "note": "A player's melee attack and its sweep: the damage event names the attacker, without a source position; armor reduces it; exhaustion 0.1; death.attack.player; with the main hand's enchantments' damage, knockback and fire (client/ench_combat)"
       }
     },
     "biome": {
@@ -7471,9 +7473,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/armor"
+          "client/armor",
+          "client/ench_combat"
         ],
-        "note": "A player's, from netherite armor; not sent, as on both official servers (client/armor); takes its share off the knockback of attacks (not recorded)"
+        "note": "A player's, from netherite armor (the double 0.1); not sent, as on both official servers (client/armor); takes its share off the knockback of attacks, the hurt's and the attack's (client/ench_combat: knockback II against a netherite chestplate)"
       },
       "oxygen_bonus": {
         "impl": "partial",
@@ -7541,12 +7544,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/ench_attributes"
+          "client/ench_attributes",
+          "client/ench_combat"
         ],
-        "note": "Sweeping edge's modifier in the main hand, sent as both official servers send it",
-        "deviations": [
-          "only reaches the client: its effect is not modeled yet"
-        ]
+        "note": "Sweeping edge's modifier in the main hand, sent as both official servers send it; a sweep hurts each swept player for 1 and the ratio of the charged attack damage, with their enchantment damage, all times the charge, as both official servers"
       },
       "water_movement_efficiency": {
         "impl": "partial",
@@ -7626,12 +7627,10 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/ench_attributes"
+          "client/ench_attributes",
+          "client/ench_combat"
         ],
-        "note": "Its sweeping damage ratio modifier in the main hand",
-        "deviations": [
-          "sweeps do not use the ratio yet"
-        ]
+        "note": "Its sweeping damage ratio modifier in the main hand (L/(L+1)), sent as both official servers send it and adding the ratio of the charged attack damage to sweeps, as both official servers"
       },
       "protection": {
         "impl": "partial",
@@ -7670,6 +7669,50 @@
         "note": "Its immunity to the burn_from_stepping types: no hurt and no wear on a magma block, lava still hurting and wearing, as both official servers",
         "deviations": [
           "it does not freeze water into frosted ice yet"
+        ]
+      },
+      "sharpness": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_combat"
+        ],
+        "note": "Its damage (1 and 0.5 a level more) in the main hand, whatever the item, times the charge, after a critical hit's half again of the attack damage alone, to the target and each player swept, with the enchanted hit's animation, as both official servers; attacks on other entities are not modeled"
+      },
+      "smite": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_combat"
+        ],
+        "note": "Read: its damage requires an undead target (sensitive_to_smite), so it adds nothing against players, recorded on both official servers; attacks on other entities are not modeled"
+      },
+      "bane_of_arthropods": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_combat"
+        ],
+        "note": "Read: its damage and slowness require an arthropod target, so it adds nothing against players (no slowness), recorded on both official servers; the slowness is not acted on and attacks on other entities are not modeled"
+      },
+      "knockback": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_combat"
+        ],
+        "note": "Its knockback (1 a level) in the main hand: the target knocked half as much along the attacker's facing after the hurt, with a strong sprint's 1, also on a weak hit, ending a sprint, as both official servers"
+      },
+      "fire_aspect": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_combat"
+        ],
+        "note": "Its post-attack ignite (4 seconds a level, from a direct attack) on the target and each player swept, also on a weak hit, times their burning time, a longer burning kept, its flag after the next tick's wear and health, as both official servers",
+        "deviations": [
+          "the scaled ticks are rounded down by Circuit's choice (the recorded hurt counts are the same rounded to the nearest)",
+          "a swept player is set burning only when hurt (Circuit's choice: every recorded one was hurt)"
         ]
       }
     }

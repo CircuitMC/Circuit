@@ -18,11 +18,13 @@ struct Worn {
     Wearable wearable;
 };
 // The armor of each material by slot (minecraft.wiki "Armor": armor points,
-// toughness, netherite's knockback resistance; client/armor: the modifiers
-// of the recorded pieces), the turtle shell, the elytra, and what is worn on
-// the head without armor and not put on by use (client/armor: a carved
-// pumpkin over a worn helmet; client/armor2: a carved pumpkin and a zombie
-// head with nothing on the head; the other heads by the same rule); which
+// toughness, netherite's knockback resistance, the double 0.1 as
+// client/ench_combat's knockback against a netherite chestplate shows;
+// client/armor: the modifiers of the recorded pieces), the turtle shell, the
+// elytra, and what is worn on the head without armor and not put on by use
+// (client/armor: a carved pumpkin over a worn helmet; client/armor2: a carved
+// pumpkin and a zombie head with nothing on the head; the other heads by the
+// same rule); which
 // wear as their wearer is hurt (minecraft.wiki "Durability": armor; the
 // elytra's durability goes by gliding).
 const std::array<Worn, 34> worn{{
@@ -46,10 +48,10 @@ const std::array<Worn, 34> worn{{
     {"diamond_chestplate", {chest, 8, 2, 0, diamond, true, true}},
     {"diamond_leggings", {legs, 6, 2, 0, diamond, true, true}},
     {"diamond_boots", {feet, 3, 2, 0, diamond, true, true}},
-    {"netherite_helmet", {head, 3, 3, 0.1f, netherite, true, true}},
-    {"netherite_chestplate", {chest, 8, 3, 0.1f, netherite, true, true}},
-    {"netherite_leggings", {legs, 6, 3, 0.1f, netherite, true, true}},
-    {"netherite_boots", {feet, 3, 3, 0.1f, netherite, true, true}},
+    {"netherite_helmet", {head, 3, 3, 0.1, netherite, true, true}},
+    {"netherite_chestplate", {chest, 8, 3, 0.1, netherite, true, true}},
+    {"netherite_leggings", {legs, 6, 3, 0.1, netherite, true, true}},
+    {"netherite_boots", {feet, 3, 3, 0.1, netherite, true, true}},
     {"turtle_helmet", {head, 2, 0, 0, turtle, true, true}},
     {"elytra", {chest, 0, 0, 0, elytra, true}},
     {"carved_pumpkin", {head, 0, 0, 0, generic, false}},

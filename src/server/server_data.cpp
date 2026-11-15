@@ -163,8 +163,12 @@ std::optional<gameplay::enchantments::LevelValue> level_value(const auth::Json& 
 
 // A damage effect's requirement (its `requirements`), of the forms
 // DamageRequirement knows; nullopt for another form, a predicate on more
-// than the damage type's tags, or a tag the packs do not define.
-std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(const auth::Json& json, const data::DataPacks& packs) {
+// than the damage type's tags and (where `direct_known`, for attacks)
+// whether it is direct, an entity predicate on more than the type of
+// `this`, the attacker or the direct attacker, or a tag the packs do not
+// define.
+std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(const auth::Json& json, const data::DataPacks& packs,
+                                                                            bool direct_known) {
     using gameplay::enchantments::DamageRequirement;
     using Kind = DamageRequirement::Kind;
     const auto* condition = json.find("condition");
@@ -173,14 +177,19 @@ std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(cons
     if (c.starts_with("minecraft:")) c.erase(0, 10);
     DamageRequirement r;
     const auto term = [&](const auth::Json& t) {
-        auto part = damage_requirement(t, packs);
+        auto part = damage_requirement(t, packs, direct_known);
         if (part) r.terms.push_back(std::move(*part));
         return part.has_value();
     };
+    const auto named = [](std::string id) { return id.find(':') == std::string::npos ? "minecraft:" + id : id; };
     if (c == "damage_source_properties") {
         const auto* predicate = json.find("predicate");
         if (!predicate || predicate->kind() != auth::Json::Kind::object) return std::nullopt;
         for (const auto& [key, value] : predicate->members()) {
+            if (key == "is_direct" && direct_known && value.kind() == auth::Json::Kind::boolean) {
+                r.direct = value.as_bool();
+                continue;
+            }
             if (key != "tags" || value.kind() != auth::Json::Kind::array) return std::nullopt;
             for (const auto& t : value.items()) {
                 const auto* id = t.find("id");
@@ -192,6 +201,35 @@ std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(cons
                 r.tags.push_back({*types, expected->as_bool()});
             }
         }
+    } else if (c == "entity_properties") {
+        r.kind = Kind::entity;
+        const auto* entity = json.find("entity");
+        const auto* predicate = json.find("predicate");
+        if (!entity || entity->kind() != auth::Json::Kind::string || !predicate || predicate->kind() != auth::Json::Kind::object
+            || predicate->members().size() != 1)
+            return std::nullopt;
+        using Subject = DamageRequirement::Subject;
+        if (entity->as_string() == "this") r.subject = Subject::self;
+        else if (entity->as_string() == "attacker") r.subject = Subject::attacker;
+        else if (entity->as_string() == "direct_attacker") r.subject = Subject::direct_attacker;
+        else return std::nullopt;
+        const auto* type = predicate->find("type");
+        if (!type) return std::nullopt;
+        if (type->kind() == auth::Json::Kind::string && type->as_string().starts_with("#")) {
+            const auto* types = packs.tag("entity_type", type->as_string().substr(1));
+            if (!types) return std::nullopt;
+            r.entities = *types;
+        } else if (type->kind() == auth::Json::Kind::string) {
+            r.entities.push_back(named(type->as_string()));
+        } else if (type->kind() == auth::Json::Kind::array) {
+            for (const auto& e : type->items()) {
+                if (e.kind() != auth::Json::Kind::string || e.as_string().starts_with("#")) return std::nullopt;
+                r.entities.push_back(named(e.as_string()));
+            }
+        } else {
+            return std::nullopt;
+        }
+        std::ranges::sort(r.entities);
     } else if (c == "all_of" || c == "any_of") {
         r.kind = c == "all_of" ? Kind::all_of : Kind::any_of;
         const auto* terms = json.find("terms");
@@ -209,8 +247,12 @@ std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(cons
 }
 
 // An enchantment's slots, attribute modifiers (its minecraft:attributes
-// effects), damage protection and damage immunity: refused when it names a
-// slot group, attribute, value form or requirement Circuit does not know.
+// effects), damage protection, damage immunity, the damage and knockback it
+// adds to attacks and the fire they set (post-attack ignite from the
+// attacker's enchantment onto the victim): refused when it names a slot
+// group, attribute, value form or requirement Circuit does not know. Other
+// post-attack effects are not acted on yet (thorns' damage and wear, bane of
+// arthropods' slowness, whose requirement no player meets).
 std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json,
                                                                                const data::DataPacks& packs) {
     namespace en = gameplay::enchantments;
@@ -225,34 +267,63 @@ std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(
         }
     }
     const auto* effects = json.find("effects");
-    // An effect's requirement, if it has one (refused when unreadable).
-    const auto requirement = [&](const auth::Json& e) -> std::expected<std::optional<en::DamageRequirement>, std::string> {
+    // An effect's requirement, if it has one (refused when unreadable);
+    // whether the damage is direct is known for attacks alone.
+    const auto requirement = [&](const auth::Json& e, bool attack) -> std::expected<std::optional<en::DamageRequirement>, std::string> {
         const auto* r = e.find("requirements");
         if (!r) return std::nullopt;
-        auto read = damage_requirement(*r, packs);
+        auto read = damage_requirement(*r, packs, attack);
         if (!read) return std::unexpected(std::format("enchantment {}: a damage requirement Circuit cannot read", name));
         return std::optional<en::DamageRequirement>(std::move(*read));
     };
-    if (const auto* list = effects ? effects->find("minecraft:damage_protection") : nullptr) {
-        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: damage protection is not a list", name));
+    // Value effects that add a level-based value (the vanilla packs' only form).
+    const auto values = [&](const char* component, const char* what, bool attack,
+                            std::vector<en::ValueEffect>& into) -> std::expected<void, std::string> {
+        const auto* list = effects ? effects->find(component) : nullptr;
+        if (!list) return {};
+        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: {} is not a list", name, what));
         for (const auto& e : list->items()) {
             const auto* effect = e.find("effect");
             const auto* type = effect ? effect->find("type") : nullptr;
             const auto* amount = effect ? effect->find("value") : nullptr;
             auto value = amount ? level_value(*amount) : std::nullopt;
             if (!type || type->kind() != auth::Json::Kind::string || (type->as_string() != "minecraft:add" && type->as_string() != "add") || !value)
-                return std::unexpected(std::format("enchantment {}: a damage protection effect Circuit cannot read", name));
-            auto r = requirement(e);
+                return std::unexpected(std::format("enchantment {}: a {} effect Circuit cannot read", name, what));
+            auto r = requirement(e, attack);
             if (!r) return std::unexpected(r.error());
-            out.protection.push_back({std::move(*value), std::move(*r)});
+            into.push_back({std::move(*value), std::move(*r)});
         }
-    }
+        return {};
+    };
+    if (auto v = values("minecraft:damage_protection", "damage protection", false, out.protection); !v) return std::unexpected(v.error());
+    if (auto v = values("minecraft:damage", "damage", true, out.damage); !v) return std::unexpected(v.error());
+    if (auto v = values("minecraft:knockback", "knockback", true, out.knockback); !v) return std::unexpected(v.error());
     if (const auto* list = effects ? effects->find("minecraft:damage_immunity") : nullptr) {
         if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: damage immunity is not a list", name));
         for (const auto& e : list->items()) {
-            auto r = requirement(e);
+            auto r = requirement(e, false);
             if (!r) return std::unexpected(r.error());
             out.immunity.push_back(std::move(*r));
+        }
+    }
+    if (const auto* list = effects ? effects->find("minecraft:post_attack") : nullptr) {
+        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: post-attack effects are not a list", name));
+        for (const auto& e : list->items()) {
+            const auto* effect = e.find("effect");
+            const auto* type = effect ? effect->find("type") : nullptr;
+            if (!type || type->kind() != auth::Json::Kind::string)
+                return std::unexpected(std::format("enchantment {}: a post-attack effect Circuit cannot read", name));
+            if (type->as_string() != "minecraft:ignite" && type->as_string() != "ignite") continue; // not acted on yet
+            const auto* enchanted = e.find("enchanted");
+            const auto* affected = e.find("affected");
+            const auto* duration = effect->find("duration");
+            auto seconds = duration ? level_value(*duration) : std::nullopt;
+            if (!seconds || !enchanted || enchanted->kind() != auth::Json::Kind::string || enchanted->as_string() != "attacker" || !affected
+                || affected->kind() != auth::Json::Kind::string || affected->as_string() != "victim")
+                return std::unexpected(std::format("enchantment {}: a post-attack effect Circuit cannot read", name));
+            auto r = requirement(e, true);
+            if (!r) return std::unexpected(r.error());
+            out.ignite.push_back({std::move(*seconds), std::move(*r)});
         }
     }
     const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;

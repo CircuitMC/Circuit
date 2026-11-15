@@ -196,6 +196,9 @@ struct Player {
     std::int32_t fire_ticks{-20};
     bool in_fire{};
     bool burning{};
+    // The fire ticks attacks set since the player's last fire tick (fire
+    // aspect), taken after it (0: none).
+    std::int32_t attack_fire{};
     // The tick in which a hurt wore the player's armor: its slots, and
     // (`wear_seen`: but for 1.21.4's lava) what others see of it, are told
     // at the next tick, after the hurt's velocity (client/fire).
@@ -775,7 +778,13 @@ struct Game::Impl final : GameServices {
         for (const auto& i : p.attributes) attributes.emplace_back(gameplay::attributes::name(i.attribute));
         return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion, saved_book(p.book),
                 p.dead ? std::vector<gameplay::effects::Effect>{} : p.effects, std::move(attributes), p.dead ? 0.0f : p.absorption,
-                p.dead ? -20 : p.fire_ticks, p.dead ? gameplay::damage::max_air : p.air, p.dead ? 0 : p.frozen_ticks};
+                p.dead ? -20 : saved_fire(p), p.dead ? gameplay::damage::max_air : p.air, p.dead ? 0 : p.frozen_ticks};
+    }
+    // The fire ticks saved: with the fire an attack set that the player's
+    // fire tick has not taken yet (a hit before leaving, or in a frozen
+    // world), as that tick would take it.
+    static std::int32_t saved_fire(const Player& p) {
+        return p.attack_fire > 0 && p.game_mode != creative && p.game_mode != spectator ? std::max(p.fire_ticks, p.attack_fire) : p.fire_ticks;
     }
     // A recipe book by ids, and back (ids the data packs no longer have are left out).
     SavedBook saved_book(const PlayerBook& b) const {
@@ -2036,6 +2045,12 @@ struct Game::Impl final : GameServices {
         // Lava halves the distance fallen each tick (minecraft.wiki "Damage";
         // not recorded).
         if (!p.dead && in_lava(p)) p.fall_distance *= 0.5;
+        // The fire attacks set since the last fire tick comes after it: the
+        // official servers take an attack after its target's tick
+        // (client/ench_combat: the flag of fire aspect's fire after the next
+        // tick's wear and health).
+        if (const auto fire = std::exchange(p.attack_fire, 0); fire > 0 && !p.dead && p.game_mode != creative && p.game_mode != spectator)
+            p.fire_ticks = std::max(p.fire_ticks, fire);
     }
     // What a player touches (client/fire): fire (1, soul fire 2 by
     // minecraft.wiki "Soul Fire"; catching fire as gameplay::damage counts
@@ -2449,7 +2464,8 @@ struct Game::Impl final : GameServices {
         if (harm == Harm::void_ && p.game_mode == spectator) return false;
         const auto& type = harm_type(harm);
         if (!harm_allowed(type)) return false;
-        if (immune(p, type.name)) return false;
+        const auto context = damage_context(type.name, by);
+        if (immune(p, context)) return false;
         static const auto fire_resistance = gameplay::effects::id("fire_resistance"), resistance = gameplay::effects::id("resistance");
         if (type.fire && fire_resistance && effect_amplifier(p, *fire_resistance)) return false;
         if (by && harm == Harm::player_attack && blocking(p)) {
@@ -2478,7 +2494,7 @@ struct Game::Impl final : GameServices {
         }
         if (const auto level = resistance ? effect_amplifier(p, *resistance) : std::nullopt; level && type.resistance)
             applied = gameplay::damage::after_resistance(applied, *level);
-        applied = gameplay::damage::after_enchantments(applied, protection(p, type.name));
+        applied = gameplay::damage::after_enchantments(applied, protection(p, context));
         // Absorption takes the damage first.
         if (p.absorption > 0.0f) {
             const auto absorbed = std::min(p.absorption, applied);
@@ -2617,6 +2633,7 @@ struct Game::Impl final : GameServices {
     void die(Player& p, Harm harm, double fall_distance, const Player* by = nullptr) {
         p.dead = true;
         p.dead_ticks = 0;
+        p.attack_fire = 0; // a fire an attack set goes with the player
         p.camera.reset(); // the death screen replaces the view; a respawn has its own
         p.digging.reset();
         stop_use(p);
@@ -2963,8 +2980,8 @@ struct Game::Impl final : GameServices {
             remove_modifier(p, Attribute::armor, id);
             remove_modifier(p, Attribute::armor_toughness, id);
         }
-        if (armor && worn->knockback_resistance > 0.0f)
-            add_modifier(p, Attribute::knockback_resistance, {id, static_cast<double>(worn->knockback_resistance), Operation::add_value}, true);
+        if (armor && worn->knockback_resistance > 0.0)
+            add_modifier(p, Attribute::knockback_resistance, {id, worn->knockback_resistance, Operation::add_value}, true);
         else
             remove_modifier(p, Attribute::knockback_resistance, id);
     }
@@ -3006,29 +3023,60 @@ struct Game::Impl final : GameServices {
             }
         }
     }
-    // Whether an enchantment keeps damage of a type off (client/ench_fire:
-    // frost walker boots on a magma block, no hurt and no wear).
-    bool immune(const Player& p, std::string_view type) const {
+    // What a player's damage is tested against by enchantment requirements:
+    // its type and, for an attack by a player (`by`), the attacker causing
+    // and dealing it directly (melee: client/ench_combat).
+    static gameplay::enchantments::DamageContext damage_context(std::string_view type, const Player* by) {
+        gameplay::enchantments::DamageContext c{type};
+        if (by) {
+            c.direct = true;
+            c.attacker = c.direct_attacker = "minecraft:player";
+        }
+        return c;
+    }
+    // Whether an enchantment keeps damage off (client/ench_fire: frost
+    // walker boots on a magma block, no hurt and no wear).
+    bool immune(const Player& p, const gameplay::enchantments::DamageContext& damage) const {
         bool kept = false;
         each_enchantment(p, [&](const gameplay::enchantments::Effects& e, std::int32_t) {
             for (const auto& r : e.immunity)
-                if (!r || r->matches(type)) kept = true;
+                if (!r || r->matches(damage)) kept = true;
         });
         return kept;
     }
-    // The enchantment protection factor against damage of a type: the
-    // protection values of the enchantments that protect against it, added
-    // (none against the types of the tags bypasses_effects and
-    // bypasses_enchantments: client/ench_protect, starvation not reduced by
-    // protection IV on all four pieces).
-    float protection(const Player& p, std::string_view type) const {
-        if (!data.game || std::ranges::binary_search(data.game->damage_bypassing_enchantments, type)) return 0.0f;
+    // The values of the enchantments' value effects of one kind (`kind`:
+    // protection, damage or knockback) whose requirements the damage meets,
+    // added.
+    float enchantment_value(const Player& p, std::vector<gameplay::enchantments::ValueEffect> gameplay::enchantments::Effects::* kind,
+                            const gameplay::enchantments::DamageContext& damage) const {
         float sum = 0.0f;
         each_enchantment(p, [&](const gameplay::enchantments::Effects& e, std::int32_t level) {
-            for (const auto& effect : e.protection)
-                if (!effect.requirement || effect.requirement->matches(type)) sum += effect.value.at(level);
+            for (const auto& effect : e.*kind)
+                if (!effect.requirement || effect.requirement->matches(damage)) sum += effect.value.at(level);
         });
         return sum;
+    }
+    // The enchantment protection factor against damage: the protection
+    // values of the enchantments that protect against it, added (none
+    // against the types of the tags bypasses_effects and
+    // bypasses_enchantments: client/ench_protect, starvation not reduced by
+    // protection IV on all four pieces).
+    float protection(const Player& p, const gameplay::enchantments::DamageContext& damage) const {
+        if (!data.game || std::ranges::binary_search(data.game->damage_bypassing_enchantments, damage.type)) return 0.0f;
+        return enchantment_value(p, &gameplay::enchantments::Effects::protection, damage);
+    }
+    // The fire an attacker's enchantments set on the player attacked
+    // (post-attack ignite: client/ench_combat, fire aspect on the target
+    // and those swept, also on a weak hit), its seconds scaled by the
+    // target's burning time, held for the end of the target's next fire tick.
+    void ignite(const Player& attacker, Player& p, const gameplay::enchantments::DamageContext& damage) {
+        if (p.dead) return;
+        each_enchantment(attacker, [&](const gameplay::enchantments::Effects& e, std::int32_t level) {
+            for (const auto& effect : e.ignite)
+                if (!effect.requirement || effect.requirement->matches(damage))
+                    p.attack_fire = gameplay::damage::ignite(p.attack_fire, effect.seconds.at(level),
+                                                             attribute_value(p, gameplay::attributes::Attribute::burning_time));
+        });
     }
 
     // ---- status effects -----------------------------------------------------
@@ -4593,36 +4641,50 @@ struct Game::Impl final : GameServices {
         }
         p.impulse = v;
     }
-    // A player's melee attack on another (client/combat, combat-timing; both
-    // versions alike but for the sweep's order):
+    // A player's melee attack on another (client/combat, combat-timing,
+    // client/ench_combat; both versions alike but for the sweep's order):
     //  - the attack damage, kept by the charge (0.2 plus 0.8 times its
-    //    square), starts the charge again; none left (weakness), nothing more;
+    //    square), and the enchantments' damage against the target (sharpness;
+    //    smite and bane of arthropods none against players), times the
+    //    charge; the charge starts again; neither left (weakness without
+    //    sharpness), nothing more;
     //  - a strong attack (charge above 0.9) sprinting knocks: its sound
     //    first; a strong one falling (not on the ground, not climbing, in
-    //    water, blind or sprinting) is critical, half as much again; a strong
-    //    one on the ground with a sword and neither is a sweep (also walking:
-    //    client/combat, about 0.2 a tick backwards);
+    //    water, blind or sprinting) is critical, its attack damage (not the
+    //    enchantments') half as much again; a strong one on the ground with a
+    //    sword and neither is a sweep (also walking: client/combat, about 0.2
+    //    a tick backwards);
     //  - the target hurt (the damage event naming the attacker, the hurt
     //    animation, its knockback away from the attacker); if not hurt (the
     //    hurt cooldown, creative mode), the nodamage sound and nothing more;
-    //  - a sprint's 0.5 knockback along the attacker's facing, whose sprint
-    //    ends; the sweep: each other player in survival within the target's
-    //    box grown by 1, 0.25, 1 and 3 blocks of the attacker hurt for 1 and
-    //    knocked 0.4 along the facing (1.21.8 the hurt first, the knock if it
-    //    hurt; 1.21.4 the knock first), the sweep sound and particle;
+    //  - the knockback of the enchantments and a sprint's 1, half as much
+    //    along the attacker's facing, whose sprint then ends (also on a weak
+    //    hit with knockback); the fire the enchantments set (fire aspect);
+    //    the sweep: each other player in survival within the target's box
+    //    grown by 1, 0.25, 1 and 3 blocks of the attacker hurt for 1 and the
+    //    sweeping damage ratio of the attack damage, with the enchantments'
+    //    damage against that player, all times the charge, knocked 0.4 along
+    //    the facing (1.21.8 the hurt first, the knock if it hurt; 1.21.4 the
+    //    knock first) and set on fire if hurt; the sweep sound and particle;
     //  - the target's velocity told to the target, the server keeping its
     //    velocity from before the attack;
     //  - the critical hit's sound and animation, or the strong or weak sound
-    //    (a sweep's own); the damage indicator particles (half the health the
-    //    target lost); the weapon's wear outside creative mode; exhaustion.
+    //    (a sweep's own); the enchanted hit's animation (5) with enchantment
+    //    damage; the damage indicator particles (half the health the target
+    //    lost); the weapon's wear outside creative mode; exhaustion.
     void attack(Player& p, Player& t) {
         using gameplay::attributes::Attribute;
+        using gameplay::enchantments::Effects;
         using Sound = Wire::PlayerSound;
         namespace damage = gameplay::damage;
         const float charge = damage::attack_charge(p.attack_ticks, attribute_value(p, Attribute::attack_speed));
-        float amount = damage::charged_damage(static_cast<float>(attribute_value(p, Attribute::attack_damage)), charge);
+        const float base = damage::charged_damage(static_cast<float>(attribute_value(p, Attribute::attack_damage)), charge);
+        // The enchantments' damage against a player (all players alike).
+        const auto melee = damage_context(harm_type(Harm::player_attack).name, &p);
+        const float enchanted = enchantment_value(p, &Effects::damage, melee);
+        const bool magic = enchanted * charge > 0.0f;
         p.attack_ticks = 0;
-        if (amount <= 0.0f) return;
+        if (!(base > 0.0f) && !magic) return;
         const auto own_sound = [&](Wire::PlayerSound sound) {
             sound_near(p, wire.player_sound(sound, p.pos, 1.0f, 1.0f, static_cast<std::int64_t>(sound_seed++)), true);
         };
@@ -4632,34 +4694,42 @@ struct Game::Impl final : GameServices {
         if (knocks) own_sound(Sound::attack_knockback);
         const bool critical = strong && p.fall_distance > 0.0 && !p.on_ground && !climbing(p) && !in_water(p)
                               && !(blindness && effect_amplifier(p, *blindness)) && !p.sprinting;
-        if (critical) amount *= 1.5f;
         const auto held = slot_of(p, main_hand(p));
         const bool sweep = strong && !knocks && !critical && p.on_ground && !held.empty() && gameplay::equipment::sweeps(held.item);
         const float health_before = t.health;
         const auto velocity_before = velocity_of(t);
-        if (!hurt(t, amount, Harm::player_attack, 0.0, &p)) {
+        if (!hurt(t, damage::melee_damage(base, enchanted, charge, critical), Harm::player_attack, 0.0, &p)) {
             own_sound(Sound::attack_nodamage);
             return;
         }
         const double yaw = p.yaw * std::numbers::pi / 180.0;
         const double facing_x = -std::sin(yaw), facing_z = std::cos(yaw);
-        if (knocks) {
-            knock(t, 0.5, facing_x, facing_z);
-            p.sprinting = false;
-            remove_modifier(p, Attribute::movement_speed, gameplay::attributes::sprinting.id);
+        const float knockback = enchantment_value(p, &Effects::knockback, melee) + (knocks ? 1.0f : 0.0f);
+        if (knockback > 0.0f) {
+            knock(t, knockback * 0.5, facing_x, facing_z);
+            if (p.sprinting) {
+                p.sprinting = false;
+                remove_modifier(p, Attribute::movement_speed, gameplay::attributes::sprinting.id);
+            }
         }
+        ignite(p, t, melee);
         if (sweep) {
             const auto around = box_of(t, t.pos).inflate(1.0, 0.25, 1.0);
+            const auto ratio = attribute_value(p, Attribute::sweeping_damage_ratio);
             for (auto& [oid, o] : players) {
                 if (&o == &p || &o == &t || o.dead || o.game_mode != survival || !box_of(o, o.pos).intersects(around)) continue;
                 const double dx = o.pos.x - p.pos.x, dy = o.pos.y - p.pos.y, dz = o.pos.z - p.pos.z;
                 if (dx * dx + dy * dy + dz * dz >= 9.0) continue;
+                const float amount = damage::sweep_damage(base, ratio, enchantment_value(p, &Effects::damage, melee), charge);
+                bool hurt_now = false;
                 if (wire.protocol() >= 772) {
-                    if (hurt(o, 1.0f, Harm::player_attack, 0.0, &p)) knock(o, 0.4, facing_x, facing_z);
+                    hurt_now = hurt(o, amount, Harm::player_attack, 0.0, &p);
+                    if (hurt_now) knock(o, 0.4, facing_x, facing_z);
                 } else {
                     knock(o, 0.4, facing_x, facing_z);
-                    hurt(o, 1.0f, Harm::player_attack, 0.0, &p);
+                    hurt_now = hurt(o, amount, Harm::player_attack, 0.0, &p);
                 }
+                if (hurt_now) ignite(p, o, melee);
             }
             own_sound(Sound::attack_sweep);
             const auto packet = wire.particles(Wire::Particle::sweep_attack, {p.pos.x + facing_x, p.pos.y + body_height(p) * 0.5, p.pos.z + facing_z},
@@ -4671,15 +4741,18 @@ struct Game::Impl final : GameServices {
             t.hurt_marked = false;
             t.impulse = velocity_before;
         }
-        if (critical) {
-            own_sound(Sound::attack_crit);
-            const auto packet = wire.animate(t.entity_id, 4);
+        const auto to_all = [&](const Bytes& packet) {
             t.peer->send(packet);
             for (const auto viewer : t.seen_by)
                 if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(packet);
+        };
+        if (critical) {
+            own_sound(Sound::attack_crit);
+            to_all(wire.animate(t.entity_id, 4));
         } else if (!sweep) {
             own_sound(strong ? Sound::attack_strong : Sound::attack_weak);
         }
+        if (magic) to_all(wire.animate(t.entity_id, 5)); // the enchanted hit
         if (const auto count = damage::damage_indicators(health_before - t.health); count > 0) {
             const Vec3 middle{t.pos.x, t.pos.y + body_height(t) * 0.5, t.pos.z};
             particles_near(wire.particles(Wire::Particle::damage_indicator, middle, {0.1, 0.0, 0.1}, 0.2f, count), middle);

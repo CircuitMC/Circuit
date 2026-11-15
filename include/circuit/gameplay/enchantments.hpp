@@ -43,12 +43,28 @@ struct AttributeEffect {
     LevelValue amount;
     attributes::Operation operation{};
 };
-// A requirement on the damage a player takes, of the forms the vanilla
-// packs give their damage effects (minecraft.wiki "Predicate"): the damage
-// type in or out of damage type tags (damage_source_properties with tags
-// alone), all or any of other requirements, or one inverted.
+// The damage a requirement is tested against: its type, whether it is
+// direct (a melee attack is: its direct source is the entity causing it),
+// the type of the entity it reaches (the requirement's `this`; Circuit's
+// damage reaches players alone) and of the entities causing and dealing it
+// (`attacker` and `direct_attacker`; empty for none).
+struct DamageContext {
+    std::string_view type;
+    bool direct{};
+    std::string_view entity{"minecraft:player"};
+    std::string_view attacker{};
+    std::string_view direct_attacker{};
+};
+// A requirement on damage, of the forms the vanilla packs give their damage
+// and attack effects (minecraft.wiki "Predicate"): the damage type in or out
+// of damage type tags and, where Circuit knows it, whether the damage is
+// direct (damage_source_properties with tags and is_direct alone); the type
+// of the entity it reaches or of those causing or dealing it (entity_properties
+// of `this`, `attacker` or `direct_attacker` with a type alone: an entity
+// absent fails); all or any of other requirements, or one inverted.
 struct DamageRequirement {
-    enum class Kind : std::uint8_t { tags, all_of, any_of, inverted };
+    enum class Kind : std::uint8_t { tags, all_of, any_of, inverted, entity };
+    enum class Subject : std::uint8_t { self, attacker, direct_attacker };
     struct Tag {
         std::vector<std::string> types; // the tag's damage types, sorted ("minecraft:fall")
         bool expected{};
@@ -56,25 +72,44 @@ struct DamageRequirement {
     Kind kind{};
     std::vector<Tag> tags;                // tags: each must hold as expected
     std::vector<DamageRequirement> terms; // all_of, any_of; inverted: the one inverted
-    bool matches(std::string_view type) const;
+    std::optional<bool> direct;           // tags: whether the damage must be direct, if asked
+    Subject subject{};                    // entity: the entity tested
+    std::vector<std::string> entities;    // entity: the types it may be, sorted ("minecraft:zombie")
+    bool matches(const DamageContext& damage) const;
+    // Damage of a type a player takes (no requirement on directness read).
+    bool matches(std::string_view type) const { return matches(DamageContext{type}); }
 };
-// A damage protection value (the effect minecraft:damage_protection, its
-// value added) and the damage it protects against.
-struct ProtectionEffect {
+// A value an enchantment adds (the effects minecraft:damage_protection,
+// minecraft:damage and minecraft:knockback with the value effect add) and
+// the damage it adds to.
+struct ValueEffect {
     LevelValue value;
+    std::optional<DamageRequirement> requirement;
+};
+// A post-attack effect setting the victim on fire (minecraft:post_attack
+// ignite, the attacker's enchantment, the victim affected), for its duration
+// in seconds, when the attack meets its requirement.
+struct IgniteEffect {
+    LevelValue seconds;
     std::optional<DamageRequirement> requirement;
 };
 // What an enchantment does that Circuit models: in the slots of its `slots`
 // groups (whatever the item; client/ench_attributes: efficiency on a stick
 // held counts, swift sneak on a chestplate does not), its attribute
-// modifiers, the protection it adds against damage and the damage it keeps
-// off (minecraft:damage_immunity).
+// modifiers, the protection it adds against damage, the damage it keeps
+// off (minecraft:damage_immunity), the damage and knockback it adds to an
+// attack, and the fire its attacks set.
 struct Effects {
     std::uint8_t slots{};
     std::vector<AttributeEffect> attributes;
-    std::vector<ProtectionEffect> protection;
+    std::vector<ValueEffect> protection;
     std::vector<std::optional<DamageRequirement>> immunity;
-    bool empty() const noexcept { return attributes.empty() && protection.empty() && immunity.empty(); }
+    std::vector<ValueEffect> damage;
+    std::vector<ValueEffect> knockback;
+    std::vector<IgniteEffect> ignite;
+    bool empty() const noexcept {
+        return attributes.empty() && protection.empty() && immunity.empty() && damage.empty() && knockback.empty() && ignite.empty();
+    }
 };
 
 } // namespace circuit::gameplay::enchantments

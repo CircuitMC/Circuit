@@ -31,7 +31,7 @@ struct Wearable {
     Slot slot{};
     float armor{};
     float toughness{};
-    float knockback_resistance{};
+    double knockback_resistance{}; // a double: client/ench_combat (netherite's 0.1 knocked as the double 0.1)
     EquipSound sound{};
     bool swappable{};
     bool wears{};

@@ -35,6 +35,11 @@ std::int32_t armor_wear(float damage) noexcept;
 inline constexpr std::int32_t not_burning = -20;
 std::int32_t touch_fire(std::int32_t ticks, bool more, double burning = 1.0) noexcept;
 std::int32_t touch_lava(std::int32_t ticks, double burning = 1.0) noexcept;
+// Set on fire by an attack for `seconds` (fire aspect: client/ench_combat),
+// as many ticks rounded down, times the burning time as fire and lava are;
+// a longer burning kept (fire aspect I on a player burning from II), nothing
+// at 0.
+std::int32_t ignite(std::int32_t ticks, float seconds, double burning = 1.0) noexcept;
 // A tick out of fire: a count of 0 or below back to -20.
 std::int32_t out_of_fire(std::int32_t ticks) noexcept;
 // A burning tick: with ticks above 0, a hurt when they are a multiple of 20,
@@ -74,6 +79,14 @@ double frost_slowness(std::int32_t ticks) noexcept;
 float attack_charge(std::int32_t ticks, double attack_speed) noexcept;
 float charged_damage(float damage, float charge) noexcept;
 inline constexpr float strong_charge = 0.9f;
+// A melee attack's damage to its target (client/combat, client/ench_combat):
+// the charged attack damage, half as much again when critical, and the
+// enchantments' damage against the target (`enchanted`) times the charge.
+float melee_damage(float charged, float enchanted, float charge, bool critical) noexcept;
+// A sweep's damage to another player (client/ench_combat): 1 and the
+// sweeping damage ratio of the charged attack damage, with the
+// enchantments' damage against that player, all times the charge.
+float sweep_damage(float charged, double ratio, float enchanted, float charge) noexcept;
 // A knockback of `strength` along the horizontal direction (x, z) (for a
 // hurt, from what hurt to the one hurt): half the velocity before plus
 // `strength` along the direction; upwards, on the ground, half the vertical

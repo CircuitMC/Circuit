@@ -64,6 +64,12 @@ std::int32_t touch_lava(std::int32_t ticks, double burning) noexcept {
     const auto set = scaled(300, burning);
     return set > 0 ? std::max(ticks, set) : ticks;
 }
+std::int32_t ignite(std::int32_t ticks, float seconds, double burning) noexcept {
+    const float base = std::floor(seconds * 20.0f);
+    if (!(base > 0.0f)) return ticks; // and NaN
+    const auto set = scaled(static_cast<std::int32_t>(std::min(base, 1.0e9f)), burning);
+    return set > 0 ? std::max(ticks, set) : ticks;
+}
 // client/fire: below 0 (a second fire after one taken away took 20 ticks
 // again); 0, which only fire at a burning time of 0 leaves, alike by
 // Circuit's choice (not recorded).
@@ -107,6 +113,17 @@ float attack_charge(std::int32_t ticks, double attack_speed) noexcept {
 }
 
 float charged_damage(float damage, float charge) noexcept { return damage * (0.2f + charge * charge * 0.8f); }
+
+// client/ench_combat: sharpness V (3) at a charge of 0.04 adds 0.12, and a
+// critical hit with it at full charge deals 6 * 1.5 + 3.
+float melee_damage(float charged, float enchanted, float charge, bool critical) noexcept {
+    return (critical ? charged * 1.5f : charged) + enchanted * charge;
+}
+// client/ench_combat: sweeping edge III (0.75) and sharpness V at a charge
+// of 0.96 swept 7.889047622680664 off 20 (this order of the floats).
+float sweep_damage(float charged, double ratio, float enchanted, float charge) noexcept {
+    return (1.0f + static_cast<float>(ratio) * charged + enchanted) * charge;
+}
 
 // client/combat: a standing player (velocity (0, -0.0784, 0)) hit from the
 // west moves (0.4, 0.3608, 0); a sprint's 0.5 after it, (0.7, 0.4, 0).

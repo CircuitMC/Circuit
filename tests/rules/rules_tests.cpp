@@ -212,19 +212,49 @@ int main() {
         // Damage requirements: tags as expected (fire protection: is_fire and
         // not bypasses_invulnerability), all of, any of, inverted.
         using Req = en::DamageRequirement;
-        const Req fire{Req::Kind::tags, {{{"minecraft:hot_floor", "minecraft:lava"}, true}, {{"minecraft:generic_kill", "minecraft:out_of_world"}, false}}, {}};
+        const auto req = [](Req::Kind kind, std::vector<Req::Tag> tags, std::vector<Req> terms = {}) {
+            Req r;
+            r.kind = kind;
+            r.tags = std::move(tags);
+            r.terms = std::move(terms);
+            return r;
+        };
+        const Req fire = req(Req::Kind::tags, {{{"minecraft:hot_floor", "minecraft:lava"}, true}, {{"minecraft:generic_kill", "minecraft:out_of_world"}, false}});
         require(fire.matches("minecraft:lava") && !fire.matches("minecraft:fall") && !fire.matches("minecraft:out_of_world"), "tags");
-        const Req protection{Req::Kind::tags, {{{"minecraft:generic_kill", "minecraft:out_of_world"}, false}}, {}};
-        const Req both{Req::Kind::tags, {{{"minecraft:lava", "minecraft:out_of_world"}, true}, {{"minecraft:generic_kill", "minecraft:out_of_world"}, false}}, {}};
+        const Req protection = req(Req::Kind::tags, {{{"minecraft:generic_kill", "minecraft:out_of_world"}, false}});
+        const Req both = req(Req::Kind::tags, {{{"minecraft:lava", "minecraft:out_of_world"}, true}, {{"minecraft:generic_kill", "minecraft:out_of_world"}, false}});
         require(protection.matches("minecraft:fall") && !protection.matches("minecraft:out_of_world") && both.matches("minecraft:lava")
                     && !both.matches("minecraft:out_of_world"),
                 "a type in a tag expected out");
-        const Req any{Req::Kind::any_of, {}, {fire, Req{Req::Kind::tags, {{{"minecraft:fall"}, true}}, {}}}};
-        const Req all{Req::Kind::all_of, {}, {fire, Req{Req::Kind::tags, {{{"minecraft:fall"}, true}}, {}}}};
-        const Req inverted{Req::Kind::inverted, {}, {fire}};
+        const Req any = req(Req::Kind::any_of, {}, {fire, req(Req::Kind::tags, {{{"minecraft:fall"}, true}})});
+        const Req all = req(Req::Kind::all_of, {}, {fire, req(Req::Kind::tags, {{{"minecraft:fall"}, true}})});
+        const Req inverted = req(Req::Kind::inverted, {}, {fire});
         require(any.matches("minecraft:fall") && any.matches("minecraft:hot_floor") && !all.matches("minecraft:lava") && !all.matches("minecraft:fall")
-                    && inverted.matches("minecraft:fall") && !inverted.matches("minecraft:lava") && Req{Req::Kind::all_of, {}, {}}.matches("x"),
+                    && inverted.matches("minecraft:fall") && !inverted.matches("minecraft:lava") && req(Req::Kind::all_of, {}).matches("x"),
                 "all of, any of, inverted");
+        // Attacks (client/ench_combat): fire aspect's direct damage; smite's
+        // and bane of arthropods' `this` (a player is in neither tag);
+        // power's and punch's direct attacker (an arrow: never a melee
+        // attacker; an entity absent fails).
+        using Context = en::DamageContext;
+        Req direct = req(Req::Kind::tags, {});
+        direct.direct = true;
+        const Context melee{"minecraft:player_attack", true, "minecraft:player", "minecraft:player", "minecraft:player"};
+        const Context fall{"minecraft:fall"};
+        require(direct.matches(melee) && !direct.matches(fall) && !direct.matches("minecraft:player_attack"), "is_direct");
+        Req undead = req(Req::Kind::entity, {});
+        undead.entities = {"minecraft:skeleton", "minecraft:zombie"};
+        Req players = undead;
+        players.entities = {"minecraft:player"};
+        Req arrows = req(Req::Kind::entity, {});
+        arrows.subject = Req::Subject::direct_attacker;
+        arrows.entities = {"minecraft:arrow", "minecraft:spectral_arrow"};
+        Req attacker = players;
+        attacker.subject = Req::Subject::attacker;
+        require(!undead.matches(melee) && players.matches(melee) && players.matches(fall) && !arrows.matches(melee) && !arrows.matches(fall)
+                    && attacker.matches(melee) && !attacker.matches(fall)
+                    && req(Req::Kind::all_of, {}, {players, direct}).matches(melee) && !req(Req::Kind::all_of, {}, {undead, direct}).matches(melee),
+                "entity types of this, the attacker and the direct attacker");
     });
 
     suite.run("vertical slice: line and repeater across a chunk edge", [] {
@@ -3381,7 +3411,7 @@ int main() {
         namespace eq = circuit::gameplay::equipment;
         const auto* netherite = eq::wearable(item("minecraft:netherite_chestplate"));
         require(netherite && netherite->slot == eq::Slot::chest && netherite->armor == 8.0f && netherite->toughness == 3.0f
-                    && netherite->knockback_resistance == 0.1f,
+                    && netherite->knockback_resistance == 0.1,
                 "netherite: 8 armor, 3 toughness, 0.1 knockback resistance");
         const auto sword = eq::weapon(item("minecraft:iron_sword"));
         require(sword && sword->damage == 5.0f && sword->speed == -2.4f && !eq::weapon(items::stone), "an iron sword's modifiers");
@@ -3500,6 +3530,55 @@ int main() {
             return hurts;
         };
         require(after_lava(254) == 12 && after_lava(164) == 7 && after_lava(74) == 3, "the burning hurts after lava");
+    });
+
+    suite.run("weapon enchantments add to melee damage, sweeps and burning as both official servers count them (client/ench_combat)", [] {
+        namespace dm = circuit::gameplay::damage;
+        // An iron sword (6; attack speed 4 with -2.4000000953674316): the
+        // healths recorded from 20.
+        const double sword = 4.0 - 2.4000000953674316;
+        const float weak = dm::attack_charge(0, sword); // a swing and a hit in one tick
+        require(std::abs(weak - 0.04f) < 1.0e-6f && dm::attack_charge(30, sword) == 1.0f, std::format("the charges: {}", weak));
+        require(20.0f - dm::melee_damage(dm::charged_damage(6.0f, weak), 3.0f, weak, false) == 18.672319412231445f
+                    && 20.0f - dm::melee_damage(dm::charged_damage(6.0f, weak), 0.0f, weak, false) == 18.792320251464844f,
+                "sharpness V on a weak hit, times the charge");
+        require(dm::melee_damage(6.0f, 3.0f, 1.0f, false) == 9.0f && dm::melee_damage(6.0f, 3.0f, 1.0f, true) == 12.0f
+                    && dm::melee_damage(9.0f, 3.0f, 1.0f, false) == 12.0f && dm::melee_damage(1.0f, 3.0f, 1.0f, false) == 4.0f
+                    && dm::melee_damage(0.0f, 3.0f, 1.0f, false) == 3.0f,
+                "sharpness V: the sword, a critical hit (the attack damage alone half again), the axe, a stick, a stick under weakness");
+        // Sweeps at full charge: 1 and the ratio of 6, with sharpness V.
+        require(dm::sweep_damage(6.0f, 0.0, 0.0f, 1.0f) == 1.0f && dm::sweep_damage(6.0f, 0.0, 3.0f, 1.0f) == 4.0f
+                    && dm::sweep_damage(6.0f, 0.5, 0.0f, 1.0f) == 4.0f && 20.0f - dm::sweep_damage(6.0f, 0.6666666865348816, 0.0f, 1.0f) == 15.0f
+                    && dm::sweep_damage(6.0f, 0.75, 0.0f, 1.0f) == 5.5f && dm::sweep_damage(6.0f, 0.75, 3.0f, 1.0f) == 8.5f,
+                "sweeps with sweeping edge I to III and sharpness V");
+        // Haste 229 (attack speed 24 times): a swing and a hit in one tick
+        // charge 0.96, a strong hit sweeping.
+        const float haste = dm::attack_charge(0, sword * 24.0);
+        const float base = dm::charged_damage(6.0f, haste);
+        require(haste > dm::strong_charge && haste < 1.0f && 20.0f - dm::melee_damage(base, 3.0f, haste, false) == 11.496320724487305f
+                    && 20.0f - dm::sweep_damage(base, 0.75, 3.0f, haste) == 12.110952377319336f,
+                std::format("a sweep at a charge of {}: the whole times the charge", haste));
+        // Fire aspect: 4 seconds a level as ticks, times the burning time
+        // (fire protection IV on a chestplate: 1 - 0.6000000238418579, its
+        // 64 ticks rounded down by Circuit's choice); a longer burning kept.
+        require(dm::ignite(dm::not_burning, 4.0f) == 80 && dm::ignite(dm::not_burning, 8.0f) == 160
+                    && dm::ignite(dm::not_burning, 8.0f, 1.0 + static_cast<double>(-0.15f + -0.15f * 3.0f)) == 63,
+                "fire aspect I and II, against fire protection IV");
+        require(dm::ignite(124, 4.0f) == 124 && dm::ignite(50, 4.0f) == 80 && dm::ignite(dm::not_burning, 0.0f) == dm::not_burning
+                    && dm::ignite(7, 8.0f, 0.0) == 7 && dm::ignite(7, std::numeric_limits<float>::quiet_NaN()) == 7,
+                "a longer burning kept; nothing at 0 seconds, a burning time of 0 or NaN");
+        // The burning hurts after the hit, the first due within its hurt
+        // cooldown not counted (I 3, II 7, against fire protection IV 2).
+        const auto after_hit = [](std::int32_t ticks) {
+            int hurts = 0;
+            for (int k = 0; ticks > 0; ++k) {
+                const auto b = dm::burn(ticks);
+                hurts += b.hurts && k >= 10 ? 1 : 0;
+                ticks = b.ticks;
+            }
+            return hurts;
+        };
+        require(after_hit(80) == 3 && after_hit(160) == 7 && after_hit(63) == 2, "the burning hurts after a hit");
     });
 
     suite.run("breath and frost count as both official servers count them (client/drown)", [] {
