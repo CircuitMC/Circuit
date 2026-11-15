@@ -41,4 +41,15 @@ std::optional<std::uint8_t> slot_group(std::string_view name) noexcept {
     return std::nullopt;
 }
 
+bool DamageRequirement::matches(std::string_view type) const {
+    switch (kind) {
+    case Kind::tags:
+        return std::ranges::all_of(tags, [&](const Tag& t) { return std::ranges::binary_search(t.types, type) == t.expected; });
+    case Kind::all_of: return std::ranges::all_of(terms, [&](const DamageRequirement& r) { return r.matches(type); });
+    case Kind::any_of: return std::ranges::any_of(terms, [&](const DamageRequirement& r) { return r.matches(type); });
+    case Kind::inverted: return !terms.empty() && !terms.front().matches(type);
+    }
+    return false;
+}
+
 } // namespace circuit::gameplay::enchantments

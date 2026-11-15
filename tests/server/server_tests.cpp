@@ -5354,6 +5354,297 @@ int main() {
                 "a modifier outside the minecraft namespace");
         require(attempt(with(R"({"id":"minecraft:enchantment.respiration","attribute":"minecraft:oxygen_bonus","amount":{"type":"minecraft:wavy"},"operation":"add_value"})")).find("cannot read") != std::string::npos,
                 "a value form Circuit does not know");
+        // Damage protection and immunity: the forms the official packs use
+        // load; another value effect, a requirement on more than the damage
+        // type's tags or a tag no pack defines do not.
+        const std::string armor = R"({"description":"r","supported_items":"#minecraft:enchantable/head_armor","weight":2,"max_level":3,"min_cost":{"base":10,"per_level_above_first":10},"max_cost":{"base":40,"per_level_above_first":10},"anvil_cost":4,"slots":["armor"],"effects":{)";
+        const auto protecting = [&](std::string_view effect, std::string_view requirement) {
+            return armor + R"("minecraft:damage_protection":[{"effect":)" + std::string(effect) + R"(,"requirements":)" + std::string(requirement) + "}]}}";
+        };
+        const std::string add = R"({"type":"minecraft:add","value":{"type":"minecraft:linear","base":2,"per_level_above_first":2}})";
+        const std::string fire = R"({"condition":"minecraft:all_of","terms":[{"condition":"minecraft:damage_source_properties","predicate":{"tags":[{"id":"minecraft:is_fire","expected":true},{"id":"minecraft:bypasses_invulnerability","expected":false}]}}]})";
+        require(attempt(protecting(add, fire)) == "loaded", "fire protection's form loads");
+        require(attempt(armor + R"("minecraft:damage_immunity":[{"effect":{},"requirements":{"condition":"minecraft:inverted","term":{"condition":"minecraft:damage_source_properties","predicate":{"tags":[{"id":"minecraft:is_fall","expected":true}]}}}}]}})") == "loaded",
+                "an immunity, inverted, loads");
+        require(attempt(protecting(R"({"type":"minecraft:multiply","factor":2})", fire)).find("damage protection effect Circuit cannot read") != std::string::npos,
+                "another value effect");
+        require(attempt(protecting(add, R"({"condition":"minecraft:damage_source_properties","predicate":{"is_direct":true}})")).find("damage requirement Circuit cannot read") != std::string::npos,
+                "a requirement on more than tags");
+        require(attempt(protecting(add, R"({"condition":"minecraft:random_chance","chance":0.5})")).find("damage requirement Circuit cannot read") != std::string::npos,
+                "another condition");
+        require(attempt(protecting(add, R"({"condition":"minecraft:damage_source_properties","predicate":{"tags":[{"id":"pack:nothing","expected":true}]}})")).find("damage requirement Circuit cannot read") != std::string::npos,
+                "a tag no pack defines");
+        require(attempt(protecting(add, R"({"condition":"minecraft:all_of","terms":[{"condition":"minecraft:random_chance","chance":0.5}]})")).find("damage requirement Circuit cannot read") != std::string::npos
+                    && attempt(protecting(add, R"({"condition":"minecraft:inverted","term":{"condition":"minecraft:random_chance","chance":0.5}})")).find("damage requirement Circuit cannot read") != std::string::npos,
+                "an unreadable term within all of or inverted");
+        require(attempt(protecting(R"({"type":"minecraft:add","value":{"type":"minecraft:wavy"}})", fire)).find("damage protection effect Circuit cannot read") != std::string::npos,
+                "an added value of a form Circuit does not know");
+        require(attempt(armor + R"("minecraft:damage_immunity":[{"effect":{},"requirements":{"condition":"minecraft:random_chance","chance":0.5}}]}})").find("damage requirement Circuit cannot read") != std::string::npos,
+                "an immunity with an unreadable requirement");
+    });
+
+    suite.run("enchantments protect players and shorten their burning as both official servers do (client/ench_protect, client/ench_fire)", [] {
+        // circuit-clienttest/ench-protect.js and ench-fire.js; enchantments
+        // need the official data packs (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        using I = server::Intent;
+        bool ran = false;
+        for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            ran = true;
+            const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value() && d->game, d ? "no game data" : d.error());
+            const auto enchanted = d->game->enchanted;
+            GameFixture f(version, offline_config(), std::move(*d));
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            const auto item = [&](std::string_view name) { return tables.item_id(name).value(); };
+            // A stack set in creative mode, enchanted.
+            const auto put = [&](std::uint64_t who, std::string_view name, std::vector<std::pair<std::string, std::int32_t>> levels, std::int16_t slot) {
+                auto patch = levels.empty() ? std::optional<contracts::ComponentPatch>(contracts::ComponentPatch{}) : enchanted(levels);
+                require(patch.has_value(), "enchanted");
+                f.game->submit(who, I{name.empty() ? server::intent::CreativeSlot{slot, 0, 0} : server::intent::CreativeSlot{slot, 1, item(name), 0, *patch}});
+            };
+            const bool v772 = std::string_view(version) == "1.21.8";
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::int32_t entity = -1;
+            {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(alice->mutex);
+                for (const auto& bytes : alice->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) entity = pk->fields.i32().value();
+            }
+            // alice's since the last call: her health, her damage events (the
+            // type's name), her shared flags, her own window's slot changes and
+            // the sounds she hears (by id).
+            std::size_t seen = 0;
+            const auto packets = [&] {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                std::vector<std::string> out;
+                std::lock_guard lock(alice->mutex);
+                for (; seen < alice->packets.size(); ++seen) {
+                    auto pk = protocol::open_packet(alice->packets[seen]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("set_health")) {
+                        out.push_back(std::format("health {}", in.f32().value()));
+                    } else if (pk->id == id("damage_event")) {
+                        if (in.varint().value() != entity) continue;
+                        const auto type = in.varint().value();
+                        const auto& types = f.data.registries;
+                        std::string name = "?";
+                        for (const auto& r : types)
+                            if (r.registry == "minecraft:damage_type" && type >= 0 && static_cast<std::size_t>(type) < r.entries.size())
+                                name = std::string(r.entries[static_cast<std::size_t>(type)]);
+                        out.push_back("damage " + name);
+                    } else if (pk->id == id("set_entity_data")) {
+                        if (in.varint().value() == entity && in.u8().value() == 0 && in.varint().value() == 0) out.push_back(std::format("flags {}", in.u8().value()));
+                    } else if (pk->id == id("container_set_slot")) {
+                        if (in.varint().value() != 0) continue;
+                        (void)in.varint();
+                        out.push_back(std::format("slot {}", in.i16().value()));
+                    } else if (pk->id == id("sound")) {
+                        out.push_back(std::format("sound {}", in.varint().value() - 1));
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+                return packets();
+            };
+            const auto has = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::find(v, x) != v.end(); };
+            const auto count = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::count(v, x); };
+            const auto health = [](const std::vector<std::string>& v) {
+                for (auto it = v.rbegin(); it != v.rend(); ++it)
+                    if (it->starts_with("health ")) return std::stof(it->substr(7));
+                return -1.0f;
+            };
+            // The health told right after the first damage of a type.
+            const auto health_after = [](const std::vector<std::string>& v, std::string_view damage) {
+                const auto it = std::ranges::find(v, damage);
+                const auto h = std::find_if(it, v.end(), [](const auto& x) { return x.starts_with("health "); });
+                return h == v.end() ? -1.0f : std::stof(h->substr(7));
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            // alice teleported by a command, the teleport confirmed.
+            std::int32_t teleports = 1;
+            const auto teleport = [&](std::string where) {
+                command(1, "tp alice " + where);
+                f.game->tick();
+                f.game->submit(1, I{server::intent::ConfirmTeleport{++teleports}});
+            };
+            const auto heal = [&] {
+                command(1, "effect give alice minecraft:instant_health 1 3");
+                (void)ticks(30);
+            };
+            // Armor (helmet to boots) put on in creative mode, then survival.
+            const auto wear = [&](std::vector<std::pair<std::string_view, std::vector<std::pair<std::string, std::int32_t>>>> pieces) {
+                command(1, "gamemode creative");
+                f.game->tick();
+                for (std::size_t k = 0; k < pieces.size(); ++k) put(1, pieces[k].first, pieces[k].second, static_cast<std::int16_t>(5 + k));
+                f.game->tick();
+                command(1, "gamemode survival");
+                (void)ticks(2);
+            };
+            const std::vector<std::pair<std::string, std::int32_t>> none, p4{{"minecraft:protection", 4}}, fp4{{"minecraft:fire_protection", 4}};
+            f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+            f.game->submit(2, I{server::intent::ConfirmTeleport{1}});
+            for (const auto* c : {"gamerule naturalRegeneration false", "gamerule doFireTick false", "difficulty normal", "gamemode survival"})
+                command(1, c);
+            command(2, "tp bob 2.5 -60 0.5");
+            (void)ticks(2);
+            f.game->submit(2, I{server::intent::ConfirmTeleport{2}});
+            teleport("0.5 -60 0.5");
+            f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, -60.0, 0.5}, std::nullopt, true}});
+            (void)ticks(2);
+
+            // A 10-block fall (7): feather falling IV boots 12 points; with
+            // protection IV on all four 28, counted as 20; a protection IV
+            // helmet held protects nothing.
+            const auto fall = [&] {
+                f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, -50.0, 0.5}, std::nullopt, false}});
+                for (int y = 9; y >= 1; --y) f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, -60.0 + y, 0.5}, std::nullopt, false}});
+                f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, -60.0, 0.5}, std::nullopt, false}});
+                f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, -60.0, 0.5}, std::nullopt, true}});
+                return ticks(25);
+            };
+            wear({{"", none}, {"", none}, {"", none}, {"minecraft:leather_boots", {{"minecraft:feather_falling", 4}}}});
+            auto a = fall();
+            require(has(a, "damage minecraft:fall") && health(a) == 16.360000610351562f, std::format("{}: feather falling IV: {}", version, health(a)));
+            heal();
+            wear({{"minecraft:leather_helmet", p4}, {"minecraft:leather_chestplate", p4}, {"minecraft:leather_leggings", p4},
+                  {"minecraft:leather_boots", {{"minecraft:protection", 4}, {"minecraft:feather_falling", 4}}}});
+            a = fall();
+            require(health(a) == 18.600000381469727f, std::format("{}: 28 points count as 20: {}", version, health(a)));
+            heal();
+            wear({{"", none}, {"", none}, {"", none}, {"", none}});
+            command(1, "gamemode creative");
+            f.game->tick();
+            put(1, "minecraft:leather_helmet", p4, 36);
+            command(1, "gamemode survival");
+            (void)ticks(2);
+            a = fall();
+            require(health(a) == 13.0f, std::format("{}: a protection IV helmet held: {}", version, health(a)));
+            heal();
+            // Instant damage (magic, 6) with protection IV on the helmet: 4
+            // points; with resistance I, resistance first.
+            wear({{"minecraft:leather_helmet", p4}});
+            command(1, "effect give alice minecraft:instant_damage 1 0");
+            a = ticks(25);
+            require(health(a) == 14.960000038146973f, std::format("{}: magic, 4 points: {}", version, health(a)));
+            heal();
+            command(1, "effect give alice minecraft:resistance 600 0");
+            command(1, "effect give alice minecraft:instant_damage 1 0");
+            a = ticks(25);
+            require(health(a) == 15.967999458312988f, std::format("{}: magic, 4 points and resistance I: {}", version, health(a)));
+            command(1, "effect clear alice minecraft:resistance");
+            heal();
+            // Typed protection leaves other damage alone: projectile and blast
+            // protection IV against a fall, fire protection IV against magic.
+            const std::vector<std::pair<std::string, std::int32_t>> pp4{{"minecraft:projectile_protection", 4}}, bp4{{"minecraft:blast_protection", 4}};
+            wear({{"minecraft:leather_helmet", pp4}, {"minecraft:leather_chestplate", pp4}, {"minecraft:leather_leggings", bp4}, {"minecraft:leather_boots", bp4}});
+            a = fall();
+            require(health(a) == 13.0f, std::format("{}: projectile and blast protection against a fall: {}", version, health(a)));
+            heal();
+            wear({{"minecraft:leather_helmet", fp4}, {"minecraft:leather_chestplate", fp4}, {"minecraft:leather_leggings", fp4}, {"minecraft:leather_boots", fp4}});
+            command(1, "effect give alice minecraft:instant_damage 1 0");
+            a = ticks(25);
+            require(health(a) == 14.0f, std::format("{}: fire protection against magic: {}", version, health(a)));
+            heal();
+            // The void and starvation, with protection IV on all four: neither
+            // reduced.
+            wear({{"minecraft:leather_helmet", p4}, {"minecraft:leather_chestplate", p4}, {"minecraft:leather_leggings", p4}, {"minecraft:leather_boots", p4}});
+            teleport("0.5 -200 0.5");
+            a.clear();
+            for (int k = 0; k < 40 && !has(a, "damage minecraft:out_of_world"); ++k) {
+                const auto more = ticks(1);
+                a.insert(a.end(), more.begin(), more.end());
+            }
+            teleport("0.5 -60 0.5");
+            f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, -60.0, 0.5}, std::nullopt, true}});
+            const auto back = ticks(25);
+            a.insert(a.end(), back.begin(), back.end());
+            require(has(a, "damage minecraft:out_of_world") && health(a) == 16.0f, std::format("{}: the void: {}", version, health(a)));
+            heal();
+            command(1, "effect give alice minecraft:hunger 60 255");
+            a.clear();
+            for (int k = 0; k < 400 && !has(a, "damage minecraft:starve"); ++k) {
+                const auto more = ticks(1);
+                a.insert(a.end(), more.begin(), more.end());
+            }
+            require(has(a, "damage minecraft:starve") && health(a) == 19.0f, std::format("{}: starvation: {}", version, health(a)));
+            command(1, "effect clear alice minecraft:hunger");
+            command(1, "effect give alice minecraft:saturation 1 19");
+            heal();
+            // bob's iron sword at full charge: leather armor leaves 5.04,
+            // protection IV on all four 1.8144.
+            command(2, "gamemode creative");
+            f.game->tick();
+            put(2, "minecraft:iron_sword", none, 36);
+            command(2, "gamemode survival");
+            (void)ticks(30);
+            f.game->submit(2, I{server::intent::Attack{entity}});
+            a = ticks(25);
+            require(has(a, "damage minecraft:player_attack") && health(a) == 18.18560028076172f, std::format("{}: the sword: {}", version, health(a)));
+            heal();
+
+            // Fire (ench-fire.js): alice in a pit with a netherrack floor.
+            for (const auto* c : {"setblock 8 -62 8 netherrack", "setblock 8 -61 8 air"}) command(1, c);
+            teleport("8.5 -61 8.5");
+            f.game->submit(1, I{server::intent::Move{server::Vec3{8.5, -61.0, 8.5}, std::nullopt, true}});
+            (void)ticks(2);
+            // Frost walker II boots on a magma block: no hurt.
+            wear({{"minecraft:diamond_helmet", none}, {"minecraft:diamond_chestplate", none}, {"minecraft:diamond_leggings", none},
+                  {"minecraft:diamond_boots", {{"minecraft:frost_walker", 2}}}});
+            command(1, "setblock 8 -62 8 magma_block");
+            a = ticks(60);
+            require(!std::ranges::any_of(a, [](const auto& x) { return x.starts_with("damage") || x.starts_with("slot") || x.starts_with("health"); }),
+                    std::format("{}: frost walker on magma, neither a hurt nor wear", version));
+            command(1, "setblock 8 -62 8 netherrack");
+            // Its immunity is to hot floors only: lava hurts and wears.
+            command(1, "setblock 8 -61 8 lava");
+            a = ticks(3);
+            command(1, "setblock 8 -61 8 water[level=0]");
+            const auto out = ticks(5);
+            a.insert(a.end(), out.begin(), out.end());
+            command(1, "setblock 8 -61 8 air");
+            require(has(a, "damage minecraft:lava") && has(a, "slot 8"), std::format("{}: frost walker in lava", version));
+            heal();
+            // Fire protection IV on all four: 20 points against the magma;
+            // lava hurts 0.192 and never sets her burning.
+            wear({{"minecraft:diamond_helmet", fp4}, {"minecraft:diamond_chestplate", fp4}, {"minecraft:diamond_leggings", fp4}, {"minecraft:diamond_boots", fp4}});
+            command(1, "setblock 8 -62 8 magma_block");
+            a = ticks(30);
+            require(health_after(a, "damage minecraft:hot_floor") == 19.95800018310547f,
+                    std::format("{}: magma, fire protection IV: {}", version, health_after(a, "damage minecraft:hot_floor")));
+            command(1, "setblock 8 -62 8 netherrack");
+            heal();
+            // Water then: not burning, no extinguish sound.
+            const auto extinguish = std::format("sound {}", v772 ? 616 : 603);
+            command(1, "setblock 8 -61 8 lava");
+            a = ticks(3);
+            command(1, "setblock 8 -61 8 water[level=0]");
+            const auto rest = ticks(10);
+            a.insert(a.end(), rest.begin(), rest.end());
+            command(1, "setblock 8 -61 8 air");
+            const auto dry = ticks(30);
+            a.insert(a.end(), dry.begin(), dry.end());
+            require(has(a, "damage minecraft:lava") && health(a) == 19.808000564575195f && !has(a, "flags 1") && !has(a, extinguish),
+                    std::format("{}: lava, fire protection IV: {}", version, health(a)));
+            heal();
+            // Fire protection I on a helmet alone: lava's burning hurts 12
+            // times after it (14 without), each 0.92.
+            wear({{"minecraft:iron_helmet", {{"minecraft:fire_protection", 1}}}, {"", none}, {"", none}, {"", none}});
+            command(1, "setblock 8 -61 8 lava");
+            a = ticks(3);
+            command(1, "setblock 8 -61 8 air");
+            const auto burning = ticks(300);
+            require(has(a, "damage minecraft:lava") && count(burning, "damage minecraft:on_fire") == 12 && has(burning, "flags 0"),
+                    std::format("{}: fire protection I: {} burning hurts", version, count(burning, "damage minecraft:on_fire")));
+        }
+        if (!ran) std::puts("  (no official server jar given: the protection checks did not run)");
     });
 
     suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {

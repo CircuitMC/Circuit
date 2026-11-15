@@ -1471,6 +1471,28 @@
       "description": "A survival player stays under water for about 120 ticks without a helmet and with respiration III and I; whether the air lost is one a tick without it and within 4.5 standard deviations of respiration's chance with it (the draws are random); Circuit and both official servers give identical output"
     },
     {
+      "id": "client/ench_protect",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-protect.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "A survival player in enchanted leather armor, another watching: a 10-block fall bare, with feather falling IV boots, with protection IV on all four pieces and feather falling IV, with protection I on the helmet, with a protection IV helmet held, with feather falling IV and resistance I, and with projectile and blast protection IV; instant damage with protection IV on the helmet, also with resistance I, with projectile and blast protection, and with fire protection IV on all four; the void and starvation with protection IV on all four; the other's iron sword at full charge through plain leather and through protection IV on all four; each step's health, food and saturation, damage events, slots and equipment (components compared by type, enchantments by id) and hurt sounds; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/ench_fire",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-fire.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "A survival player in a pit: a magma block under her in plain diamond armor, with protection IV and with fire protection IV on all four pieces, and with frost walker II boots for 3 seconds; lava for a hurt then water, with frost walker II boots, with protection IV and with fire protection IV on all four; then lava for a hurt and her burning until she is no longer shown burning, with fire protection I on a helmet, III, and IV with I on a chestplate; her health, damage events, shared flags, slots (components compared by type) and sounds; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/xp_death",
       "kind": "black_box",
       "versions": [

@@ -2085,10 +2085,11 @@ struct Game::Impl final : GameServices {
             else if (name == "powder_snow") p.in_snow = true;
         });
         if (p.in_fire) {
-            p.fire_ticks = gameplay::damage::touch_fire(p.fire_ticks, random_draw() < 0.5f);
+            p.fire_ticks = gameplay::damage::touch_fire(p.fire_ticks, random_draw() < 0.5f,
+                                                        attribute_value(p, gameplay::attributes::Attribute::burning_time));
             hurt(p, soul ? 2.0f : 1.0f, soul ? Harm::soul_fire : Harm::in_fire);
-        } else if (p.fire_ticks < 0) {
-            p.fire_ticks = gameplay::damage::not_burning;
+        } else {
+            p.fire_ticks = gameplay::damage::out_of_fire(p.fire_ticks);
         }
         if (cactus && !p.dead) hurt(p, 1.0f, Harm::cactus);
         if (bush && !p.dead && (p.pos.x != p.tick_pos.x || p.pos.z != p.tick_pos.z)) hurt(p, 1.0f, Harm::sweet_berry_bush);
@@ -2257,7 +2258,7 @@ struct Game::Impl final : GameServices {
                                             static_cast<std::int64_t>(sound_seed++)), true);
             if (p.dead && wire.protocol() >= 772) extinguish_sound(p);
         }
-        if (!p.dead) p.fire_ticks = gameplay::damage::touch_lava(p.fire_ticks);
+        if (!p.dead) p.fire_ticks = gameplay::damage::touch_lava(p.fire_ticks, attribute_value(p, gameplay::attributes::Attribute::burning_time));
     }
     // Water puts the fire out, and so does rain (rain_on_players).
     void touch_water(Player& p) {
@@ -2431,8 +2432,11 @@ struct Game::Impl final : GameServices {
     // how much it exceeds the last. Then, as both official servers reduce it
     // (client/fire; minecraft.wiki "Armor", "Resistance"): armor wears by a
     // quarter of it (at least one) and takes away what its points and
-    // toughness allow, resistance 20% a level, absorption what it holds.
-    // Damage of the types that tire costs that exhaustion. Damage a player
+    // toughness allow, resistance 20% a level, the enchantments' protection
+    // (client/ench_protect: after resistance; none against starvation)
+    // 4% a point, absorption what it holds. An enchantment's immunity (frost
+    // walker against hot floors: client/ench_fire) keeps the damage off as
+    // the game rules do. Damage of the types that tire costs that exhaustion. Damage a player
     // dealt (`by`: client/combat) names them in the damage event and the
     // death message, shows the one hurt its direction (the hurt animation)
     // and knocks them 0.4 away. Damage within the cooldown that exceeds the
@@ -2445,6 +2449,7 @@ struct Game::Impl final : GameServices {
         if (harm == Harm::void_ && p.game_mode == spectator) return false;
         const auto& type = harm_type(harm);
         if (!harm_allowed(type)) return false;
+        if (immune(p, type.name)) return false;
         static const auto fire_resistance = gameplay::effects::id("fire_resistance"), resistance = gameplay::effects::id("resistance");
         if (type.fire && fire_resistance && effect_amplifier(p, *fire_resistance)) return false;
         if (by && harm == Harm::player_attack && blocking(p)) {
@@ -2473,6 +2478,7 @@ struct Game::Impl final : GameServices {
         }
         if (const auto level = resistance ? effect_amplifier(p, *resistance) : std::nullopt; level && type.resistance)
             applied = gameplay::damage::after_resistance(applied, *level);
+        applied = gameplay::damage::after_enchantments(applied, protection(p, type.name));
         // Absorption takes the damage first.
         if (p.absorption > 0.0f) {
             const auto absorbed = std::min(p.absorption, applied);
@@ -2983,6 +2989,46 @@ struct Game::Impl final : GameServices {
                 given.emplace_back(a.attribute, id);
             }
         }
+    }
+    // The effects of the enchantments on what a player wears and holds, with
+    // their levels: each in the slots its enchantment works in, as their
+    // attribute modifiers.
+    template <typename F>
+    void each_enchantment(const Player& p, F&& f) const {
+        if (!data.game || !data.game->enchantments_of) return;
+        const auto now = equipment_now(p);
+        for (std::size_t k = 0; k < now.size(); ++k) {
+            if (now[k].empty()) continue;
+            const auto bit = gameplay::enchantments::slot_bit(static_cast<gameplay::equipment::Slot>(k));
+            for (const auto& [id, level] : data.game->enchantments_of(now[k].components, false)) {
+                const auto e = data.game->enchantment_effects.find(id);
+                if (e != data.game->enchantment_effects.end() && (e->second.slots & bit) != 0) f(e->second, level);
+            }
+        }
+    }
+    // Whether an enchantment keeps damage of a type off (client/ench_fire:
+    // frost walker boots on a magma block, no hurt and no wear).
+    bool immune(const Player& p, std::string_view type) const {
+        bool kept = false;
+        each_enchantment(p, [&](const gameplay::enchantments::Effects& e, std::int32_t) {
+            for (const auto& r : e.immunity)
+                if (!r || r->matches(type)) kept = true;
+        });
+        return kept;
+    }
+    // The enchantment protection factor against damage of a type: the
+    // protection values of the enchantments that protect against it, added
+    // (none against the types of the tags bypasses_effects and
+    // bypasses_enchantments: client/ench_protect, starvation not reduced by
+    // protection IV on all four pieces).
+    float protection(const Player& p, std::string_view type) const {
+        if (!data.game || std::ranges::binary_search(data.game->damage_bypassing_enchantments, type)) return 0.0f;
+        float sum = 0.0f;
+        each_enchantment(p, [&](const gameplay::enchantments::Effects& e, std::int32_t level) {
+            for (const auto& effect : e.protection)
+                if (!effect.requirement || effect.requirement->matches(type)) sum += effect.value.at(level);
+        });
+        return sum;
     }
 
     // ---- status effects -----------------------------------------------------

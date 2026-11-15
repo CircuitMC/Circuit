@@ -15,6 +15,10 @@ float after_armor(float damage, float armor, float toughness) noexcept;
 // What the resistance effect leaves: 20% less per level (amplifier + 1),
 // nothing from level 5.
 float after_resistance(float damage, std::int32_t amplifier) noexcept;
+// What enchantments' protection leaves (minecraft.wiki "Armor"): 4% less
+// per point of the enchantment protection factor, which counts between 0
+// and 20 (NaN as 0), in single precision.
+float after_enchantments(float damage, float protection) noexcept;
 // The durability each piece of armor loses by damage armor reduces: a
 // quarter of it, at least one.
 std::int32_t armor_wear(float damage) noexcept;
@@ -24,10 +28,15 @@ std::int32_t armor_wear(float damage) noexcept;
 // for 8 seconds (160 ticks); from then on each tick in fire adds one or two
 // (`more`; the official servers draw it, and their draws were not recorded
 // tick by tick: Circuit draws its own) and keeps at least 160. Lava sets
-// at least 300. Out of fire, a count below 0 goes back to -20.
+// at least 300. Out of fire, a count of 0 or below goes back to -20. The 160
+// and 300 are the player's burning time attribute (`burning`, 1 but for fire
+// protection) times them, rounded down (Circuit's choice: not told apart from
+// rounding by the recordings); lava sets nothing at a burning time of 0.
 inline constexpr std::int32_t not_burning = -20;
-std::int32_t touch_fire(std::int32_t ticks, bool more) noexcept;
-std::int32_t touch_lava(std::int32_t ticks) noexcept;
+std::int32_t touch_fire(std::int32_t ticks, bool more, double burning = 1.0) noexcept;
+std::int32_t touch_lava(std::int32_t ticks, double burning = 1.0) noexcept;
+// A tick out of fire: a count of 0 or below back to -20.
+std::int32_t out_of_fire(std::int32_t ticks) noexcept;
 // A burning tick: with ticks above 0, a hurt when they are a multiple of 20,
 // then one less; at 0 the fire is out (-20).
 struct Burn {

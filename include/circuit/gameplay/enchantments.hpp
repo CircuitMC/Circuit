@@ -43,13 +43,38 @@ struct AttributeEffect {
     LevelValue amount;
     attributes::Operation operation{};
 };
+// A requirement on the damage a player takes, of the forms the vanilla
+// packs give their damage effects (minecraft.wiki "Predicate"): the damage
+// type in or out of damage type tags (damage_source_properties with tags
+// alone), all or any of other requirements, or one inverted.
+struct DamageRequirement {
+    enum class Kind : std::uint8_t { tags, all_of, any_of, inverted };
+    struct Tag {
+        std::vector<std::string> types; // the tag's damage types, sorted ("minecraft:fall")
+        bool expected{};
+    };
+    Kind kind{};
+    std::vector<Tag> tags;                // tags: each must hold as expected
+    std::vector<DamageRequirement> terms; // all_of, any_of; inverted: the one inverted
+    bool matches(std::string_view type) const;
+};
+// A damage protection value (the effect minecraft:damage_protection, its
+// value added) and the damage it protects against.
+struct ProtectionEffect {
+    LevelValue value;
+    std::optional<DamageRequirement> requirement;
+};
 // What an enchantment does that Circuit models: in the slots of its `slots`
 // groups (whatever the item; client/ench_attributes: efficiency on a stick
 // held counts, swift sneak on a chestplate does not), its attribute
-// modifiers.
+// modifiers, the protection it adds against damage and the damage it keeps
+// off (minecraft:damage_immunity).
 struct Effects {
     std::uint8_t slots{};
     std::vector<AttributeEffect> attributes;
+    std::vector<ProtectionEffect> protection;
+    std::vector<std::optional<DamageRequirement>> immunity;
+    bool empty() const noexcept { return attributes.empty() && protection.empty() && immunity.empty(); }
 };
 
 } // namespace circuit::gameplay::enchantments

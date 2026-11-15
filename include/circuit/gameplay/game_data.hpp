@@ -118,9 +118,13 @@ struct GameData {
         std::vector<std::uint32_t> exclusive;
     };
     std::unordered_map<std::uint32_t, EnchantmentRules> enchantment_rules;
-    // What each enchantment does to players (by id): the slots it works in
-    // and the attribute modifiers it gives there.
+    // What each enchantment does to players (by id): the slots it works in,
+    // the attribute modifiers it gives there, the protection it adds and the
+    // damage it keeps off.
     std::unordered_map<std::uint32_t, enchantments::Effects> enchantment_effects;
+    // The damage types enchantments do not protect against (the damage type
+    // tags bypasses_effects and bypasses_enchantments), sorted.
+    std::vector<std::string> damage_bypassing_enchantments;
     // The items that repair an item at an anvil (minecraft.wiki "Anvil"), by
     // the item: the members of its material's item tag.
     std::unordered_map<std::uint16_t, std::vector<std::uint16_t>> repair_materials;

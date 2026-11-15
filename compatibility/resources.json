@@ -6983,14 +6983,16 @@
         "evidence": "compared",
         "cases": [
           "client/vitals",
-          "client/effects_heal"
+          "client/effects_heal",
+          "client/ench_protect"
         ]
       },
       "magic": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/effects_heal"
+          "client/effects_heal",
+          "client/ench_protect"
         ],
         "note": "Instant damage and poison"
       },
@@ -6998,7 +7000,8 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/vitals"
+          "client/vitals",
+          "client/ench_protect"
         ],
         "note": "Its sounds and the velocity told were not recorded"
       },
@@ -7006,7 +7009,8 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/effects_heal"
+          "client/effects_heal",
+          "client/ench_protect"
         ]
       },
       "wither": {
@@ -7029,7 +7033,8 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/fire"
+          "client/fire",
+          "client/ench_fire"
         ],
         "note": "Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it"
       },
@@ -7037,7 +7042,8 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/fire"
+          "client/fire",
+          "client/ench_fire"
         ],
         "note": "Lava: 4, armor reducing it, with the burn sound; 15 seconds of burning"
       },
@@ -7045,7 +7051,8 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/fire"
+          "client/fire",
+          "client/ench_fire"
         ],
         "note": "Magma blocks stood on without sneaking: 1, armor reducing it"
       },
@@ -7093,7 +7100,8 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/combat"
+          "client/combat",
+          "client/ench_protect"
         ],
         "note": "A player's melee attack and its sweep: the damage event names the attacker, without a source position; armor reduces it; exhaustion 0.1; death.attack.player"
       }
@@ -7484,11 +7492,12 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/ench_attributes"
+          "client/ench_attributes",
+          "client/ench_fire"
         ],
-        "note": "Fire protection's modifier on each armor piece, sent as both official servers send it",
+        "note": "Fire protection's modifier on each armor piece, sent as both official servers send it; scales the fire ticks lava sets, giving the burning hurts both official servers give",
         "deviations": [
-          "only reaches the client: its effect is not modeled yet"
+          "rounded down by Circuit's choice (the recorded counts are the same rounded to the nearest), and fire's 160 ticks scaled alike were not recorded"
         ]
       },
       "explosion_knockback_resistance": {
@@ -7596,22 +7605,21 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/ench_attributes"
+          "client/ench_attributes",
+          "client/ench_fire"
         ],
-        "note": "Its burning time modifier on each armor piece",
-        "deviations": [
-          "its protection against fire and its shorter burning are not modeled yet"
-        ]
+        "note": "Its burning time modifier on each armor piece, shortening the burning lava sets, and its protection (2 a level) against the is_fire types only (none against magic), as both official servers do"
       },
       "blast_protection": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/ench_attributes"
+          "client/ench_attributes",
+          "client/ench_protect"
         ],
-        "note": "Its explosion knockback resistance modifier on each armor piece",
+        "note": "Its explosion knockback resistance modifier on each armor piece; no protection against falls or magic, as both official servers",
         "deviations": [
-          "its protection against explosions and the knockback resistance in use are not modeled yet"
+          "its protection (2 a level) is read but Circuit deals no explosion damage to players yet, and the knockback resistance in use is not modeled"
         ]
       },
       "sweeping_edge": {
@@ -7623,6 +7631,45 @@
         "note": "Its sweeping damage ratio modifier in the main hand",
         "deviations": [
           "sweeps do not use the ratio yet"
+        ]
+      },
+      "protection": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_protect",
+          "client/ench_fire"
+        ],
+        "note": "Its protection (1 a level) against all but the bypasses_invulnerability types, in armor slots only, after armor and resistance, as both official servers; not against starvation"
+      },
+      "feather_falling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_protect"
+        ],
+        "note": "Its protection (3 a level) against falls, counted with the others up to 20, as both official servers"
+      },
+      "projectile_protection": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_protect"
+        ],
+        "note": "Its protection (2 a level) against the is_projectile types; no protection against falls or magic, as both official servers",
+        "deviations": [
+          "Circuit deals no projectile damage to players yet"
+        ]
+      },
+      "frost_walker": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_fire"
+        ],
+        "note": "Its immunity to the burn_from_stepping types: no hurt and no wear on a magma block, lava still hurting and wearing, as both official servers",
+        "deviations": [
+          "it does not freeze water into frosted ice yet"
         ]
       }
     }

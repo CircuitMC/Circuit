@@ -209,6 +209,22 @@ int main() {
                 "slot groups");
         require(circuit::gameplay::equipment::slot_name(Slot::head) == "head" && circuit::gameplay::equipment::slot_name(Slot::mainhand) == "mainhand",
                 "the slots' names in modifier ids");
+        // Damage requirements: tags as expected (fire protection: is_fire and
+        // not bypasses_invulnerability), all of, any of, inverted.
+        using Req = en::DamageRequirement;
+        const Req fire{Req::Kind::tags, {{{"minecraft:hot_floor", "minecraft:lava"}, true}, {{"minecraft:generic_kill", "minecraft:out_of_world"}, false}}, {}};
+        require(fire.matches("minecraft:lava") && !fire.matches("minecraft:fall") && !fire.matches("minecraft:out_of_world"), "tags");
+        const Req protection{Req::Kind::tags, {{{"minecraft:generic_kill", "minecraft:out_of_world"}, false}}, {}};
+        const Req both{Req::Kind::tags, {{{"minecraft:lava", "minecraft:out_of_world"}, true}, {{"minecraft:generic_kill", "minecraft:out_of_world"}, false}}, {}};
+        require(protection.matches("minecraft:fall") && !protection.matches("minecraft:out_of_world") && both.matches("minecraft:lava")
+                    && !both.matches("minecraft:out_of_world"),
+                "a type in a tag expected out");
+        const Req any{Req::Kind::any_of, {}, {fire, Req{Req::Kind::tags, {{{"minecraft:fall"}, true}}, {}}}};
+        const Req all{Req::Kind::all_of, {}, {fire, Req{Req::Kind::tags, {{{"minecraft:fall"}, true}}, {}}}};
+        const Req inverted{Req::Kind::inverted, {}, {fire}};
+        require(any.matches("minecraft:fall") && any.matches("minecraft:hot_floor") && !all.matches("minecraft:lava") && !all.matches("minecraft:fall")
+                    && inverted.matches("minecraft:fall") && !inverted.matches("minecraft:lava") && Req{Req::Kind::all_of, {}, {}}.matches("x"),
+                "all of, any of, inverted");
     });
 
     suite.run("vertical slice: line and repeater across a chunk edge", [] {
@@ -3431,6 +3447,59 @@ int main() {
             t = next.ticks;
         }
         require(hurts == 14, std::format("{} hurts", hurts));
+    });
+
+    suite.run("enchantments' protection and fire protection's burning time count as both official servers count them (client/ench_protect, client/ench_fire)", [] {
+        namespace dm = circuit::gameplay::damage;
+        // The healths recorded from 20: a fall of 7 with feather falling IV
+        // (12 points), with 28 points (counted as 20), protection I (1);
+        // magic of 6 with protection IV (4), and with resistance I first.
+        require(20.0f - dm::after_enchantments(7.0f, 12.0f) == 16.360000610351562f, "12 points");
+        require(20.0f - dm::after_enchantments(7.0f, 28.0f) == 18.600000381469727f && dm::after_enchantments(7.0f, 28.0f) == dm::after_enchantments(7.0f, 20.0f),
+                "at most 20 points");
+        require(20.0f - dm::after_enchantments(7.0f, 1.0f) == 13.280000686645508f && 20.0f - dm::after_enchantments(6.0f, 4.0f) == 14.960000038146973f,
+                "1 and 4 points");
+        require(20.0f - dm::after_enchantments(dm::after_resistance(6.0f, 0), 4.0f) == 15.967999458312988f
+                    && 20.0f - dm::after_enchantments(dm::after_resistance(7.0f, 0), 12.0f) == 17.08799934387207f,
+                "resistance first");
+        require(dm::after_enchantments(5.0f, -3.0f) == 5.0f && dm::after_enchantments(5.0f, 0.0f) == 5.0f, "no less than 0 points");
+        // A burning time from fire protection's modifiers (add_multiplied_base
+        // of a base of 1, the amounts in floats): lava's 300 ticks scaled,
+        // rounded down (Circuit's choice: the recorded hurt counts below are
+        // the same rounded to the nearest); none at 0, the ticks left as they
+        // are.
+        const auto burning = [](std::initializer_list<std::int32_t> levels) {
+            double v = 1.0;
+            for (const auto level : levels) v += static_cast<double>(-0.15f + -0.15f * static_cast<float>(level - 1));
+            return std::max(v, 0.0);
+        };
+        require(dm::touch_lava(dm::not_burning, burning({1})) == 254 && dm::touch_lava(dm::not_burning, burning({3})) == 164
+                    && dm::touch_lava(dm::not_burning, burning({4, 1})) == 74 && dm::touch_lava(dm::not_burning, burning({4, 4})) == dm::not_burning
+                    && dm::touch_lava(50, burning({4, 4})) == 50,
+                "lava's burning scaled");
+        require(dm::touch_lava(400, 0.5) == 400 && dm::touch_lava(dm::not_burning, 1.0) == 300, "the longer kept");
+        std::int32_t t = -1;
+        t = dm::touch_fire(t, false, burning({4}));
+        require(t == 63, std::format("fire's 160 scaled (not recorded): {}", t));
+        // At a burning time of 0, fire counts up to 0 and keeps it; out of
+        // fire that 0 goes back to -20, as a count below 0 does.
+        t = dm::touch_fire(-1, false, burning({4, 4}));
+        require(t == 0 && dm::out_of_fire(t) == dm::not_burning && dm::out_of_fire(-5) == dm::not_burning && dm::out_of_fire(7) == 7,
+                "out of fire");
+        require(20.0f - dm::after_enchantments(4.0f, std::numeric_limits<float>::quiet_NaN()) == 16.0f, "a value of NaN protects nothing");
+        // The burning hurts after lava, the first due within the hurt
+        // cooldown of lava's hurt not counted (client/ench_fire: 12 with I,
+        // 7 with III, 3 with IV and I).
+        const auto after_lava = [](std::int32_t ticks) {
+            int hurts = 0;
+            for (int k = 0; ticks > 0; ++k) {
+                const auto b = dm::burn(ticks);
+                hurts += b.hurts && k >= 9 ? 1 : 0;
+                ticks = b.ticks;
+            }
+            return hurts;
+        };
+        require(after_lava(254) == 12 && after_lava(164) == 7 && after_lava(74) == 3, "the burning hurts after lava");
     });
 
     suite.run("breath and frost count as both official servers count them (client/drown)", [] {

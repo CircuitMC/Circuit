@@ -161,10 +161,58 @@ std::optional<gameplay::enchantments::LevelValue> level_value(const auth::Json& 
     return v;
 }
 
-// An enchantment's slots and attribute modifiers (its minecraft:attributes
-// effects): refused when it names a slot group, attribute or value form
-// Circuit does not know.
-std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json) {
+// A damage effect's requirement (its `requirements`), of the forms
+// DamageRequirement knows; nullopt for another form, a predicate on more
+// than the damage type's tags, or a tag the packs do not define.
+std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(const auth::Json& json, const data::DataPacks& packs) {
+    using gameplay::enchantments::DamageRequirement;
+    using Kind = DamageRequirement::Kind;
+    const auto* condition = json.find("condition");
+    if (!condition || condition->kind() != auth::Json::Kind::string) return std::nullopt;
+    auto c = condition->as_string();
+    if (c.starts_with("minecraft:")) c.erase(0, 10);
+    DamageRequirement r;
+    const auto term = [&](const auth::Json& t) {
+        auto part = damage_requirement(t, packs);
+        if (part) r.terms.push_back(std::move(*part));
+        return part.has_value();
+    };
+    if (c == "damage_source_properties") {
+        const auto* predicate = json.find("predicate");
+        if (!predicate || predicate->kind() != auth::Json::Kind::object) return std::nullopt;
+        for (const auto& [key, value] : predicate->members()) {
+            if (key != "tags" || value.kind() != auth::Json::Kind::array) return std::nullopt;
+            for (const auto& t : value.items()) {
+                const auto* id = t.find("id");
+                const auto* expected = t.find("expected");
+                if (!id || id->kind() != auth::Json::Kind::string || !expected || expected->kind() != auth::Json::Kind::boolean)
+                    return std::nullopt;
+                const auto* types = packs.tag("damage_type", id->as_string());
+                if (!types) return std::nullopt;
+                r.tags.push_back({*types, expected->as_bool()});
+            }
+        }
+    } else if (c == "all_of" || c == "any_of") {
+        r.kind = c == "all_of" ? Kind::all_of : Kind::any_of;
+        const auto* terms = json.find("terms");
+        if (!terms || terms->kind() != auth::Json::Kind::array) return std::nullopt;
+        for (const auto& t : terms->items())
+            if (!term(t)) return std::nullopt;
+    } else if (c == "inverted") {
+        r.kind = Kind::inverted;
+        const auto* t = json.find("term");
+        if (!t || !term(*t)) return std::nullopt;
+    } else {
+        return std::nullopt;
+    }
+    return r;
+}
+
+// An enchantment's slots, attribute modifiers (its minecraft:attributes
+// effects), damage protection and damage immunity: refused when it names a
+// slot group, attribute, value form or requirement Circuit does not know.
+std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json,
+                                                                               const data::DataPacks& packs) {
     namespace en = gameplay::enchantments;
     namespace at = gameplay::attributes;
     en::Effects out;
@@ -177,6 +225,36 @@ std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(
         }
     }
     const auto* effects = json.find("effects");
+    // An effect's requirement, if it has one (refused when unreadable).
+    const auto requirement = [&](const auth::Json& e) -> std::expected<std::optional<en::DamageRequirement>, std::string> {
+        const auto* r = e.find("requirements");
+        if (!r) return std::nullopt;
+        auto read = damage_requirement(*r, packs);
+        if (!read) return std::unexpected(std::format("enchantment {}: a damage requirement Circuit cannot read", name));
+        return std::optional<en::DamageRequirement>(std::move(*read));
+    };
+    if (const auto* list = effects ? effects->find("minecraft:damage_protection") : nullptr) {
+        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: damage protection is not a list", name));
+        for (const auto& e : list->items()) {
+            const auto* effect = e.find("effect");
+            const auto* type = effect ? effect->find("type") : nullptr;
+            const auto* amount = effect ? effect->find("value") : nullptr;
+            auto value = amount ? level_value(*amount) : std::nullopt;
+            if (!type || type->kind() != auth::Json::Kind::string || (type->as_string() != "minecraft:add" && type->as_string() != "add") || !value)
+                return std::unexpected(std::format("enchantment {}: a damage protection effect Circuit cannot read", name));
+            auto r = requirement(e);
+            if (!r) return std::unexpected(r.error());
+            out.protection.push_back({std::move(*value), std::move(*r)});
+        }
+    }
+    if (const auto* list = effects ? effects->find("minecraft:damage_immunity") : nullptr) {
+        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: damage immunity is not a list", name));
+        for (const auto& e : list->items()) {
+            auto r = requirement(e);
+            if (!r) return std::unexpected(r.error());
+            out.immunity.push_back(std::move(*r));
+        }
+    }
     const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;
     if (!list) return out;
     if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: attributes are not a list", name));
@@ -419,11 +497,15 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 game->enchantment_rules.emplace(*id, std::move(rules));
                 // What it does to players: its slots and attribute modifiers
                 // (refused when the data asks for what Circuit cannot do).
-                auto effects = enchantment_effects(name, *json);
+                auto effects = enchantment_effects(name, *json, *packs);
                 if (!effects) return std::unexpected(effects.error());
-                if (!effects->attributes.empty()) game->enchantment_effects.emplace(*id, std::move(*effects));
+                if (!effects->empty()) game->enchantment_effects.emplace(*id, std::move(*effects));
             }
         }
+        for (const auto* tag : {"minecraft:bypasses_effects", "minecraft:bypasses_enchantments"})
+            if (const auto* bypassing = packs->tag("damage_type", tag))
+                game->damage_bypassing_enchantments.insert(game->damage_bypassing_enchantments.end(), bypassing->begin(), bypassing->end());
+        std::ranges::sort(game->damage_bypassing_enchantments);
         // Enchanting tables: the enchantments they offer, in the tag's order,
         // and the blocks that power them and let the power through.
         if (const auto* offered = packs->ordered_tag("enchantment", "minecraft:in_enchanting_table"))

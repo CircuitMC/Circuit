@@ -22,6 +22,15 @@ float after_resistance(float damage, std::int32_t amplifier) noexcept {
     return std::max(damage * static_cast<float>(left) / 25.0f, 0.0f);
 }
 
+// client/ench_protect: a fall of 7 with 12 points leaves 3.64 (20 health to
+// 16.360000610351562), with 20 points 1.4; magic of 6 with 4 points and
+// resistance I 4.0320005 (15.967999458312988: resistance first).
+float after_enchantments(float damage, float protection) noexcept {
+    if (!(protection > 0.0f)) return damage; // and NaN, from a data pack's value
+    const float points = std::min(protection, 20.0f);
+    return damage * (1.0f - points / 25.0f);
+}
+
 // client/fire: hits of 1 and of 4 each wear a piece by one.
 std::int32_t armor_wear(float damage) noexcept {
     const float quarter = damage / 4.0f;
@@ -33,13 +42,32 @@ std::int32_t armor_wear(float damage) noexcept {
 // burning's first hurt in the next tick, its flag in the one after), and
 // burns 8 seconds and a few ticks once out right after; lava's burning
 // hurts 14 times after it (minecraft.wiki "Lava"; client/fire: 12 times
-// to death from 12 health).
-std::int32_t touch_fire(std::int32_t ticks, bool more) noexcept {
+// to death from 12 health). With fire protection (client/ench_fire) lava's
+// burning hurts 12 times after it with I (a burning time of 0.85), 7 with
+// III (0.55), 3 with IV and I (0.25), and never with IV on four pieces (0).
+// Rounding down is Circuit's choice: the recorded counts are the same
+// rounded to the nearest (255, 165, 75). Fire's 160 scaled alike was not
+// recorded; a burning time of 0 leaves the fire ticks as they are (not
+// recorded but for never being shown burning).
+namespace {
+std::int32_t scaled(std::int32_t ticks, double burning) noexcept {
+    const double t = std::floor(static_cast<double>(ticks) * burning);
+    return t > 0.0 ? static_cast<std::int32_t>(std::min(t, 1.0e9)) : 0; // and NaN
+}
+} // namespace
+std::int32_t touch_fire(std::int32_t ticks, bool more, double burning) noexcept {
     if (ticks < 0) ++ticks;
     else ticks += more ? 2 : 1;
-    return ticks >= 0 ? std::max(ticks, 160) : ticks;
+    return ticks >= 0 ? std::max(ticks, scaled(160, burning)) : ticks;
 }
-std::int32_t touch_lava(std::int32_t ticks) noexcept { return std::max(ticks, 300); }
+std::int32_t touch_lava(std::int32_t ticks, double burning) noexcept {
+    const auto set = scaled(300, burning);
+    return set > 0 ? std::max(ticks, set) : ticks;
+}
+// client/fire: below 0 (a second fire after one taken away took 20 ticks
+// again); 0, which only fire at a burning time of 0 leaves, alike by
+// Circuit's choice (not recorded).
+std::int32_t out_of_fire(std::int32_t ticks) noexcept { return ticks <= 0 ? not_burning : ticks; }
 
 Burn burn(std::int32_t ticks) noexcept {
     if (ticks <= 0) return {ticks, false};
