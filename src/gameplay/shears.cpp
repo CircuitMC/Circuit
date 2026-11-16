@@ -58,6 +58,8 @@ void carve_pumpkin(RuleContext& ctx, BlockPos pos, Direction face, Direction pla
     const std::vector<registry::Property> props{{"facing", std::string(direction_name(facing))}};
     const auto carved = registry::state_of(*registry::find_block(release, "carved_pumpkin"), props);
     set_block(ctx, pos, BlockState::registered(carved.value()));
+    // Heard by everyone near, the carver too (client/ench_unbreaking; pitch 1, minecraft.wiki).
+    play_sound(ctx, pos, contracts::SoundEvent::pumpkin_carve);
     const auto o = contracts::offset(facing);
     Entity e;
     e.position = {pos.x + 0.5 + o.dx * 0.65, pos.y + 0.1, pos.z + 0.5 + o.dz * 0.65};

@@ -117,13 +117,33 @@ struct PostAttackEffect {
     std::vector<EntityEffect> effects;
     std::optional<DamageRequirement> requirement;
 };
+// A requirement on the item an effect is for, of the forms the vanilla
+// packs give (minecraft.wiki "Predicate"): match_tool on its item alone (one
+// item, a list or an item tag), all or any of other requirements, or one
+// inverted.
+struct ItemRequirement {
+    enum class Kind : std::uint8_t { items, all_of, any_of, inverted };
+    Kind kind{};
+    std::vector<std::string> items;    // items: those it may be, sorted ("minecraft:iron_sword")
+    std::vector<ItemRequirement> terms; // all_of, any_of; inverted: the one inverted
+    bool matches(std::string_view item) const;
+};
+// A change of the wear an enchanted item takes (minecraft:item_damage) of
+// the form remove_binomial: each point of it removed by a draw below
+// `chance` at the enchantment's level (unbreaking), for an item meeting the
+// requirement.
+struct ItemDamageEffect {
+    LevelValue chance;
+    std::optional<ItemRequirement> requirement;
+};
 // What an enchantment does that Circuit models: in the slots of its `slots`
 // groups (whatever the item; client/ench_attributes: efficiency on a stick
 // held counts, swift sneak on a chestplate does not), its attribute
 // modifiers, the protection it adds against damage, the damage it keeps
 // off (minecraft:damage_immunity), the damage and knockback it adds to an
 // attack, and what follows an attack that hurt (the fire an attacker's
-// enchantment sets, a victim's thorns).
+// enchantment sets, a victim's thorns); and, wherever the enchanted item
+// is, the wear it is spared.
 struct Effects {
     std::uint8_t slots{};
     std::vector<AttributeEffect> attributes;
@@ -132,8 +152,10 @@ struct Effects {
     std::vector<ValueEffect> damage;
     std::vector<ValueEffect> knockback;
     std::vector<PostAttackEffect> post_attack;
+    std::vector<ItemDamageEffect> item_damage;
     bool empty() const noexcept {
-        return attributes.empty() && protection.empty() && immunity.empty() && damage.empty() && knockback.empty() && post_attack.empty();
+        return attributes.empty() && protection.empty() && immunity.empty() && damage.empty() && knockback.empty() && post_attack.empty()
+               && item_damage.empty();
     }
 };
 

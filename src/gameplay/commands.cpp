@@ -225,10 +225,10 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     const bool off_hand = c.slot == contracts::offhand_slot;
     const bool holding = !held.empty() || (inventory && !inventory->slots[contracts::offhand_slot].empty());
     const auto clicked = ctx.block(c.pos);
-    // Flint and steel or a fire charge wears by one, or is used up, outside
-    // creative mode once it acted.
+    // Flint and steel or a fire charge wears by one (unless unbreaking spared
+    // it), or is used up, outside creative mode once it acted.
     const auto spend_fire_item = [&ctx, c](bool charge) {
-        if (!c.survival) return;
+        if (!c.survival || (!charge && c.spared)) return;
         auto& inv = ctx.player(c.player);
         auto& slot = inv.slots[c.slot];
         if (charge) {
@@ -242,12 +242,13 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     // Blocks are used with the main hand only, and not while sneaking with an item.
     if (!off_hand && !(c.sneaking && holding)) {
         // Shears carve a pumpkin, and take a full hive's honeycomb, wearing
-        // by one outside creative mode (shears_use, client/shears_items).
+        // by one outside creative mode unless unbreaking spared them
+        // (shears_use, client/shears_items, client/ench_unbreaking).
         if (held.item == items::shears && (detail::shears_carve(clicked) || detail::full_hive(clicked)))
             return [&ctx, c, clicked] {
                 if (detail::shears_carve(clicked)) detail::carve_pumpkin(ctx, c.pos, c.face, c.horizontal);
                 else detail::harvest_hive(ctx, c.pos);
-                if (!c.survival) return;
+                if (!c.survival || c.spared) return;
                 auto& inv = ctx.player(c.player);
                 auto& slot = inv.slots[c.slot];
                 if (const auto* info = items::info(slot.item); info && ++slot.damage >= info->max_damage) slot = {};
@@ -343,7 +344,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     if (fire_item) {
         if ((c.reach & 3) == 0) return std::unexpected(ErrorCode::out_of_reach);
         return [&ctx, c, spend_fire_item, charge = *fire_item] {
-            if (detail::light_with(ctx, c.pos, c.face, charge)) spend_fire_item(charge);
+            if (detail::light_with(ctx, c.pos, c.face, charge, c.player)) spend_fire_item(charge);
         };
     }
     // Bone meal acts on the clicked block as a dispenser's does, used up in
@@ -443,9 +444,10 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
         const auto base_pos = c.pos.relative(contracts::opposite(s.facing()));
         const bool head_with_base = s.is(BlockType::piston_head) && detail::head_has_base(ctx, c.pos, s);
         if (head_with_base && !c.survival) set_block(ctx, base_pos, blocks::air());
-        // Shears wear on every block, those broken at once too (client/shears_items).
+        // Shears wear on every block, those broken at once too (client/shears_items);
+        // a tool unbreaking spared does not (client/ench_unbreaking).
         const bool shears = tool.item == items::shears;
-        if (c.survival && (hardness(s) != 0.0f || shears) && tool.item != 0) {
+        if (c.survival && !c.spared && (hardness(s) != 0.0f || shears) && tool.item != 0) {
             // The tool wears by one and breaks at its durability.
             if (const auto* info = items::info(tool.item); info && info->max_damage > 0) {
                 auto& inv = ctx.player(c.player);
@@ -618,15 +620,18 @@ Plan plan(RuleContext& ctx, const contracts::ConsumeItem& c) {
 // Armor worn down by a hurt (client/fire: an iron helmet and a diamond
 // chestplate lose one each by a hit of 1 or of 4, netherite boots none by
 // fire; minecraft.wiki "Durability": a quarter of the damage, at least one,
-// gone at the piece's durability). Its breaking makes no sound here (as
+// gone at the piece's durability), less the points unbreaking spared each
+// piece (client/ench_unbreaking). Its breaking makes no sound here (as
 // tools' breaking does not yet).
 Plan plan(RuleContext& ctx, const contracts::WearArmor& c) {
     if (c.amount < 1 || c.amount > contracts::max_armor_wear) return std::unexpected(ErrorCode::invalid_argument);
+    for (const auto spared : c.spared)
+        if (spared < 0 || spared > c.amount) return std::unexpected(ErrorCode::invalid_argument);
     return [&ctx, c] {
         const auto* inventory = ctx.peek_player(c.player);
         if (!inventory) return;
         for (std::uint8_t slot = 5; slot <= 8; ++slot) {
-            const auto after = equipment::worn_down(inventory->slots[slot], c.amount, c.fire);
+            const auto after = equipment::worn_down(inventory->slots[slot], c.amount - c.spared[slot - 5], c.fire);
             if (!after) continue;
             auto& inv = ctx.player(c.player);
             inv.slots[slot] = *after;

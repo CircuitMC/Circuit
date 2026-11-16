@@ -191,6 +191,9 @@ struct PlayerUse {
     // The player's yaw in degrees (0 south, 90 west), for blocks that turn to
     // the player in sixteen steps.
     float yaw{};
+    // Whether the held item's enchantments spare it the wear of this use
+    // (unbreaking: the server's draw; client/ench_unbreaking).
+    bool spared{};
     bool operator==(const PlayerUse&) const = default;
 };
 // The block a player's view meets first: the block, the face it enters and
@@ -226,12 +229,14 @@ struct PlayerUseItem {
 };
 // A player breaks a block, resolved when applied: air and piston parts
 // cannot be broken. In survival the block drops what the held tool harvests,
-// containers drop their contents, and the tool wears.
+// containers drop their contents, and the tool wears unless its enchantments
+// spare it (`spared`: unbreaking, the server's draw; client/ench_unbreaking).
 struct PlayerBreak {
     PlayerKey player;
     BlockPos pos;
     bool survival{};
     std::uint8_t slot{hotbar_first}; // the main hand's inventory slot
+    bool spared{};
     bool operator==(const PlayerBreak&) const = default;
 };
 // A player picks up an item entity they touch; applied only once its pickup
@@ -444,14 +449,17 @@ struct ConsumeItem {
 
 // A player is hurt by damage that armor reduces (client/fire): each piece
 // worn in an armor slot (5-8) that wears when its wearer is hurt (armor and
-// the turtle shell; not the elytra) loses `amount` durability, breaking at
-// its durability; with `fire` (damage of the is_fire tag) the pieces that
+// the turtle shell; not the elytra) loses `amount` durability less the
+// points its enchantments spare it (`spared`, by slot from the helmet's:
+// unbreaking, the server's draws; client/ench_unbreaking), breaking at its
+// durability; with `fire` (damage of the is_fire tag) the pieces that
 // resist fire (netherite) are left alone.
 inline constexpr std::int32_t max_armor_wear = 1 << 20;
 struct WearArmor {
     PlayerKey player;
     std::int32_t amount{1};
     bool fire{};
+    std::array<std::int32_t, 4> spared{};
     bool operator==(const WearArmor&) const = default;
 };
 

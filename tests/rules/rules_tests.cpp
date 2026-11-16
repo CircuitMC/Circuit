@@ -271,6 +271,28 @@ int main() {
         require(at(7, 0.5f) && !req(Req::Kind::all_of, {}, {undead, chance}).matches(thorns) && drawn == 6
                     && req(Req::Kind::all_of, {}, {players, chance}).matches(thorns) && drawn == 7,
                 "a chance among other terms drawn when reached");
+        // Unbreaking's chances (client/ench_unbreaking): 2L/(5L+5) for armor,
+        // L/(L+1) for other items; its requirement on the item.
+        const en::LevelValue armor_chance{Kind::fraction, 0.0f, 0.0f, {linear(2, 2), linear(10, 5)}, {}};
+        require(armor_chance.at(1) == 0.2f && armor_chance.at(3) == 0.3f && fraction.at(3) == 0.75f, "unbreaking I and III");
+        using Items = en::ItemRequirement;
+        Items armor_items;
+        armor_items.items = {"minecraft:iron_boots", "minecraft:iron_chestplate"};
+        Items others;
+        others.kind = Items::Kind::inverted;
+        others.terms = {armor_items};
+        Items shears;
+        shears.items = {"minecraft:shears"};
+        Items either;
+        either.kind = Items::Kind::any_of;
+        either.terms = {armor_items, shears};
+        Items all_items;
+        all_items.kind = Items::Kind::all_of;
+        all_items.terms = {armor_items, shears};
+        require(armor_items.matches("minecraft:iron_chestplate") && !armor_items.matches("minecraft:iron_sword") && others.matches("minecraft:iron_sword")
+                    && !others.matches("minecraft:iron_boots") && either.matches("minecraft:shears") && either.matches("minecraft:iron_boots")
+                    && !either.matches("minecraft:stick") && !all_items.matches("minecraft:shears") && Items{Items::Kind::all_of, {}, {}}.matches("x"),
+                "item requirements: items, inverted, any of, all of");
     });
 
     suite.run("vertical slice: line and repeater across a chunk edge", [] {
@@ -1540,13 +1562,29 @@ int main() {
         s.tick({SetPlayerSlot{alex, 36, {flint, 1, 62}}});
         s.tick({use({0, 0, 0})});
         require(block_notation(s.at({0, 1, 0})).starts_with("minecraft:fire[age=0") && held().damage == 63, "fire on stone, worn by one");
+        // Its sound at the fire, heard by the others (client/ench_unbreaking),
+        // its pitch from the draw between 0.8 and 1.2.
+        const auto sounds = of_kind(s.last, TraceKind::sound_played);
+        const float pitch = sounds.size() == 1 ? std::bit_cast<float>(static_cast<std::uint32_t>(sounds[0].a >> 32)) : 0.0f;
+        require(sounds.size() == 1 && (sounds[0].a & 0xFF) == static_cast<std::uint64_t>(circuit::contracts::SoundEvent::flint_and_steel_use)
+                    && sounds[0].pos == BlockPos{0, 1, 0} && sounds[0].b == alex.hi && sounds[0].c == alex.lo && pitch >= 0.8f && pitch <= 1.2f,
+                "flint and steel's sound, not to its user");
         s.tick({use({2, 0, 0})});
         require(s.at({2, 1, 0}) == blocks::stone() && held().damage == 63, "the cell taken: nothing, and no wear");
+        // Spared by unbreaking (client/ench_unbreaking): fire set, no wear.
+        auto spared = use({0, 0, 0});
+        spared.spared = true;
+        s.tick({place({0, 1, 0}, blocks::air())});
+        s.tick({spared});
+        require(block_notation(s.at({0, 1, 0})).starts_with("minecraft:fire[age=0") && held().damage == 63, "fire set, spared");
         s.tick({use({4, 0, 0})});
         require(s.at({4, 0, 0}) == campfire("true") && held().empty(), "a campfire lit, and the last use breaks it");
         s.tick({SetPlayerSlot{alex, 36, {charge, 2}}});
-        s.tick({use({8, 0, 0})});
-        require(block_notation(s.at({8, 1, 0})) == "minecraft:soul_fire" && held().count == 1, "soul fire on soul soil, a charge used up");
+        auto charged = use({8, 0, 0});
+        charged.spared = true;
+        s.tick({charged});
+        require(block_notation(s.at({8, 1, 0})) == "minecraft:soul_fire" && held().count == 1 && of_kind(s.last, TraceKind::sound_played).empty(),
+                "soul fire on soul soil, a charge used up (spared or not), its sound not sent");
         s.tick({use({6, 0, 0}, false)});
         const auto d = s.oracle.dump();
         require(s.at({6, 0, 0}).is_air() && held().count == 1
@@ -1590,6 +1628,10 @@ int main() {
         s.tick({PlayerUse{alex, 36, {0, 0, 0}, D::up, D::east, D::east, false, true, 3, 3}});
         require(block_notation(s.at({0, 0, 0})) == "minecraft:carved_pumpkin[facing=west]" && items_of("minecraft:pumpkin_seeds") == 4 && damage() == 1,
                 "carved, four seeds, worn");
+        const auto carved = of_kind(s.last, TraceKind::sound_played);
+        require(carved.size() == 1 && carved[0].a == static_cast<std::uint64_t>(circuit::contracts::SoundEvent::pumpkin_carve) && carved[0].pos == BlockPos{0, 0, 0}
+                    && carved[0].b == 0 && carved[0].c == 0,
+                "the carving's sound at the pumpkin, pitch 1, heard by everyone (client/ench_unbreaking)");
         s.tick({PlayerUse{alex, 36, {2, 0, 0}, D::up, D::east, D::east, false, true, 3, 3}});
         require(block_notation(s.at({2, 0, 0})) == "minecraft:beehive[facing=north,honey_level=0]" && items_of("minecraft:honeycomb") == 3 && damage() == 2,
                 "a full hive emptied");
@@ -1600,6 +1642,17 @@ int main() {
         for (const auto& r : of_kind(s.last, TraceKind::block_changed))
             if (const auto st = BlockState::decode(static_cast<std::uint32_t>(r.b))) disarmed = disarmed || block_notation(*st).find("disarmed=true") != std::string::npos;
         require(s.at({4, 0, 0}).is_air() && disarmed && damage() == 3, "tripwire disarmed first; an instant block wears shears");
+        // Spared by unbreaking (client/ench_unbreaking): a carving and a
+        // break that do not wear them, their slot not recorded.
+        s.tick({place({0, 0, 0}, registry_block("pumpkin")), place({6, 0, 0}, registry_block("white_wool"))});
+        PlayerUse carve{alex, 36, {0, 0, 0}, D::up, D::east, D::east, false, true, 3, 3};
+        carve.spared = true;
+        s.tick({carve});
+        require(block_notation(s.at({0, 0, 0})) == "minecraft:carved_pumpkin[facing=west]" && damage() == 3
+                    && of_kind(s.last, TraceKind::player_slot_changed).empty(),
+                "carved, spared");
+        s.tick({PlayerBreak{alex, {6, 0, 0}, true, 36, true}});
+        require(s.at({6, 0, 0}).is_air() && damage() == 3 && of_kind(s.last, TraceKind::player_slot_changed).empty(), "broken, spared");
     });
 
     suite.run("the swap key swaps the hands; books are edited only with the server's components", [] {
@@ -3461,6 +3514,16 @@ int main() {
         require(slot(6) == ItemStack{item("minecraft:elytra"), 1} && slot(5) == ItemStack{item("minecraft:carved_pumpkin"), 1}, "elytra, pumpkin");
         s.tick({WearArmor{alex, 0, false}});
         require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "no wear of nothing");
+        // Points unbreaking spared a piece (client/ench_unbreaking): the
+        // chestplate spared 2 of 3, the boots all (unchanged, not recorded).
+        s.tick({SetPlayerSlot{alex, 6, {chest, 1}}, SetPlayerSlot{alex, 5, {items::iron_helmet, 1}}, SetPlayerSlot{alex, 8, {boots, 1}}});
+        s.tick({WearArmor{alex, 3, false, {0, 2, 0, 3}}});
+        require(slot(5).damage == 3 && slot(6).damage == 1 && slot(8).damage == 0, "each piece less the points spared it");
+        require(std::ranges::count_if(s.last, [](const auto& r) { return r.kind == TraceKind::player_slot_changed; }) == 2, "the boots' slot not recorded");
+        s.tick({WearArmor{alex, 2, false, {0, 3, 0, 0}}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "no more spared than the wear");
+        s.tick({WearArmor{alex, 2, false, {-1, 0, 0, 0}}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "none spared below 0");
     });
 
     suite.run("damage reductions and burning count as both official servers count them (client/fire)", [] {

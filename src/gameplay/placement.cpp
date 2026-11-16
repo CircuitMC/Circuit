@@ -3,6 +3,7 @@
 // oriented by the player and the clicked face.
 #include "internal.hpp"
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <string>
 #include <vector>
@@ -119,6 +120,11 @@ bool has_collision(BlockState s) {
     case BlockType::other: return other_has_collision(s);
     default: return true;
     }
+}
+
+void play_sound(RuleContext& ctx, BlockPos pos, contracts::SoundEvent sound, float pitch, contracts::PlayerKey except) {
+    const auto bits = pitch == 1.0f ? std::uint64_t{0} : std::uint64_t{std::bit_cast<std::uint32_t>(pitch)};
+    ctx.record(contracts::TraceKind::sound_played, pos, static_cast<std::uint64_t>(sound) | bits << 32, except.hi, except.lo);
 }
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {

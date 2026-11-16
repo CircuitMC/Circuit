@@ -58,4 +58,14 @@ bool DamageRequirement::matches(const DamageContext& damage) const {
     return false;
 }
 
+bool ItemRequirement::matches(std::string_view item) const {
+    switch (kind) {
+    case Kind::items: return std::ranges::binary_search(items, item);
+    case Kind::all_of: return std::ranges::all_of(terms, [&](const ItemRequirement& r) { return r.matches(item); });
+    case Kind::any_of: return std::ranges::any_of(terms, [&](const ItemRequirement& r) { return r.matches(item); });
+    case Kind::inverted: return !terms.empty() && !terms.front().matches(item);
+    }
+    return false;
+}
+
 } // namespace circuit::gameplay::enchantments

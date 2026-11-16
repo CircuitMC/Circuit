@@ -467,19 +467,23 @@ Bytes Wire::explosion(Vec3 center) const {
     w.f64(center.x).f64(center.y).f64(center.z).boolean(false).varint(21).varint(sound + 1);
     return packet(id_->explode, w);
 }
-Bytes Wire::sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int64_t seed) const {
-    // Sound event ids (PrismarineJS minecraft-data sounds.json, MIT; the same
-    // on both protocols: the lists agree up to cake candles), sent plus one.
+Bytes Wire::sound(contracts::SoundEvent sound, contracts::BlockPos at, float pitch, std::int64_t seed) const {
+    // Sound event ids (PrismarineJS minecraft-data sounds.json, MIT, less
+    // one: its lists number from 1; the beacon's the same on both protocols,
+    // the lists agreeing up to cake candles), sent plus one.
+    const bool v772 = protocol_ >= 772;
     std::int32_t id = 0;
     switch (sound) {
     case contracts::SoundEvent::beacon_activate: id = 140; break;
     case contracts::SoundEvent::beacon_ambient: id = 141; break;
     case contracts::SoundEvent::beacon_deactivate: id = 142; break;
     case contracts::SoundEvent::beacon_power_select: id = 143; break;
+    case contracts::SoundEvent::flint_and_steel_use: id = v772 ? 558 : 545; break;
+    case contracts::SoundEvent::pumpkin_carve: id = v772 ? 1211 : 1172; break;
     }
     constexpr std::int32_t block_category = 4;
     Writer w;
-    w.varint(id + 1).varint(block_category).i32(at.x * 8 + 4).i32(at.y * 8 + 4).i32(at.z * 8 + 4).f32(1.0f).f32(1.0f).i64(seed);
+    w.varint(id + 1).varint(block_category).i32(at.x * 8 + 4).i32(at.y * 8 + 4).i32(at.z * 8 + 4).f32(1.0f).f32(pitch).i64(seed);
     return packet(id_->sound, w);
 }
 Bytes Wire::player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed, SoundCategory category) const {

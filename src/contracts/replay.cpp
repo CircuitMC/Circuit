@@ -138,8 +138,13 @@ private:
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
 // (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes, 39 EditBook,
 // 40 SwapHands, 41 SetBeacon, 42 ConsumeItem, 43 WearArmor, 44 WearHeld,
-// 45 LoseExperience.
+// 45 LoseExperience, 46 PlayerBreak whose tool's wear is spared (tag 8's
+// is not), 47 PlayerUse whose held item's wear is spared (tag 25's is
+// not), 48 WearArmor with the points spared each piece (tag 43 spares none).
 std::uint8_t tag_of(const CommandBody& body) {
+    if (const auto* wear = std::get_if<WearArmor>(&body); wear && wear->spared != std::array<std::int32_t, 4>{}) return 48;
+    if (const auto* use = std::get_if<PlayerUse>(&body); use && use->spared) return 47;
+    if (const auto* broken = std::get_if<PlayerBreak>(&body); broken && broken->spared) return 46;
     if (std::holds_alternative<LoseExperience>(body)) return 45;
     if (std::holds_alternative<WearHeld>(body)) return 44;
     if (std::holds_alternative<WearArmor>(body)) return 43;
@@ -335,6 +340,8 @@ void encode_command(Writer& w, const Command& c) {
             w.player(body.player);
             w.put(body.amount);
             w.put(static_cast<std::uint8_t>(body.fire));
+            if (body.spared != std::array<std::int32_t, 4>{})
+                for (const auto spared : body.spared) w.put(spared);
         } else if constexpr (std::is_same_v<T, WearHeld>) {
             w.player(body.player);
             w.put(body.slot);
@@ -437,7 +444,7 @@ bool decode_command(Reader& r, Command& c) {
         return true;
     }
     case 6: { RemoveTicket b; if (!r.get(b.ticket)) return false; c.body = b; return true; }
-    case 7: case 24: case 25: {
+    case 7: case 24: case 25: case 47: {
         PlayerUse b;
         std::uint8_t face{}, horizontal{}, look{}, sneaking{}, survival{};
         if (!r.player(b.player) || !r.get(b.slot) || !r.pos(b.pos) || !r.get(face) || !r.get(horizontal) || !r.get(look)
@@ -453,7 +460,7 @@ bool decode_command(Reader& r, Command& c) {
             for (const float v : {b.cursor_x, b.cursor_y, b.cursor_z})
                 if (!(v >= 0.0f && v <= 1.0f)) return false;
         }
-        if (tag == 25) {
+        if (tag == 25 || tag == 47) {
             std::uint32_t yaw{};
             if (!r.get(yaw)) return false;
             b.yaw = std::bit_cast<float>(yaw);
@@ -464,10 +471,11 @@ bool decode_command(Reader& r, Command& c) {
         b.look = static_cast<Direction>(look);
         if (!is_horizontal(b.horizontal)) return false;
         // Earlier uses have the yaw of their horizontal facing.
-        if (tag != 25)
+        if (tag != 25 && tag != 47)
             b.yaw = b.horizontal == Direction::south ? 0.0f : b.horizontal == Direction::west ? 90.0f : b.horizontal == Direction::north ? 180.0f : 270.0f;
         b.sneaking = sneaking == 1;
         b.survival = survival == 1;
+        b.spared = tag == 47;
         c.body = b;
         return true;
     }
@@ -502,11 +510,12 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 8: {
+    case 8: case 46: {
         PlayerBreak b;
         std::uint8_t survival{};
         if (!r.player(b.player) || !r.pos(b.pos) || !r.get(survival) || survival > 1 || !r.get(b.slot)) return false;
         b.survival = survival == 1;
+        b.spared = tag == 46;
         c.body = b;
         return true;
     }
@@ -689,11 +698,16 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 43: {
+    case 43: case 48: {
         WearArmor b;
         std::uint8_t fire{};
         if (!r.player(b.player) || !r.get(b.amount) || b.amount < 1 || b.amount > max_armor_wear || !r.get(fire) || fire > 1) return false;
         b.fire = fire == 1;
+        if (tag == 48) {
+            for (auto& spared : b.spared)
+                if (!r.get(spared) || spared < 0 || spared > b.amount) return false;
+            if (b.spared == std::array<std::int32_t, 4>{}) return false; // tag 43's form
+        }
         c.body = b;
         return true;
     }

@@ -230,21 +230,25 @@ std::optional<bool> fire_item(std::uint16_t item) {
 // can stay there (soul fire on soul sand and soul soil). The sound's pitch
 // draws from the level random first: one float for flint and steel, two for
 // a fire charge; fire set draws its tick's delay after that. Nothing else
-// does anything, nor draws.
-bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge) {
-    const auto sound = [&] {
-        (void)ctx.random_float();
+// does anything, nor draws. Flint and steel's sound (item.flintandsteel.use,
+// heard by the others: client/ench_unbreaking; its pitch 0.8 to 1.2 by
+// minecraft.wiki, from that draw) plays at the block lit or the fire set;
+// a fire charge's is not sent (not recorded).
+bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge, contracts::PlayerKey user) {
+    const auto sound = [&](BlockPos at) {
+        const float draw = ctx.random_float();
         if (charge) (void)ctx.random_float();
+        else play_sound(ctx, at, contracts::SoundEvent::flint_and_steel_use, 0.8f + draw * 0.4f, user);
     };
     if (const auto s = ctx.block(pos); lightable(s)) {
-        sound();
+        sound(pos);
         set_block(ctx, pos, lit(s));
         return true;
     }
     const auto target = pos.relative(face);
     const auto fire = fire_to_set(ctx, target);
     if (!fire) return false;
-    sound();
+    sound(target);
     set_block(ctx, target, *fire);
     return true;
 }

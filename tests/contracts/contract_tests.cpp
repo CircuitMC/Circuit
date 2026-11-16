@@ -201,6 +201,12 @@ int main() {
                                   {55, WearHeld{alex, 6, 812, 2}}, {56, WearHeld{alex, 5, 812, 2}}, {57, WearHeld{alex, 8, 812, 2}}}});
         // Experience lost at death (tag 45), dropped or not.
         log.ticks.push_back({18, {{58, LoseExperience{alex, {40.5, -60.0, 8.5}, true}}, {59, LoseExperience{alex, {-0.25, 319.75, 1e7}, false}}}});
+        // Wear unbreaking spared: a break (tag 46), a use (tag 47), armor
+        // piece by piece (tag 48).
+        PlayerUse spared_use{alex, 36, {4, -60, 6}, Direction::up, Direction::north, Direction::north, false, true, 3, 3, 0.25f, 1.0f, 0.75f, 182.5f};
+        spared_use.spared = true;
+        log.ticks.push_back({19, {{60, PlayerBreak{alex, {8, -60, 6}, true, 36, true}}, {61, spared_use},
+                                  {62, WearArmor{alex, 3, false, {0, 3, 1, 2}}}, {63, WearArmor{alex, max_armor_wear, true, {max_armor_wear, 0, 0, 0}}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -255,6 +261,13 @@ int main() {
             one.ticks.push_back({1, {{1, WearArmor{alex, amount, false}}}});
             const auto encoded = encode_replay(one);
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "armor wear is range-checked");
+        }
+        // The points spared a piece are 0 to the wear.
+        for (const auto& spared : {std::array<std::int32_t, 4>{0, 4, 0, 0}, std::array<std::int32_t, 4>{-1, 0, 0, 1}}) {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            one.ticks.push_back({1, {{1, WearArmor{alex, 3, false, spared}}}});
+            const auto encoded = encode_replay(one);
+            require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "the points spared are range-checked");
         }
         // A WearHeld's slot is a hotbar slot, the off hand or an armor slot
         // and its amount 1 to max_held_wear.

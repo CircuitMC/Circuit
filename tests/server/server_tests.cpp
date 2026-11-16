@@ -25,6 +25,7 @@
 #include <circuit/server/server.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <cmath>
+#include <functional>
 #include <numbers>
 #include <csignal>
 #include <cstdio>
@@ -5444,6 +5445,41 @@ int main() {
                                         R"({"condition":"minecraft:damage_source_properties","predicate":{"direct_entity":{"type":"minecraft:arrow"}}})"})
             require(attempt(damaging(requirement)).find("damage requirement Circuit cannot read") != std::string::npos, std::format("an unreadable requirement: {}", requirement));
         require(attempt(protecting(add, direct)).find("damage requirement Circuit cannot read") != std::string::npos, "is_direct in protection");
+        // Item damage: unbreaking's form loads (remove_binomial by a
+        // fraction, for the items of a tag or the others), and items named
+        // alone or in a list; another value effect, a predicate on more than
+        // the items, a tag no pack defines, a tag in a list, another
+        // condition or an unreadable chance do not.
+        const auto item_damage = [&](std::string_view effect, std::string_view requirement = "") {
+            return effects(R"("minecraft:item_damage":[{"effect":)" + std::string(effect)
+                           + (requirement.empty() ? std::string{} : R"(,"requirements":)" + std::string(requirement)) + "}]");
+        };
+        const std::string binomial = R"({"type":"minecraft:remove_binomial","chance":{"type":"minecraft:fraction","numerator":{"type":"minecraft:linear","base":1.0,"per_level_above_first":1.0},"denominator":{"type":"minecraft:linear","base":2.0,"per_level_above_first":1.0}}})";
+        const std::string armor_items = R"({"condition":"minecraft:match_tool","predicate":{"items":"#minecraft:enchantable/armor"}})";
+        require(attempt(item_damage(binomial, armor_items)) == "loaded"
+                    && attempt(item_damage(binomial, R"({"condition":"minecraft:inverted","term":)" + armor_items + "}")) == "loaded"
+                    && attempt(item_damage(binomial)) == "loaded"
+                    && attempt(item_damage(binomial, R"({"condition":"minecraft:any_of","terms":[{"condition":"minecraft:match_tool","predicate":{"items":"minecraft:shears"}},{"condition":"minecraft:all_of","terms":[{"condition":"minecraft:match_tool","predicate":{"items":["iron_sword","minecraft:iron_axe"]}}]}]})")) == "loaded",
+                "unbreaking's item damage loads, and item requirements of items alone, a list, any of and all of");
+        const auto bad_item_damage = [&](const std::string& definition) {
+            return attempt(definition).find("item damage effect Circuit cannot read") != std::string::npos;
+        };
+        const auto bad_item_requirement = [&](const std::string& definition) {
+            return attempt(definition).find("item requirement Circuit cannot read") != std::string::npos;
+        };
+        require(bad_item_damage(item_damage(R"({"type":"minecraft:add","value":1})"))
+                    && bad_item_damage(item_damage(R"({"type":"minecraft:remove_binomial"})"))
+                    && bad_item_damage(item_damage(R"({"type":"minecraft:remove_binomial","chance":{"type":"minecraft:wavy"}})"))
+                    && attempt(effects(R"("minecraft:item_damage":{"effect":{"type":"minecraft:remove_binomial","chance":0.5}})")).find("item damage effects are not a list") != std::string::npos,
+                "an item damage effect of another form, without its chance or of an unknown one, or not a list");
+        require(bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:match_tool","predicate":{"items":"#pack:nothing"}})"))
+                    && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:match_tool","predicate":{"items":["#minecraft:enchantable/armor"]}})"))
+                    && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:match_tool","predicate":{"items":"minecraft:shears","count":1}})"))
+                    && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:match_tool","predicate":{}})"))
+                    && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:random_chance","chance":0.5})"))
+                    && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:inverted","term":{"condition":"minecraft:match_tool"}})"))
+                    && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:all_of","terms":{"condition":"minecraft:match_tool","predicate":{"items":"minecraft:shears"}}})")),
+                "an item requirement on a tag no pack defines, a tag in a list, more than the items, nothing, another condition, an unreadable term, terms not a list");
     });
 
     suite.run("enchantments protect players and shorten their burning as both official servers do (client/ench_protect, client/ench_fire)", [] {
@@ -6413,6 +6449,215 @@ int main() {
                     std::format("{}: killed by thorns: {}", version, text(t.bob)));
         }
         if (!ran) std::puts("  (no official server jar given: the thorns checks did not run)");
+    });
+
+    suite.run("unbreaking spares players' items' wear as both official servers do (client/ench_unbreaking)", [] {
+        // circuit-clienttest/ench-unbreaking.js: alice (8.5 -60 8.5, facing
+        // east) and bob (10.5 -60 8.5, facing west). Unbreaking III removes
+        // each point of wear with a chance of 0.3 for armor and 0.75 for
+        // other items (Circuit's own draws): the totals within 4 standard
+        // deviations of their means, a use that wore nothing telling the
+        // holder no slot. The enchantments need the official data packs
+        // (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        using I = server::Intent;
+        bool ran = false;
+        for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            ran = true;
+            const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value() && d->game, d ? "no game data" : d.error());
+            const auto enchanted = d->game->enchanted;
+            GameFixture f(version, offline_config(), std::move(*d));
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            std::int32_t alice_id = 0, bob_id = 0, last_teleport = 0;
+            for (const auto& [r, into] : {std::pair{alice.get(), &alice_id}, std::pair{bob.get(), &bob_id}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) *into = pk->fields.i32().value();
+            }
+            // The slots told to alice since the last call (window 0).
+            std::size_t seen = 0;
+            const auto slots_told = [&] {
+                const auto slot_id = f.wire.ids().id(State::play, Bound::clientbound, "container_set_slot");
+                const auto position = f.wire.ids().id(State::play, Bound::clientbound, "player_position");
+                std::vector<std::int32_t> out;
+                std::lock_guard lock(alice->mutex);
+                for (; seen < alice->packets.size(); ++seen) {
+                    auto pk = protocol::open_packet(alice->packets[seen]);
+                    if (!pk) continue;
+                    if (pk->id == position) {
+                        last_teleport = pk->fields.varint().value();
+                    } else if (pk->id == slot_id) {
+                        if (pk->fields.varint().value() != 0) continue;
+                        (void)pk->fields.varint();
+                        out.push_back(pk->fields.i16().value());
+                    }
+                }
+                return out;
+            };
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            const auto put = [&](std::uint64_t who, std::int16_t slot, std::string_view name, std::vector<std::pair<std::string, std::int32_t>> levels) {
+                command(who, "gamemode creative");
+                ticks(1);
+                if (name.empty()) {
+                    f.game->submit(who, I{server::intent::CreativeSlot{slot, 0, 0}});
+                } else {
+                    auto patch = levels.empty() ? std::optional<contracts::ComponentPatch>(contracts::ComponentPatch{}) : enchanted(levels);
+                    require(patch.has_value(), "enchanted");
+                    f.game->submit(who, I{server::intent::CreativeSlot{slot, 1, tables.item_id(name).value(), 0, *patch}});
+                }
+                ticks(1);
+                command(who, "gamemode survival");
+                ticks(2);
+            };
+            const auto wear = [&](std::uint64_t peer, std::size_t slot) {
+                const auto inv = f.game->engine().view().player(contracts::PlayerKey{peer, peer}).value();
+                return inv ? static_cast<std::int32_t>(inv->slots[slot].damage) : -1;
+            };
+            // Within 4 standard deviations of the binomial mean of `n` points kept with `keep`.
+            const auto within = [](std::int32_t total, int n, double keep) {
+                const double mean = n * keep, sd = std::sqrt(n * keep * (1.0 - keep));
+                return std::abs(total - mean) <= 4.0 * sd;
+            };
+            const std::vector<std::pair<std::string, std::int32_t>> unbreaking{{"minecraft:unbreaking", 3}};
+            for (const auto* c : {"gamerule naturalRegeneration false", "fill 4 -61 4 16 -61 12 stone", "tp alice 8.5 -60 8.5 -90 0", "gamemode survival"})
+                command(1, c);
+            command(2, "tp bob 10.5 -60 8.5 90 0");
+            command(2, "gamemode survival");
+            ticks(2);
+            (void)slots_told();
+            f.game->submit(1, I{server::intent::ConfirmTeleport{last_teleport}});
+            f.game->submit(1, I{server::intent::Move{std::nullopt, std::pair{-90.0f, 0.0f}, true}});
+            f.game->submit(2, I{server::intent::Move{std::nullopt, std::pair{90.0f, 0.0f}, true}});
+            ticks(30);
+            // Repeats `use` n times, `gap` ticks apart: the uses that wore the
+            // item in `slot` of `peer` and the slots told to alice of it.
+            struct Worn {
+                std::int32_t total{}, uses_worn{}, told{};
+                std::vector<std::int32_t> each; // each use's wear
+            };
+            const auto repeat = [&](int n, int gap, std::uint64_t peer, std::size_t slot, const std::function<void(int)>& use) {
+                Worn w;
+                const auto start = wear(peer, slot);
+                (void)slots_told();
+                for (int k = 0; k < n; ++k) {
+                    const auto before = wear(peer, slot);
+                    use(k);
+                    ticks(gap);
+                    w.each.push_back(wear(peer, slot) - before);
+                    if (wear(peer, slot) != before) ++w.uses_worn;
+                    if (peer == 1)
+                        for (const auto s : slots_told()) w.told += s == static_cast<std::int32_t>(slot) ? 1 : 0;
+                }
+                w.total = wear(peer, slot) - start;
+                return w;
+            };
+            // An iron sword's 100 hits on bob, under resistance V: each a point
+            // kept with 0.25.
+            command(2, "effect give bob minecraft:resistance 6000 4 true");
+            put(1, 36, "minecraft:iron_sword", unbreaking);
+            auto w = repeat(100, 11, 1, 36, [&](int) { f.game->submit(1, I{server::intent::Attack{bob_id}}); });
+            require(within(w.total, 100, 0.25) && w.uses_worn == w.total && w.told == w.uses_worn && w.uses_worn < 100,
+                    std::format("{}: the sword worn by {} in {} hits, {} slots told", version, w.total, w.uses_worn, w.told));
+            // Uses wearing more than a point draw for each point: an iron
+            // axe's 40 hits (2 points each), some worn by 1.
+            const auto between = [](const Worn& worn, std::int32_t low, std::int32_t high) {
+                return std::ranges::all_of(worn.each, [&](std::int32_t d) { return d >= low && d <= high; });
+            };
+            const auto in_part = [](const Worn& worn, std::int32_t points) {
+                return std::ranges::count_if(worn.each, [&](std::int32_t d) { return d > 0 && d < points; });
+            };
+            put(1, 36, "minecraft:iron_axe", unbreaking);
+            w = repeat(40, 25, 1, 36, [&](int) { f.game->submit(1, I{server::intent::Attack{bob_id}}); });
+            require(within(w.total, 80, 0.25) && between(w, 0, 2) && in_part(w, 2) > 0 && w.told == w.uses_worn,
+                    std::format("{}: the axe worn by {} in 40 hits, {} by 1, {} slots told", version, w.total, in_part(w, 2), w.told));
+            // Iron armor's 60 hurts by bob's fist, alice regenerating: each
+            // point kept with 0.7, piece by piece.
+            put(1, 36, "", {});
+            const std::array<const char*, 4> pieces{"minecraft:iron_helmet", "minecraft:iron_chestplate", "minecraft:iron_leggings", "minecraft:iron_boots"};
+            for (std::int16_t k = 0; k < 4; ++k) put(1, static_cast<std::int16_t>(5 + k), pieces[static_cast<std::size_t>(k)], unbreaking);
+            command(1, "effect give alice minecraft:regeneration 6000 4 true");
+            std::array<std::int32_t, 4> before{};
+            for (std::size_t k = 0; k < 4; ++k) before[k] = wear(1, 5 + k);
+            w = repeat(60, 11, 1, 6, [&](int) { f.game->submit(2, I{server::intent::Attack{alice_id}}); });
+            for (std::size_t k = 0; k < 4; ++k)
+                require(within(wear(1, 5 + k) - before[k], 60, 0.7) && wear(1, 5 + k) - before[k] < 60,
+                        std::format("{}: armor slot {} worn by {} in 60 hurts", version, 5 + k, wear(1, 5 + k) - before[k]));
+            require(w.told == w.uses_worn, std::format("{}: the chestplate's slot told {} times, worn in {} hurts", version, w.told, w.uses_worn));
+            command(1, "effect clear alice minecraft:regeneration");
+            for (std::int16_t k = 0; k < 4; ++k) put(1, static_cast<std::int16_t>(5 + k), "", {});
+            // alice's shield raised against bob's iron sword: 30 blocks of 7
+            // points each, the blocks worn in part.
+            std::int32_t seq = 100;
+            put(1, 45, "minecraft:shield", unbreaking);
+            put(2, 36, "minecraft:iron_sword", {});
+            f.game->submit(1, I{server::intent::Use{1, ++seq, -90.0f, 0.0f}});
+            ticks(12);
+            w = repeat(30, 15, 1, 45, [&](int) { f.game->submit(2, I{server::intent::Attack{alice_id}}); });
+            require(within(w.total, 210, 0.25) && between(w, 0, 7) && in_part(w, 7) > 0 && w.told == w.uses_worn,
+                    std::format("{}: the shield worn by {} in 30 blocks, {} in part, {} slots told", version, w.total, in_part(w, 7), w.told));
+            f.game->submit(1, I{server::intent::Dig{5, {}, 0, 0}});
+            put(2, 36, "", {});
+            put(1, 45, "", {});
+            // bob's chestplate of thorns VII hit 39 times by alice's fist
+            // (alice under resistance V, bob regenerating): the hurt's point
+            // and thorns' 2, each kept with the armor's 0.7.
+            command(2, "effect clear bob minecraft:resistance");
+            command(2, "effect give bob minecraft:regeneration 6000 4 true");
+            command(1, "effect give alice minecraft:resistance 6000 4 true");
+            put(2, 6, "minecraft:iron_chestplate", {{"minecraft:thorns", 7}, {"minecraft:unbreaking", 3}});
+            w = repeat(39, 11, 2, 6, [&](int) { f.game->submit(1, I{server::intent::Attack{bob_id}}); });
+            // Some hit worn by at most 1: impossible were thorns' 2 not spared.
+            require(within(w.total, 117, 0.7) && w.total < 117 && between(w, 0, 3) && in_part(w, 3) > 0
+                        && std::ranges::any_of(w.each, [](std::int32_t d) { return d <= 1; }),
+                    std::format("{}: the thorns chestplate worn by {} in 39 hits, {} in part", version, w.total, in_part(w, 3)));
+            command(1, "effect clear alice minecraft:resistance");
+            put(2, 6, "", {});
+            // Flint and steel's 40 fires, and an iron shovel of efficiency V's
+            // 40 dirt blocks broken at once: each a point kept with 0.25.
+            put(1, 36, "minecraft:flint_and_steel", unbreaking);
+            // Its sound (item.flintandsteel.use, block category) to bob for
+            // each fire, to alice, who used it, never.
+            const auto flint_sounds = [&](Recorder& r, std::size_t from) {
+                const auto sound = f.wire.ids().id(State::play, Bound::clientbound, "sound");
+                int n = 0;
+                std::lock_guard lock(r.mutex);
+                for (auto k = from; k < r.packets.size(); ++k)
+                    if (auto pk = protocol::open_packet(r.packets[k]); pk && pk->id == sound && pk->fields.varint().value() == (version == std::string_view{"1.21.8"} ? 559 : 546)
+                                                                      && pk->fields.varint().value() == 4)
+                        ++n;
+                return n;
+            };
+            const auto packets_of = [](Recorder& r) {
+                std::lock_guard lock(r.mutex);
+                return r.packets.size();
+            };
+            const auto alice_from = packets_of(*alice), bob_from = packets_of(*bob);
+            w = repeat(40, 3, 1, 36, [&](int) {
+                command(1, "setblock 8 -60 6 air");
+                f.game->submit(1, I{server::intent::UseOn{0, {8, -61, 6}, 1, 0.5f, 1.0f, 0.5f, false, ++seq}});
+            });
+            require(within(w.total, 40, 0.25) && w.total > 0 && w.total < 40 && w.told == w.uses_worn,
+                    std::format("{}: flint and steel worn by {} in 40 uses, {} slots told", version, w.total, w.told));
+            require(flint_sounds(*bob, bob_from) == 40 && flint_sounds(*alice, alice_from) == 0,
+                    std::format("{}: flint and steel's sound {} times to bob, {} to alice", version, flint_sounds(*bob, bob_from), flint_sounds(*alice, alice_from)));
+            put(1, 36, "minecraft:iron_shovel", {{"minecraft:efficiency", 5}, {"minecraft:unbreaking", 3}});
+            w = repeat(40, 3, 1, 36, [&](int) {
+                command(1, "setblock 8 -60 6 dirt");
+                f.game->submit(1, I{server::intent::Dig{0, {8, -60, 6}, 1, ++seq}});
+            });
+            require(within(w.total, 40, 0.25) && w.total > 0 && w.total < 40 && w.told == w.uses_worn,
+                    std::format("{}: the shovel worn by {} in 40 breaks, {} slots told", version, w.total, w.told));
+        }
+        if (!ran) std::puts("  (no official server jar given: the unbreaking checks did not run)");
     });
 
     suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {

@@ -103,6 +103,9 @@ std::optional<std::pair<BlockPos, BlockState>> second_part(BlockState placed, Bl
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot);
+// Records a sound played at a block's center (sound_played), at `pitch`,
+// heard by the players near it but `except`, whose client plays it itself.
+void play_sound(RuleContext& ctx, BlockPos pos, contracts::SoundEvent sound, float pitch = 1.0f, contracts::PlayerKey except = {});
 // Adds a stack to a player's inventory in the target version's order for
 // picked-up items; returns what does not fit.
 ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack, std::uint8_t selected);
@@ -364,9 +367,9 @@ bool is_fire(BlockState s);
 bool is_soul_fire(BlockState s);
 // Whether an item lights fire: flint and steel (false) or a fire charge (true).
 std::optional<bool> fire_item(std::uint16_t item);
-// Flint and steel or a fire charge used on a face of the block at `pos`:
-// whether it lit something or set fire.
-bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge);
+// Flint and steel or a fire charge used by `user` on a face of the block at
+// `pos`: whether it lit something or set fire.
+bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge, contracts::PlayerKey user);
 // A dispenser's flint and steel at the cell in front: whether it acted.
 bool dispense_fire(RuleContext& ctx, BlockPos front);
 

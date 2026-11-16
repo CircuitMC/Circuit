@@ -265,6 +265,60 @@ std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(cons
     return r;
 }
 
+// An item effect's requirement (its `requirements`), of the forms
+// ItemRequirement knows: match_tool with an item predicate on its items
+// alone (an item, a list of items or an item tag the packs define),
+// all_of, any_of and inverted; nullopt for any other.
+std::optional<gameplay::enchantments::ItemRequirement> item_requirement(const auth::Json& json, const data::DataPacks& packs) {
+    using gameplay::enchantments::ItemRequirement;
+    using Kind = ItemRequirement::Kind;
+    const auto* condition = json.find("condition");
+    if (!condition || condition->kind() != auth::Json::Kind::string) return std::nullopt;
+    auto c = condition->as_string();
+    if (c.starts_with("minecraft:")) c.erase(0, 10);
+    ItemRequirement r;
+    const auto term = [&](const auth::Json& t) {
+        auto part = item_requirement(t, packs);
+        if (part) r.terms.push_back(std::move(*part));
+        return part.has_value();
+    };
+    const auto named = [](std::string id) { return id.find(':') == std::string::npos ? "minecraft:" + id : id; };
+    if (c == "match_tool") {
+        const auto* predicate = json.find("predicate");
+        const auto* items = predicate && predicate->kind() == auth::Json::Kind::object && predicate->members().size() == 1 ? predicate->find("items")
+                                                                                                                          : nullptr;
+        if (!items) return std::nullopt;
+        if (items->kind() == auth::Json::Kind::string && items->as_string().starts_with("#")) {
+            const auto* tagged = packs.tag("item", items->as_string().substr(1));
+            if (!tagged) return std::nullopt;
+            r.items = *tagged;
+        } else if (items->kind() == auth::Json::Kind::string) {
+            r.items.push_back(named(items->as_string()));
+        } else if (items->kind() == auth::Json::Kind::array) {
+            for (const auto& i : items->items()) {
+                if (i.kind() != auth::Json::Kind::string || i.as_string().starts_with("#")) return std::nullopt;
+                r.items.push_back(named(i.as_string()));
+            }
+        } else {
+            return std::nullopt;
+        }
+        std::ranges::sort(r.items);
+    } else if (c == "all_of" || c == "any_of") {
+        r.kind = c == "all_of" ? Kind::all_of : Kind::any_of;
+        const auto* terms = json.find("terms");
+        if (!terms || terms->kind() != auth::Json::Kind::array) return std::nullopt;
+        for (const auto& t : terms->items())
+            if (!term(t)) return std::nullopt;
+    } else if (c == "inverted") {
+        r.kind = Kind::inverted;
+        const auto* t = json.find("term");
+        if (!t || !term(*t)) return std::nullopt;
+    } else {
+        return std::nullopt;
+    }
+    return r;
+}
+
 // An enchantment's slots, attribute modifiers (its minecraft:attributes
 // effects), damage protection, damage immunity, the damage and knockback it
 // adds to attacks, and its post-attack effects of the entity effects ignite,
@@ -275,7 +329,9 @@ std::optional<gameplay::enchantments::DamageRequirement> damage_requirement(cons
 // or such an effect it cannot read. Other post-attack effects (other entity
 // effects, or damage of other types, alone or among others) are not acted
 // on yet (bane of arthropods' slowness, whose requirement no player meets;
-// channeling's lightning and wind burst's explosion).
+// channeling's lightning and wind burst's explosion). Its item_damage
+// effects of the form remove_binomial (unbreaking) with requirements on the
+// item are read; another form refuses the packs.
 std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json,
                                                                                const data::DataPacks& packs) {
     namespace en = gameplay::enchantments;
@@ -408,6 +464,25 @@ std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(
             if (!r) return std::unexpected(r.error());
             effect_read.requirement = std::move(*r);
             out.post_attack.push_back(std::move(effect_read));
+        }
+    }
+    if (const auto* list = effects ? effects->find("minecraft:item_damage") : nullptr) {
+        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: item damage effects are not a list", name));
+        for (const auto& e : list->items()) {
+            const auto* effect = e.find("effect");
+            const auto* type = effect ? effect->find("type") : nullptr;
+            const auto* chance = effect ? effect->find("chance") : nullptr;
+            auto value = chance ? level_value(*chance) : std::nullopt;
+            if (!type || type->kind() != auth::Json::Kind::string
+                || (type->as_string() != "minecraft:remove_binomial" && type->as_string() != "remove_binomial") || !value)
+                return std::unexpected(std::format("enchantment {}: an item damage effect Circuit cannot read", name));
+            en::ItemDamageEffect read{std::move(*value), std::nullopt};
+            if (const auto* r = e.find("requirements")) {
+                auto requirement = item_requirement(*r, packs);
+                if (!requirement) return std::unexpected(std::format("enchantment {}: an item requirement Circuit cannot read", name));
+                read.requirement = std::move(*requirement);
+            }
+            out.item_damage.push_back(std::move(read));
         }
     }
     const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;

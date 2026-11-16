@@ -18,6 +18,7 @@
 #include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <algorithm>
+#include <bit>
 #include <cctype>
 #include <charconv>
 #include <atomic>
@@ -2441,6 +2442,29 @@ struct Game::Impl final : GameServices {
         z = (z ^ (z >> 27)) * 0x94D049BB133111EBull;
         return static_cast<float>((z ^ (z >> 31)) >> 40) / 16777216.0f;
     }
+    // The points of `amount` wear an item's enchantments spare it: their
+    // item_damage effects for the items their requirements name, each
+    // point removed by a draw below the chance at the enchantment's level
+    // (unbreaking; client/ench_unbreaking). No draws for an item without.
+    std::int32_t wear_spared(const contracts::ItemStack& stack, std::int32_t amount) {
+        if (amount <= 0 || stack.empty() || !data.game || !data.game->enchantments_of) return 0;
+        const auto* info = gameplay::items::info(stack.item);
+        if (!info) return 0;
+        std::int32_t left = amount;
+        for (const auto& [id, level] : data.game->enchantments_of(stack.components, false)) {
+            const auto e = data.game->enchantment_effects.find(id);
+            if (e == data.game->enchantment_effects.end()) continue;
+            for (const auto& d : e->second.item_damage) {
+                if (d.requirement && !d.requirement->matches(info->name)) continue;
+                const float chance = d.chance.at(level);
+                std::int32_t removed = 0;
+                for (std::int32_t i = 0; i < left; ++i)
+                    if (random_draw() < chance) ++removed;
+                left -= removed;
+            }
+        }
+        return amount - left;
+    }
     // A voice's pitch: 1 give or take 0.2, the difference of two uniform draws.
     float voice_pitch() {
         const auto a = random_draw();
@@ -2562,12 +2586,19 @@ struct Game::Impl final : GameServices {
     // hurt's tick; its slots are told at the next tick, and so is what others
     // see of it unless `seen_now` (1.21.4 shows a lava hurt's wear to others
     // in its tick, before the burning's flag: client/fire).
+    // A piece's points unbreaking spares are drawn piece by piece
+    // (client/ench_unbreaking); with all spared nothing wears.
     void wear_armor(Player& p, float amount, bool fire, bool seen_now) {
+        contracts::WearArmor wear{key_of(p), std::min(gameplay::damage::armor_wear(amount), contracts::max_armor_wear), fire};
         bool worn = false;
-        for (std::uint8_t slot = 5; slot <= 8 && !worn; ++slot)
-            worn = gameplay::equipment::worn_down(slot_of(p, slot), 1, fire).has_value();
+        for (std::uint8_t slot = 5; slot <= 8; ++slot) {
+            const auto piece = slot_of(p, slot);
+            if (!gameplay::equipment::worn_down(piece, 1, fire)) continue;
+            wear.spared[slot - 5] = wear_spared(piece, wear.amount);
+            worn = worn || wear.spared[slot - 5] < wear.amount;
+        }
         if (!worn) return;
-        admit(contracts::WearArmor{key_of(p), std::min(gameplay::damage::armor_wear(amount), contracts::max_armor_wear), fire});
+        admit(wear);
         hold_wear(p, 0b1'1110'0000, seen_now);
     }
     // Holds back the slots worn in this tick (a bit each) for the next.
@@ -3186,8 +3217,10 @@ struct Game::Impl final : GameServices {
                         const float amount = std::floor(step.a.at(d.level));
                         if (!(amount >= 1.0f) || enchanted.game_mode == creative) break;
                         const auto index = gameplay::equipment::inventory_slot(d.slot, static_cast<std::uint8_t>(enchanted.held));
-                        admit(contracts::WearHeld{key_of(enchanted), index, d.stack.item,
-                                                  static_cast<std::int32_t>(std::min(amount, static_cast<float>(contracts::max_held_wear)))});
+                        const auto wear = static_cast<std::int32_t>(std::min(amount, static_cast<float>(contracts::max_held_wear)));
+                        const auto left = wear - wear_spared(d.stack, wear); // unbreaking too (client/ench_unbreaking)
+                        if (left < 1) break;
+                        admit(contracts::WearHeld{key_of(enchanted), index, d.stack.item, left});
                         hold_wear(enchanted, std::uint64_t{1} << index, false);
                         break;
                     }
@@ -3421,8 +3454,11 @@ struct Game::Impl final : GameServices {
             to_all(wire.entity_event(p.entity_id, 29));
         }
         if (amount >= 3.0f && p.game_mode != creative) {
-            admit(contracts::WearHeld{key_of(p), u.slot, u.stack.item, std::min(1 + static_cast<std::int32_t>(std::floor(amount)), contracts::max_held_wear)});
-            hold_wear(p, std::uint64_t{1} << u.slot, false);
+            const auto wear = std::min(1 + static_cast<std::int32_t>(std::floor(amount)), contracts::max_held_wear);
+            if (const auto left = wear - wear_spared(slot_of(p, u.slot), wear); left > 0) {
+                admit(contracts::WearHeld{key_of(p), u.slot, u.stack.item, left});
+                hold_wear(p, std::uint64_t{1} << u.slot, false);
+            }
         }
         knock(p, 0.5, by.pos.x - p.pos.x, by.pos.z - p.pos.z);
         knock(p, 0.4, p.pos.x - by.pos.x, p.pos.z - by.pos.z);
@@ -4146,8 +4182,8 @@ struct Game::Impl final : GameServices {
         const auto progress = gameplay::destroy_progress(at(b), slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), data.game.get(), dig_effects(p));
         if (d.status == 0) {
             if (progress >= 1.0f) {
-                admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});
-            exhaust(p, 0.005f); // breaking a block
+                admit(break_by(p, b));
+                exhaust(p, 0.005f); // breaking a block
                 exhaust(p, 0.005f); // breaking a block
                 p.digging.reset();
             } else {
@@ -4161,11 +4197,17 @@ struct Game::Impl final : GameServices {
         }
         const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
         if (progress * (ticks + 1.0f) >= 0.7f) {
-            admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});
+            admit(break_by(p, b));
             p.digging.reset();
         } else {
             p.digging->delayed = true;
         }
+    }
+
+    // A survival player's break, the held tool's wear spared or not by its
+    // unbreaking (client/ench_unbreaking).
+    contracts::PlayerBreak break_by(const Player& p, BlockPos b) {
+        return contracts::PlayerBreak{key_of(p), b, true, main_hand(p), wear_spared(slot_of(p, main_hand(p)), 1) > 0};
     }
 
     // Whether water covers the player's eyes, as the target version decides
@@ -4191,7 +4233,7 @@ struct Game::Impl final : GameServices {
             const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
             if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), data.game.get(), dig_effects(p)) * (ticks + 1.0f)
                 >= 1.0f) {
-                admit(contracts::PlayerBreak{key_of(p), p.digging->pos, true, main_hand(p)});
+                admit(break_by(p, p.digging->pos));
                 exhaust(p, 0.005f); // breaking a block
                 p.digging.reset();
             }
@@ -4322,6 +4364,9 @@ struct Game::Impl final : GameServices {
         if (gameplay::in_world(bundle, beside) && in_reach(p, beside)) use.reach |= 2;
         if (!occupied_by_player(b)) use.free |= 1;
         if (!occupied_by_player(beside)) use.free |= 2;
+        // The held item's wear, if the use wears it, spared or not by its
+        // unbreaking (client/ench_unbreaking).
+        use.spared = use.survival && wear_spared(slot_of(p, use.slot), 1) > 0;
         p.used_on = Player::UsedOn{tick_count.load(), u.hand, {b, face, use.cursor_x, use.cursor_y, use.cursor_z}};
         admit(use);
     }
@@ -4886,10 +4931,11 @@ struct Game::Impl final : GameServices {
         }
         if (p.dead) return; // killed by the target's thorns: their weapon does not wear (Circuit's choice; not recorded with a weapon)
         if (p.game_mode != creative && !held.empty())
-            if (const auto wear = gameplay::equipment::attack_wear(held.item); wear > 0) {
-                admit(contracts::WearHeld{key_of(p), main_hand(p), held.item, wear});
-                hold_wear(p, std::uint64_t{1} << main_hand(p), false);
-            }
+            if (const auto wear = gameplay::equipment::attack_wear(held.item); wear > 0)
+                if (const auto left = wear - wear_spared(held, wear); left > 0) {
+                    admit(contracts::WearHeld{key_of(p), main_hand(p), held.item, left});
+                    hold_wear(p, std::uint64_t{1} << main_hand(p), false);
+                }
         exhaust(p, 0.1f);
     }
     // Particles for the players within 32 blocks of them (not recorded:
@@ -5634,10 +5680,15 @@ struct Game::Impl final : GameServices {
         for (const auto& r : engine->trace()) {
             if (r.dimension != overworld) continue;
             // Sounds the rules played, to players within 16 blocks (a sound
-            // of volume 1 carries that far).
+            // of volume 1 carries that far) but the one whose client plays
+            // it itself (flint and steel's user: client/ench_unbreaking).
             if (r.kind == contracts::TraceKind::sound_played) {
-                const auto packet = wire.sound(static_cast<contracts::SoundEvent>(r.a), r.pos, static_cast<std::int64_t>(sound_seed++));
+                const auto bits = static_cast<std::uint32_t>(r.a >> 32);
+                const auto packet = wire.sound(static_cast<contracts::SoundEvent>(r.a & 0xFF), r.pos, bits ? std::bit_cast<float>(bits) : 1.0f,
+                                               static_cast<std::int64_t>(sound_seed++));
+                const contracts::PlayerKey except{r.b, r.c};
                 for (auto& [id, p] : players) {
+                    if ((r.b || r.c) && key_of(p) == except) continue;
                     const double dx = p.pos.x - (r.pos.x + 0.5), dy = p.pos.y - (r.pos.y + 0.5), dz = p.pos.z - (r.pos.z + 0.5);
                     if (dx * dx + dy * dy + dz * dz < 256.0) p.peer->send(packet);
                 }

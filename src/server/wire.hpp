@@ -323,9 +323,9 @@ public:
     Bytes set_experience(float progress, std::int32_t level, std::int32_t total) const;
     Bytes explosion(Vec3 center) const;
     // A sound the rules played, at a block's center (category block, volume
-    // and pitch 1, as both official servers send a beacon's; the seed varies
-    // on them).
-    Bytes sound(contracts::SoundEvent sound, contracts::BlockPos at, std::int64_t seed) const;
+    // 1, as both official servers send a beacon's, flint and steel's and a
+    // pumpkin's carving; the seed varies on them), at `pitch`.
+    Bytes sound(contracts::SoundEvent sound, contracts::BlockPos at, float pitch, std::int64_t seed) const;
     // A player's own sounds, at the player's position: hurt, death, and the
     // falls beyond and within 4 blocks of damage (category player); eating,
     // drinking and drinking honey, a burp, an ominous bottle's disposal, a
