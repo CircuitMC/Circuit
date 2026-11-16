@@ -52,8 +52,9 @@ struct SummonEntity {
     Vec3 velocity;
     std::int32_t fuse{80};
     std::int32_t fire{};
-    // An experience orb's value, the orbs merged into it (1 or more) and its
-    // age (-32768 to 32767).
+    // An experience orb's value (-32768 or more: both official servers
+    // summon orbs of a negative value; client/ench_mending), the orbs merged
+    // into it (1 or more) and its age (-32768 to 32767).
     std::int32_t value{};
     std::int32_t count{1};
     std::int32_t age{};

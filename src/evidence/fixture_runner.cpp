@@ -179,7 +179,7 @@ std::expected<contracts::SummonEntity, std::string> summon_command(const std::st
                 (key == "Fire" ? c.fire : c.fuse) = static_cast<std::int32_t>(v);
             } else if ((key == "Value" || key == "Count" || key == "Age") && type == "minecraft:experience_orb") {
                 double v{};
-                if (!number(value, key == "Age" ? 's' : 'i', v) || v != std::floor(v) || v < (key == "Count" ? 1 : key == "Age" ? -32768 : 0)
+                if (!number(value, key == "Age" ? 's' : 'i', v) || v != std::floor(v) || v < (key == "Count" ? 1 : -32768)
                     || v > (key == "Age" ? 32767 : INT32_MAX))
                     return std::unexpected(unsupported);
                 (key == "Value" ? c.value : key == "Count" ? c.count : c.age) = static_cast<std::int32_t>(v);

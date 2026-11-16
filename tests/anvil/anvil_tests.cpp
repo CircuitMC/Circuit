@@ -799,8 +799,11 @@ int main() {
         Engine engine(bundle(), 5);
         Admissions admit;
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        // Also orbs of a negative value, which summons keep (client/ench_mending).
         engine.advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:experience_orb", {3.5, 0.0, 3.5}, {}, 80, 0, 7, 3, 100},
-                              SummonEntity{"minecraft:experience_orb", {6.5, 2.0, 6.5}, {0.0, 0.1, 0.0}, 80, 0, 2477, 1, 0}}));
+                              SummonEntity{"minecraft:experience_orb", {6.5, 2.0, 6.5}, {0.0, 0.1, 0.0}, 80, 0, 2477, 1, 0},
+                              SummonEntity{"minecraft:experience_orb", {9.5, 0.0, 9.5}, {}, 80, 0, -5, 1, 0},
+                              SummonEntity{"minecraft:experience_orb", {12.5, 0.0, 12.5}, {}, 80, 0, -32768, 1, 0}}));
         engine.advance({});
         const auto state = engine.dump();
         const auto target = root / "orbs";
@@ -814,7 +817,20 @@ int main() {
             std::ranges::sort(out);
             return out;
         };
-        require(orbs(state).size() == 2 && orbs(state) == orbs(back->state), "orbs kept with their state");
+        require(orbs(state).size() == 4 && orbs(state) == orbs(back->state)
+                    && std::ranges::any_of(orbs(back->state), [](const auto& o) { return std::get<2>(o) == -32768; }),
+                "orbs kept with their state (also of -5 and -32768)");
+        // An engine restored from the imported world keeps them.
+        Engine resumed(bundle(), 5, back->state);
+        resumed.advance({});
+        const auto values = [](const WorldDump& w) {
+            std::vector<std::int32_t> out;
+            for (const auto& e : w.overworld().entities)
+                if (e.kind == circuit::gameplay::EntityKind::experience_orb) out.push_back(e.experience);
+            std::ranges::sort(out);
+            return out;
+        };
+        require(values(resumed.dump()) == std::vector<std::int32_t>{-32768, -5, 7, 2477}, "restored with their values");
     });
 
     suite.run("maps round-trip through Anvil, saved as the official servers save them", [&] {

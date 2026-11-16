@@ -627,7 +627,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
                 return false;
             }
         }
-        if (e.experience < 0 || e.orbs < 1) {
+        if (e.experience < -32768 || e.orbs < 1) {
             b.error = "invalid experience orb";
             return false;
         }

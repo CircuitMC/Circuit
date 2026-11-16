@@ -1526,6 +1526,28 @@
       "description": "Two survival players wear items without unbreaking, then with unbreaking III: an iron sword's and an iron axe's hits, full iron armor hurt by fists, a shield raised against an iron sword, a chestplate of thorns VII hit by fists, an efficiency V iron shovel breaking dirt at once, flint and steel lighting fire and shears carving pumpkins; the wear told to each item's holder (slots and equipment in a stats file: without unbreaking exact, with it within four standard deviations of its chance, uses of several points worn in part, no unchanged slot told) and each client's health (the attacker's in the thorns steps masked), damage events, velocities, statuses, animations, shared flags, effects, sounds, particles and deaths; Circuit and both official servers give identical output"
     },
     {
+      "id": "client/ench_mending",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-mending.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "A survival player takes experience orbs summoned at their feet, a second player watching: an orb with nothing to mend; a mending iron pickaxe in the main hand with damages from 1 to 249 and orbs of 1 to 37 (the repair, the points used and the rest to the bar); a whole one, one in another hotbar slot, one also of unbreaking; an orb merged from 4; in creative mode; orbs of -5 (also with levels and points) and 0; mending on both hands and all armor, the boots whole and a mending pickaxe in another hotbar slot, with 150 orbs of 1 (the choice in a stats file: each damaged item within four standard deviations, never the boots or the other slot, no point to the bar); a pickaxe 2 from whole and a shield of damage 100 with an orb of 10, twelve times (the rest repairing the shield in the same pickup); each client's orbs (spawns, values, pickups, removals), experience, slots, equipment and sounds; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/ench_mending_pack",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-mending-pack.js with circuit-clienttest/mendpack, a data pack replacing mending's repair effects (in the official servers' world/datapacks before their first start, and as Circuit's data-pack); Circuit's side also in tests/rules/rules_tests.cpp and tests/server/server_tests.cpp",
+      "status": "passing",
+      "description": "With a data pack giving mending item-dependent repair effects (a factor of 0.5, 1.5, 3 or 2 by level, 1 added, a factor 2 then 1 added, set to 3 less 1 a level, all of a factor 3 and -1 added, remove_binomial 0.5; shears meeting none), a survival player takes orbs of 1 to 7 with items of damage 1 to 100: the repair, the points used, the points lost when the repair is 0 or less and the rest to the bar (the remove_binomial boots in a stats file, within four standard deviations); Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/xp_death",
       "kind": "black_box",
       "versions": [

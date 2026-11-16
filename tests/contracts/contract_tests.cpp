@@ -404,8 +404,9 @@ int main() {
             ReplayLog summons{"java-1.21.8", "circuit-reference-rules-v12", 1, {}, "circuit-blocks-1"};
             summons.ticks.push_back({1, {{1, SummonEntity{"minecraft:arrow", {0.5, 3.0, 0.5}, {1.2, 0.25, 0.05}, 80, 300}},
                                          {2, SummonEntity{"minecraft:tnt", {1.5, 2.0, 0.5}, {}, 3, 0}},
-                                         {3, SummonEntity{"minecraft:experience_orb", {2.5, 1.0, 0.5}, {0.1, 0.0, 0.0}, 80, 0, 17, 3, -5}}}});
-            require(decode_replay(encode_replay(summons).value()).value() == summons, "summons round-trip");
+                                         {3, SummonEntity{"minecraft:experience_orb", {2.5, 1.0, 0.5}, {0.1, 0.0, 0.0}, 80, 0, 17, 3, -5}},
+                                         {4, SummonEntity{"minecraft:experience_orb", {2.5, 1.0, 0.5}, {}, 80, 0, -5, 1, 0}}}});
+            require(decode_replay(encode_replay(summons).value()).value() == summons, "summons round-trip (an orb of a negative value too)");
             CommandQueue q2(4);
             require(q2.admit(SummonEntity{"minecraft:arrow", {}, {}, 80, 0}).has_value() && q2.admit(SummonEntity{"Minecraft:Arrow", {}, {}, 80, 0}).error() == ErrorCode::invalid_argument
                         && q2.admit(SummonEntity{"", {}, {}, 80, 0}).error() == ErrorCode::invalid_argument,

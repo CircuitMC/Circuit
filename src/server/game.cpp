@@ -91,6 +91,8 @@ struct Player {
     std::array<std::vector<std::pair<gameplay::attributes::Attribute, std::string_view>>, gameplay::equipment::slot_count> enchanted{};
     std::size_t experience_advancements{}; // the recipe book's advancements done when the experience was last sent
     std::optional<std::uint64_t> levelup_tick; // when the level-up sound last played (client/xp_death)
+    std::optional<std::uint64_t> orb_tick; // when the player last took an orb
+    std::set<std::uint8_t> placed; // armor and off-hand slots set in creative mode since the equipment was last seen
     std::optional<std::uint64_t> death_drops; // a death's PlayerDeath (its admission): the health waits for its slots
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
@@ -516,6 +518,10 @@ struct Tracked {
     std::int32_t protocol_id{};
     Vec3 last;
     std::set<std::uint64_t> viewers; // peer ids
+    // 1.21.8: an orb's value, sent again the tick after it was first shown
+    // (client/ench_mending, orb-data: summoned and dropped orbs alike).
+    std::optional<std::int32_t> value_again;
+    std::uint64_t shown{};
 };
 
 struct Message {
@@ -2941,15 +2947,23 @@ struct Game::Impl final : GameServices {
         const auto& was = p.equipped;
         // A shield put into the off hand (client/shield: equip_generic; not
         // in the main hand), before the armor's.
+        // A stack set in creative mode in place of the same item of another
+        // damage sounds too (client/ench_mending: a shield and boots for
+        // ones repaired); the same piece worn down or repaired does not.
+        const auto placed = std::exchange(p.placed, {});
+        const auto set_anew = [&](Slot s) {
+            return placed.contains(gameplay::equipment::inventory_slot(s, 0)) && now[std::size_t(s)] != was[std::size_t(s)];
+        };
         static const auto shield = gameplay::items::by_name("minecraft:shield");
         if (const auto& o = now[std::size_t(Slot::offhand)], &w = was[std::size_t(Slot::offhand)];
-            shield && !o.empty() && o.item == *shield && (w.empty() || w.item != o.item))
+            shield && !o.empty() && o.item == *shield && (w.empty() || w.item != o.item || set_anew(Slot::offhand)))
             sound_around_at(p, Wire::PlayerSound::equip_generic, 1.0f, 1.0f, Wire::SoundCategory::player, true);
         // A piece put on: another item, or the same with other components
         // (client/ench_attributes: an iron helmet for one enchanted
         // otherwise); not the same piece worn down.
         for (std::size_t k = std::size_t(Slot::feet); k < now.size(); ++k) {
-            if (now[k] == was[k] || now[k].empty() || (!was[k].empty() && was[k].item == now[k].item && was[k].components == now[k].components))
+            if (now[k] == was[k] || now[k].empty()
+                || (!was[k].empty() && was[k].item == now[k].item && was[k].components == now[k].components && !set_anew(static_cast<Slot>(k))))
                 continue;
             if (const auto* worn = gameplay::equipment::wearable(now[k].item); worn && worn->slot == static_cast<Slot>(k))
                 sound_around_at(p, equip_sound(worn->sound), 1.0f, 1.0f, Wire::SoundCategory::player, true);
@@ -4263,6 +4277,7 @@ struct Game::Impl final : GameServices {
         std::uint64_t player;
         std::uint64_t entity;
         std::int32_t count;
+        bool orb{};
     };
     std::map<std::uint64_t, Pickup> pickups; // by admission
     void detect_pickups() {
@@ -4284,7 +4299,7 @@ struct Game::Impl final : GameServices {
                     const auto admission = queue.admit(contracts::PickUp{key_of(p), EntityId{entity_id}, main_hand(p), p.game_mode == creative});
                     if (!admission) continue;
                     taken.insert(entity_id);
-                    pickups[*admission] = {id, entity_id, 1};
+                    pickups[*admission] = {id, entity_id, 1, true};
                     continue;
                 }
                 if ((*e)->kind != gameplay::EntityKind::item || (*e)->pickup_delay > 0) continue;
@@ -4298,6 +4313,20 @@ struct Game::Impl final : GameServices {
                 taken.insert(entity_id);
                 pickups[*admission] = {id, entity_id, (*e)->stack.count};
             }
+        }
+    }
+
+    // 1.21.8 tells an orb's value again the tick after it was first shown,
+    // to those who see it, before the tick's pickups (client/ench_mending:
+    // an orb at a player's feet, its value twice and then its pickup; also
+    // the orbs a death drops, orb-data).
+    void publish_orb_values() {
+        for (auto& [id, t] : tracked) {
+            if (!t.value_again || t.shown + 1 != tick_count) continue;
+            const auto packet = wire.orb_metadata(t.protocol_id, *t.value_again);
+            t.value_again.reset();
+            for (const auto viewer : t.viewers)
+                if (const auto p = players.find(viewer); p != players.end()) p->second.peer->send(packet);
         }
     }
 
@@ -4316,6 +4345,7 @@ struct Game::Impl final : GameServices {
             const auto collector = players.find(pickup.player);
             const auto entity = tracked.find(pickup.entity);
             if (collector == players.end() || entity == tracked.end()) continue;
+            if (pickup.orb) collector->second.orb_tick = tick_count;
             const auto packet = wire.take_item_entity(entity->second.protocol_id, collector->second.entity_id, pickup.count);
             collector->second.peer->send(packet);
             for (const auto viewer : entity->second.viewers)
@@ -4447,6 +4477,7 @@ struct Game::Impl final : GameServices {
         }
         stack.damage = static_cast<std::uint16_t>(std::clamp<std::int32_t>(c.damage, 0, gameplay::items::max_damage(stack)));
         admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), stack});
+        if ((c.slot >= 5 && c.slot <= 8) || c.slot == contracts::offhand_slot) p.placed.insert(static_cast<std::uint8_t>(c.slot));
         // As in the target version, the slot is not echoed: the client already shows it.
         if (!p.window && p.remote_window == 0 && static_cast<std::size_t>(c.slot) < p.remote.size())
             p.remote[static_cast<std::size_t>(c.slot)] = wire_stack(stack);
@@ -5742,11 +5773,14 @@ struct Game::Impl final : GameServices {
         if (fresh) {
             t.protocol_id = next_entity_id++;
             t.last = e.position;
+            t.shown = tick_count;
+            if (e.kind == gameplay::EntityKind::experience_orb && wire.orbs_are_entities() && e.experience != 0) t.value_again = e.experience;
         }
         if (!t.viewers.insert(p.peer->id()).second) return;
         if (e.kind == gameplay::EntityKind::experience_orb) {
             p.peer->send(wire.experience_orb(t.protocol_id, entity_uuid(engine_id), orb_entity_type, t.last, e.experience));
-            if (wire.orbs_are_entities()) p.peer->send(wire.orb_metadata(t.protocol_id, e.experience));
+            // 1.21.8 sends no value of 0, its default (client/ench_mending).
+            if (wire.orbs_are_entities() && e.experience != 0) p.peer->send(wire.orb_metadata(t.protocol_id, e.experience));
             return;
         }
         if (e.kind == gameplay::EntityKind::falling_block) {
@@ -5865,6 +5899,12 @@ struct Game::Impl final : GameServices {
             }
             send_put_back(p);
             send_ghosts(p);
+            // A tick's orbs: the experience left, then the items they mended
+            // (client/ench_mending).
+            if (p.orb_tick == tick_count && !p.vitals_pending && !p.dead) {
+                level_up(p);
+                sync_experience(p);
+            }
             sync_inventory(p);
             // The drops applied: the health after their slots, at the next
             // tick's vitals when the tick's wear holds slots back (armor worn
@@ -6305,6 +6345,7 @@ struct Game::Impl final : GameServices {
         equipment_sounds(); // before the level events (client/armor2)
         publish_blocks();
         publish_block_events();
+        publish_orb_values();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();
         publish_level_events();

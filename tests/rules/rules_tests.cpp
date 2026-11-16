@@ -2292,6 +2292,189 @@ int main() {
         require(player().xp_total == 10 && player().xp_level == 1 && orbs().size() == 2, "the second two ticks on, and the orb is gone");
     });
 
+    suite.run("mending repairs damaged items in equipment slots with an orb's points (client/ench_mending)", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ItemStack;
+        using circuit::contracts::PickUp;
+        using circuit::contracts::PlayerKey;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::contracts::SummonEntity;
+        using circuit::gameplay::EntityKind;
+        using circuit::gameplay::PlayerInventory;
+        namespace en = circuit::gameplay::enchantments;
+        using Op = en::ValueOperation;
+        using Levels = std::vector<std::pair<std::uint32_t, std::int32_t>>;
+        const auto constant = [](float v) { return en::LevelValue{en::LevelValue::Kind::constant, v, 0.0f, {}, {}}; };
+        // Value effects: add, multiply, set, all of them in order, and units
+        // removed by draws below the chance.
+        int drawn = 0;
+        const std::function<float()> draw = [&] { return (drawn++ % 2) ? 0.9f : 0.1f; };
+        const Op times2{Op::Kind::multiply, constant(2.0f), {}};
+        const Op plus1{Op::Kind::add, constant(1.0f), {}};
+        const Op set3{Op::Kind::set, constant(3.0f), {}};
+        const Op both{Op::Kind::all_of, {}, {Op{Op::Kind::multiply, constant(3.0f), {}}, Op{Op::Kind::add, constant(-1.0f), {}}}};
+        const Op half{Op::Kind::remove_binomial, constant(0.5f), {}};
+        require(times2.apply(7.0f, 1, draw) == 14.0f && plus1.apply(7.0f, 1, draw) == 8.0f && set3.apply(7.0f, 1, draw) == 3.0f
+                    && both.apply(7.0f, 1, draw) == 20.0f && drawn == 0,
+                "multiply, add, set and all of in order, without draws");
+        require(half.apply(5.0f, 1, draw) == 2.0f && drawn == 5 && half.apply(4.5f, 1, draw) == 2.5f && drawn == 9
+                    && half.apply(0.5f, 1, draw) == 0.5f && half.apply(-3.0f, 1, draw) == -3.0f && drawn == 9,
+                "remove_binomial: a draw per whole unit, none below 1");
+
+        // Stand-ins for the server's encoding: type 1 the enchantments, one
+        // byte per id and level. 22 mending (any slot, a factor 2); 60 a
+        // repair of 3 for hoes and of 0 for swords, in the main hand alone.
+        const auto patch = [](const Levels& levels) {
+            std::vector<std::byte> bytes;
+            for (const auto& [id, level] : levels) {
+                bytes.push_back(static_cast<std::byte>(id));
+                bytes.push_back(static_cast<std::byte>(level));
+            }
+            return ComponentPatch::make(772, {{1, bytes}}, {}, {});
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->enchantments_of = [](const ComponentPatch& p, bool stored) {
+            Levels out;
+            for (const auto& a : p.added())
+                if (a.type == 1 && !stored)
+                    for (std::size_t k = 0; k + 1 < a.value.size(); k += 2)
+                        out.emplace_back(static_cast<std::uint32_t>(a.value[k]), static_cast<std::int32_t>(a.value[k + 1]));
+            return out;
+        };
+        en::Effects mending;
+        mending.slots = *en::slot_group("any");
+        mending.repair_with_xp = {{times2, std::nullopt}};
+        data->enchantment_effects[22] = mending;
+        en::Effects odd;
+        odd.slots = *en::slot_group("mainhand");
+        en::ItemRequirement hoes;
+        hoes.items = {"minecraft:iron_hoe"};
+        en::ItemRequirement swords;
+        swords.items = {"minecraft:iron_sword"};
+        odd.repair_with_xp = {{set3, hoes}, {Op{Op::Kind::set, constant(0.0f), {}}, swords}};
+        data->enchantment_effects[60] = odd;
+        // 61: a factor by level (client/ench_mending_pack's pickaxe): 0.5,
+        // 1.5 and 3, then 2.
+        en::Effects factors;
+        factors.slots = *en::slot_group("any");
+        factors.repair_with_xp = {{Op{Op::Kind::multiply, en::LevelValue{en::LevelValue::Kind::lookup, 0.0f, 0.0f, {constant(2.0f)}, {0.5f, 1.5f, 3.0f}}, {}},
+                                   std::nullopt}};
+        data->enchantment_effects[61] = factors;
+        const auto item = [](std::string_view name) { return circuit::gameplay::items::by_name(name).value(); };
+        const auto mended = [&](std::string_view name, std::uint16_t damage, std::uint32_t id = 22, std::int32_t level = 1) {
+            ItemStack s{item(name), 1, damage};
+            s.components = patch({{id, level}});
+            return s;
+        };
+
+        const PlayerKey alex{6, 1};
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-2, 2, -2, 2));
+        s.tick({PlayerPresence{alex, {0.5, 0.0, 0.5}}});
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        // An orb of `value` taken at once (the 2 ticks between pickups kept),
+        // with a hotbar slot selected, in survival or creative mode.
+        const auto take = [&](std::int32_t value, std::uint8_t selected = 36, bool creative = false) {
+            s.tick({SummonEntity{"minecraft:experience_orb", {0.5, 0.0, 0.5}, {}, 80, 0, value, 1, 0}});
+            const auto d = s.oracle.dump();
+            const auto orb = std::ranges::find_if(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::experience_orb; });
+            require(orb != d.overworld().entities.end(), "the orb summoned");
+            s.tick({PickUp{alex, orb->id, selected, creative}});
+            s.tick();
+            s.tick();
+        };
+        const auto damage = [&](std::uint8_t slot) { return player().slots[slot].damage; };
+
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 100)}});
+        take(7);
+        require(damage(36) == 86 && player().xp_total == 0, "2 durability a point, the points all used");
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 3)}});
+        take(2);
+        require(damage(36) == 0 && player().xp_total == 1, "3 repaired for 3*2/4 = 1 point, 1 to the bar");
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 1)}});
+        take(1);
+        require(damage(36) == 0 && player().xp_total == 2, "1 repaired for none, the point to the bar");
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 1)}});
+        take(2);
+        require(damage(36) == 0 && player().xp_total == 4, "1 repaired for 1*2/4 = 0 points, both to the bar");
+        take(5);
+        require(damage(36) == 0 && player().xp_total == 9, "a whole item: all to the bar");
+        // The selected slot is the main hand's; creative pickups mend too.
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 50)}, SetPlayerSlot{alex, 37, mended("minecraft:iron_pickaxe", 50)}});
+        take(5, 37);
+        require(damage(36) == 50 && damage(37) == 40 && player().xp_total == 9, "slot 37 selected: it is repaired, slot 36 not");
+        take(5, 36, true);
+        require(damage(36) == 40 && damage(37) == 40 && player().xp_total == 9, "in creative mode: repaired");
+        s.tick({SetPlayerSlot{alex, 37, {}}});
+
+        // Factors by level, the durability rounded down
+        // (client/ench_mending_pack): 0.5 on a point repairs nothing and
+        // loses it; 0.5 on 2 repairs 1; 1.5 on 1 repairs 1; 1.5 on 3 (4.5)
+        // makes a pickaxe of damage 2 whole for 3*2/4 = 1 point, 2 to the
+        // bar; 3 on 7 repairs 21; the fallback 2 beyond.
+        const auto factor = [&](std::int32_t level, std::uint16_t from, std::int32_t value) {
+            s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", from, 61, level)}});
+            const auto before = player().xp_total;
+            take(value);
+            return std::pair{static_cast<int>(damage(36)), player().xp_total - before};
+        };
+        require(factor(1, 100, 1) == std::pair{100, 0} && factor(1, 100, 2) == std::pair{99, 0} && factor(2, 100, 1) == std::pair{99, 0}
+                    && factor(2, 2, 3) == std::pair{0, 2} && factor(3, 100, 7) == std::pair{79, 0} && factor(4, 100, 3) == std::pair{94, 0},
+                "factors 0.5, 1.5, 3 and 2 by level, rounded down");
+        // An item whose enchantment's repair effects all ask for other items:
+        // the points themselves (the pack's shears: 5 for 5).
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 100, 60)}});
+        take(5);
+        require(damage(36) == 95, "no requirement met: a point a point");
+
+        // The rest to another damaged item, never to a whole one, one not
+        // selected or one where the enchantment does not work.
+        int seen_first = 0, seen_second = 0;
+        for (int k = 0; k < 12; ++k) {
+            const auto before = player().xp_total;
+            s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 2)}, SetPlayerSlot{alex, 6, mended("minecraft:iron_chestplate", 100)},
+                    SetPlayerSlot{alex, 8, mended("minecraft:iron_boots", 0)}, SetPlayerSlot{alex, 37, mended("minecraft:iron_pickaxe", 50)},
+                    SetPlayerSlot{alex, 45, mended("minecraft:iron_hoe", 50, 60)}});
+            take(10);
+            const bool first = damage(36) == 0 && damage(6) == 82, second = damage(36) == 2 && damage(6) == 80;
+            require((first || second) && damage(8) == 0 && damage(37) == 50 && damage(45) == 50 && player().xp_total == before,
+                    "the pickaxe whole and the 9 left on the chestplate, or the chestplate alone");
+            seen_first += first;
+            seen_second += second;
+        }
+        require(seen_first > 0 && seen_second > 0, "either item picked first");
+
+        // Repair forms: a repair of 3 whatever the points; one of 0 loses them.
+        s.tick({SetPlayerSlot{alex, 6, {}}, SetPlayerSlot{alex, 8, {}}, SetPlayerSlot{alex, 37, {}}, SetPlayerSlot{alex, 45, {}},
+                SetPlayerSlot{alex, 36, mended("minecraft:iron_hoe", 100, 60)}});
+        auto before = player().xp_total;
+        take(7);
+        require(damage(36) == 97 && player().xp_total == before, "a hoe repaired by 3 for all 7 points");
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_hoe", 2, 60)}});
+        take(7);
+        require(damage(36) == 0 && player().xp_total == before + 3, "2 repaired for 7*2/3 = 4 points, 3 to the bar");
+        before = player().xp_total;
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_sword", 100, 60)}});
+        take(5);
+        require(damage(36) == 100 && player().xp_total == before, "a repair of 0: nothing repaired, the points lost");
+
+        // Orbs of no points or fewer change nothing (client/ench_mending).
+        s.tick({SetPlayerSlot{alex, 36, mended("minecraft:iron_pickaxe", 50)}});
+        before = player().xp_total;
+        const auto level = player().xp_level;
+        const auto progress = player().xp_progress;
+        take(-5);
+        take(0);
+        const auto d = s.oracle.dump();
+        require(damage(36) == 50 && player().xp_total == before && player().xp_level == level && player().xp_progress == progress
+                    && std::ranges::none_of(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::experience_orb; }),
+                "an orb of -5 and one of 0 taken, nothing changed");
+    });
+
     suite.run("mined ores give experience as orbs at their center, but not to Silk Touch", [] {
         using circuit::contracts::ComponentPatch;
         using circuit::contracts::PlayerBreak;

@@ -68,4 +68,26 @@ bool ItemRequirement::matches(std::string_view item) const {
     return false;
 }
 
+float ValueOperation::apply(float input, std::int32_t level, const std::function<float()>& draw) const {
+    switch (kind) {
+    case Kind::add: return input + value.at(level);
+    case Kind::multiply: return input * value.at(level);
+    case Kind::set: return value.at(level);
+    case Kind::remove_binomial: {
+        const float chance = value.at(level);
+        // The value's whole units, each a draw (at most 2^20 of them: a
+        // pack's huge values must not stall the tick; Circuit's limit).
+        const auto units = input >= 1.0f ? static_cast<std::int64_t>(std::min(std::floor(input), 1048576.0f)) : 0;
+        std::int64_t removed = 0;
+        for (std::int64_t i = 0; i < units; ++i)
+            if (draw && draw() < chance) ++removed;
+        return input - static_cast<float>(removed);
+    }
+    case Kind::all_of:
+        for (const auto& p : parts) input = p.apply(input, level, draw);
+        return input;
+    }
+    return input;
+}
+
 } // namespace circuit::gameplay::enchantments

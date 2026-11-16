@@ -319,6 +319,42 @@ std::optional<gameplay::enchantments::ItemRequirement> item_requirement(const au
     return r;
 }
 
+// A value effect (minecraft.wiki "Enchantment definition"): add and set
+// with a level-based `value`, multiply with a `factor`, remove_binomial with
+// a `chance`, all_of with a list of `effects`; nullopt for another type or
+// a missing or unreadable value.
+std::optional<gameplay::enchantments::ValueOperation> value_operation(const auth::Json& json) {
+    using gameplay::enchantments::ValueOperation;
+    using Kind = ValueOperation::Kind;
+    const auto* type = json.find("type");
+    if (!type || type->kind() != auth::Json::Kind::string) return std::nullopt;
+    auto t = type->as_string();
+    if (t.starts_with("minecraft:")) t.erase(0, 10);
+    ValueOperation op;
+    if (t == "all_of") {
+        op.kind = Kind::all_of;
+        const auto* parts = json.find("effects");
+        if (!parts || parts->kind() != auth::Json::Kind::array) return std::nullopt;
+        for (const auto& p : parts->items()) {
+            auto part = value_operation(p);
+            if (!part) return std::nullopt;
+            op.parts.push_back(std::move(*part));
+        }
+        return op;
+    }
+    const char* field = nullptr;
+    if (t == "add") op.kind = Kind::add, field = "value";
+    else if (t == "set") op.kind = Kind::set, field = "value";
+    else if (t == "multiply") op.kind = Kind::multiply, field = "factor";
+    else if (t == "remove_binomial") op.kind = Kind::remove_binomial, field = "chance";
+    else return std::nullopt;
+    const auto* v = json.find(field);
+    auto value = v ? level_value(*v) : std::nullopt;
+    if (!value) return std::nullopt;
+    op.value = std::move(*value);
+    return op;
+}
+
 // An enchantment's slots, attribute modifiers (its minecraft:attributes
 // effects), damage protection, damage immunity, the damage and knockback it
 // adds to attacks, and its post-attack effects of the entity effects ignite,
@@ -331,7 +367,9 @@ std::optional<gameplay::enchantments::ItemRequirement> item_requirement(const au
 // on yet (bane of arthropods' slowness, whose requirement no player meets;
 // channeling's lightning and wind burst's explosion). Its item_damage
 // effects of the form remove_binomial (unbreaking) with requirements on the
-// item are read; another form refuses the packs.
+// item are read; another form refuses the packs. Its repair_with_xp effects
+// (mending) of every value effect form, with requirements on the item, are
+// read; another type or an unreadable requirement refuses the packs.
 std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json,
                                                                                const data::DataPacks& packs) {
     namespace en = gameplay::enchantments;
@@ -483,6 +521,21 @@ std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(
                 read.requirement = std::move(*requirement);
             }
             out.item_damage.push_back(std::move(read));
+        }
+    }
+    if (const auto* list = effects ? effects->find("minecraft:repair_with_xp") : nullptr) {
+        if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: repair effects are not a list", name));
+        for (const auto& e : list->items()) {
+            const auto* effect = e.find("effect");
+            auto operation = effect ? value_operation(*effect) : std::nullopt;
+            if (!operation) return std::unexpected(std::format("enchantment {}: a repair effect Circuit cannot read", name));
+            en::RepairEffect read{std::move(*operation), std::nullopt};
+            if (const auto* r = e.find("requirements")) {
+                auto requirement = item_requirement(*r, packs);
+                if (!requirement) return std::unexpected(std::format("enchantment {}: an item requirement Circuit cannot read", name));
+                read.requirement = std::move(*requirement);
+            }
+            out.repair_with_xp.push_back(std::move(read));
         }
     }
     const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;

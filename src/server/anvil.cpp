@@ -1030,7 +1030,7 @@ private:
                 // Its experience (a short), the orbs merged into it and its
                 // age (a short); its health as saved (1.21.4 saves 0).
                 out.kind = gameplay::EntityKind::experience_orb;
-                out.experience = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Value").value_or(0), 0, 32767));
+                out.experience = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Value").value_or(0), -32768, 32767));
                 out.orbs = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Count").value_or(1), 1, INT32_MAX));
                 out.age = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Age").value_or(0), -32768, 32767));
                 out.health = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Health").value_or(gameplay::item_health), 0, 32767));
@@ -1583,7 +1583,7 @@ private:
                 // As the target versions save a summoned orb: 1.21.4 writes
                 // its health as 0 and its fire as -1.
                 const bool older = bundle_.schema.content_release == "1.21.4";
-                t.set("Value", Tag::short_(static_cast<std::int16_t>(std::clamp(e->experience, 0, 32767))));
+                t.set("Value", Tag::short_(static_cast<std::int16_t>(std::clamp(e->experience, -32768, 32767))));
                 t.set("Count", Tag::int_(e->orbs));
                 t.set("Age", Tag::short_(static_cast<std::int16_t>(e->age)));
                 t.set("Health", Tag::short_(static_cast<std::int16_t>(older ? 0 : e->health)));

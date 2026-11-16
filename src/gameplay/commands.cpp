@@ -4,6 +4,8 @@
 #include <circuit/gameplay/equipment.hpp>
 #include <circuit/gameplay/food.hpp>
 #include <circuit/gameplay/survival.hpp>
+#include <array>
+#include <cmath>
 #include <functional>
 
 namespace circuit::gameplay {
@@ -132,7 +134,7 @@ Plan plan(RuleContext& ctx, const contracts::SummonEntity& c) {
         return std::unexpected(ErrorCode::invalid_argument);
     const bool orb = c.type == "minecraft:experience_orb";
     if ((c.value != 0 || c.count != 1 || c.age != 0) && !orb) return std::unexpected(ErrorCode::invalid_argument);
-    if (orb && (c.value < 0 || c.count < 1 || c.age < -32768 || c.age > 32767)) return std::unexpected(ErrorCode::invalid_argument);
+    if (orb && (c.value < -32768 || c.count < 1 || c.age < -32768 || c.age > 32767)) return std::unexpected(ErrorCode::invalid_argument);
     Entity e;
     if (c.type == "minecraft:tnt") e.kind = EntityKind::primed_tnt, e.fuse = c.fuse;
     else if (c.type == "minecraft:arrow") e.kind = EntityKind::arrow, e.fire = c.fire;
@@ -490,24 +492,93 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
     };
 }
 
+// The durability an orb's `points` repair on an item (minecraft:repair_with_xp):
+// the points as a value through the repair effects of its enchantments that
+// work in the slot, in order, each meeting its requirement (none met: the
+// points themselves; client/ench_mending_pack), rounded down.
+std::int64_t repair_of(RuleContext& ctx, const GameData& data, const contracts::ItemStack& stack, equipment::Slot slot, std::int32_t points) {
+    const auto* info = items::info(stack.item);
+    const std::function<float()> draw = [&ctx] { return ctx.random_float(); };
+    float value = static_cast<float>(points);
+    for (const auto& [id, level] : data.enchantments_of(stack.components, false)) {
+        const auto e = data.enchantment_effects.find(id);
+        if (e == data.enchantment_effects.end() || !(e->second.slots & enchantments::slot_bit(slot))) continue;
+        for (const auto& r : e->second.repair_with_xp)
+            if (!r.requirement || (info && r.requirement->matches(info->name))) value = r.operation.apply(value, level, draw);
+    }
+    if (std::isnan(value)) return 0;
+    return static_cast<std::int64_t>(std::floor(std::clamp(value, -2147483648.0f, 2147483647.0f)));
+}
+
+// Mending (client/ench_mending, client/ench_mending_pack; both versions
+// alike): an orb's points repair a damaged item whose enchantments have
+// repair effects and work in its equipment slot (the selected hotbar slot,
+// the off hand, the armor), one picked with equal chances (Circuit's draws
+// from the level random): its durability to repair d, the repair the least
+// of d and the item's damage, the points it uses the repair times the points
+// over d (rounded down); what is left repairs another such item, picked
+// again, and what is left when none is goes to the player. A durability or
+// repair not above 0 repairs nothing and loses the orb's points. Returns the
+// points left.
+std::int32_t mend(RuleContext& ctx, const contracts::PlayerKey key, std::uint8_t selected, std::int32_t points) {
+    const auto* data = ctx.data();
+    if (!data || !data->enchantments_of) return points;
+    while (points > 0) {
+        const auto* inventory = ctx.peek_player(key);
+        if (!inventory) return points;
+        std::array<std::pair<std::uint8_t, equipment::Slot>, equipment::slot_count> damaged{};
+        std::size_t count = 0;
+        for (std::size_t s = 0; s < equipment::slot_count; ++s) {
+            const auto slot = static_cast<equipment::Slot>(s);
+            const auto at = equipment::inventory_slot(slot, static_cast<std::uint8_t>(selected - contracts::hotbar_first));
+            const auto& stack = inventory->slots[at];
+            if (stack.empty() || stack.damage == 0 || items::max_damage(stack) <= 0) continue;
+            bool repairs = false;
+            for (const auto& [id, level] : data->enchantments_of(stack.components, false)) {
+                const auto e = data->enchantment_effects.find(id);
+                if (e != data->enchantment_effects.end() && !e->second.repair_with_xp.empty() && (e->second.slots & enchantments::slot_bit(slot)))
+                    repairs = true;
+            }
+            if (repairs) damaged[count++] = {at, slot};
+        }
+        if (count == 0) return points;
+        const auto [at, slot] = damaged[count > 1 ? static_cast<std::size_t>(ctx.random_int(static_cast<std::int32_t>(count))) : 0];
+        const auto durability = repair_of(ctx, *data, inventory->slots[at], slot, points);
+        auto& player = ctx.player(key);
+        auto& stack = player.slots[at];
+        const auto repair = std::min<std::int64_t>(durability, stack.damage);
+        if (repair <= 0) return 0;
+        stack.damage = static_cast<std::uint16_t>(stack.damage - repair);
+        detail::record_slot(ctx, player, at);
+        points -= static_cast<std::int32_t>(repair * points / durability);
+    }
+    return points;
+}
+
 Plan plan(RuleContext& ctx, const contracts::PickUp& c) {
     if (c.selected < contracts::hotbar_first || c.selected >= contracts::offhand_slot) return std::unexpected(ErrorCode::invalid_slot);
     const auto* e = ctx.peek_entity(c.entity);
-    // An experience orb: a player takes one of its orbs every 2 ticks, gaining
-    // its experience (the official servers' levels and progress, checked with
-    // a protocol client); the last one is gone. Mending is not modeled.
+    // An experience orb: a player takes one of its orbs every 2 ticks (in
+    // any game mode); its points mend their items first, and what is left
+    // goes to them (the official servers' levels and progress, checked with
+    // a protocol client); the last one is gone. An orb of no points or fewer
+    // changes nothing (client/ench_mending: also with levels and points).
     if (e && e->kind == EntityKind::experience_orb) {
         if (const auto* inv = ctx.peek_player(c.player); inv && ctx.now() < inv->xp_ready) return std::unexpected(ErrorCode::not_usable);
         return [&ctx, c] {
-            auto& player = ctx.player(c.player);
+            ctx.player(c.player).xp_ready = ctx.now() + 2;
             auto* orb = ctx.entity(c.entity);
-            player.xp_ready = ctx.now() + 2;
-            const auto level = player.xp_level;
-            experience::give_points(player, orb->experience);
-            ctx.record(TraceKind::player_experience_changed, contracts::block_of(orb->position), c.player.hi, c.player.lo,
-                       static_cast<std::uint64_t>(static_cast<std::uint32_t>(player.xp_total)));
-            if (const auto reached = experience::level_reached(level, player.xp_level, false))
-                ctx.record(TraceKind::player_level_reached, {}, c.player.hi, c.player.lo, static_cast<std::uint64_t>(reached));
+            const auto where = contracts::block_of(orb->position);
+            if (const auto left = orb->experience > 0 ? mend(ctx, c.player, c.selected, orb->experience) : 0; left > 0) {
+                auto& player = ctx.player(c.player);
+                const auto level = player.xp_level;
+                experience::give_points(player, left);
+                ctx.record(TraceKind::player_experience_changed, where, c.player.hi, c.player.lo,
+                           static_cast<std::uint64_t>(static_cast<std::uint32_t>(player.xp_total)));
+                if (const auto reached = experience::level_reached(level, player.xp_level, false))
+                    ctx.record(TraceKind::player_level_reached, {}, c.player.hi, c.player.lo, static_cast<std::uint64_t>(reached));
+            }
+            orb = ctx.entity(c.entity);
             if (--orb->orbs > 0) return;
             ctx.record(TraceKind::entity_removed, contracts::block_of(orb->position), c.entity.value,
                        static_cast<std::uint64_t>(RemovalReason::picked_up));

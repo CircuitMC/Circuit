@@ -136,14 +136,37 @@ struct ItemDamageEffect {
     LevelValue chance;
     std::optional<ItemRequirement> requirement;
 };
+// A value effect of any of the data's forms (minecraft.wiki "Enchantment
+// definition"), worked out in single precision on a value: a level-based
+// value added (add), a factor multiplied by (multiply), the value replaced
+// (set), each whole unit of it removed by a draw below a chance
+// (remove_binomial: its integer part's units, none below 1, at most 2^20 of
+// them; Circuit's choices for a value with a fraction and for huge values),
+// or the effects in order (all_of).
+struct ValueOperation {
+    enum class Kind : std::uint8_t { add, multiply, set, remove_binomial, all_of };
+    Kind kind{};
+    LevelValue value;                  // add, set: the value; multiply: the factor; remove_binomial: the chance
+    std::vector<ValueOperation> parts; // all_of
+    // `draw` gives uniform draws in [0, 1) for remove_binomial.
+    float apply(float input, std::int32_t level, const std::function<float()>& draw) const;
+};
+// The durability an experience orb's points repair (minecraft:repair_with_xp,
+// mending), for an item meeting the requirement.
+struct RepairEffect {
+    ValueOperation operation;
+    std::optional<ItemRequirement> requirement;
+};
 // What an enchantment does that Circuit models: in the slots of its `slots`
 // groups (whatever the item; client/ench_attributes: efficiency on a stick
 // held counts, swift sneak on a chestplate does not), its attribute
 // modifiers, the protection it adds against damage, the damage it keeps
 // off (minecraft:damage_immunity), the damage and knockback it adds to an
-// attack, and what follows an attack that hurt (the fire an attacker's
-// enchantment sets, a victim's thorns); and, wherever the enchanted item
-// is, the wear it is spared.
+// attack, what follows an attack that hurt (the fire an attacker's
+// enchantment sets, a victim's thorns) and the repair experience gives (an
+// enchantment with repair effects makes its item take part, whatever their
+// requirements; client/ench_mending_pack: shears meeting none repaired a
+// point a point); and, wherever the enchanted item is, the wear it is spared.
 struct Effects {
     std::uint8_t slots{};
     std::vector<AttributeEffect> attributes;
@@ -153,9 +176,10 @@ struct Effects {
     std::vector<ValueEffect> knockback;
     std::vector<PostAttackEffect> post_attack;
     std::vector<ItemDamageEffect> item_damage;
+    std::vector<RepairEffect> repair_with_xp;
     bool empty() const noexcept {
         return attributes.empty() && protection.empty() && immunity.empty() && damage.empty() && knockback.empty() && post_attack.empty()
-               && item_damage.empty();
+               && item_damage.empty() && repair_with_xp.empty();
     }
 };
 

@@ -189,12 +189,13 @@ constexpr std::array reference_v4_mechanisms{
         "than gravity alone makes them, else they rest; on 1.21.4 always, and their vertical drag in double precision), "
         "taking in the orbs of their value whose ids are 40 apart every 20 ticks from their first, keeping the younger "
         "age, and going at age 6000; the nearest player within 8 blocks draws them, and a player who touches one takes "
-        "one of its orbs every 2 ticks, gaining its experience with the official servers' levels and progress "
-        "(client/orbs); experience at a point comes in orbs of the official values, each drawing a slot of 40 from the "
+        "one of its orbs every 2 ticks, its points mending damaged items of enchantments with repair effects first "
+        "(client/ench_mending, client/ench_mending_pack) and the rest giving its experience with the official servers' "
+        "levels and progress (client/orbs); experience at a point comes in orbs of the official values, each drawing a slot of 40 from the "
         "level random to join an orb of its value nearby, a new orb drawing its first motion from its own random "
         "(seeded with its id, as harness 0.36.0 seeds it); mined ores and sculk give their experience (xp_ores, "
         "xp_merge, xp_merge_more), none to Silk Touch; lava makes orbs jump by their own random. Gaps: how players draw "
-        "orbs is not compared tick by tick; Mending; experience given outside the command phase gets its orbs' first "
+        "orbs is not compared tick by tick; experience given outside the command phase gets its orbs' first "
         "motion at the commit (xp_explosion)."},
     MechanismEntry{"brewing", l0_exact, l2_declared_deviation, harness_trace,
         "Brewing stands as both official servers run them (brewing, brewing_hoppers; with the official data packs' "

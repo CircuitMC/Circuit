@@ -1273,7 +1273,7 @@ void Engine::Impl::restore(const WorldDump& state) {
                 break;
             case gameplay::EntityKind::experience_orb:
                 // 1.21.4 saves an orb's health as 0.
-                if (e.experience < 0 || e.orbs < 1 || e.age < -32768 || e.age > 32767 || e.health < 0 || e.health > 32767)
+                if (e.experience < -32768 || e.orbs < 1 || e.age < -32768 || e.age > 32767 || e.health < 0 || e.health > 32767)
                     bad("experience orb state");
                 rest.experience = 0;
                 rest.orbs = 1;

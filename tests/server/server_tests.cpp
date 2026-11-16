@@ -5480,6 +5480,35 @@ int main() {
                     && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:inverted","term":{"condition":"minecraft:match_tool"}})"))
                     && bad_item_requirement(item_damage(binomial, R"({"condition":"minecraft:all_of","terms":{"condition":"minecraft:match_tool","predicate":{"items":"minecraft:shears"}}})")),
                 "an item requirement on a tag no pack defines, a tag in a list, more than the items, nothing, another condition, an unreadable term, terms not a list");
+        // Repair with experience (client/ench_mending, client/ench_mending_pack):
+        // mending's form and every value effect form load, with or without an
+        // item requirement; another type, a missing or unreadable value, a
+        // part unreadable, parts or effects not a list, or an unreadable
+        // requirement do not.
+        const auto repair = [&](std::string_view effect, std::string_view requirement = "") {
+            return effects(R"("minecraft:repair_with_xp":[{"effect":)" + std::string(effect)
+                           + (requirement.empty() ? std::string{} : R"(,"requirements":)" + std::string(requirement)) + "}]");
+        };
+        const auto bad_repair = [&](const std::string& definition) {
+            return attempt(definition).find("repair effect Circuit cannot read") != std::string::npos;
+        };
+        require(attempt(repair(R"({"type":"minecraft:multiply","factor":2.0})")) == "loaded"
+                    && attempt(repair(R"({"type":"minecraft:multiply","factor":{"type":"minecraft:lookup","values":[0.5,1.5,3.0],"fallback":2.0}})",
+                                      R"({"condition":"minecraft:match_tool","predicate":{"items":"minecraft:iron_pickaxe"}})")) == "loaded"
+                    && attempt(repair(R"({"type":"add","value":1.0})")) == "loaded"
+                    && attempt(repair(R"({"type":"minecraft:set","value":{"type":"minecraft:linear","base":3.0,"per_level_above_first":-1.0}})")) == "loaded"
+                    && attempt(repair(R"({"type":"minecraft:remove_binomial","chance":0.5})")) == "loaded"
+                    && attempt(repair(R"({"type":"minecraft:all_of","effects":[{"type":"minecraft:multiply","factor":3.0},{"type":"minecraft:add","value":-1.0}]})")) == "loaded",
+                "repair effects: multiply (a constant or by level, with an item requirement), add, set, remove_binomial and all of");
+        require(bad_repair(repair(R"({"type":"minecraft:exponent","base":2.0})")) && bad_repair(repair(R"({"type":"minecraft:multiply"})"))
+                    && bad_repair(repair(R"({"type":"minecraft:add","value":{"type":"minecraft:wavy"}})")) && bad_repair(repair(R"({"factor":2.0})"))
+                    && bad_repair(repair(R"({"type":"minecraft:all_of","effects":[{"type":"minecraft:add"}]})"))
+                    && bad_repair(repair(R"({"type":"minecraft:all_of","effects":{"type":"minecraft:add","value":1.0}})"))
+                    && bad_repair(effects(R"("minecraft:repair_with_xp":[{"requirements":{"condition":"minecraft:match_tool","predicate":{"items":"minecraft:shears"}}}])"))
+                    && attempt(effects(R"("minecraft:repair_with_xp":{"effect":{"type":"minecraft:multiply","factor":2.0}})")).find("repair effects are not a list") != std::string::npos
+                    && bad_item_requirement(repair(R"({"type":"minecraft:multiply","factor":2.0})", R"({"condition":"minecraft:random_chance","chance":0.5})")),
+                "a repair effect of another type, without its value or of an unknown one, a part unreadable, parts not a list, no effect, "
+                "not a list, or with an unreadable requirement");
     });
 
     suite.run("enchantments protect players and shorten their burning as both official servers do (client/ench_protect, client/ench_fire)", [] {
@@ -6658,6 +6687,193 @@ int main() {
                     std::format("{}: the shovel worn by {} in 40 breaks, {} slots told", version, w.total, w.told));
         }
         if (!ran) std::puts("  (no official server jar given: the unbreaking checks did not run)");
+    });
+
+    suite.run("mending repairs players' items with the orbs they take as both official servers do (client/ench_mending)", [] {
+        // circuit-clienttest/ench-mending.js: orbs summoned at alice's feet
+        // (0.5 -60 0.5), bob 10 blocks east. The enchantments need the
+        // official data packs (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        using I = server::Intent;
+        bool ran = false;
+        for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            ran = true;
+            const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value() && d->game, d ? "no game data" : d.error());
+            const auto enchanted = d->game->enchanted;
+            GameFixture f(version, offline_config(), std::move(*d));
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            const bool v772 = version == std::string_view{"1.21.8"};
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            const std::vector<std::pair<std::string, std::int32_t>> mending{{"minecraft:mending", 1}};
+            const auto put = [&](std::int16_t slot, std::string_view name, std::int32_t damage) {
+                command(1, "gamemode creative");
+                ticks(1);
+                if (name.empty()) {
+                    f.game->submit(1, I{server::intent::CreativeSlot{slot, 0, 0}});
+                } else {
+                    auto patch = enchanted(mending);
+                    require(patch.has_value(), "enchanted");
+                    f.game->submit(1, I{server::intent::CreativeSlot{slot, 1, tables.item_id(name).value(), damage, *patch}});
+                }
+                ticks(1);
+                command(1, "gamemode survival");
+                ticks(2);
+            };
+            const auto damage = [&](std::size_t slot) {
+                const auto inv = f.game->engine().view().player(contracts::PlayerKey{1, 1}).value();
+                return inv ? static_cast<std::int32_t>(inv->slots[slot].damage) : -1;
+            };
+            const auto total = [&] {
+                const auto inv = f.game->engine().view().player(contracts::PlayerKey{1, 1}).value();
+                return inv ? inv->xp_total : -1;
+            };
+            // The kinds of the packets alice is sent from `from` on: s a slot
+            // of window 0, x her experience, t a pickup, r a removal, o an
+            // orb's spawn (with its value on 1.21.4) and v an orb's value
+            // (with the value).
+            std::set<std::int32_t> orbs; // the orbs' entity ids seen
+            const auto kinds = [&](std::size_t from) {
+                const auto id = [&](const char* name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto slot = id("container_set_slot"), experience = id("set_experience"), take = id("take_item_entity"),
+                           removal = id("remove_entities"), data = id("set_entity_data");
+                const auto orb = v772 ? id("add_entity") : id("add_experience_orb");
+                std::string out;
+                std::lock_guard lock(alice->mutex);
+                for (auto k = from; k < alice->packets.size(); ++k) {
+                    auto pk = protocol::open_packet(alice->packets[k]);
+                    if (!pk) continue;
+                    if (pk->id == slot && pk->fields.varint().value() == 0) {
+                        out += 's';
+                    } else if (pk->id == experience) {
+                        out += 'x';
+                    } else if (pk->id == take) {
+                        out += 't';
+                    } else if (pk->id == removal) {
+                        out += 'r';
+                    } else if (pk->id == orb) {
+                        orbs.insert(pk->fields.varint().value());
+                        out += 'o';
+                        if (!v772) {
+                            for (int c = 0; c < 3; ++c) (void)pk->fields.f64();
+                            out += std::to_string(pk->fields.i16().value());
+                        }
+                    } else if (pk->id == data && orbs.contains(pk->fields.varint().value())) {
+                        const auto index = pk->fields.u8().value();
+                        const auto type = pk->fields.varint().value();
+                        out += 'v';
+                        if (index == 8 && type == 1) out += std::to_string(pk->fields.varint().value());
+                    }
+                }
+                return out;
+            };
+            const auto mark = [&] {
+                std::lock_guard lock(alice->mutex);
+                return alice->packets.size();
+            };
+            const auto orb = [&](std::int32_t value, std::string_view extra = "") {
+                command(1, std::format("summon experience_orb 0.5 -60 0.5 {{Value:{},Motion:[0.0d,0.0d,0.0d]{}}}", value, extra));
+            };
+            for (const auto* c : {"gamerule doMobSpawning false", "tp alice 0.5 -60 0.5 0 0", "gamemode survival"}) command(1, c);
+            command(2, "tp bob 10.5 -60 0.5 90 0");
+            ticks(30);
+            const auto origin = total();
+
+            // An iron pickaxe of mending, damage 100: an orb of 7 repairs 14,
+            // all its points used; alice is told the pickup, the removal and
+            // the slot, no experience.
+            put(36, "minecraft:iron_pickaxe", 100);
+            auto from = mark();
+            orb(7);
+            ticks(6);
+            const auto first = kinds(from);
+            require(damage(36) == 86 && total() == origin && first.ends_with("trs") && first.find('x') == std::string::npos,
+                    std::format("{}: 14 repaired: damage {}, total {}, packets {}", version, damage(36), total(), first));
+            // Damage 3 and an orb of 2: whole, 1 to the bar, told before the slot.
+            put(36, "minecraft:iron_pickaxe", 3);
+            from = mark();
+            orb(2);
+            ticks(6);
+            const auto second = kinds(from);
+            require(damage(36) == 0 && total() == origin + 1 && second.ends_with("trxs"),
+                    std::format("{}: 3 repaired for 1 point: damage {}, total {}, packets {}", version, damage(36), total(), second));
+            // A whole pickaxe: all to the bar.
+            orb(5);
+            ticks(6);
+            require(damage(36) == 0 && total() == origin + 6, std::format("{}: a whole pickaxe, total {}", version, total()));
+
+            // The choice: 60 orbs of 1 over a damaged pickaxe, shield and
+            // helmet (each within 4 standard deviations of 20 picks), never the
+            // whole boots or a pickaxe in a slot not selected, no point to the bar.
+            put(36, "minecraft:iron_pickaxe", 100);
+            put(45, "minecraft:shield", 100);
+            put(5, "minecraft:iron_helmet", 100);
+            put(8, "minecraft:iron_boots", 0);
+            put(37, "minecraft:iron_pickaxe", 100);
+            const auto before = total();
+            // The equip sounds alice hears from `from` on: iron armor's (72)
+            // and the shield's (70).
+            const auto equip_sounds = [&](std::size_t from, std::int32_t sound) {
+                const auto id = f.wire.ids().id(State::play, Bound::clientbound, "sound");
+                int n = 0;
+                std::lock_guard lock(alice->mutex);
+                for (auto k = from; k < alice->packets.size(); ++k)
+                    if (auto pk = protocol::open_packet(alice->packets[k]); pk && pk->id == id && pk->fields.varint().value() == sound + 1) ++n;
+                return n;
+            };
+            from = mark();
+            orb(1, ",Count:60");
+            ticks(140);
+            const int pickaxe = (100 - damage(36)) / 2, shield = (100 - damage(45)) / 2, helmet = (100 - damage(5)) / 2;
+            const auto fair = [](int n) { return std::abs(n - 20) <= 15; };
+            require(pickaxe + shield + helmet == 60 && fair(pickaxe) && fair(shield) && fair(helmet) && damage(8) == 0 && damage(37) == 100
+                        && total() == before && equip_sounds(from, 72) == 0 && equip_sounds(from, 70) == 0,
+                    std::format("{}: picks {} {} {}, boots {}, slot 37 {}, total {} (was {}), equip sounds {} {}", version, pickaxe, shield, helmet,
+                                damage(8), damage(37), total(), before, equip_sounds(from, 72), equip_sounds(from, 70)));
+            // Set in creative mode in place of the same item of another
+            // damage: the equip sound (the boots whole for ones of damage 100,
+            // the shield repaired for one of damage 100).
+            from = mark();
+            put(8, "minecraft:iron_boots", 100);
+            put(45, "minecraft:shield", 100);
+            require(equip_sounds(from, 72) == 1 && equip_sounds(from, 70) == 1,
+                    std::format("{}: equip sounds for the boots {} and the shield {}", version, equip_sounds(from, 72), equip_sounds(from, 70)));
+            for (const std::int16_t s : {45, 5, 8, 37}) put(s, "", 0);
+
+            // Orbs of -5 and of 0: shown (1.21.8 with the value twice, the
+            // second a tick on, and none for 0), taken, nothing changed, also
+            // with levels and points.
+            command(1, "xp set alice 3 levels");
+            command(1, "xp add alice 5 points");
+            put(36, "minecraft:iron_pickaxe", 50);
+            const auto kept = total();
+            // The kinds tick by tick ('|' after each), the last empty ticks left out.
+            const auto by_tick = [&](int n) {
+                std::string out;
+                for (int k = 0; k < n; ++k) {
+                    const auto at = mark();
+                    ticks(1);
+                    out += kinds(at) + '|';
+                }
+                while (out.ends_with("||")) out.pop_back();
+                if (out.ends_with('|')) out.pop_back();
+                return out;
+            };
+            orb(-5);
+            const auto negative = by_tick(6);
+            orb(0);
+            const auto zero = by_tick(6);
+            require(damage(36) == 50 && total() == kept && negative == (v772 ? "ov-5|v-5tr" : "o-5|tr") && zero == (v772 ? "o|tr" : "o0|tr"),
+                    std::format("{}: orbs of -5 and 0: damage {}, total {} (was {}), packets {} and {}", version, damage(36), total(), kept, negative, zero));
+        }
+        if (!ran) std::puts("  (no official server jar given: the mending checks did not run)");
     });
 
     suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {

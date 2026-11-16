@@ -489,6 +489,12 @@ int main() {
         orb.seeded = true;
         orb.own_random = 0x123456789ABCULL;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(orb);
+        // And one of the least value a summoned orb keeps (client/ench_mending).
+        auto negative = orb;
+        negative.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        negative.experience = -32768;
+        negative.orbs = 1;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(negative);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;
         returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};

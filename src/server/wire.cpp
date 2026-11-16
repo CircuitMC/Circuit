@@ -435,7 +435,7 @@ Bytes Wire::experience_orb(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 p
     // later: an entity with its value at data index 8 (a VarInt).
     if (id_->add_experience_orb >= 0) {
         Writer w;
-        w.varint(id).f64(pos.x).f64(pos.y).f64(pos.z).i16(static_cast<std::int16_t>(std::clamp(value, 0, 32767)));
+        w.varint(id).f64(pos.x).f64(pos.y).f64(pos.z).i16(static_cast<std::int16_t>(std::clamp(value, -32768, 32767)));
         return packet(id_->add_experience_orb, w);
     }
     return spawn_entity(id, uuid, type, pos, 0, 0, 0, 0, {});

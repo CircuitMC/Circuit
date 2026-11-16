@@ -6851,7 +6851,7 @@
       "experience_orb": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Summoned experience orbs: motion, bouncing, floating, merging and despawning, as both official servers run them; drawn to and taken by players, shown to clients; dropped by players who die",
+        "note": "Summoned experience orbs (of a negative value too, taken without effect): motion, bouncing, floating, merging and despawning, as both official servers run them; drawn to and taken by players, their points mending items first, shown to clients (1.21.8: the value again a tick on, none for 0); dropped by players who die",
         "cases": [
           "trace/orbs",
           "trace/orbs_merge",
@@ -6860,10 +6860,13 @@
           "trace/xp_merge",
           "trace/xp_merge_more",
           "client/orbs",
-          "client/xp_death"
+          "client/xp_death",
+          "client/ench_mending"
         ],
         "deviations": [
-          "mobs give none yet; how players draw them is not compared tick by tick; Mending is not modeled"
+          "mobs give none yet; how players draw them is not compared tick by tick",
+          "1.21.8: the second values of several orbs that appear in one tick come in Circuit's order",
+          "a respawned player is not sent the orbs near them again (both official servers remove and spawn them again)"
         ]
       },
       "snowball": {
@@ -7749,6 +7752,18 @@
         "deviations": [
           "its chance is drawn from Circuit's own random",
           "what dispensers wear (flint and steel, shears) wears without it"
+        ]
+      },
+      "mending": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_mending",
+          "client/ench_mending_pack"
+        ],
+        "note": "Its repair with experience effect (a factor 2; its slots: any): an orb's points repair a damaged item with it in the main hand, the off hand or the armor, picked with equal chances, by the lesser of twice the points and the damage, using the repair times the points over twice them (rounded down); the rest to another such item in the same pickup, then to the player; whole items and other hotbar slots never; also in creative mode and with unbreaking; with a data pack's other repair effects (factors by level, added, set, all of, remove_binomial) as both official servers",
+        "deviations": [
+          "the item is picked by a draw of the level random"
         ]
       }
     }
