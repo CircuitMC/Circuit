@@ -681,7 +681,8 @@ bool decode_command(Reader& r, Command& c) {
     }
     case 44: {
         WearHeld b;
-        if (!r.player(b.player) || !r.get(b.slot) || ((b.slot < hotbar_first || b.slot >= hotbar_first + 9) && b.slot != offhand_slot) || !r.get(b.item)
+        if (!r.player(b.player) || !r.get(b.slot)
+            || ((b.slot < hotbar_first || b.slot >= hotbar_first + 9) && b.slot != offhand_slot && (b.slot < 5 || b.slot > 8)) || !r.get(b.item)
             || !r.get(b.amount)
             || b.amount < 1 || b.amount > max_held_wear)
             return false;

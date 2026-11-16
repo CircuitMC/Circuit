@@ -5383,8 +5383,9 @@ int main() {
                 "an immunity with an unreadable requirement");
         // Attacks: the damage, knockback and post-attack forms the official
         // packs use load (smite's entity type tag, power's direct attacker,
-        // fire aspect's direct ignite, bane of arthropods' slowness and
-        // thorns, not acted on); others do not, nor is_direct in protection.
+        // fire aspect's direct ignite, thorns' chance, damage and wear, bane
+        // of arthropods' slowness, not acted on); others do not, nor
+        // is_direct or a random chance in protection.
         const std::string weapon = R"({"description":"r","supported_items":"#minecraft:enchantable/sword","weight":2,"max_level":3,"min_cost":{"base":10,"per_level_above_first":10},"max_cost":{"base":40,"per_level_above_first":10},"anvil_cost":4,"slots":["mainhand"],"effects":{)";
         const auto effects = [&](std::string_view body) { return weapon + std::string(body) + "}}"; };
         const std::string smite = R"({"condition":"minecraft:entity_properties","entity":"this","predicate":{"type":"#minecraft:sensitive_to_smite"}})";
@@ -5392,15 +5393,46 @@ int main() {
         require(attempt(effects(R"("minecraft:damage":[{"effect":)" + add + R"(,"requirements":)" + smite + "}]")) == "loaded"
                     && attempt(effects(R"("minecraft:knockback":[{"effect":)" + add + R"(,"requirements":{"condition":"minecraft:entity_properties","entity":"direct_attacker","predicate":{"type":["minecraft:arrow","spectral_arrow"]}}}])")) == "loaded"
                     && attempt(effects(R"("minecraft:post_attack":[{"affected":"victim","enchanted":"attacker","effect":{"type":"minecraft:ignite","duration":{"type":"minecraft:linear","base":4,"per_level_above_first":4}},"requirements":)" + direct + "}]")) == "loaded"
-                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"victim","enchanted":"attacker","effect":{"type":"minecraft:apply_mob_effect","to_apply":"minecraft:slowness","min_duration":1.5,"max_duration":1.5,"min_amplifier":3,"max_amplifier":3},"requirements":{"condition":"minecraft:all_of","terms":[)" + smite + "," + direct + "]}}]")) == "loaded",
+                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"victim","enchanted":"attacker","effect":{"type":"minecraft:apply_mob_effect","to_apply":"minecraft:slowness","min_duration":1.5,"max_duration":1.5,"min_amplifier":3,"max_amplifier":3},"requirements":{"condition":"minecraft:all_of","terms":[)" + smite + "," + direct + "]}}]")) == "loaded"
+                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"attacker","enchanted":"victim","effect":{"type":"minecraft:all_of","effects":[{"type":"minecraft:damage_entity","damage_type":"minecraft:thorns","max_damage":5.0,"min_damage":1.0},{"type":"minecraft:change_item_damage","amount":2.0}]},"requirements":{"chance":{"type":"minecraft:enchantment_level","amount":{"type":"minecraft:linear","base":0.15,"per_level_above_first":0.15}},"condition":"minecraft:random_chance"}}])")) == "loaded",
                 "the official forms of damage, knockback and post-attack effects load");
+        // Forms the official packs do not use: an ignite onto the attacker,
+        // a constant chance, damage_entity of another type (not acted on,
+        // also among others: its requirement not read), the damaging entity
+        // enchanted (a melee attack's attacker).
+        require(attempt(effects(R"("minecraft:post_attack":[{"affected":"attacker","enchanted":"victim","effect":{"type":"minecraft:ignite","duration":4},"requirements":{"condition":"minecraft:random_chance","chance":{"type":"minecraft:constant","value":0.5}}}])")) == "loaded"
+                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"victim","enchanted":"damaging_entity","effect":{"type":"minecraft:change_item_damage","amount":1},"requirements":{"condition":"minecraft:random_chance","chance":0.25}}])")) == "loaded"
+                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"attacker","enchanted":"victim","effect":{"type":"minecraft:all_of","effects":[{"type":"minecraft:damage_entity","damage_type":"minecraft:magic","max_damage":5.0,"min_damage":1.0},{"type":"minecraft:change_item_damage","amount":2.0}]},"requirements":{"condition":"minecraft:weather_check","thundering":true}}])")) == "loaded",
+                "other forms of post-attack effects load");
         require(attempt(effects(R"("minecraft:damage":[{"effect":{"type":"minecraft:multiply","factor":2}}])")).find("a damage effect Circuit cannot read") != std::string::npos
                     && attempt(effects(R"("minecraft:knockback":[{"effect":{"type":"minecraft:set","value":2}}])")).find("a knockback effect Circuit cannot read") != std::string::npos,
                 "a damage or knockback effect other than an added value");
-        require(attempt(effects(R"("minecraft:post_attack":[{"affected":"attacker","enchanted":"victim","effect":{"type":"minecraft:ignite","duration":4}}])")).find("post-attack effect Circuit cannot read") != std::string::npos
-                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"victim","enchanted":"attacker","effect":{"type":"minecraft:ignite","duration":{"type":"minecraft:wavy"}}}])")).find("post-attack effect Circuit cannot read") != std::string::npos
-                    && attempt(effects(R"("minecraft:post_attack":[{"affected":"victim","enchanted":"attacker","effect":{"duration":4}}])")).find("post-attack effect Circuit cannot read") != std::string::npos,
-                "an ignite onto the attacker, of an unknown duration form, or an effect without a type");
+        const auto post_attack = [&](std::string_view effect, std::string_view requirement = "") {
+            return effects(R"("minecraft:post_attack":[{"affected":"attacker","enchanted":"victim","effect":)" + std::string(effect)
+                           + (requirement.empty() ? std::string{} : R"(,"requirements":)" + std::string(requirement)) + "}]");
+        };
+        const auto unreadable = [&](const std::string& definition) { return attempt(definition).find("post-attack effect Circuit cannot read") != std::string::npos; };
+        require(unreadable(effects(R"("minecraft:post_attack":[{"affected":"killer","enchanted":"victim","effect":{"type":"minecraft:ignite","duration":4}}])"))
+                    && unreadable(effects(R"("minecraft:post_attack":[{"affected":"victim","effect":{"type":"minecraft:ignite","duration":4}}])"))
+                    && unreadable(post_attack(R"({"type":"minecraft:ignite","duration":{"type":"minecraft:wavy"}})"))
+                    && unreadable(post_attack(R"({"duration":4})"))
+                    && unreadable(post_attack(R"({"type":"minecraft:damage_entity","damage_type":"minecraft:thorns","min_damage":1.0})"))
+                    && unreadable(post_attack(R"({"type":"minecraft:damage_entity","max_damage":5.0,"min_damage":1.0})"))
+                    && unreadable(post_attack(R"({"type":"minecraft:change_item_damage","amount":{"type":"minecraft:wavy"}})"))
+                    && unreadable(post_attack(R"({"type":"minecraft:all_of","effects":[{"type":"minecraft:change_item_damage"}]})"))
+                    && unreadable(post_attack(R"({"type":"minecraft:all_of","effects":{"type":"minecraft:ignite","duration":4}})"))
+                    && unreadable(post_attack(R"({"type":"minecraft:all_of","effects":[{"type":"minecraft:apply_mob_effect"},{"type":"minecraft:ignite"}]})")),
+                "a post-attack effect of an unknown party, without one, an unknown duration, damage or wear form, without a type, "
+                "or all of an unreadable effect or not a list (also among effects not acted on)");
+        const auto bad_requirement = [&](const std::string& definition) {
+            return attempt(definition).find("damage requirement Circuit cannot read") != std::string::npos;
+        };
+        require(bad_requirement(post_attack(R"({"type":"minecraft:ignite","duration":4})", R"({"condition":"minecraft:random_chance","chance":{"type":"minecraft:uniform","min":0,"max":1}})"))
+                    && bad_requirement(post_attack(R"({"type":"minecraft:ignite","duration":4})", R"({"condition":"minecraft:random_chance","chance":{"type":"minecraft:constant","value":"half"}})"))
+                    && bad_requirement(post_attack(R"({"type":"minecraft:ignite","duration":4})", R"({"condition":"minecraft:random_chance"})"))
+                    && bad_requirement(post_attack(R"({"type":"minecraft:ignite","duration":4})", R"({"condition":"minecraft:random_chance","chance":{"type":"minecraft:enchantment_level","amount":{"type":"minecraft:wavy"}}})"))
+                    && bad_requirement(effects(R"("minecraft:damage":[{"effect":)" + add + R"(,"requirements":{"condition":"minecraft:random_chance","chance":0.5}}])")),
+                "a random chance of a uniform, unreadable or missing chance, or in an attack's damage");
         const auto damaging = [&](std::string_view requirement) {
             return effects(R"("minecraft:damage":[{"effect":)" + add + R"(,"requirements":)" + std::string(requirement) + "}]");
         };
@@ -6057,6 +6089,330 @@ int main() {
             require(again_id >= 0 && shown, std::format("{}: bob shown burning after leaving as he was hit", version));
         }
         if (!ran) std::puts("  (no official server jar given: the weapon enchantment checks did not run)");
+    });
+
+    suite.run("thorns hurt, knock back and wear as both official servers do (client/ench_thorns)", [] {
+        // circuit-clienttest/ench-thorns.js: alice (8.5 -60 8.5, facing east)
+        // attacks bob (10.5 -60 8.5, facing west), carol watching 3 blocks
+        // south of alice or swept beside bob; thorns VII always acts (a
+        // chance of 1.05). The enchantments need the official data packs
+        // (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        using I = server::Intent;
+        bool ran = false;
+        for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            ran = true;
+            const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value() && d->game, d ? "no game data" : d.error());
+            const auto enchanted = d->game->enchanted;
+            GameFixture f(version, offline_config(), std::move(*d));
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            const bool v772 = std::string_view(version) == "1.21.8";
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            auto carol = f.join(3, "carol");
+            std::map<std::int32_t, std::string> names;
+            std::map<std::string, std::int32_t> ids;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}, std::pair{carol, "carol"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) {
+                        const auto e = pk->fields.i32().value();
+                        names[e] = name;
+                        ids[name] = e;
+                    }
+            }
+            // Since the last call, as text: health, damage events, velocities,
+            // sounds, animations, particles, equipment others see and deaths
+            // (the death screen with its message's key when it is thorns').
+            std::map<std::uint64_t, std::size_t> seen;
+            std::int32_t last_teleport = 0; // alice's
+            const auto packets = [&](Recorder& r) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                const auto who = [&](std::int32_t e) { return names.contains(e) ? names[e] : std::format("#{}", e); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto& at = seen[r.peer_id]; at < r.packets.size(); ++at) {
+                    auto pk = protocol::open_packet(r.packets[at]);
+                    if (!pk) continue;
+                    auto& in = pk->fields;
+                    if (pk->id == id("set_health")) {
+                        out.push_back(std::format("health {}", in.f32().value()));
+                    } else if (pk->id == id("player_position")) {
+                        if (&r == alice.get()) last_teleport = in.varint().value();
+                    } else if (pk->id == id("damage_event")) {
+                        const auto e = in.varint().value(), type = in.varint().value(), cause = in.varint().value(), direct = in.varint().value();
+                        out.push_back(std::format("damage {} {} by {} {}", who(e), type, cause ? who(cause - 1) : "none", direct ? who(direct - 1) : "none"));
+                    } else if (pk->id == id("set_entity_motion")) {
+                        const auto e = in.varint().value();
+                        const auto x = in.i16().value(), y = in.i16().value(), z = in.i16().value();
+                        out.push_back(std::format("velocity {} {} {} {}", who(e), x, y, z));
+                    } else if (pk->id == id("sound")) {
+                        out.push_back(std::format("sound {}", in.varint().value() - 1));
+                    } else if (pk->id == id("animate")) {
+                        const auto e = in.varint().value();
+                        out.push_back(std::format("animation {} {}", who(e), in.u8().value()));
+                    } else if (pk->id == id("set_equipment")) {
+                        out.push_back(std::format("equipment {}", who(in.varint().value())));
+                    } else if (pk->id == id("player_combat_kill")) {
+                        const std::string raw(reinterpret_cast<const char*>(r.packets[at].data()), r.packets[at].size());
+                        out.push_back(raw.find("death.attack.thorns") != std::string::npos ? "death screen death.attack.thorns" : "death screen");
+                    } else if (pk->id == id("level_particles")) {
+                        (void)in.boolean();
+                        (void)in.boolean();
+                        for (int k = 0; k < 3; ++k) (void)in.f64();
+                        for (int k = 0; k < 4; ++k) (void)in.f32();
+                        const auto n = in.i32().value();
+                        out.push_back(std::format("particle {} count {}", in.varint().value(), n));
+                    } else if (pk->id == id("set_entity_data")) {
+                        const auto e = in.varint().value();
+                        if (in.u8().value() == 0 && in.varint().value() == 0) out.push_back(std::format("flags {} {}", who(e), in.u8().value()));
+                    }
+                }
+                return out;
+            };
+            struct Seen {
+                std::vector<std::string> alice, bob, carol;
+            };
+            const auto ticks = [&](int n) {
+                Seen all;
+                for (int k = 0; k < n; ++k) {
+                    f.game->tick();
+                    for (auto [r, into] : {std::pair{alice.get(), &all.alice}, std::pair{bob.get(), &all.bob}, std::pair{carol.get(), &all.carol}}) {
+                        auto v = packets(*r);
+                        into->insert(into->end(), v.begin(), v.end());
+                    }
+                }
+                return all;
+            };
+            const auto has = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::find(v, x) != v.end(); };
+            const auto count = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::count(v, x); };
+            // In this order, a health of any value written "health".
+            const auto in_order = [](const std::vector<std::string>& v, std::initializer_list<std::string> want) {
+                auto at = v.begin();
+                for (const auto& w : want) {
+                    at = std::find_if(at, v.end(), [&](const std::string& x) { return x == w || (w == "health" && x.starts_with("health ")); });
+                    if (at == v.end()) return false;
+                    ++at;
+                }
+                return true;
+            };
+            const auto healths = [](const std::vector<std::string>& v) {
+                std::vector<float> out;
+                for (const auto& x : v)
+                    if (x.starts_with("health ")) out.push_back(std::stof(x.substr(7)));
+                return out;
+            };
+            const auto text = [](const std::vector<std::string>& v) {
+                std::string t;
+                for (const auto& x : v) t += x + "; ";
+                return t;
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            const auto attack = [&] {
+                f.game->submit(1, I{server::intent::Attack{ids.at("bob")}});
+                f.game->submit(1, I{server::intent::Swing{0}});
+            };
+            const auto put = [&](std::uint64_t who, std::int16_t slot, std::string_view name, std::vector<std::pair<std::string, std::int32_t>> levels) {
+                command(who, "gamemode creative");
+                (void)ticks(1);
+                if (name.empty()) {
+                    f.game->submit(who, I{server::intent::CreativeSlot{slot, 0, 0}});
+                } else {
+                    auto patch = levels.empty() ? std::optional<contracts::ComponentPatch>(contracts::ComponentPatch{}) : enchanted(levels);
+                    require(patch.has_value(), "enchanted");
+                    f.game->submit(who, I{server::intent::CreativeSlot{slot, 1, tables.item_id(name).value(), 0, *patch}});
+                }
+                (void)ticks(1);
+                command(who, "gamemode survival");
+            };
+            const auto wear = [&](std::uint64_t peer, std::size_t slot) {
+                const auto inv = f.game->engine().view().player(contracts::PlayerKey{peer, peer}).value();
+                return inv ? inv->slots[slot].damage : -1;
+            };
+            const auto heal = [&] {
+                command(1, "effect give alice minecraft:instant_health 1 3");
+                command(1, "effect give bob minecraft:instant_health 1 3");
+                (void)ticks(30);
+            };
+            const auto sound = [&](std::int32_t v772_id, std::int32_t v769_id) { return std::format("sound {}", v772 ? v772_id : v769_id); };
+            const auto hurt = sound(1175, 1135), death = sound(1174, 1134), strong = sound(1168, 1128), nodamage = sound(1167, 1127),
+                       sweep = sound(1169, 1129), thorns = sound(1462, 1421);
+            const std::string hit_bob = "damage bob 34 by alice alice", hit_carol = "damage carol 34 by alice alice", thorned = "damage alice 42 by bob bob",
+                              knocked = "velocity alice -3200 2886 0", jump = "velocity alice 0 3359 0";
+            const auto sweep_particle = std::format("particle {} count 0", v772 ? 64 : 63);
+            for (const auto* c : {"gamerule naturalRegeneration false", "fill 4 -61 4 16 -61 12 dirt", "tp alice 8.5 -60 8.5 -90 0", "gamemode survival"})
+                command(1, c);
+            command(2, "tp bob 10.5 -60 8.5 90 0");
+            command(2, "gamemode survival");
+            command(3, "tp carol 8.5 -60 11.5 0 0");
+            command(3, "gamemode survival");
+            (void)ticks(2);
+            f.game->submit(1, I{server::intent::ConfirmTeleport{last_teleport}});
+            f.game->submit(1, I{server::intent::Move{std::nullopt, std::pair{-90.0f, 0.0f}, true}});
+            f.game->submit(2, I{server::intent::Move{std::nullopt, std::pair{90.0f, 0.0f}, true}});
+            f.game->submit(3, I{server::intent::Move{std::nullopt, std::pair{0.0f, 0.0f}, true}});
+            (void)ticks(30);
+            // A hit without thorns: bob's velocity put back, told the first time.
+            attack();
+            (void)ticks(3);
+
+            // Thorns VII on bob's chestplate: alice hurt for 1 to 5 by bob
+            // (the thorns damage type), knocked 0.4 away from him (to the
+            // others twice), after the attack's sound; 1.21.8 has the others
+            // hear her hurt, then everyone the thorns sound, 1.21.4 the others
+            // the thorns sound for the hurt; her health with the next tick's
+            // wear, before bob's piece others see; the piece worn by 1 and 2.
+            put(2, 6, "minecraft:iron_chestplate", {{"minecraft:thorns", 7}});
+            heal();
+            attack();
+            auto t = ticks(3);
+            const auto lost = healths(t.alice);
+            require(in_order(t.alice, {hit_bob, hurt, strong, thorned, knocked, "health", "equipment bob"}) && lost.size() == 1 && lost[0] >= 15.0f
+                        && lost[0] <= 19.0f && count(t.alice, knocked) == 1 && count(t.bob, knocked) == 2 && count(t.carol, knocked) == 2
+                        && wear(2, 6) == 3,
+                    std::format("{}: thorns: {} / {}", version, text(t.alice), text(t.bob)));
+            require(v772 ? in_order(t.bob, {thorned, hurt, thorns}) && has(t.alice, thorns)
+                         : in_order(t.bob, {thorned, thorns}) && !has(t.alice, thorns) && count(t.bob, hurt) == 0,
+                    std::format("{}: the thorns sound: {} / {}", version, text(t.alice), text(t.bob)));
+            // The knockback lifts her: her move up is not a jump; one from the
+            // ground again is.
+            f.game->submit(1, I{server::intent::Move{server::Vec3{8.5, -59.6, 8.5}, std::nullopt, false}});
+            t = ticks(2);
+            require(!has(t.bob, jump), std::format("{}: no jump by the knockback: {}", version, text(t.bob)));
+            f.game->submit(1, I{server::intent::Move{server::Vec3{8.5, -60.0, 8.5}, std::nullopt, true}});
+            (void)ticks(1);
+            f.game->submit(1, I{server::intent::Move{server::Vec3{8.5, -59.6, 8.5}, std::nullopt, false}});
+            t = ticks(2);
+            require(has(t.bob, jump), std::format("{}: a jump after landing: {}", version, text(t.bob)));
+            f.game->submit(1, I{server::intent::Move{server::Vec3{8.5, -60.0, 8.5}, std::nullopt, true}});
+            (void)ticks(3);
+            // Under resistance V: the hurt, no health lost.
+            command(1, "effect give alice minecraft:resistance 600 4");
+            heal();
+            attack();
+            t = ticks(3);
+            require(has(t.alice, thorned) && healths(t.alice).empty() && wear(2, 6) == 6, std::format("{}: resistance V: {}", version, text(t.alice)));
+            // A harder hit within bob's hurt cooldown: no thorns hurt (alice in
+            // hers), the piece still worn by 2 more.
+            heal();
+            attack();
+            (void)ticks(6);
+            command(1, "effect give alice minecraft:strength 30 1");
+            attack();
+            t = ticks(3);
+            require(!has(t.alice, thorned) && has(t.alice, strong) && wear(2, 6) == 12, std::format("{}: within the cooldown: {} ({})", version, text(t.alice), wear(2, 6)));
+            command(1, "effect clear alice minecraft:strength");
+            // An iron sword: thorns after the sweep's sound and particle, before
+            // the damage indicators (bob lost 5.28: 2); the chestplate worn by
+            // the hit's 1 and thorns' 2.
+            put(1, 36, "minecraft:iron_sword", {});
+            heal();
+            attack();
+            t = ticks(3);
+            require(in_order(t.alice, {hit_bob, hurt, sweep, sweep_particle, thorned, "particle 6 count 2"}) && wear(2, 6) == 15,
+                    std::format("{}: the sword: {}", version, text(t.alice)));
+            put(1, 36, "", {});
+            // bob in creative mode: no hurt, no thorns.
+            heal();
+            command(2, "gamemode creative");
+            (void)ticks(2);
+            attack();
+            t = ticks(3);
+            require(has(t.alice, nodamage) && !has(t.alice, thorned) && wear(2, 6) == 15, std::format("{}: bob in creative mode: {}", version, text(t.alice)));
+            command(2, "gamemode survival");
+            // alice in diamond armor: her pieces worn by thorns' hurt; bob sees
+            // her pieces before his health.
+            for (const auto& [slot, piece] : {std::pair{5, "minecraft:diamond_helmet"}, std::pair{6, "minecraft:diamond_chestplate"},
+                                              std::pair{7, "minecraft:diamond_leggings"}, std::pair{8, "minecraft:diamond_boots"}})
+                put(1, static_cast<std::int16_t>(slot), piece, {});
+            heal();
+            attack();
+            t = ticks(3);
+            require(has(t.alice, thorned) && wear(1, 5) == 1 && wear(1, 8) == 1 && in_order(t.bob, {"equipment alice", "health"}),
+                    std::format("{}: alice in diamond armor: {}", version, text(t.bob)));
+            for (const std::int16_t slot : {5, 6, 7, 8}) put(1, slot, "", {});
+            // Thorns on a sword bob holds (no chestplate): alice hurt, the
+            // sword worn by 2.
+            put(2, 6, "", {});
+            put(2, 36, "minecraft:iron_sword", {{"minecraft:thorns", 7}});
+            heal();
+            attack();
+            t = ticks(3);
+            require(has(t.alice, thorned) && wear(2, 36) == 2, std::format("{}: thorns held: {}", version, text(t.alice)));
+            put(2, 36, "", {});
+            // Two pieces of thorns: one hurt (the second within alice's
+            // cooldown), both worn by 1 and 2.
+            put(2, 6, "minecraft:iron_chestplate", {{"minecraft:thorns", 7}});
+            put(2, 7, "minecraft:iron_leggings", {{"minecraft:thorns", 7}});
+            heal();
+            attack();
+            t = ticks(3);
+            require(count(t.alice, thorned) == 1 && wear(2, 6) == 3 && wear(2, 7) == 3, std::format("{}: two pieces: {}", version, text(t.alice)));
+            put(2, 7, "", {});
+            // alice in creative mode: no hurt, the piece still worn by 2.
+            heal();
+            command(1, "gamemode creative");
+            (void)ticks(2);
+            attack();
+            t = ticks(3);
+            require(!has(t.alice, thorned) && has(t.alice, hit_bob) && wear(2, 6) == 6, std::format("{}: alice in creative mode: {} ({})", version, text(t.alice), wear(2, 6)));
+            command(1, "gamemode survival");
+            // carol beside bob, swept, in a chestplate of thorns: alice hurt by
+            // carol right after carol's hurt, before the sweep's sound.
+            put(2, 6, "", {});
+            put(3, 6, "minecraft:iron_chestplate", {{"minecraft:thorns", 7}});
+            put(1, 36, "minecraft:iron_sword", {});
+            command(3, "tp carol 10.5 -60 9.5 90 0");
+            heal();
+            attack();
+            t = ticks(3);
+            // Each player's velocities together: bob is told alice's twice
+            // (her knockback from carol changed it), then carol's twice.
+            const std::string from_carol = "velocity alice -2862 2886 -1431",
+                              swept = v772 ? "velocity carol 4631 3200 715" : "velocity carol 4462 3200 1431";
+            require(in_order(t.alice, {hit_bob, hurt, hit_carol, hurt, "damage alice 42 by carol carol", sweep}) && wear(3, 6) == 3
+                        && in_order(t.bob, {from_carol, from_carol, swept, swept}) && count(t.bob, from_carol) == 2 && count(t.bob, swept) == 2,
+                    std::format("{}: carol swept: {} / {}", version, text(t.alice), text(t.bob)));
+            put(3, 6, "", {});
+            put(1, 36, "", {});
+            command(3, "tp carol 8.5 -60 11.5 0 0");
+            // Fire aspect on a hit within bob's hurt cooldown sets him burning.
+            command(1, "effect clear alice minecraft:resistance");
+            put(1, 37, "minecraft:iron_sword", {{"minecraft:fire_aspect", 2}});
+            heal();
+            attack();
+            (void)ticks(3);
+            f.game->submit(1, I{server::intent::HeldSlot{1}});
+            (void)ticks(3);
+            attack();
+            t = ticks(200);
+            require(count(t.alice, "damage bob 31 by none none") == 7, std::format("{}: fire aspect within the cooldown: {}", version, count(t.alice, "damage bob 31 by none none")));
+            f.game->submit(1, I{server::intent::HeldSlot{0}});
+            put(1, 37, "", {});
+            // Poisoned to 1 health, alice is killed by thorns: the death sound
+            // (1.21.8 then the thorns sound), her swing after her death still
+            // shown.
+            put(2, 6, "minecraft:iron_chestplate", {{"minecraft:thorns", 7}});
+            heal();
+            command(1, "effect give alice minecraft:instant_damage 1 1");
+            (void)ticks(2);
+            command(1, "effect give alice minecraft:poison 30 0");
+            t = ticks(300);
+            const auto poisoned = healths(t.alice);
+            require(!poisoned.empty() && poisoned.back() == 1.0f, std::format("{}: poisoned to 1: {}", version, poisoned.empty() ? -1.0f : poisoned.back()));
+            command(1, "effect clear alice minecraft:poison");
+            (void)ticks(2);
+            attack();
+            t = ticks(3);
+            require(has(t.alice, "death screen death.attack.thorns") && in_order(t.bob, {thorned, death}) && has(t.bob, "animation alice 0")
+                        && (v772 ? in_order(t.bob, {thorned, death, thorns}) : !has(t.bob, thorns)),
+                    std::format("{}: killed by thorns: {}", version, text(t.bob)));
+        }
+        if (!ran) std::puts("  (no official server jar given: the thorns checks did not run)");
     });
 
     suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {

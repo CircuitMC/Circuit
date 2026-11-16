@@ -53,6 +53,7 @@ bool DamageRequirement::matches(const DamageContext& damage) const {
         const auto type = subject == Subject::self ? damage.entity : subject == Subject::attacker ? damage.attacker : damage.direct_attacker;
         return !type.empty() && std::ranges::binary_search(entities, type);
     }
+    case Kind::chance: return damage.draw && (*damage.draw)() < chance.at(damage.level);
     }
     return false;
 }

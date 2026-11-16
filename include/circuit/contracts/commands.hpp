@@ -455,10 +455,11 @@ struct WearArmor {
     bool operator==(const WearArmor&) const = default;
 };
 
-// A held item wears (client/combat: a weapon by an attack that hurt;
-// client/shield: a shield by an attack it blocked): the stack in `slot` (a
-// hotbar slot or the off hand), while it is still of `item`, loses `amount`
-// durability if it has any, breaking at its durability.
+// A held or worn item wears (client/combat: a weapon by an attack that
+// hurt; client/shield: a shield by an attack it blocked; client/ench_thorns:
+// a piece or a held item of thorns by its effect): the stack in `slot` (a
+// hotbar slot, the off hand or an armor slot), while it is still of `item`,
+// loses `amount` durability if it has any, breaking at its durability.
 inline constexpr std::int32_t max_held_wear = 1 << 20;
 struct WearHeld {
     PlayerKey player;

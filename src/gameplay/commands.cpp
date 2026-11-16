@@ -635,11 +635,13 @@ Plan plan(RuleContext& ctx, const contracts::WearArmor& c) {
     };
 }
 
-// A held item worn (client/combat: an iron sword loses one a hit that
-// hurt; client/shield: a shield 1 + the damage it blocked). Its breaking
-// makes no sound here (as armor's and tools' breaking does not yet).
+// A held or worn item worn (client/combat: an iron sword loses one a hit
+// that hurt; client/shield: a shield 1 + the damage it blocked;
+// client/ench_thorns: thorns 2 on its piece). Its breaking makes no sound
+// here (as armor's and tools' breaking does not yet).
 Plan plan(RuleContext& ctx, const contracts::WearHeld& c) {
-    if ((c.slot < contracts::hotbar_first || c.slot >= contracts::hotbar_first + 9) && c.slot != contracts::offhand_slot)
+    if ((c.slot < contracts::hotbar_first || c.slot >= contracts::hotbar_first + 9) && c.slot != contracts::offhand_slot
+        && (c.slot < 5 || c.slot > 8))
         return std::unexpected(ErrorCode::invalid_slot);
     if (c.amount < 1 || c.amount > contracts::max_held_wear) return std::unexpected(ErrorCode::invalid_argument);
     return [&ctx, c] {

@@ -7106,6 +7106,17 @@
           "client/ench_combat"
         ],
         "note": "A player's melee attack and its sweep: the damage event names the attacker, without a source position; armor reduces it; exhaustion 0.1; death.attack.player; with the main hand's enchantments' damage, knockback and fire (client/ench_combat)"
+      },
+      "thorns": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_thorns"
+        ],
+        "note": "Thorns' hurt of an attacker: caused and dealt by the enchanted player, its damage event, hurt animation and 0.4 knockback away from them; armor, resistance and protection reduce it and the attacker's armor wears; exhaustion 0.1; death.attack.thorns with the enchanted player; 1.21.8 the hurt (or death) sound then enchant.thorns.hit for everyone, 1.21.4 enchant.thorns.hit for the others in the hurt sound's place, as both official servers",
+        "deviations": [
+          "the thorns sound's pitch is Circuit's own draw (not recorded)"
+        ]
       }
     },
     "biome": {
@@ -7707,12 +7718,25 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/ench_combat"
+          "client/ench_combat",
+          "client/ench_thorns"
         ],
-        "note": "Its post-attack ignite (4 seconds a level, from a direct attack) on the target and each player swept, also on a weak hit, times their burning time, a longer burning kept, its flag after the next tick's wear and health, as both official servers",
+        "note": "Its post-attack ignite (4 seconds a level, from a direct attack) on the target and each player swept, also on a weak hit and on a hit within the target's hurt cooldown (client/ench_thorns), times their burning time, a longer burning kept, its flag after the next tick's wear and health, as both official servers",
         "deviations": [
           "the scaled ticks are rounded down by Circuit's choice (the recorded hurt counts are the same rounded to the nearest)",
           "a swept player is set burning only when hurt (Circuit's choice: every recorded one was hurt)"
+        ]
+      },
+      "thorns": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_thorns"
+        ],
+        "note": "Its post-attack effect from a piece worn or an item held (its slots: any): by chance (0.15 a level; VII always), the attacker hurt for 1 to 5 by the thorns damage type and the item worn by 2, also when the hurt did not come (the attacker in creative mode or within their hurt cooldown); after the attack's sound, a swept player's right after their hurt; also on a hit within the target's hurt cooldown; not when blocked by a shield or against a creative target; two pieces: one hurt, both worn; as both official servers",
+        "deviations": [
+          "its chance and damage are drawn from Circuit's own random",
+          "thorns from projectiles and against shields, and unbreaking's share of the wear, are not modeled"
         ]
       }
     }

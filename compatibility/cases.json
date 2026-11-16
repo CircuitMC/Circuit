@@ -1504,6 +1504,17 @@
       "description": "A survival player attacks another with a third beside him: an iron sword of sharpness V at full charge (sweeping the third), on a weak hit, critical and against a creative player; a stick of sharpness V, also under weakness; an iron axe of sharpness V; smite V and bane of arthropods V; knockback I and II standing, weak, sprinting, weak and sprinting, and against a netherite chestplate; fire aspect I and II until neither is shown burning, weak, against fire protection IV, against a creative player, and I on a player burning from II; sweeping edge I to III, III with sharpness V, and at a charge of 0.96 under haste 229; each client's health, damage events, velocities, statuses, animations, shared flags, effects, slots and equipment (components compared by type, enchantments by id), attributes, sounds and particles; Circuit and both official servers give identical output"
     },
     {
+      "id": "client/ench_thorns",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/ench-thorns.js; Circuit's side also in tests/server/server_tests.cpp, tests/rules/rules_tests.cpp and tests/contracts/contract_tests.cpp",
+      "status": "passing",
+      "description": "A survival player attacks another with a third watching: once without thorns; with thorns VII on the target's chestplate by the fist and an iron sword at full charge, again 2 ticks later, harder within the target's hurt cooldown (strength II), the attacker under resistance V, in diamond armor and in protection IV leather armor; against a raised shield and a creative target; thorns VII on a sword held; the attacker poisoned to 1 health and killed by thorns; thorns on chestplate and leggings; the attacker in creative mode; the third, beside the target in a sweep, in thorns; a hit within the target's hurt cooldown with a sword of fire aspect II switched to, in the tick of the switch and 3 ticks after; each client's health (the attacker's after a thorns hurt, and the target's in the last step, masked: their values come from each server's random and timing), damage events, velocities, statuses, animations, shared flags, effects, slots and equipment (components compared by type, enchantments by id), sounds, particles and death messages; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/xp_death",
       "kind": "black_box",
       "versions": [

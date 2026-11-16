@@ -255,6 +255,22 @@ int main() {
                     && attacker.matches(melee) && !attacker.matches(fall)
                     && req(Req::Kind::all_of, {}, {players, direct}).matches(melee) && !req(Req::Kind::all_of, {}, {undead, direct}).matches(melee),
                 "entity types of this, the attacker and the direct attacker");
+        // Random chances (client/ench_thorns): thorns' 0.15 a level, a draw
+        // below the chance at the level holding; without draws, none.
+        Req chance = req(Req::Kind::chance, {});
+        chance.chance.kind = en::LevelValue::Kind::linear;
+        chance.chance.a = chance.chance.b = 0.15f;
+        float next = 0.0f;
+        int drawn = 0;
+        const std::function<float()> draw = [&] { ++drawn; return next; };
+        Context thorns = melee;
+        thorns.draw = &draw;
+        const auto at = [&](std::int32_t level, float value) { thorns.level = level; next = value; return chance.matches(thorns); };
+        require(at(1, 0.149f) && !at(1, 0.15f) && at(3, 0.449f) && !at(3, 0.45001f) && at(7, 0.99999994f) && !chance.matches(melee) && drawn == 5,
+                "a random chance at the enchantment's level, one draw each");
+        require(at(7, 0.5f) && !req(Req::Kind::all_of, {}, {undead, chance}).matches(thorns) && drawn == 6
+                    && req(Req::Kind::all_of, {}, {players, chance}).matches(thorns) && drawn == 7,
+                "a chance among other terms drawn when reached");
     });
 
     suite.run("vertical slice: line and repeater across a chunk edge", [] {
@@ -3680,7 +3696,22 @@ int main() {
         s.tick({WearHeld{alex, 36, sword, 249}});
         require(slot(36).empty(), "broken");
         s.tick({WearHeld{alex, 35, sword, 1}});
-        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "neither a hotbar slot nor the off hand");
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "neither a hotbar slot, the off hand nor armor");
+        s.tick({WearHeld{alex, 4, sword, 1}});
+        require(std::ranges::any_of(s.last, [](const auto& r) { return r.kind == TraceKind::command_rejected; }), "a crafting slot");
+        // A piece worn (client/ench_thorns: thorns' 2 on its piece); an iron
+        // chestplate lasts 240.
+        const auto chestplate = item("minecraft:iron_chestplate");
+        s.tick({SetPlayerSlot{alex, 6, {chestplate, 1}}});
+        s.tick({WearHeld{alex, 6, chestplate, 2}, WearHeld{alex, 7, chestplate, 2}});
+        require(slot(6) == ItemStack{chestplate, 1, 2} && slot(7).empty(), "the chestplate worn by 2, nothing in the leggings' slot");
+        s.tick({WearHeld{alex, 6, chestplate, 238}});
+        require(slot(6).empty(), "the chestplate broken");
+        // The helmet's and the boots' slots too.
+        const auto helmet = item("minecraft:iron_helmet"), boots = item("minecraft:iron_boots");
+        s.tick({SetPlayerSlot{alex, 5, {helmet, 1}}, SetPlayerSlot{alex, 8, {boots, 1}}});
+        s.tick({WearHeld{alex, 5, helmet, 2}, WearHeld{alex, 8, boots, 3}});
+        require(slot(5) == ItemStack{helmet, 1, 2} && slot(8) == ItemStack{boots, 1, 3}, "the helmet and the boots worn");
         // A shield in the off hand (client/shield).
         const auto shield = item("minecraft:shield");
         s.tick({SetPlayerSlot{alex, 45, {shield, 1}}});

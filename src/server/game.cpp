@@ -32,6 +32,7 @@
 #include <tuple>
 #include <cstdlib>
 #include <format>
+#include <functional>
 #include <deque>
 #include <map>
 #include <numbers>
@@ -175,6 +176,10 @@ struct Player {
     std::int32_t hurt_cooldown{};
     float last_hurt{};
     bool hurt_marked{}; // hurt since its velocity was last told
+    bool hurt_by_attack{}; // that hurt dealt by a player (an attack's packets: the sweep, thorns)
+    // Told an upward velocity by a hurt: moves up are its knockback, not a
+    // jump, until the player is on the ground again or teleported.
+    bool lifted{};
     // The velocity the server keeps for the player (client/combat): one a
     // knockback or a jump set since the player's velocity was last told (an
     // impulse; else a standing player's), and the last told of it to those
@@ -1353,6 +1358,7 @@ struct Game::Impl final : GameServices {
     void teleport(Player& p, Vec3 to, bool stops = true) {
         p.pos = to;
         if (stops) p.stopped = p.teleported = true;
+        p.lifted = false;
         // A dead player's body moves with them for those who see it (a
         // living player's client moves after confirming).
         if (p.dead) p.moved = true;
@@ -1921,10 +1927,14 @@ struct Game::Impl final : GameServices {
         // those who see the player are told (client/combat: (0, 0.42, 0)
         // standing; jump boost's 0.1 a level and a sprint's 0.2 forward by
         // minecraft.wiki, not recorded).
-        if (was_on_ground && !m.on_ground && dy > 0.0) {
+        // A player a hurt's knockback lifted moves up by it (client/ench_thorns:
+        // no jump told after thorns' knockback; a move up from the ground
+        // later, after a teleport, was one).
+        if (was_on_ground && !m.on_ground && dy > 0.0 && !p.lifted) {
             exhaust(p, p.sprinting ? 0.2f : 0.05f);
             jumped(p);
         }
+        if (m.on_ground) p.lifted = false;
         p.pos = to;
         if (m.position) p.moved = true;
         // A move inside a sweet berry bush stops the player (client/drown:
@@ -2357,7 +2367,7 @@ struct Game::Impl final : GameServices {
 
     enum class Harm : std::uint8_t {
         fall, void_, starve, kill, magic, wither, in_fire, soul_fire, on_fire, lava, hot_floor, drown, in_wall, cactus, freeze, sweet_berry_bush,
-        player_attack
+        player_attack, thorns
     };
     // What a damage type does, from the official data packs (both versions
     // alike): its name, death message key, exhaustion, whether armor (not in
@@ -2369,7 +2379,8 @@ struct Game::Impl final : GameServices {
     // fireDamage for fire, drowningDamage, freezeDamage: client/drown), and
     // the hurt sound those nearby hear (its effects: burning gives
     // hurt_on_fire, client/fire; drowning hurt_drown, freezing hurt_freeze
-    // and poking hurt_sweet_berry_bush, client/drown).
+    // and poking hurt_sweet_berry_bush, client/drown; thorns enchant.thorns.hit,
+    // which 1.21.8 plays after the hurt sound instead: client/ench_thorns).
     struct HarmType {
         const char* name;
         const char* death;
@@ -2380,7 +2391,7 @@ struct Game::Impl final : GameServices {
     };
     static const HarmType& harm_type(Harm h) {
         using enum Wire::PlayerSound;
-        static const std::array<HarmType, 17> types{{
+        static const std::array<HarmType, 18> types{{
             {"minecraft:fall", "death.attack.fall", 0.0f, false, true, false, true, "fallDamage", hurt},
             {"minecraft:out_of_world", "death.attack.outOfWorld", 0.0f, false, false, false, true, nullptr, hurt},
             {"minecraft:starve", "death.attack.starve", 0.0f, false, false, false, true, nullptr, hurt},
@@ -2398,6 +2409,7 @@ struct Game::Impl final : GameServices {
             {"minecraft:freeze", "death.attack.freeze", 0.0f, false, true, false, true, "freezeDamage", hurt_freeze},
             {"minecraft:sweet_berry_bush", "death.attack.sweetBerryBush", 0.1f, true, true, false, true, nullptr, hurt_sweet_berry_bush},
             {"minecraft:player_attack", "death.attack.player", 0.1f, true, true, false, true, nullptr, hurt},
+            {"minecraft:thorns", "death.attack.thorns", 0.1f, true, true, false, true, nullptr, thorns_hit},
         }};
         return types[static_cast<std::size_t>(h)];
     }
@@ -2522,13 +2534,27 @@ struct Game::Impl final : GameServices {
         // Then the others nearby hear the hurt or the death; the hurt player's
         // velocity is told at the next entity update (client/effects_heal),
         // but for drowning (client/drown).
-        if (type.impact) p.hurt_marked = true;
+        if (type.impact) {
+            p.hurt_marked = true;
+            p.hurt_by_attack = by != nullptr;
+        }
+        // 1.21.8 has a thorns hurt heard as any other (its death too), then
+        // the thorns sound for everyone near, the one hurt too; 1.21.4 has
+        // the others hear the thorns sound for the hurt (client/ench_thorns).
+        const bool thorns_after = type.sound == Wire::PlayerSound::thorns_hit && wire.protocol() >= 772;
+        const auto thorns = [&] {
+            sound_near(p, wire.player_sound(Wire::PlayerSound::thorns_hit, p.pos, 1.0f, 0.8f + random_draw() * 0.4f,
+                                            static_cast<std::int64_t>(sound_seed++)),
+                       true);
+        };
         if (p.health <= 0.0f) {
             sound_around(p, Wire::PlayerSound::death, voice_pitch());
+            if (thorns_after) thorns();
             die(p, harm, fall_distance, by);
             return true;
         }
-        sound_around(p, type.sound, voice_pitch());
+        sound_around(p, thorns_after ? Wire::PlayerSound::hurt : type.sound, voice_pitch());
+        if (thorns_after) thorns();
         return true;
     }
     // Armor worn down by a hurt: each piece a quarter of the damage, at least
@@ -2557,19 +2583,23 @@ struct Game::Impl final : GameServices {
     }
     bool wear_held(const Player& p) const { return p.wear_tick == tick_count && !p.wear_seen; }
     // The wear held back in the last tick goes after its velocity, before
-    // the players' tick: every player's own slots, then what others see of
-    // them (client/fire: before the extinguish sound of water a command set
-    // as the hurt came; client/combat: the target's armor slot before the
-    // attacker's weapon others see).
+    // the players' tick: every player's own slots; then, player by player at
+    // the start of their tick, what others see of them, the health that tick
+    // ends with following (client/fire: before the extinguish sound of water
+    // a command set as the hurt came; client/combat: the target's armor slot
+    // before the attacker's weapon others see; client/ench_thorns: an
+    // attacker's health from the target's thorns before the target's armor
+    // others see, the target's health after the attacker's weapon and
+    // before a swept player's armor).
+    bool wear_released(const Player& p) const { return p.wear_tick && *p.wear_tick + 1 == tick_count; }
     void release_wear() {
-        const auto held = [&](const Player& p) { return p.wear_tick && *p.wear_tick + 1 == tick_count; };
         for (auto& [id, p] : players)
-            if (held(p) && !p.window) sync_inventory(p);
-        for (auto& [id, p] : players) {
-            if (!held(p) || p.wear_seen || !p.equipment_known) continue;
-            sound_equipment(p); // a piece put on in the held tick (not recorded)
-            show_equipment(p, equipment_now(p));
-        }
+            if (wear_released(p) && !p.window) sync_inventory(p);
+    }
+    void show_released_wear(Player& p) {
+        if (!wear_released(p) || p.wear_seen || !p.equipment_known) return;
+        sound_equipment(p); // a piece put on in the held tick (not recorded)
+        show_equipment(p, equipment_now(p));
     }
     // The velocity of the players hurt since the last entity update, to
     // them and to those who see them: the server's, a player standing still
@@ -2579,32 +2609,47 @@ struct Game::Impl final : GameServices {
     // told, to those who see the player (client/combat: a jump's (0, 0.42,
     // 0) to the others only; an attacked player's, put back after the attack
     // told the knockback, the first time), before the tick's entity data (a
-    // sprint's knockback before the attacker's sprint ending).
+    // sprint's knockback before the attacker's sprint ending); player by
+    // player, each with the velocity of a hurt an attack's packets dealt
+    // (client/ench_thorns: an attacker's knockback from thorns, when it
+    // changed the velocity last told, to the others twice, then the next
+    // player's; the order of the players is their joining's, which the
+    // official servers' is not always: there the target's put back velocity
+    // came before its attacker's).
     void tell_impulses() {
         for (auto& [id, p] : players) {
-            if (!p.impulse || (p.dead && p.dead_ticks >= 20)) continue;
-            const auto v = *p.impulse;
-            const double dx = v.x - p.told_velocity.x, dy = v.y - p.told_velocity.y, dz = v.z - p.told_velocity.z;
-            const double change = dx * dx + dy * dy + dz * dz;
-            if (change <= 1.0e-7 && !(change > 0.0 && v.x == 0.0 && v.y == 0.0 && v.z == 0.0)) continue;
-            p.told_velocity = v;
-            const auto packet = wire.entity_motion(p.entity_id, v);
-            for (const auto viewer : p.seen_by)
-                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(packet);
+            if (p.dead && p.dead_ticks >= 20) continue;
+            if (p.impulse) {
+                const auto v = *p.impulse;
+                const double dx = v.x - p.told_velocity.x, dy = v.y - p.told_velocity.y, dz = v.z - p.told_velocity.z;
+                const double change = dx * dx + dy * dy + dz * dz;
+                if (change > 1.0e-7 || (change > 0.0 && v.x == 0.0 && v.y == 0.0 && v.z == 0.0)) {
+                    p.told_velocity = v;
+                    const auto packet = wire.entity_motion(p.entity_id, v);
+                    for (const auto viewer : p.seen_by)
+                        if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(packet);
+                }
+            }
+            if (p.hurt_marked && p.hurt_by_attack) tell_hurt_velocity(p);
         }
     }
     // A hurt player's velocity (the impulse's, else a standing player's), to
     // the player and those who see them; the impulse is spent.
     void tell_hurt_velocities() {
         for (auto& [id, p] : players) {
-            const auto impulse = std::exchange(p.impulse, std::nullopt);
-            const bool marked = std::exchange(p.hurt_marked, false);
-            if (!marked || (p.dead && p.dead_ticks >= 20)) continue; // the body went
-            const auto motion = wire.entity_motion(p.entity_id, impulse.value_or(standing_velocity(p)));
-            p.peer->send(motion);
-            for (const auto viewer : p.seen_by)
-                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(motion);
+            if (p.hurt_marked && !(p.dead && p.dead_ticks >= 20)) tell_hurt_velocity(p); // else the body went
+            p.hurt_marked = p.hurt_by_attack = false;
+            p.impulse.reset();
         }
+    }
+    void tell_hurt_velocity(Player& p) {
+        p.hurt_marked = p.hurt_by_attack = false;
+        const auto v = p.impulse.value_or(standing_velocity(p));
+        if (v.y > 0.0) p.lifted = true;
+        const auto motion = wire.entity_motion(p.entity_id, v);
+        p.peer->send(motion);
+        for (const auto viewer : p.seen_by)
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(motion);
     }
     // The velocity the server keeps for a player standing (client/fire,
     // client/drown): in lava at the player's last tick, as the player stands
@@ -2777,6 +2822,7 @@ struct Game::Impl final : GameServices {
         p.last_hurt = 0.0f;
         p.hurt_marked = false;
         p.impulse.reset();
+        p.hurt_by_attack = p.lifted = false;
         p.told_velocity = {}; // a new entity's (client/combat)
         p.attacked = false;
         p.death_drops.reset();
@@ -3012,14 +3058,22 @@ struct Game::Impl final : GameServices {
     // attribute modifiers.
     template <typename F>
     void each_enchantment(const Player& p, F&& f) const {
+        each_enchanted(p, [&](gameplay::equipment::Slot, const contracts::ItemStack&, const gameplay::enchantments::Effects& e,
+                              std::int32_t level) { f(e, level); });
+    }
+    // The same with the slot and the stack each enchantment is on, slot by
+    // slot (the order of equipment::Slot).
+    template <typename F>
+    void each_enchanted(const Player& p, F&& f) const {
         if (!data.game || !data.game->enchantments_of) return;
         const auto now = equipment_now(p);
         for (std::size_t k = 0; k < now.size(); ++k) {
             if (now[k].empty()) continue;
-            const auto bit = gameplay::enchantments::slot_bit(static_cast<gameplay::equipment::Slot>(k));
+            const auto slot = static_cast<gameplay::equipment::Slot>(k);
+            const auto bit = gameplay::enchantments::slot_bit(slot);
             for (const auto& [id, level] : data.game->enchantments_of(now[k].components, false)) {
                 const auto e = data.game->enchantment_effects.find(id);
-                if (e != data.game->enchantment_effects.end() && (e->second.slots & bit) != 0) f(e->second, level);
+                if (e != data.game->enchantment_effects.end() && (e->second.slots & bit) != 0) f(slot, now[k], e->second, level);
             }
         }
     }
@@ -3065,18 +3119,82 @@ struct Game::Impl final : GameServices {
         if (!data.game || std::ranges::binary_search(data.game->damage_bypassing_enchantments, damage.type)) return 0.0f;
         return enchantment_value(p, &gameplay::enchantments::Effects::protection, damage);
     }
-    // The fire an attacker's enchantments set on the player attacked
-    // (post-attack ignite: client/ench_combat, fire aspect on the target
-    // and those swept, also on a weak hit), its seconds scaled by the
-    // target's burning time, held for the end of the target's next fire tick.
-    void ignite(const Player& attacker, Player& p, const gameplay::enchantments::DamageContext& damage) {
-        if (p.dead) return;
-        each_enchantment(attacker, [&](const gameplay::enchantments::Effects& e, std::int32_t level) {
-            for (const auto& effect : e.ignite)
-                if (!effect.requirement || effect.requirement->matches(damage))
-                    p.attack_fire = gameplay::damage::ignite(p.attack_fire, effect.seconds.at(level),
-                                                             attribute_value(p, gameplay::attributes::Attribute::burning_time));
-        });
+    // What follows an attack that hurt (client/ench_combat,
+    // client/ench_thorns): the post-attack effects of the victim's
+    // enchantments (thorns), then of the attacker's (fire aspect; the
+    // order Circuit's choice: none recorded with both), each in the slots its
+    // enchantment works in, slot by slot, when its requirement holds (with
+    // the enchantment's level and Circuit's draws for its chances), on the
+    // player it affects:
+    //  - ignite: its seconds scaled by that player's burning time, held for
+    //    the end of their next fire tick (fire aspect on the target and
+    //    those swept, also on a weak hit);
+    //  - damage_entity: a uniform draw between its least and most damage,
+    //    caused and dealt by the enchanted player (thorns: its damage event,
+    //    hurt animation and knockback from them, as an attack's);
+    //  - change_item_damage: the enchanted stack worn by its amount (rounded
+    //    down; none below 1, nor in creative mode), told with the tick's
+    //    other wear (thorns: 2 on the piece, also when its damage did not
+    //    hurt).
+    // A player dead before an effect is not affected by it, and a player
+    // dead with their items dropping has no effects of theirs act (not
+    // recorded).
+    void post_attack(Player& attacker, Player& victim, const gameplay::enchantments::DamageContext& attack) {
+        using gameplay::enchantments::EntityEffect;
+        using gameplay::enchantments::Party;
+        std::function<float()> draw = [this] { return random_draw(); };
+        for (const auto party : {Party::victim, Party::attacker}) {
+            Player& enchanted = party == Party::victim ? victim : attacker;
+            // Killed by the attack (or by an effect before), with the items
+            // dropping: none left to act (Circuit's choice, not recorded; with
+            // keepInventory they still do).
+            if (enchanted.dead && enchanted.death_drops) continue;
+            // The effects to run, gathered first: a hurt may change what the
+            // players wear and hold.
+            struct Due {
+                const gameplay::enchantments::PostAttackEffect* effect;
+                gameplay::equipment::Slot slot;
+                contracts::ItemStack stack;
+                std::int32_t level;
+            };
+            std::vector<Due> due;
+            each_enchanted(enchanted, [&](gameplay::equipment::Slot slot, const contracts::ItemStack& stack,
+                                          const gameplay::enchantments::Effects& e, std::int32_t level) {
+                for (const auto& effect : e.post_attack)
+                    if (effect.enchanted == party) due.push_back({&effect, slot, stack, level});
+            });
+            for (const auto& d : due) {
+                auto context = attack;
+                context.level = d.level;
+                context.draw = &draw;
+                if (d.effect->requirement && !d.effect->requirement->matches(context)) continue;
+                Player& affected = d.effect->affected == Party::victim ? victim : attacker;
+                for (const auto& step : d.effect->effects) {
+                    switch (step.kind) {
+                    case EntityEffect::Kind::ignite:
+                        if (!affected.dead)
+                            affected.attack_fire = gameplay::damage::ignite(affected.attack_fire, step.a.at(d.level),
+                                                                            attribute_value(affected, gameplay::attributes::Attribute::burning_time));
+                        break;
+                    case EntityEffect::Kind::damage: {
+                        const float least = step.a.at(d.level), most = step.b.at(d.level);
+                        const float amount = least + random_draw() * (most - least);
+                        if (!affected.dead && step.damage_type == harm_type(Harm::thorns).name) hurt(affected, amount, Harm::thorns, 0.0, &enchanted);
+                        break;
+                    }
+                    case EntityEffect::Kind::wear: {
+                        const float amount = std::floor(step.a.at(d.level));
+                        if (!(amount >= 1.0f) || enchanted.game_mode == creative) break;
+                        const auto index = gameplay::equipment::inventory_slot(d.slot, static_cast<std::uint8_t>(enchanted.held));
+                        admit(contracts::WearHeld{key_of(enchanted), index, d.stack.item,
+                                                  static_cast<std::int32_t>(std::min(amount, static_cast<float>(contracts::max_held_wear)))});
+                        hold_wear(enchanted, std::uint64_t{1} << index, false);
+                        break;
+                    }
+                    }
+                }
+            }
+        }
     }
 
     // ---- status effects -----------------------------------------------------
@@ -3881,6 +3999,7 @@ struct Game::Impl final : GameServices {
         tell_hurt_velocities();
         release_wear();
         for (auto& [id, p] : players) {
+            show_released_wear(p);
             if (!p.dead) {
                 if (p.floating && ++p.floating_ticks > 80) {
                     log_warn(std::format("{} was kicked for floating too long", p.name));
@@ -4296,8 +4415,10 @@ struct Game::Impl final : GameServices {
     // An arm's swing, for those who see the player (client/armor: 0 the main
     // arm, 3 the off arm; not to the player).
     void handle(Player& p, intent::Swing& s) {
-        if (p.dead || (s.hand != 0 && s.hand != 1)) return;
-        p.attack_ticks = 0; // a swing starts the attack's charge again (combat-timing)
+        if (s.hand != 0 && s.hand != 1) return;
+        // A swing of a player dead is still shown (client/ench_thorns: the
+        // swing after an attack whose thorns killed the attacker).
+        if (!p.dead) p.attack_ticks = 0; // a swing starts the attack's charge again (combat-timing)
         // A swing within the first half of the last is not shown
         // (client/combat: a second hit 2 ticks after the first showed none,
         // one 4 ticks after showed its swing).
@@ -4659,19 +4780,23 @@ struct Game::Impl final : GameServices {
     //    hurt cooldown, creative mode), the nodamage sound and nothing more;
     //  - the knockback of the enchantments and a sprint's 1, half as much
     //    along the attacker's facing, whose sprint then ends (also on a weak
-    //    hit with knockback); the fire the enchantments set (fire aspect);
-    //    the sweep: each other player in survival within the target's box
-    //    grown by 1, 0.25, 1 and 3 blocks of the attacker hurt for 1 and the
-    //    sweeping damage ratio of the attack damage, with the enchantments'
-    //    damage against that player, all times the charge, knocked 0.4 along
-    //    the facing (1.21.8 the hurt first, the knock if it hurt; 1.21.4 the
-    //    knock first) and set on fire if hurt; the sweep sound and particle;
+    //    hit with knockback); the sweep: each other player in survival
+    //    within the target's box grown by 1, 0.25, 1 and 3 blocks of the
+    //    attacker hurt for 1 and the sweeping damage ratio of the attack
+    //    damage, with the enchantments' damage against that player, all
+    //    times the charge, knocked 0.4 along the facing (1.21.8 the hurt
+    //    first, the knock if it hurt; 1.21.4 the knock first) and, if hurt,
+    //    the post-attack effects on them (fire aspect's fire); the sweep
+    //    sound and particle;
     //  - the target's velocity told to the target, the server keeping its
     //    velocity from before the attack;
     //  - the critical hit's sound and animation, or the strong or weak sound
     //    (a sweep's own); the enchanted hit's animation (5) with enchantment
-    //    damage; the damage indicator particles (half the health the target
-    //    lost); the weapon's wear outside creative mode; exhaustion.
+    //    damage; the post-attack effects on the target (fire aspect's fire,
+    //    the target's thorns: client/ench_thorns, also on a hit within the
+    //    target's hurt cooldown); the damage indicator particles (half the
+    //    health the target lost); the weapon's wear outside creative mode;
+    //    exhaustion.
     void attack(Player& p, Player& t) {
         using gameplay::attributes::Attribute;
         using gameplay::enchantments::Effects;
@@ -4712,7 +4837,6 @@ struct Game::Impl final : GameServices {
                 remove_modifier(p, Attribute::movement_speed, gameplay::attributes::sprinting.id);
             }
         }
-        ignite(p, t, melee);
         if (sweep) {
             const auto around = box_of(t, t.pos).inflate(1.0, 0.25, 1.0);
             const auto ratio = attribute_value(p, Attribute::sweeping_damage_ratio);
@@ -4729,7 +4853,7 @@ struct Game::Impl final : GameServices {
                     knock(o, 0.4, facing_x, facing_z);
                     hurt_now = hurt(o, amount, Harm::player_attack, 0.0, &p);
                 }
-                if (hurt_now) ignite(p, o, melee);
+                if (hurt_now) post_attack(p, o, melee);
             }
             own_sound(Sound::attack_sweep);
             const auto packet = wire.particles(Wire::Particle::sweep_attack, {p.pos.x + facing_x, p.pos.y + body_height(p) * 0.5, p.pos.z + facing_z},
@@ -4737,7 +4861,9 @@ struct Game::Impl final : GameServices {
             particles_near(packet, p.pos);
         }
         if (t.hurt_marked) {
-            t.peer->send(wire.entity_motion(t.entity_id, velocity_of(t)));
+            const auto told = velocity_of(t);
+            t.peer->send(wire.entity_motion(t.entity_id, told));
+            if (told.y > 0.0) t.lifted = true;
             t.hurt_marked = false;
             t.impulse = velocity_before;
         }
@@ -4753,10 +4879,12 @@ struct Game::Impl final : GameServices {
             own_sound(strong ? Sound::attack_strong : Sound::attack_weak);
         }
         if (magic) to_all(wire.animate(t.entity_id, 5)); // the enchanted hit
+        post_attack(p, t, melee);
         if (const auto count = damage::damage_indicators(health_before - t.health); count > 0) {
             const Vec3 middle{t.pos.x, t.pos.y + body_height(t) * 0.5, t.pos.z};
             particles_near(wire.particles(Wire::Particle::damage_indicator, middle, {0.1, 0.0, 0.1}, 0.2f, count), middle);
         }
+        if (p.dead) return; // killed by the target's thorns: their weapon does not wear (Circuit's choice; not recorded with a weapon)
         if (p.game_mode != creative && !held.empty())
             if (const auto wear = gameplay::equipment::attack_wear(held.item); wear > 0) {
                 admit(contracts::WearHeld{key_of(p), main_hand(p), held.item, wear});

@@ -330,12 +330,14 @@ public:
     // falls beyond and within 4 blocks of damage (category player); eating,
     // drinking and drinking honey, a burp, an ominous bottle's disposal, a
     // chorus fruit's teleport and the omens' coming, in the category given
-    // (client/eat); a piece of armor put on (client/armor).
+    // (client/eat); a piece of armor put on (client/armor); thorns' hit
+    // (client/ench_thorns).
     enum class PlayerSound : std::uint8_t {
         hurt, death, big_fall, small_fall, eat, drink, honey_drink, burp, ominous_bottle, chorus_teleport, bad_omen, trial_omen, raid_omen,
         equip_generic, equip_leather, equip_chain, equip_iron, equip_gold, equip_diamond, equip_netherite, equip_turtle, equip_elytra,
         hurt_on_fire, generic_burn, extinguish_fire, hurt_drown, hurt_freeze, hurt_sweet_berry_bush,
-        attack_crit, attack_knockback, attack_nodamage, attack_strong, attack_sweep, attack_weak, shield_block, shield_break, levelup
+        attack_crit, attack_knockback, attack_nodamage, attack_strong, attack_sweep, attack_weak, shield_block, shield_break, levelup,
+        thorns_hit
     };
     enum class SoundCategory : std::int32_t { neutral = 6, player = 7 };
     Bytes player_sound(PlayerSound sound, Vec3 at, float volume, float pitch, std::int64_t seed,
