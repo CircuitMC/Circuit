@@ -122,6 +122,16 @@ struct GameData {
     // the attribute modifiers it gives there, the protection it adds and the
     // damage it keeps off.
     std::unordered_map<std::uint32_t, enchantments::Effects> enchantment_effects;
+    // Whether one of a stack's enchantments (not stored ones) has the
+    // valueless effect `flag` (the curses), wherever the stack is.
+    [[nodiscard]] bool enchanted_with(const contracts::ComponentPatch& components, bool enchantments::Effects::*flag) const {
+        if (!enchantments_of) return false;
+        for (const auto& [id, level] : enchantments_of(components, false)) {
+            const auto e = enchantment_effects.find(id);
+            if (e != enchantment_effects.end() && e->second.*flag) return true;
+        }
+        return false;
+    }
     // The damage types enchantments do not protect against (the damage type
     // tags bypasses_effects and bypasses_enchantments), sorted.
     std::vector<std::string> damage_bypassing_enchantments;

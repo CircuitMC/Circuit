@@ -166,7 +166,10 @@ struct RepairEffect {
 // enchantment sets, a victim's thorns) and the repair experience gives (an
 // enchantment with repair effects makes its item take part, whatever their
 // requirements; client/ench_mending_pack: shears meeting none repaired a
-// point a point); and, wherever the enchanted item is, the wear it is spared.
+// point a point); and, wherever the enchanted item is, the wear it is spared,
+// whether it stays on in an armor slot (minecraft:prevent_armor_change, the
+// curse of binding) and whether it vanishes at its holder's death
+// (minecraft:prevent_equipment_drop, the curse of vanishing).
 struct Effects {
     std::uint8_t slots{};
     std::vector<AttributeEffect> attributes;
@@ -177,9 +180,11 @@ struct Effects {
     std::vector<PostAttackEffect> post_attack;
     std::vector<ItemDamageEffect> item_damage;
     std::vector<RepairEffect> repair_with_xp;
+    bool prevent_armor_change{};
+    bool prevent_equipment_drop{};
     bool empty() const noexcept {
         return attributes.empty() && protection.empty() && immunity.empty() && damage.empty() && knockback.empty() && post_attack.empty()
-               && item_damage.empty() && repair_with_xp.empty();
+               && item_damage.empty() && repair_with_xp.empty() && !prevent_armor_change && !prevent_equipment_drop;
     }
 };
 

@@ -5509,6 +5509,17 @@ int main() {
                     && bad_item_requirement(repair(R"({"type":"minecraft:multiply","factor":2.0})", R"({"condition":"minecraft:random_chance","chance":0.5})")),
                 "a repair effect of another type, without its value or of an unknown one, a part unreadable, parts not a list, no effect, "
                 "not a list, or with an unreadable requirement");
+        // The curses' valueless effects (client/ench_curses_pack): an object
+        // loads, with members too (the official servers read {"note": 1});
+        // another kind does not.
+        for (const auto* component : {"minecraft:prevent_armor_change", "minecraft:prevent_equipment_drop"}) {
+            const auto curse = [&](std::string_view value) { return effects(std::format(R"("{}":{})", component, value)); };
+            require(attempt(curse("{}")) == "loaded" && attempt(curse(R"({"note":1})")) == "loaded",
+                    std::format("{}: an object loads", component));
+            for (const auto* value : {"true", "[]", "1", R"("yes")"})
+                require(attempt(curse(value)).find(std::format("a {} effect Circuit cannot read", component)) != std::string::npos,
+                        std::format("{}: {} refused", component, value));
+        }
     });
 
     suite.run("enchantments protect players and shorten their burning as both official servers do (client/ench_protect, client/ench_fire)", [] {
@@ -6876,6 +6887,312 @@ int main() {
         if (!ran) std::puts("  (no official server jar given: the mending checks did not run)");
     });
 
+    suite.run("the curses of binding and vanishing act as both official servers show them (client/ench_curses)", [] {
+        // circuit-clienttest/ench-curses.js and ench-curses-table.js; the
+        // enchantments need the official data packs (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        using I = server::Intent;
+        bool ran = false;
+        for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            ran = true;
+            const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value() && d->game, d ? "no game data" : d.error());
+            const auto enchanted = d->game->enchanted;
+            GameFixture f(version, offline_config(), std::move(*d));
+            const auto& tables = *protocol::ContentTables::for_protocol(f.wire.protocol());
+            auto alice = f.join(1, "alice");
+            auto bob = f.join(2, "bob");
+            const auto ticks = [&](int n) {
+                for (int k = 0; k < n; ++k) f.game->tick();
+            };
+            const auto command = [&](std::uint64_t who, std::string text) { f.game->submit(who, I{server::intent::Command{std::move(text)}}); };
+            const auto item = [](std::string_view name) { return gameplay::items::by_name(name).value(); };
+            // Stacks set in creative mode: a name, a curse or none, a count.
+            const auto put = [&](std::vector<std::tuple<std::int16_t, std::string_view, std::string_view, std::int32_t>> stacks,
+                                 std::string_view mode = "survival") {
+                command(1, "gamemode creative");
+                ticks(1);
+                for (const auto& [slot, name, curse, count] : stacks) {
+                    if (name.empty()) {
+                        f.game->submit(1, I{server::intent::CreativeSlot{slot, 0, 0}});
+                        continue;
+                    }
+                    contracts::ComponentPatch patch;
+                    if (!curse.empty()) {
+                        auto made = enchanted({{std::string(curse), 1}});
+                        require(made.has_value(), "enchanted");
+                        patch = *made;
+                    }
+                    f.game->submit(1, I{server::intent::CreativeSlot{slot, count, tables.item_id(name).value(), 0, patch}});
+                }
+                ticks(1);
+                command(1, std::format("gamemode {}", mode));
+                ticks(2);
+            };
+            const auto inventory = [&] {
+                const auto inv = f.game->engine().view().player(contracts::PlayerKey{1, 1}).value();
+                return inv ? *inv : gameplay::PlayerInventory{};
+            };
+            const auto items_out = [&] {
+                std::vector<std::uint16_t> out;
+                const auto dump = f.game->engine().dump();
+                for (const auto& e : dump.overworld().entities)
+                    if (e.kind == gameplay::EntityKind::item) out.push_back(e.stack.item);
+                return out;
+            };
+            const auto click = [&](std::int16_t slot, std::int8_t button, std::int32_t mode) {
+                f.game->submit(1, window_click(0, slot, button, mode));
+                ticks(1);
+            };
+            // The players' entity ids, and since `from` the packets a client
+            // got, as text: "event <who> <n>", "spawn", "slot <window> <slot>",
+            // "health", "attributes <who>", "open <window>", "close", "cursor",
+            // "content <window> [<slots not empty>] carried <0 or 1>" (plain
+            // stacks alone read; "?" past one with components).
+            std::map<std::string, std::int32_t> ids;
+            std::map<std::int32_t, std::string> names;
+            for (const auto& [r, name] : {std::pair{alice, "alice"}, std::pair{bob, "bob"}}) {
+                const auto login = f.wire.ids().id(State::play, Bound::clientbound, "login");
+                std::lock_guard lock(r->mutex);
+                for (const auto& bytes : r->packets)
+                    if (auto pk = protocol::open_packet(bytes); pk && pk->id == login) {
+                        const auto e = pk->fields.i32().value();
+                        names[e] = name;
+                        ids[name] = e;
+                    }
+            }
+            const auto mark = [&](Recorder& r) {
+                std::lock_guard lock(r.mutex);
+                return r.packets.size();
+            };
+            const auto since = [&](Recorder& r, std::size_t from) {
+                const auto id = [&](std::string_view name) { return f.wire.ids().id(State::play, Bound::clientbound, name); };
+                std::vector<std::string> out;
+                std::lock_guard lock(r.mutex);
+                for (auto k = from; k < r.packets.size(); ++k) {
+                    auto pk = protocol::open_packet(r.packets[k]);
+                    if (!pk) continue;
+                    if (pk->id == id("entity_event")) {
+                        const auto e = pk->fields.i32().value();
+                        out.push_back(std::format("event {} {}", names.contains(e) ? names[e] : "?", pk->fields.u8().value()));
+                    } else if (pk->id == id("add_entity")) {
+                        out.push_back("spawn");
+                    } else if (pk->id == id("container_set_slot")) {
+                        const auto window = pk->fields.varint().value();
+                        (void)pk->fields.varint();
+                        out.push_back(std::format("slot {} {}", window, pk->fields.i16().value()));
+                    } else if (pk->id == id("set_health")) {
+                        out.push_back("health");
+                    } else if (pk->id == id("update_attributes")) {
+                        const auto e = pk->fields.varint().value();
+                        out.push_back(std::format("attributes {}", names.contains(e) ? names[e] : "?"));
+                    } else if (pk->id == id("open_screen")) {
+                        out.push_back(std::format("open {}", pk->fields.varint().value()));
+                    } else if (pk->id == id("container_close")) {
+                        out.push_back("close");
+                    } else if (pk->id == id("set_cursor_item")) {
+                        out.push_back("cursor");
+                    } else if (pk->id == id("container_set_content")) {
+                        const auto window = pk->fields.varint().value();
+                        (void)pk->fields.varint();
+                        const auto n = pk->fields.varint().value();
+                        std::string full;
+                        bool plain = true;
+                        const auto present = [&] {
+                            if (pk->fields.varint().value() == 0) return false;
+                            (void)pk->fields.varint();
+                            plain = pk->fields.varint().value() == 0 && pk->fields.varint().value() == 0;
+                            return true;
+                        };
+                        for (std::int32_t k = 0; k < n && plain; ++k)
+                            if (present()) full += std::format("{}{}", full.empty() ? "" : ",", k);
+                        const auto carried = plain ? (present() ? "1" : "0") : "?";
+                        out.push_back(std::format("content {} [{}] carried {}", window, plain ? full : "?", carried));
+                    }
+                }
+                return out;
+            };
+            for (const auto* c : {"gamerule doMobSpawning false", "tp alice 0.5 -60 0.5 0 0", "gamemode survival"}) command(1, c);
+            command(2, "tp bob 10.5 -60 0.5 90 0");
+            ticks(30);
+
+            // Binding: no click takes the bound helmet off in survival, nor a
+            // use swaps it; in creative mode a click does.
+            put({{5, "minecraft:iron_helmet", "minecraft:binding_curse", 1}, {36, "minecraft:diamond_helmet", "", 1}});
+            const auto bound = inventory().slots[5];
+            for (const auto& [slot, button, mode] : std::vector<std::tuple<std::int16_t, std::int8_t, std::int32_t>>{
+                     {5, 0, 0}, {5, 0, 1}, {5, 1, 2}, {5, 40, 2}, {5, 0, 4}, {5, 1, 4}})
+                click(slot, button, mode);
+            require(inventory().slots[5] == bound && inventory().cursor.empty() && inventory().slots[45].empty() && items_out().empty(),
+                    std::format("{}: the bound helmet stays through every click", version));
+            f.game->submit(1, I{server::intent::HeldSlot{0}});
+            f.game->submit(1, I{server::intent::Use{0, 1, 0.0f, 0.0f}});
+            ticks(2);
+            require(inventory().slots[5] == bound && inventory().slots[36].item == item("minecraft:diamond_helmet"),
+                    std::format("{}: a helmet used over it changes nothing", version));
+            command(1, "gamemode creative");
+            ticks(2);
+            click(5, 0, 0);
+            require(inventory().slots[5].empty() && inventory().cursor == bound, std::format("{}: in creative mode a click takes it", version));
+            click(5, 0, 0);
+            // Each creative set of the own grid's slots sends the result again
+            // (ench-curses.js: four empty slots set empty, four results).
+            auto at = mark(*alice);
+            f.game->submit(1, I{server::intent::CreativeSlot{1, 0, 0}});
+            f.game->submit(1, I{server::intent::CreativeSlot{2, 0, 0}});
+            f.game->submit(1, I{server::intent::CreativeSlot{9, 0, 0}});
+            ticks(1);
+            auto seen = since(*alice, at);
+            std::erase_if(seen, [](const auto& x) { return !x.starts_with("slot"); });
+            require(seen == std::vector<std::string>{"slot 0 0", "slot 0 0"}, std::format("{}: the result sent again for each grid slot set ({})", version, [&] {
+                        std::string t;
+                        for (const auto& x : seen) t += x + "; ";
+                        return t;
+                    }()));
+            command(1, "gamemode survival");
+            ticks(2);
+
+            // A bound helmet of damage 164 broken by bob's fist: its break
+            // event (49) to both before the slot is told, and the slot freed.
+            {
+                command(1, "gamemode creative");
+                ticks(1);
+                auto patch = enchanted({{"minecraft:binding_curse", 1}});
+                require(patch.has_value(), "enchanted");
+                f.game->submit(1, I{server::intent::CreativeSlot{5, 1, tables.item_id("minecraft:iron_helmet").value(), 164, *patch}});
+                ticks(1);
+                command(1, "gamemode survival");
+                command(2, "gamemode survival");
+                command(2, "tp bob 2.0 -60 0.5 90 0");
+                ticks(10);
+            }
+            const auto at_alice = mark(*alice), at_bob = mark(*bob);
+            f.game->submit(2, I{server::intent::Attack{ids.at("alice")}});
+            ticks(3);
+            const auto alice_saw = since(*alice, at_alice), bob_saw = since(*bob, at_bob);
+            const auto first = [](const std::vector<std::string>& v, std::string_view x) { return std::ranges::find(v, x) - v.begin(); };
+            require(inventory().slots[5].empty() && first(alice_saw, "event alice 49") < first(alice_saw, "slot 0 5")
+                        && first(alice_saw, "slot 0 5") < first(alice_saw, "health") && first(alice_saw, "health") < first(alice_saw, "attributes alice")
+                        && first(alice_saw, "attributes alice") < static_cast<std::ptrdiff_t>(alice_saw.size())
+                        && std::ranges::find(bob_saw, "event alice 49") != bob_saw.end(),
+                    std::format("{}: the helmet broke, its event, then its slot, the health and the attributes", version));
+            command(2, "tp bob 10.5 -60 0.5 90 0");
+            ticks(2);
+
+            // Vanishing at death: the vanishing stacks of the inventory are
+            // gone, the rest drops; the grid's and the carried stack stay
+            // until the body goes 20 ticks later, then are thrown, vanishing
+            // or not, the carried stack first.
+            command(1, "tp alice 40.5 -60 8.5 0 0");
+            ticks(2);
+            put({{5, "minecraft:iron_helmet", "minecraft:vanishing_curse", 1}, {36, "minecraft:iron_sword", "minecraft:vanishing_curse", 1},
+                 {37, "minecraft:stone", "", 5}, {38, "minecraft:redstone", "minecraft:vanishing_curse", 3},
+                 {39, "minecraft:feather", "minecraft:vanishing_curse", 1}});
+            click(38, 0, 0);
+            click(1, 0, 0);
+            click(39, 0, 0);
+            require(inventory().slots[1].item == item("minecraft:redstone") && inventory().cursor.item == item("minecraft:feather"),
+                    std::format("{}: redstone in the grid, a feather carried", version));
+            command(2, "tp bob 60.5 -60 8.5 90 0");
+            ticks(5);
+            at = mark(*bob);
+            command(1, "kill");
+            ticks(3);
+            seen = since(*bob, at);
+            require(std::ranges::find(seen, "spawn") < std::ranges::find(seen, "event alice 3") && std::ranges::find(seen, "event alice 3") != seen.end(),
+                    std::format("{}: the others see the drops appear before the death animation", version));
+            require(items_out() == std::vector<std::uint16_t>{gameplay::items::stone}, std::format("{}: only the stone dropped at the death ({})", version, items_out().size()));
+            require(inventory().slots[1].item == item("minecraft:redstone") && inventory().cursor.item == item("minecraft:feather")
+                        && inventory().slots[5].empty() && inventory().slots[36].empty(),
+                    std::format("{}: the grid and the carried stack stay, the vanishing stacks gone", version));
+            at = mark(*bob);
+            const auto quiet = mark(*alice);
+            ticks(20);
+            require(items_out() == std::vector<std::uint16_t>{gameplay::items::stone, item("minecraft:feather"), item("minecraft:redstone")},
+                    std::format("{}: the body gone, the feather then the redstone thrown ({})", version, items_out().size()));
+            seen = since(*bob, at);
+            require(std::ranges::find(seen, "event alice 60") < std::ranges::find(seen, "spawn") && std::ranges::count(seen, "spawn") == 2,
+                    std::format("{}: the body's last event before the throw", version));
+            seen = since(*alice, quiet);
+            require(std::ranges::none_of(seen, [](const auto& x) { return x.starts_with("slot") || x == "cursor" || x.starts_with("content"); }),
+                    std::format("{}: the dead player told nothing of the throw", version));
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            ticks(3);
+
+            // A respawn before the body goes throws the grid and the carried
+            // stack then; the respawn's window shows them gone.
+            command(1, "tp alice 40.5 -60 16.5 0 0");
+            ticks(2);
+            put({{38, "minecraft:clay_ball", "", 2}, {39, "minecraft:feather", "", 1}});
+            click(38, 0, 0);
+            click(1, 0, 0);
+            click(39, 0, 0);
+            command(1, "kill");
+            ticks(3);
+            at = mark(*alice);
+            const auto thrown = items_out().size();
+            f.game->submit(1, I{server::intent::ClientCommand{0}});
+            ticks(1);
+            seen = since(*alice, at);
+            const auto content = std::ranges::find_if(seen, [](const auto& x) { return x.starts_with("content 0"); });
+            require(content != seen.end() && *content == "content 0 [] carried 0",
+                    std::format("{}: the respawn's window without the grid and the carried stack ({})", version, content != seen.end() ? *content : "none"));
+            at = mark(*alice);
+            ticks(3);
+            seen = since(*alice, at);
+            require(items_out().size() == thrown + 2 && items_out()[thrown] == item("minecraft:feather") && items_out()[thrown + 1] == item("minecraft:clay_ball")
+                        && std::ranges::none_of(seen, [](const auto& x) { return x.starts_with("slot 0 1") || x == "cursor"; }),
+                    std::format("{}: thrown at the respawn, the feather first, nothing told", version));
+
+            // A crafting table open at death: no close, the death's slots told
+            // in its window; its grid and the carried stack thrown when the
+            // body goes, or at once by a close from the dead player's client.
+            for (const bool closes : {false, true}) {
+                const auto z = closes ? 32 : 24;
+                command(1, std::format("tp alice 20.5 -60 {}.5 0 0", z));
+                command(1, std::format("setblock 20 -60 {} crafting_table", z + 2));
+                ticks(3);
+                put({{36, "minecraft:clay_ball", "", 2}, {37, "minecraft:feather", "", 1}, {38, "minecraft:stone", "", 3}});
+                at = mark(*alice);
+                f.game->submit(1, I{server::intent::UseOn{0, {20, -60, z + 2}, 1, 0.5f, 1.0f, 0.5f, false, 900 + z}});
+                ticks(2);
+                seen = since(*alice, at);
+                const auto opened = std::ranges::find_if(seen, [](const auto& x) { return x.starts_with("open "); });
+                require(opened != seen.end(), std::format("{}: the table opened", version));
+                const auto window = std::stoi(opened->substr(5));
+                for (const auto& [slot, button] : std::vector<std::pair<std::int16_t, std::int8_t>>{{37, 0}, {1, 0}, {38, 0}}) {
+                    f.game->submit(1, window_click(window, slot, button, 0));
+                    ticks(1);
+                }
+                require(inventory().table[1].item == item("minecraft:clay_ball") && inventory().cursor.item == item("minecraft:feather"),
+                        std::format("{}: clay in the table's grid, a feather carried", version));
+                const auto before = items_out().size();
+                at = mark(*alice);
+                command(1, "kill");
+                ticks(3);
+                seen = since(*alice, at);
+                require(std::ranges::find(seen, std::format("slot {} 39", window)) != seen.end() && std::ranges::find(seen, "close") == seen.end()
+                            && items_out().size() == before + 1 && inventory().table[1].item == item("minecraft:clay_ball"),
+                        std::format("{}: the stone's slot told in the table's window, no close, the grid kept", version));
+                if (closes) {
+                    f.game->submit(1, I{server::intent::ContainerClose{window}});
+                    ticks(1);
+                } else {
+                    ticks(20);
+                }
+                require(items_out().size() == before + 3 && items_out()[before + 1] == item("minecraft:feather")
+                            && items_out()[before + 2] == item("minecraft:clay_ball"),
+                        std::format("{}: the feather then the table's clay thrown ({})", version, closes ? "closed by the client" : "the body gone"));
+                f.game->submit(1, I{server::intent::ClientCommand{0}});
+                ticks(3);
+            }
+            (void)bob;
+        }
+        if (!ran) std::puts("  (no official server jar given: the curse checks did not run)");
+    });
+
     suite.run("players hear the level-up sound and are told their experience after /xp as both official servers do (client/xp_death)", [] {
         // circuit-clienttest/xp-levelup.js: alice gains levels by /xp, bob
         // listens 3 blocks away.
@@ -7127,10 +7444,10 @@ int main() {
             f.game->submit(1, I{server::intent::ConfirmTeleport{5}});
             f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
             for (int k = 0; k < 6; ++k) f.game->tick(); // the rest of her orbs taken
-            // With keepInventory (20 blocks the other way): nothing drops, the
-            // levels and the stone stay and are told at the respawn; the stone
-            // carried at the death goes back into the inventory as the window
-            // closes.
+            // With keepInventory (20 blocks the other way): nothing drops at
+            // the death, the levels stay and are told at the respawn; the
+            // stone carried is thrown when the body goes, here at the respawn
+            // before it (client/ench_curses).
             f.game->submit(1, I{server::intent::Command{"tp alice -19.5 -60 0.5"}});
             f.game->tick();
             f.game->submit(1, I{server::intent::ConfirmTeleport{6}});
@@ -7158,14 +7475,22 @@ int main() {
             {
                 const auto d = f.game->engine().dump();
                 const auto p = std::ranges::find_if(d.players, [&](const auto& inv) { return inv.player == key; });
-                require(entities().size() == before_keep && p != d.players.end() && p->cursor.empty()
-                            && p->slots[36] == contracts::ItemStack{static_cast<std::uint16_t>(stone), 16, 0} && p->xp_level == 3,
-                        std::format("{}: keepInventory keeps the stone (put back from the cursor) and the levels", version));
+                require(entities().size() == before_keep && p != d.players.end()
+                            && p->cursor == contracts::ItemStack{static_cast<std::uint16_t>(stone), 16, 0} && p->xp_level == 3,
+                        std::format("{}: keepInventory keeps the levels, the stone still carried", version));
             }
             require(std::ranges::none_of(packets(), [](const auto& s) { return s.starts_with("experience"); }), "nothing told while dead");
             f.game->submit(1, I{server::intent::ClientCommand{0}});
             f.game->tick();
             seen_now = packets();
+            {
+                // The carried stack thrown from where the body was at the
+                // respawn (client/ench_curses: when the body goes, or then).
+                const auto d = f.game->engine().dump();
+                const auto p = std::ranges::find_if(d.players, [&](const auto& inv) { return inv.player == key; });
+                require(entities().size() == before_keep + 1 && (p == d.players.end() || p->cursor.empty()),
+                        std::format("{}: the carried stone thrown at the respawn", version));
+            }
             // (the total keeps the 21 points she took from her orbs: /xp set leaves it)
             require(seen_now == std::vector<std::string>{"respawn", "position", "spawn", "experience 0 3 21", "spawn", "health 20", "experience 0 3 21"},
                     std::format("{}: keepInventory, the respawn: {}", version, [&] { std::string t; for (const auto& e : seen_now) t += e + ", "; return t; }()));

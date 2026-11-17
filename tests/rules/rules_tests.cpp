@@ -32,6 +32,7 @@
 #include <limits>
 #include <format>
 #include <map>
+#include <ranges>
 #include <random>
 #include <set>
 
@@ -1043,25 +1044,34 @@ int main() {
         s.tick({ContainerClick{alex, std::nullopt, 37, 0, 0, false, {}, {}}});
         const auto position = at_block(1.5, 1.32, 1.5);
         s.tick({PlayerDeath{alex, position}});
-        const auto d = s.oracle.dump();
-        require(d.players.empty(), "the inventory is empty");
-        // Hotbar, main inventory, armor from the feet up, off hand, crafting grid, carried stack.
+        auto d = s.oracle.dump();
+        // Hotbar, main inventory, armor from the feet up, off hand; the
+        // crafting grid and the carried stack stay (client/ench_curses).
         const std::vector<ItemStack> expected{{items::redstone, 64, 0}, {items::stone, 5, 0}, {items::iron_boots, 1, 0},
-                                              {items::diamond_helmet, 1, 30}, {items::shield, 1, 0}, {items::wheat, 3, 0},
-                                              {items::lever, 7, 0}};
+                                              {items::diamond_helmet, 1, 30}, {items::shield, 1, 0}};
         require(d.overworld().entities.size() == expected.size(), std::format("{} entities", d.overworld().entities.size()));
         for (std::size_t i = 0; i < expected.size(); ++i) {
             require(d.overworld().entities[i].stack == expected[i], std::format("drop {} in order", i));
             require(d.overworld().entities[i].pickup_delay > 30, "with the thrown pickup delay");
         }
+        require(d.players.size() == 1 && d.players[0].slots[2] == ItemStack{items::wheat, 3, 0} && d.players[0].cursor == ItemStack{items::lever, 7, 0}
+                    && std::ranges::all_of(d.players[0].slots | std::views::drop(5), &ItemStack::empty),
+                "the grid and the carried stack stay");
         // They spread in different directions.
         std::set<std::pair<double, double>> directions;
         for (const auto& e : d.overworld().entities) directions.insert({e.velocity.x, e.velocity.z});
         require(directions.size() == expected.size(), "spread");
+        // When the body goes they are thrown: the carried stack, then the grid.
+        s.tick({circuit::contracts::CloseContainer{alex, at_block(1.5, 2.5, 1.5), {}, true}});
+        d = s.oracle.dump();
+        require(d.players.empty() && d.overworld().entities.size() == expected.size() + 2
+                    && d.overworld().entities[expected.size()].stack == ItemStack{items::lever, 7, 0}
+                    && d.overworld().entities[expected.size() + 1].stack == ItemStack{items::wheat, 3, 0},
+                "the carried stack, then the grid's, thrown");
         // Below the world nothing can drop: the items are lost, as in the void.
         s.tick({SetPlayerSlot{alex, 36, {items::stone, 2, 0}}});
         s.tick({PlayerDeath{alex, at_block(1.5, -200, 1.5)}});
-        require(s.oracle.dump().players.empty() && s.oracle.dump().overworld().entities.size() == expected.size(), "lost below the world");
+        require(s.oracle.dump().players.empty() && s.oracle.dump().overworld().entities.size() == expected.size() + 2, "lost below the world");
     });
 
     suite.run("a dead player's experience drops as orbs after the items, 7 points a level up to 100", [] {
@@ -2473,6 +2483,185 @@ int main() {
         require(damage(36) == 50 && player().xp_total == before && player().xp_level == level && player().xp_progress == progress
                     && std::ranges::none_of(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::experience_orb; }),
                 "an orb of -5 and one of 0 taken, nothing changed");
+    });
+
+    suite.run("the curses: a bound piece stays on outside creative mode, a vanishing stack drops nothing at death (client/ench_curses)", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::ItemStack;
+        using circuit::contracts::PlayerDeath;
+        using circuit::contracts::PlayerKey;
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::EntityKind;
+        using circuit::gameplay::PlayerInventory;
+        namespace en = circuit::gameplay::enchantments;
+        using Levels = std::vector<std::pair<std::uint32_t, std::int32_t>>;
+        // Stand-ins for the server's encoding: type 1 the enchantments (type 2
+        // the stored ones), one byte per id and level. 2 binding, its slots the main hand alone, and
+        // 40 vanishing, the head alone: neither curse heeds its slots
+        // (client/ench_curses_pack); 27 an enchantment with no curse.
+        const auto patch = [](const Levels& levels) {
+            std::vector<std::byte> bytes;
+            for (const auto& [id, level] : levels) {
+                bytes.push_back(static_cast<std::byte>(id));
+                bytes.push_back(static_cast<std::byte>(level));
+            }
+            return ComponentPatch::make(772, {{1, bytes}}, {}, {});
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->enchantments_of = [](const ComponentPatch& p, bool stored) {
+            Levels out;
+            for (const auto& a : p.added())
+                if (a.type == (stored ? 2 : 1))
+                    for (std::size_t k = 0; k + 1 < a.value.size(); k += 2)
+                        out.emplace_back(static_cast<std::uint32_t>(a.value[k]), static_cast<std::int32_t>(a.value[k + 1]));
+            return out;
+        };
+        en::Effects binding;
+        binding.slots = *en::slot_group("mainhand");
+        binding.prevent_armor_change = true;
+        data->enchantment_effects[2] = binding;
+        en::Effects vanishing;
+        vanishing.slots = *en::slot_group("head");
+        vanishing.prevent_equipment_drop = true;
+        data->enchantment_effects[40] = vanishing;
+        en::Effects other;
+        other.slots = *en::slot_group("armor");
+        other.protection = {en::ValueEffect{}};
+        data->enchantment_effects[27] = other;
+        const auto item = [](std::string_view name) { return circuit::gameplay::items::by_name(name).value(); };
+        const auto with = [&](std::string_view name, const Levels& levels, std::uint8_t count = 1) {
+            ItemStack s{item(name), count, 0};
+            s.components = patch(levels);
+            return s;
+        };
+        const auto bound = with("minecraft:iron_helmet", {{2, 1}});
+        const ItemStack plain{items::iron_helmet, 1};
+        const PlayerKey alex{6, 3};
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-2, 2, -2, 2));
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            return it == d.players.end() ? PlayerInventory{} : *it;
+        };
+        const auto items_out = [&] {
+            const auto d = s.oracle.dump();
+            return std::ranges::count_if(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::item; });
+        };
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode, bool creative = false) {
+            return ContainerClick{alex, std::nullopt, slot, button, mode, creative, at_block(0.5, 2.5, 0.5), {}};
+        };
+        const auto use = [&](std::uint8_t at, bool survival) { return PlayerUseItem{alex, at, {0.5, 1.62, 0.5}, 0.0f, 0.0f, 4.5, survival, std::nullopt}; };
+
+        // Every click that would take a bound helmet off in survival leaves it
+        // (pickup, half, shift-click, number keys onto an empty and a full
+        // hotbar slot, F, Q and Ctrl+Q, a swap with a carried helmet, a drag
+        // over it, double clicks).
+        s.tick({SetPlayerSlot{alex, 5, bound}, SetPlayerSlot{alex, 37, plain}, SetPlayerSlot{alex, 38, {items::stone, 16}}});
+        for (const auto& [slot, button, mode] : std::vector<std::tuple<std::int16_t, std::uint8_t, std::uint8_t>>{
+                 {5, 0, 0}, {5, 1, 0}, {5, 0, 1}, {5, 0, 2}, {5, 1, 2}, {5, 40, 2}, {5, 0, 4}, {5, 1, 4}, {5, 2, 3}}) {
+            s.tick({click(slot, button, mode)});
+            const auto p = player();
+            require(p.slots[5] == bound && p.cursor.empty() && p.slots[36].empty() && p.slots[37] == plain && p.slots[45].empty()
+                        && items_out() == 0,
+                    std::format("click {} {} {}: the bound helmet stays", slot, button, mode));
+        }
+        s.tick({click(37, 0, 0)});
+        s.tick({click(5, 0, 0)});
+        s.tick({click(5, 1, 0)});
+        require(player().slots[5] == bound && player().cursor == plain, "a carried helmet is not swapped for it");
+        s.tick({click(37, 0, 0), click(38, 0, 0)});
+        s.tick({click(-999, 0, 5), click(5, 1, 5), click(-999, 2, 5)});
+        s.tick({click(5, 0, 6)});
+        require(player().slots[5] == bound && player().cursor == ItemStack{items::stone, 16}, "a drag over it and a double click");
+        s.tick({click(38, 0, 0)});
+        // A double click collecting bound pumpkins skips the worn one; plain
+        // ones are collected, the worn one too (client/ench_curses).
+        const auto pumpkin = item("minecraft:carved_pumpkin");
+        const auto bound_pumpkin = with("minecraft:carved_pumpkin", {{2, 1}});
+        s.tick({SetPlayerSlot{alex, 5, bound_pumpkin}, SetPlayerSlot{alex, 39, bound_pumpkin}});
+        s.tick({click(39, 0, 0)});
+        s.tick({click(20, 0, 6)});
+        require(player().slots[5] == bound_pumpkin && player().cursor == bound_pumpkin, "the bound pumpkin not collected");
+        s.tick({click(39, 0, 0), SetPlayerSlot{alex, 5, {pumpkin, 1}}});
+        s.tick({SetPlayerSlot{alex, 39, {pumpkin, 1}}});
+        s.tick({click(39, 0, 0)});
+        s.tick({click(20, 0, 6)});
+        require(player().slots[5].empty() && player().cursor == ItemStack{pumpkin, 2}, "the plain worn pumpkin collected");
+        s.tick({click(39, 0, 0)});
+        // Using another helmet over it in survival changes nothing; in creative
+        // mode it swaps.
+        s.tick({SetPlayerSlot{alex, 5, bound}, SetPlayerSlot{alex, 36, {items::diamond_helmet, 1}}});
+        s.tick({use(36, true)});
+        require(player().slots[5] == bound && player().slots[36] == ItemStack{items::diamond_helmet, 1}, "no swap by use in survival");
+        s.tick({use(36, false)});
+        require(player().slots[5] == ItemStack{items::diamond_helmet, 1} && player().slots[36] == bound, "swapped by use in creative mode");
+        // In creative mode clicks take it.
+        s.tick({SetPlayerSlot{alex, 5, bound}, SetPlayerSlot{alex, 36, {}}});
+        s.tick({click(5, 0, 0, true)});
+        require(player().slots[5].empty() && player().cursor == bound, "picked up in creative mode");
+        s.tick({click(5, 0, 0, true)});
+        s.tick({click(5, 0, 1, true)});
+        require(player().slots[5].empty() && player().slots[9] == bound, "shift-clicked out in creative mode");
+        // Out of the armor slots it moves freely, and goes on by click, shift-
+        // click, number key and use, also over a plain helmet.
+        s.tick({click(9, 0, 1)});
+        require(player().slots[5] == bound && player().slots[9].empty(), "shift-clicked on");
+        const auto shield = with("minecraft:shield", {{2, 1}});
+        s.tick({SetPlayerSlot{alex, 45, shield}, SetPlayerSlot{alex, 5, {}}, SetPlayerSlot{alex, 36, bound}});
+        s.tick({click(45, 0, 0)});
+        require(player().slots[45].empty() && player().cursor == shield, "a bound shield leaves the off hand");
+        s.tick({click(45, 0, 0)});
+        s.tick({click(36, 40, 2)});
+        require(player().slots[36] == shield && player().slots[45] == bound, "bound items swap between the hand and the off hand");
+        s.tick({click(36, 40, 2)});
+        s.tick({click(5, 0, 2)});
+        require(player().slots[5] == bound && player().slots[36].empty(), "a number key puts it on");
+        s.tick({SetPlayerSlot{alex, 5, plain}, SetPlayerSlot{alex, 36, bound}});
+        s.tick({click(5, 0, 2)});
+        require(player().slots[5] == bound && player().slots[36] == plain, "a number key swaps it for a plain one");
+        s.tick({SetPlayerSlot{alex, 5, plain}, SetPlayerSlot{alex, 36, bound}});
+        s.tick({click(36, 0, 0)});
+        s.tick({click(5, 0, 0)});
+        require(player().slots[5] == bound && player().cursor == plain, "a click swaps it for a plain one");
+        s.tick({click(36, 0, 0), SetPlayerSlot{alex, 5, plain}, SetPlayerSlot{alex, 36, bound}});
+        s.tick({use(36, true)});
+        require(player().slots[5] == bound && player().slots[36] == plain, "used over a plain helmet");
+        s.tick({use(36, true)});
+        require(player().slots[5] == bound && player().slots[36] == plain, "and stays");
+        // An enchantment without the curse binds nothing.
+        s.tick({SetPlayerSlot{alex, 5, with("minecraft:iron_helmet", {{27, 1}})}, SetPlayerSlot{alex, 36, {}}});
+        s.tick({click(5, 0, 0)});
+        require(player().slots[5].empty() && player().cursor.item == items::iron_helmet, "another enchantment binds nothing");
+        s.tick({click(5, 0, 0)});
+
+        // At death the vanishing stacks of the inventory empty their slots and
+        // drop nothing: in the hotbar, the main inventory, armor (bound too)
+        // and the off hand; a book storing the curse and the rest drop, in the
+        // target version's order, the spread pattern counting only those.
+        s.tick({SetPlayerSlot{alex, 38, {}}, SetPlayerSlot{alex, 39, {}}});
+        ItemStack book{item("minecraft:enchanted_book"), 1, 0};
+        book.components = ComponentPatch::make(772, {{2, {std::byte{40}, std::byte{1}}}}, {}, {});
+        s.tick({SetPlayerSlot{alex, 36, with("minecraft:iron_sword", {{40, 1}})}, SetPlayerSlot{alex, 37, {items::stone, 5}},
+                SetPlayerSlot{alex, 9, with("minecraft:iron_ingot", {{40, 1}}, 4)}, SetPlayerSlot{alex, 10, {items::redstone, 3}},
+                SetPlayerSlot{alex, 11, book},
+                SetPlayerSlot{alex, 5, with("minecraft:iron_helmet", {{40, 1}})}, SetPlayerSlot{alex, 6, {item("minecraft:iron_chestplate"), 1}},
+                SetPlayerSlot{alex, 7, with("minecraft:iron_leggings", {{2, 1}})},
+                SetPlayerSlot{alex, 8, with("minecraft:iron_boots", {{2, 1}, {40, 1}})}, SetPlayerSlot{alex, 45, with("minecraft:shield", {{40, 1}})}});
+        s.tick({PlayerDeath{alex, at_block(0.5, 2.32, 0.5)}});
+        const auto d = s.oracle.dump();
+        std::vector<ItemStack> dropped;
+        for (const auto& e : d.overworld().entities)
+            if (e.kind == EntityKind::item) dropped.push_back(e.stack);
+        require(dropped == std::vector<ItemStack>{{items::stone, 5}, {items::redstone, 3}, book, with("minecraft:iron_leggings", {{2, 1}}),
+                                                  {item("minecraft:iron_chestplate"), 1}},
+                std::format("the plain and bound stacks dropped in order ({})", dropped.size()));
+        const auto p = player();
+        require(std::ranges::all_of(p.slots, &ItemStack::empty), "every slot emptied");
+        const auto first = std::ranges::find_if(d.overworld().entities, [](const auto& e) { return e.kind == EntityKind::item; });
+        require(first->velocity.x == 0.0 && first->velocity.z > 0.0, "the spread's first direction for the first drop");
     });
 
     suite.run("mined ores give experience as orbs at their center, but not to Silk Touch", [] {
@@ -6870,7 +7059,7 @@ int main() {
         s.tick({PlayerPresence{alex, at_block(0.5, 1, 2.5)}, PlayerPresence{bob, at_block(1.5, 1, 2.5)}});
         const auto beside = [&] { return std::pair{s.at({-1, 1, 0}).level(), s.at({1, 0, 0}).level()}; };
         const auto use = [&](PlayerKey who) { return PlayerUse{who, 36, chest, Direction::up, Direction::south, Direction::south, false, true, 3, 3}; };
-        const auto close = [&](PlayerKey who, BlockPos at) { return CloseContainer{who, at_block(0.5, 2, 2.5), {}, false, at}; };
+        const auto close = [&](PlayerKey who, BlockPos at, bool drop = false) { return CloseContainer{who, at_block(0.5, 2, 2.5), {}, drop, at}; };
         const auto lids = [&] {
             std::vector<std::uint64_t> counts;
             for (const auto& r : of_kind(s.last, TraceKind::block_event_queued))
@@ -6907,11 +7096,14 @@ int main() {
         s.tick({PlayerPresence{bob, {}, false, false}});
         for (int i = 0; i < 5; ++i) s.tick();
         require(beside() == std::pair<std::uint8_t, std::uint8_t>{0, 0}, "a viewer gone from the level is dropped");
-        // A player who dies stops viewing.
+        // A player who dies stops viewing when the window goes with the body
+        // (client/ench_curses: a dead player's window stays until then).
         s.tick({use(alex)});
         require(beside().first == 1, "alex again");
         s.tick({PlayerDeath{alex, at_block(0.5, 1, 2.5)}});
-        require(beside() == std::pair<std::uint8_t, std::uint8_t>{0, 0} && !viewing(alex), "and dies");
+        require(beside().first == 1 && viewing(alex) == chest, "and dies, still viewing");
+        s.tick({close(alex, chest, true)});
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{0, 0} && !viewing(alex), "until the body goes");
     });
 
     suite.run("barrels are open from their first viewer to their last", [] {
@@ -7311,14 +7503,19 @@ int main() {
         require(std::ranges::all_of(player().table, &ItemStack::empty) && player().cursor.empty() &&
                     s.oracle.dump().overworld().entities.size() == before + 2,
                 "the grid and the cursor dropped");
-        // A death drops an open table's grid with the inventory.
+        // A death leaves an open table's grid; it is thrown when the body goes
+        // (client/ench_curses).
         s.tick({SetPlayerSlot{alex, 36, {items::oak_log, 2}}});
         s.tick({click(37, 0, 1)});
         s.tick({circuit::contracts::PlayerDeath{alex, at_block(0.5, 2, 0.5)}});
+        require(player().table[1] == ItemStack{items::oak_log, 2}
+                    && std::ranges::count(s.oracle.dump().overworld().entities, ItemStack{items::oak_log, 2}, &circuit::gameplay::Entity::stack) == 0,
+                "the log stays in the grid at death");
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, true}});
         const auto d = s.oracle.dump();
         require(std::ranges::find(d.players, alex, &PlayerInventory::player) == d.players.end() &&
                     std::ranges::count(d.overworld().entities, ItemStack{items::oak_log, 2}, &circuit::gameplay::Entity::stack) == 1,
-                "the log dropped at death");
+                "the log thrown when the body goes");
     });
 
     suite.run("held maps explore the terrain as both official servers draw it", [] {

@@ -237,11 +237,16 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
     // Armor and the elytra are put on, swapping with what is worn (in
     // creative mode too); in creative mode with nothing worn there, a copy
     // goes on and the hand keeps the piece (client/armor, client/armor3).
+    // Outside creative mode a worn piece whose enchantment keeps it on (the
+    // curse of binding) stays, and nothing changes (client/ench_curses).
     if (const auto* worn = equipment::wearable(held.item); worn && worn->swappable && !held.empty()) {
         const auto to = equipment::inventory_slot(worn->slot, 0);
         return [&ctx, c, to] {
             auto& inv = ctx.player(c.player);
             if (inv.slots[c.slot] == inv.slots[to]) return;
+            if (const auto* data = ctx.data();
+                c.survival && data && data->enchanted_with(inv.slots[to].components, &enchantments::Effects::prevent_armor_change))
+                return;
             if (!c.survival && inv.slots[to].empty()) {
                 inv.slots[to] = inv.slots[c.slot];
                 record_slot(ctx, inv, to);

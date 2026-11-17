@@ -608,7 +608,9 @@ constexpr std::array reference_v4_mechanisms{
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "
         "tool (stone gives cobblestone), container contents and tool wear; pickup by box with the target "
         "version's slot order and pickup delays (10 for block drops, 40 for thrown items); a dead player's "
-        "inventory drops in the target version's order. Gaps: thrown items have no random spread and death "
+        "inventory drops in the target version's order but its stacks with the curse of vanishing, and the "
+        "crafting grids and the carried stack are thrown when the body goes (client/ench_curses); a piece with "
+        "the curse of binding stays in its armor slot outside creative mode. Gaps: thrown items have no random spread and death "
         "drops spread in a fixed pattern; modeled blocks have fixed drops, and blocks without rules drop from "
         "their data-pack loot tables only where these draw no random numbers. Health, hunger and movement "
         "are checked by the server, not by the rules."},

@@ -442,7 +442,17 @@ public:
         }
         return true;
     }
-    [[nodiscard]] bool may_pickup(std::size_t i) const { return !result(i); }
+    [[nodiscard]] bool may_pickup(std::size_t i) const {
+        if (result(i)) return false;
+        // A piece whose enchantment keeps it on (the curse of binding) stays
+        // in its armor slot outside creative mode: no click takes it, swaps it
+        // or collects it (client/ench_curses).
+        if (own_ && i >= 5 && i <= 8 && !creative_) {
+            const auto* data = ctx_.data();
+            if (data && data->enchanted_with(get(i).components, &enchantments::Effects::prevent_armor_change)) return false;
+        }
+        return true;
+    }
     [[nodiscard]] int max_stack(std::size_t i, ItemStack stack) const {
         if (own_ && i >= 5 && i <= 8) return 1;
         if (furnace_ && i == 1 && stack.item == items::bucket) return 1;
@@ -1627,6 +1637,16 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
         // and the carried stack go back into the inventory, or drop when the
         // player left.
         const auto put_back = [&](ItemStack s) { return c.drop ? s : add_to_player(ctx, inv, s, contracts::hotbar_first); };
+        // Thrown, the carried stack goes first (client/ench_curses: a dead
+        // player's, before the grid's, own or a crafting table's).
+        const auto carried_out = [&] {
+            if (inv.cursor.empty()) return;
+            const auto carried = inv.cursor;
+            inv.cursor = {};
+            record_slot(ctx, inv, player_slots);
+            throw_item(ctx, c.drop_position, c.drop_velocity, put_back(carried));
+        };
+        if (c.drop) carried_out();
         for (const auto grid : {own_grid, table_grid})
             for (std::size_t k = 1; k <= grid.size(); ++k) {
                 auto& slot = player_slot(inv, grid.record(k));
@@ -1667,12 +1687,7 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
         set_anvil_result(ctx, inv, false);
         inv.enchant_costs = {};
         inv.enchant_clues = inv.enchant_clue_levels = {-1, -1, -1};
-        if (!inv.cursor.empty()) {
-            const auto carried = inv.cursor;
-            inv.cursor = {};
-            record_slot(ctx, inv, player_slots);
-            throw_item(ctx, c.drop_position, c.drop_velocity, put_back(carried));
-        }
+        carried_out();
         // A beacon's payment does not go back: it is thrown out
         // (client/beacon2, both versions).
         if (!inv.beacon[0].empty()) {
@@ -1707,55 +1722,33 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         if (!ctx.peek_player(c.player)) return; // nothing to drop
         auto& inv = ctx.player(c.player);
         reset_drag(inv);
-        stop_viewing(ctx, inv);
         // The target version's order: hotbar, main inventory, armor from the
-        // feet up, off hand; then the crafting grids (an open crafting
-        // table's after the own one) and the carried stack.
+        // feet up, off hand. The crafting grids, an open workstation's inputs
+        // and the carried stack stay with the window until the body goes
+        // (a CloseContainer that throws them; client/ench_curses), and so
+        // does the viewing of an open container (Circuit's choice, as the
+        // recorded crafting table's window stays).
         std::vector<std::uint8_t> order;
         for (std::uint8_t s = contracts::hotbar_first; s < contracts::offhand_slot; ++s) order.push_back(s);
         for (std::uint8_t s = 9; s < contracts::hotbar_first; ++s) order.push_back(s);
         for (std::uint8_t s = 8; s >= 5; --s) order.push_back(s);
         order.push_back(contracts::offhand_slot);
-        for (std::uint8_t s = 1; s <= 4; ++s) order.push_back(s);
-        for (std::size_t k = 1; k <= table_grid.size(); ++k) order.push_back(table_grid.record(k));
-        order.push_back(contracts::cutter_first);
-        for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::smith_first + k));
-        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::grind_first + k));
-        for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::loom_first + k));
-        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::anvil_first + k));
-        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::enchant_first + k));
-        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::cartography_first + k));
-        order.push_back(contracts::beacon_first);
         std::size_t n = 0;
-        const auto drop = [&](ItemStack stack) {
-            if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
+        // A stack whose enchantment makes it vanish (the curse of vanishing;
+        // not one stored in a book or carried inside a shulker box or bundle)
+        // empties its slot and drops nothing (client/ench_curses); the spread
+        // pattern counts the drops alone.
+        const auto* data = ctx.data();
+        const auto vanishes = [&](const ItemStack& stack) {
+            return data && data->enchanted_with(stack.components, &enchantments::Effects::prevent_equipment_drop);
         };
         for (const auto s : order) {
-            auto& slot = player_slot(inv, s);
+            auto& slot = inv.slots[s];
             if (slot.empty()) continue;
             const auto stack = slot;
             slot = {};
             record_slot(ctx, inv, s);
-            drop(stack);
-        }
-        inv.table_recipe = -1;
-        update_crafting(ctx, inv);
-        inv.cutter_recipe = -1;
-        set_cutter_result(ctx, inv);
-        set_smith_result(ctx, inv);
-        set_grind_result(ctx, inv);
-        set_cartography_result(ctx, inv);
-        inv.loom_pattern = -1;
-        set_loom_result(ctx, inv);
-        inv.anvil_name.clear();
-        set_anvil_result(ctx, inv, false);
-        inv.enchant_costs = {};
-        inv.enchant_clues = inv.enchant_clue_levels = {-1, -1, -1};
-        if (!inv.cursor.empty()) {
-            const auto stack = inv.cursor;
-            inv.cursor = {};
-            record_slot(ctx, inv, contracts::player_slots);
-            drop(stack);
+            if (in_world && !vanishes(stack)) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
         }
     };
 }

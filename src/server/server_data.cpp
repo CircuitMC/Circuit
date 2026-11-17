@@ -369,7 +369,9 @@ std::optional<gameplay::enchantments::ValueOperation> value_operation(const auth
 // effects of the form remove_binomial (unbreaking) with requirements on the
 // item are read; another form refuses the packs. Its repair_with_xp effects
 // (mending) of every value effect form, with requirements on the item, are
-// read; another type or an unreadable requirement refuses the packs.
+// read; another type or an unreadable requirement refuses the packs. Its
+// prevent_armor_change and prevent_equipment_drop effects (the curses) are
+// read as an object; another kind refuses the packs.
 std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json,
                                                                                const data::DataPacks& packs) {
     namespace en = gameplay::enchantments;
@@ -537,6 +539,16 @@ std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(
             }
             out.repair_with_xp.push_back(std::move(read));
         }
+    }
+    // The curses' valueless effects: an object, its members unread (as the
+    // official servers read {"note": 1}; client/ench_curses_pack).
+    for (const auto& [component, flag] : {std::pair{"minecraft:prevent_armor_change", &en::Effects::prevent_armor_change},
+                                          std::pair{"minecraft:prevent_equipment_drop", &en::Effects::prevent_equipment_drop}}) {
+        const auto* e = effects ? effects->find(component) : nullptr;
+        if (!e) continue;
+        if (e->kind() != auth::Json::Kind::object)
+            return std::unexpected(std::format("enchantment {}: a {} effect Circuit cannot read", name, component));
+        out.*flag = true;
     }
     const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;
     if (!list) return out;

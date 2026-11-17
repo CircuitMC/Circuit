@@ -215,8 +215,10 @@ struct BlockHit {
 // takes the first fluid source on the view before that block, or from the
 // block; a filled one pours into the block or beside it. In survival the
 // bucket changes in the hand. A piece of armor or an elytra is put on,
-// swapping with what is worn in its slot, in every game mode; outside
-// survival with nothing worn there a copy goes on and the hand keeps it.
+// swapping with what is worn in its slot, in every game mode but over a
+// piece whose enchantment keeps it on (the curse of binding) in survival;
+// outside survival with nothing worn there a copy goes on and the hand keeps
+// it.
 struct PlayerUseItem {
     PlayerKey player;
     std::uint8_t slot{}; // the using hand's inventory slot (36-44 or 45)
@@ -281,8 +283,11 @@ struct ContainerClick {
 };
 // A player closes their window: the carried stack and the crafting grids
 // (the own window's and an open crafting table's) go back into the
-// inventory; what does not fit drops. When `drop` (the player left), they
-// all drop instead, as the target versions drop a departed player's menus.
+// inventory; what does not fit drops. When `drop` (the player left, or a
+// dead player's body went), they are all thrown instead, the carried stack
+// first, as the target versions throw a dead player's menus
+// (client/ench_curses) and drop a departed player's (that order not
+// recorded for them).
 // `container` is the window's block: a container the player views (a chest)
 // loses the player as a viewer.
 struct CloseContainer {
@@ -294,9 +299,12 @@ struct CloseContainer {
     bool operator==(const CloseContainer&) const = default;
 };
 
-// A player dies: the whole inventory, then the crafting grid and the carried
-// stack, drops around `position` (the eyes less 0.3). Items dropped where no
-// entity can exist, such as below the world, are lost.
+// A player dies: the inventory (hotbar, main inventory, armor, off hand)
+// drops around `position` (the eyes less 0.3), but its stacks with an
+// enchantment that makes them vanish (the curse of vanishing), which are
+// gone. The crafting grids and the carried stack stay for the window's close
+// when the body goes (`CloseContainer` with `drop`; client/ench_curses).
+// Items dropped where no entity can exist, such as below the world, are lost.
 struct PlayerDeath {
     PlayerKey player;
     Vec3 position;

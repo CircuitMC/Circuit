@@ -38,6 +38,7 @@
 #include <map>
 #include <numbers>
 #include <mutex>
+#include <ranges>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -236,6 +237,22 @@ struct Player {
     Vec3 tick_pos;
     bool tick_in_lava{}; // in lava at the end of the player's last tick (a hurt's velocity)
     std::int32_t dead_ticks{}; // since death; at 20 the body goes (client/player_data)
+    // A dead player's window, crafting grids and carried stack, still to be
+    // thrown where the body is (when it goes, or at a close, respawn or leave
+    // before); and a respawn's throw of them still to be applied, while the
+    // client's new window shows the grid and the carried stack empty.
+    bool menus_due{};
+    std::optional<std::uint64_t> menus_thrown;
+    std::vector<std::uint64_t> grid_sets; // creative sets of the own grid's slots (admissions): the result sent again for each
+    bool death_shown{true}; // a death's animation shown to those who see the player (after its drops appear)
+    bool own_death_due{}; // and to the player, when the death drops items
+    std::vector<Bytes> after_death; // what the player is told after that (a /kill's feedback: client/xp_death)
+    std::uint8_t broken{}; // the equipment slots (a bit each) whose pieces the held wear broke: their modifiers wait for it
+    std::array<std::int32_t, 4> armor_worn{}; // the wear admitted for each armor piece (5-8) in the wear tick
+    // Clicks swapping with the off hand (F over a slot) not yet applied, and
+    // whether an applied one changed the off hand since its sound was decided.
+    std::vector<std::uint64_t> offhand_clicks;
+    bool offhand_swapped{};
     // The client's settings the entity data shows: the skin parts (index 17)
     // and the main hand (18, 1 right); and what was last told of the
     // entity's data: the health (none for a new entity: joined or
@@ -1303,7 +1320,9 @@ struct Game::Impl final : GameServices {
         if (it == players.end()) return;
         auto& p = it->second;
         // The crafting grids and the carried stack drop where the player
-        // was, as the official servers drop a departed player's menus.
+        // was, as the official servers drop a departed player's menus (a
+        // dead player's, if the body has not gone).
+        (void)drop_menus(p);
         if (!p.dead) {
             const auto [position, velocity] = throw_from(p);
             std::optional<BlockPos> container;
@@ -1422,10 +1441,12 @@ struct Game::Impl final : GameServices {
         const auto player_slot = [&](std::size_t i) {
             return inv && *inv ? wire_stack((*inv)->slots[i]) : WireStack{};
         };
-        const auto carried = inv && *inv ? wire_stack((*inv)->cursor) : WireStack{};
+        // A respawned player's new window has no crafting grid's items and
+        // carries nothing while the dead player's are being thrown.
+        const auto carried = inv && *inv && !p.menus_thrown ? wire_stack((*inv)->cursor) : WireStack{};
         std::vector<WireStack> slots;
         if (!p.window) {
-            for (std::size_t i = 0; i < inventory_slots; ++i) slots.push_back(player_slot(i));
+            for (std::size_t i = 0; i < inventory_slots; ++i) slots.push_back(p.menus_thrown && i < 5 ? WireStack{} : player_slot(i));
         } else {
             if (gameplay::is_crafting_table(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::table_slots; ++i)
@@ -1478,6 +1499,13 @@ struct Game::Impl final : GameServices {
         // client/own_grid_counts); other changes (closing, the recipe book)
         // send it only when it differs.
         std::size_t resends = 0;
+        if (!p.window && !p.grid_sets.empty())
+            for (const auto& r : engine->trace())
+                if (r.kind == contracts::TraceKind::command_applied || r.kind == contracts::TraceKind::command_rejected)
+                    if (const auto it = std::ranges::find(p.grid_sets, r.a); it != p.grid_sets.end()) {
+                        if (r.kind == contracts::TraceKind::command_applied) ++resends;
+                        p.grid_sets.erase(it);
+                    }
         if (!p.clicks.empty()) {
             const auto key = key_of(p);
             const bool table = p.window && gameplay::is_crafting_table(at(p.window->pos));
@@ -2593,25 +2621,53 @@ struct Game::Impl final : GameServices {
     // see of it unless `seen_now` (1.21.4 shows a lava hurt's wear to others
     // in its tick, before the burning's flag: client/fire).
     // A piece's points unbreaking spares are drawn piece by piece
-    // (client/ench_unbreaking); with all spared nothing wears.
+    // (client/ench_unbreaking); with all spared nothing wears. A piece worn
+    // to breaking gives its slot's break event (49 the head, 50 the chest,
+    // 51 the legs, 52 the feet; minecraft.wiki "Java Edition
+    // protocol/Entity statuses") to the player and those who see them at
+    // once, before the hurt's sound, and its modifiers go with the wear at
+    // the next tick (client/ench_curses: a helmet broken by a fist); several
+    // in a hurt from the feet up (Circuit's choice: not recorded).
     void wear_armor(Player& p, float amount, bool fire, bool seen_now) {
         contracts::WearArmor wear{key_of(p), std::min(gameplay::damage::armor_wear(amount), contracts::max_armor_wear), fire};
         bool worn = false;
+        std::vector<std::uint8_t> broken;
+        // The wear this tick's earlier hurts (and thorns) gave each piece,
+        // which the rules apply first.
+        auto pending = p.wear_tick == tick_count ? p.armor_worn : std::array<std::int32_t, 4>{};
+        const auto breaks = [&](const contracts::ItemStack& piece, std::int32_t by) {
+            const auto after = by > 0 ? gameplay::equipment::worn_down(piece, by, fire) : std::nullopt;
+            return after && after->empty();
+        };
         for (std::uint8_t slot = 5; slot <= 8; ++slot) {
             const auto piece = slot_of(p, slot);
             if (!gameplay::equipment::worn_down(piece, 1, fire)) continue;
             wear.spared[slot - 5] = wear_spared(piece, wear.amount);
             worn = worn || wear.spared[slot - 5] < wear.amount;
+            auto& by = pending[slot - 5];
+            const bool before = breaks(piece, by);
+            by += wear.amount - wear.spared[slot - 5];
+            if (!before && breaks(piece, by)) broken.push_back(slot);
         }
         if (!worn) return;
         admit(wear);
         hold_wear(p, 0b1'1110'0000, seen_now);
+        p.armor_worn = pending;
+        for (const auto slot : broken | std::views::reverse) {
+            const auto event = wire.entity_event(p.entity_id, static_cast<std::int8_t>(49 + (slot - 5)));
+            p.peer->send(event);
+            for (const auto viewer : p.seen_by)
+                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
+            p.broken |= static_cast<std::uint8_t>(1u << (10 - slot)); // the equipment slot: head 5 ... feet 2
+        }
     }
     // Holds back the slots worn in this tick (a bit each) for the next.
     void hold_wear(Player& p, std::uint64_t slots, bool seen_now) {
         if (p.wear_tick != tick_count) {
             p.wear_seen = seen_now;
             p.wear_slots = 0;
+            p.broken = 0;
+            p.armor_worn = {};
         } else {
             p.wear_seen = p.wear_seen && seen_now;
         }
@@ -2721,29 +2777,24 @@ struct Game::Impl final : GameServices {
         stop_use(p);
         p.floating = false;
         p.fall_distance = 0.0;
-        // The window closes without telling the client (the death screen
-        // replaces it), as on the official servers; the death drops an open
-        // crafting table's grid with the rest. Then the experience: the orbs
-        // where the player stands (their feet: Circuit's choice, the
-        // recordings show only the orbs' values), a spectator's none; the
-        // client is told the experience lost at the respawn (client/xp_death).
-        // With keepInventory the inventory and the experience stay; the window
-        // closes as the player closing it would, the grids and the carried
-        // stack going back into the inventory and what does not fit thrown
-        // (Circuit's choice: not recorded).
+        // The death drops the inventory, its slots told in the open window
+        // (client/ench_curses: a crafting table's), which stays open with its
+        // grid and the carried stack until the body goes, keepInventory or
+        // not (drop_menus). Then the experience: the orbs where the player
+        // stands (their feet: Circuit's choice, the recordings show only the
+        // orbs' values), a spectator's none; the client is told the
+        // experience lost at the respawn (client/xp_death). With keepInventory
+        // the inventory and the experience stay.
+        p.menus_due = true;
         if (gameplay::game_rule_value(bundle, rules, "keepInventory") == 0) {
-            p.window.reset();
             // The slots the drops empty go first, then the health
             // (client/xp_death: /kill; Circuit's rule for every death).
             const auto inv = engine->view().player(key_of(p));
-            const bool drops = inv && *inv && (!(*inv)->cursor.empty() || std::ranges::any_of((*inv)->slots, [](const auto& s) { return !s.empty(); }));
+            const bool drops = inv && *inv && std::ranges::any_of((*inv)->slots | std::views::drop(5), [](const auto& s) { return !s.empty(); });
             const auto death = queue.admit(contracts::PlayerDeath{key_of(p), contracts::Vec3{p.pos.x, p.pos.y + 1.32, p.pos.z}}, overworld);
             if (!death) log_warn("game: command queue full; input dropped");
             if (drops && death) p.death_drops = *death;
             admit(contracts::LoseExperience{key_of(p), contracts::Vec3{p.pos.x, p.pos.y, p.pos.z}, p.game_mode != spectator});
-        } else {
-            admit_close(p);
-            p.window.reset();
         }
         const auto key = harm == Harm::fall && fall_distance > 5.0 ? "death.fell.accident.generic" : harm_type(harm).death;
         auto with = nbt::Tag::list(nbt::TagType::compound);
@@ -2755,12 +2806,33 @@ struct Game::Impl final : GameServices {
         p.peer->send(wire.combat_kill(p.entity_id, text));
         broadcast(wire.system_chat(text));
         log_info(std::format("{} died ({})", p.name, key));
-        // The death animation, for the player and those who see them; the
-        // body stays in their view until the player respawns.
+        // The death animation, for the player and those who see them, after
+        // the items the death drops appear (client/ench_curses: ect0, the
+        // player's own, and the others'; after the orbs too: Circuit's
+        // choice); a death that drops no items (orbs or not) shows it at
+        // once, before the health and what else the hurt brings
+        // (client/effects_heal, client/fire, client/combat: before a swept
+        // player's hurt; client/ench_thorns: before the velocity); the body
+        // stays in their view until it goes.
+        if (p.death_drops) {
+            p.own_death_due = true;
+            p.death_shown = false;
+            return;
+        }
         const auto dying = wire.entity_event(p.entity_id, 3);
         p.peer->send(dying);
         for (const auto viewer : p.seen_by)
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(dying);
+    }
+    void show_deaths() {
+        for (auto& [id, p] : players) {
+            if (std::exchange(p.death_shown, true)) continue;
+            const auto dying = wire.entity_event(p.entity_id, 3);
+            if (std::exchange(p.own_death_due, false)) p.peer->send(dying);
+            for (const auto& told : std::exchange(p.after_death, {})) p.peer->send(told);
+            for (const auto viewer : p.seen_by)
+                if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(dying);
+        }
     }
     // A player's name in messages, as both official servers write it
     // (client/effects_heal): a click suggests "/tell <name> ", a hover shows
@@ -2807,6 +2879,7 @@ struct Game::Impl final : GameServices {
     // event (60), to the player and those who see the body; then it leaves
     // their view, and the others leave the dead player's.
     void body_goes(Player& p) {
+        (void)drop_menus(p);
         const auto event = wire.entity_event(p.entity_id, 60);
         p.peer->send(event);
         for (const auto viewer : p.seen_by)
@@ -2821,8 +2894,33 @@ struct Game::Impl final : GameServices {
         if (!seen.empty()) p.peer->send(wire.remove_entities(seen));
     }
 
+    // A dead player's window goes without a packet and its crafting grids
+    // and carried stack are thrown where the body is when it goes, or at the
+    // respawn (or leave) before that, keepInventory or not, and none vanishes
+    // (client/ench_curses: the carried stack, then the grid's, own or a
+    // crafting table's, after the body's last entity event); the client is
+    // told nothing of it until the respawn. A close the dead player's client
+    // sends throws them then (Circuit's choice: not recorded).
+    std::optional<std::uint64_t> drop_menus(Player& p) {
+        if (!std::exchange(p.menus_due, false)) return std::nullopt;
+        const auto [position, velocity] = throw_from(p);
+        std::optional<BlockPos> container;
+        if (p.window) container = p.window->pos;
+        p.window.reset();
+        const auto id = queue.admit(contracts::CloseContainer{key_of(p), position, velocity, true, container}, overworld);
+        if (!id) {
+            log_warn("game: command queue full; input dropped");
+            return std::nullopt;
+        }
+        return *id;
+    }
+
     // Respawning at the world spawn with full health and hunger.
     void respawn(Player& p) {
+        p.menus_thrown = drop_menus(p); // from where the body was
+        p.death_shown = true;
+        p.own_death_due = false;
+        for (const auto& told : std::exchange(p.after_death, {})) p.peer->send(told);
         p.dead = false;
         // A respawned player has no effects; the respawn resets the client's.
         // They keep the attributes they had, without modifiers (the game
@@ -2940,6 +3038,26 @@ struct Game::Impl final : GameServices {
         for (auto& [id, p] : players)
             if (p.equipment_known && !wear_held(p)) sound_equipment(p);
     }
+    // Whether the tick's applied clicks swapping with the off hand (F over a
+    // slot) changed it (a refused one, or one that left it, does not count).
+    void note_offhand_swaps() {
+        for (auto& [id, p] : players) {
+            if (p.offhand_clicks.empty()) continue;
+            const auto key = key_of(p);
+            bool in_swap = false;
+            for (const auto& r : engine->trace()) {
+                if (r.kind == contracts::TraceKind::command_applied || r.kind == contracts::TraceKind::command_rejected) {
+                    const auto it = std::ranges::find(p.offhand_clicks, r.a);
+                    in_swap = it != p.offhand_clicks.end() && r.kind == contracts::TraceKind::command_applied;
+                    if (it != p.offhand_clicks.end()) p.offhand_clicks.erase(it);
+                    continue;
+                }
+                if (in_swap && r.kind == contracts::TraceKind::player_slot_changed && r.a == key.hi && r.b == key.lo
+                    && r.c >> 48 == contracts::offhand_slot)
+                    p.offhand_swapped = true;
+            }
+        }
+    }
     // The equip sounds of the pieces put on since the equipment was last seen.
     void sound_equipment(Player& p) {
         using gameplay::equipment::Slot;
@@ -2951,12 +3069,15 @@ struct Game::Impl final : GameServices {
         // damage sounds too (client/ench_mending: a shield and boots for
         // ones repaired); the same piece worn down or repaired does not.
         const auto placed = std::exchange(p.placed, {});
+        // A shield that came into the off hand by a click's swap with it (F
+        // over a slot) plays nothing (client/ench_curses).
+        const bool swapped = std::exchange(p.offhand_swapped, false);
         const auto set_anew = [&](Slot s) {
             return placed.contains(gameplay::equipment::inventory_slot(s, 0)) && now[std::size_t(s)] != was[std::size_t(s)];
         };
         static const auto shield = gameplay::items::by_name("minecraft:shield");
         if (const auto& o = now[std::size_t(Slot::offhand)], &w = was[std::size_t(Slot::offhand)];
-            shield && !o.empty() && o.item == *shield && (w.empty() || w.item != o.item || set_anew(Slot::offhand)))
+            shield && !swapped && !o.empty() && o.item == *shield && (w.empty() || w.item != o.item || set_anew(Slot::offhand)))
             sound_around_at(p, Wire::PlayerSound::equip_generic, 1.0f, 1.0f, Wire::SoundCategory::player, true);
         // A piece put on: another item, or the same with other components
         // (client/ench_attributes: an iron helmet for one enchanted
@@ -2994,12 +3115,13 @@ struct Game::Impl final : GameServices {
     }
     // While the wear is held back, the modifiers of the slots holding
     // another item (a weapon switched away in the attack's tick), at once;
-    // the wear itself (the same item worn) follows at the next tick, as the
-    // official servers send it (client/combat: the sword's attack speed in a
-    // packet after the sprint's ending).
+    // the wear itself (the same item worn, or a piece it broke:
+    // client/ench_curses) follows at the next tick, as the official servers
+    // send it (client/combat: the sword's attack speed in a packet after the
+    // sprint's ending).
     void attribute_items(Player& p, const std::array<contracts::ItemStack, gameplay::equipment::slot_count>& now) {
         for (std::size_t k = 0; k < now.size(); ++k)
-            if (now[k].empty() != p.attributed[k].empty() || now[k].item != p.attributed[k].item) {
+            if ((p.broken >> k & 1) == 0 && (now[k].empty() != p.attributed[k].empty() || now[k].item != p.attributed[k].item)) {
                 equipment_attributes(p, static_cast<gameplay::equipment::Slot>(k), now[k]);
                 p.attributed[k] = now[k];
             }
@@ -3236,6 +3358,8 @@ struct Game::Impl final : GameServices {
                         if (left < 1) break;
                         admit(contracts::WearHeld{key_of(enchanted), index, d.stack.item, left});
                         hold_wear(enchanted, std::uint64_t{1} << index, false);
+                        // A later hurt's armor wear in the tick counts it.
+                        if (index >= 5 && index <= 8) enchanted.armor_worn[index - 5] += left;
                         break;
                     }
                     }
@@ -4457,8 +4581,15 @@ struct Game::Impl final : GameServices {
         if (p.dead) return;
         if (p.game_mode != creative) return;
         if (c.slot < 0 || c.slot >= static_cast<std::int16_t>(inventory_slots)) return; // dropping is not supported
+        // Each set of a crafting grid's slot sends the result again, changed
+        // or not, as a click's does (client/ench_curses: slots 1-4 emptied).
+        const auto set = [&](const contracts::ItemStack& stack) {
+            const auto id = queue.admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), stack}, overworld);
+            if (!id) log_warn("game: command queue full; input dropped");
+            else if (c.slot >= 1 && c.slot <= 4 && !p.window) p.grid_sets.push_back(*id);
+        };
         if (c.count == 0) {
-            admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), {}});
+            set({});
             if (!p.window && p.remote_window == 0 && static_cast<std::size_t>(c.slot) < p.remote.size())
                 p.remote[static_cast<std::size_t>(c.slot)] = WireStack{};
             return;
@@ -4476,7 +4607,7 @@ struct Game::Impl final : GameServices {
             return;
         }
         stack.damage = static_cast<std::uint16_t>(std::clamp<std::int32_t>(c.damage, 0, gameplay::items::max_damage(stack)));
-        admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), stack});
+        set(stack);
         if ((c.slot >= 5 && c.slot <= 8) || c.slot == contracts::offhand_slot) p.placed.insert(static_cast<std::uint8_t>(c.slot));
         // As in the target version, the slot is not echoed: the client already shows it.
         if (!p.window && p.remote_window == 0 && static_cast<std::size_t>(c.slot) < p.remote.size())
@@ -4535,13 +4666,19 @@ struct Game::Impl final : GameServices {
         const auto [position, velocity] = throw_from(p);
         if (const auto admitted = queue.admit(contracts::ContainerClick{key_of(p), container, c.slot, static_cast<std::uint8_t>(c.button),
                                                                          static_cast<std::uint8_t>(c.mode), p.game_mode == creative, position, velocity},
-                                              overworld))
+                                              overworld)) {
             p.clicks.push_back(*admitted);
+            if (c.mode == 2 && c.button == 40) p.offhand_clicks.push_back(*admitted);
+        }
         else
             log_warn("game: command queue full; input dropped");
     }
 
     void handle(Player& p, intent::ContainerClose& c) {
+        if (p.dead) {
+            if ((p.window && c.window == p.window->id) || (!p.window && c.window == 0)) (void)drop_menus(p);
+            return;
+        }
         if (p.window && c.window == p.window->id) {
             close_window(p, false);
         } else if (!p.window && c.window == 0) {
@@ -5111,7 +5248,11 @@ struct Game::Impl final : GameServices {
             // `/kill` or `/kill <own name>`: the generic kill, whatever the
             // game mode.
             if (!p.dead) hurt(p, std::numeric_limits<float>::max(), Harm::kill);
-            send_translation(p, "commands.kill.success.single", string_arguments({p.name}));
+            // Its feedback after the death animation (client/xp_death), which
+            // waits for the items the death drops.
+            auto told = wire.system_chat(translation("commands.kill.success.single", string_arguments({p.name})));
+            if (p.own_death_due) p.after_death.push_back(std::move(told));
+            else p.peer->send(told);
         } else if (args[0] == "summon" && c.text.starts_with("summon")) {
             // The entities the rules summon, at absolute coordinates.
             auto summon = evidence::parse_summon(c.text);
@@ -5895,7 +6036,14 @@ struct Game::Impl final : GameServices {
                 // A lectern's window closes with its book gone.
                 const auto block = at(p.window->pos);
                 const bool bookless = block.is(BlockType::lectern) && block.extra() == 0;
-                if (size != p.window->container_slots || !near || bookless) close_window(p, true);
+                // A dead player's window goes without a packet when its
+                // container goes or changes, its grids and carried stack
+                // thrown then (Circuit's choice: not recorded).
+                if (p.dead) {
+                    if (size != p.window->container_slots || bookless) (void)drop_menus(p);
+                } else if (size != p.window->container_slots || !near || bookless) {
+                    close_window(p, true);
+                }
             }
             send_put_back(p);
             send_ghosts(p);
@@ -5905,7 +6053,10 @@ struct Game::Impl final : GameServices {
                 level_up(p);
                 sync_experience(p);
             }
-            sync_inventory(p);
+            // Nothing more is told a dead player once the body has gone.
+            if (!p.dead || p.menus_due) sync_inventory(p);
+            p.grid_sets.clear(); // applied this tick: told, or not while a window opened
+            if (p.menus_thrown && applied(*p.menus_thrown)) p.menus_thrown.reset();
             // The drops applied: the health after their slots, at the next
             // tick's vitals when the tick's wear holds slots back (armor worn
             // by the deadly hurt) to go first then.
@@ -6293,6 +6444,7 @@ struct Game::Impl final : GameServices {
         // paused one resumes when a player joins).
         for (auto& [id, p] : players) send_joining_vitals(p);
         if (!run) { // the hotbar slot held changes without the world
+            show_deaths();
             equipment_sounds();
             look_at_equipment();
         }
@@ -6342,12 +6494,14 @@ struct Game::Impl final : GameServices {
         pending_setblocks.clear();
         publish_weather();
         rain_on_players();
+        note_offhand_swaps();
         equipment_sounds(); // before the level events (client/armor2)
         publish_blocks();
         publish_block_events();
         publish_orb_values();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();
+        show_deaths();
         publish_level_events();
         finish_uses();
         look_at_equipment();

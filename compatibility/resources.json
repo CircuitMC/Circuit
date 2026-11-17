@@ -7765,6 +7765,25 @@
         "deviations": [
           "the item is picked by a draw of the level random"
         ]
+      },
+      "binding_curse": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_curses",
+          "client/ench_curses_pack"
+        ],
+        "note": "Its prevent_armor_change effect (its slots: armor, not heeded): a piece with it stays in its armor slot outside creative mode, no click (pickup, shift-click, number keys, F, Q, a carried piece, a drag, a double click's collect) taking it off and no piece used over it going on, nothing sent; free in creative mode and out of the armor slots; broken, it frees the slot; as both official servers, also moved to the main hand's slots or given to protection by a data pack"
+      },
+      "vanishing_curse": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/ench_curses",
+          "client/ench_curses_pack",
+          "client/ench_curses_table"
+        ],
+        "note": "Its prevent_equipment_drop effect (its slots: any, not heeded): a stack with it in a dying player's hotbar, main inventory, armor or off hand is gone instead of dropped (without keepInventory), its slot told; not a book storing it, a shulker box's or bundle's contents, the crafting grids' items or the carried stack; as both official servers, also moved to the head's slots or given to unbreaking by a data pack"
       }
     }
   }
