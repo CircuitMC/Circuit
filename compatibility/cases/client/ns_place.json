@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ns-place.js",
+  "status": "passing",
+  "description": "With the same test pack, a player who knows only bbb:same_mix (aaa:same_mix comes first and takes the same grid) places it from the recipe book at a crafting table and in the own window, once and as many as fit, with doLimitedCrafting off and on, and takes the results; the placed recipe's birch log at the table until the grid changes, the first recipe's oak log in the own window; Circuit and both official servers give the same windows, logs and recipes (those unlocked at once compared as sets: their order varies on the official servers)"
+}

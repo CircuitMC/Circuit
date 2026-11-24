@@ -1,0 +1,12 @@
+{
+  "name": "Portals and dimension travel",
+  "milestones": [
+    "C7"
+  ],
+  "mechanics": [
+    "nether_portals",
+    "end_portals",
+    "respawn_points",
+    "entity_travel"
+  ]
+}

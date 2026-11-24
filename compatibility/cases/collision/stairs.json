@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/stairs.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness stairs report",
+  "status": "passing",
+  "description": "The shape oak stairs of each facing and half take with air or oak or cobblestone stairs of each facing and half on each of their four sides (104,976 combinations), reported identically by both official servers; Circuit's rules match every one"
+}

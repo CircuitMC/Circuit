@@ -1,0 +1,21 @@
+{
+  "name": "Component and entity-data schema changes of 1.21.5",
+  "milestone": "C1",
+  "impl": {
+    "java-1.21.4": "not_applicable",
+    "java-1.21.8": "partial"
+  },
+  "evidence": {
+    "java-1.21.8": "compared"
+  },
+  "absent_reason": {
+    "java-1.21.4": "introduced in 1.21.5"
+  },
+  "cases": [
+    "components/official_stacks"
+  ],
+  "note": "The 1.21.5 component schema (96 types, length-prefixed creative values) is read and written",
+  "deviations": [
+    "entity-data schema changes are not modeled"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Placed",
+  "cases": [
+    "client/redstone",
+    "client/collision"
+  ]
+}

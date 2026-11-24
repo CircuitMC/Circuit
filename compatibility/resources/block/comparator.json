@@ -1,0 +1,7 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "reads chests and hoppers only"
+  ]
+}

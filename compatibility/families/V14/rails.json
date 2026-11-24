@@ -1,0 +1,21 @@
+{
+  "name": "Rails, powered, detector and activator rails",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/rail_shapes",
+    "trace/rail_power",
+    "trace/rail_more",
+    "trace/minecart_rails",
+    "trace/minecart_tracks",
+    "trace/detector_rails",
+    "trace/detector_rails_more"
+  ],
+  "deviations": [
+    "waterlogging is stored only",
+    "activator rails act on no minecart (only empty ones exist, which they leave unchanged)",
+    "comparators read 0 from detector rails (no minecart has contents)"
+  ],
+  "note": "Rails take their shapes from the rails beside them and make them join, curve with the official preferences, rise toward higher rails, switch at three-way junctions on updates from signal sources and need a sturdy top; powered and activator rails pass power along up to eight rails of their kind; detector rails sense minecarts, check every 20 ticks and power their ends, neighbors and the block below"
+}

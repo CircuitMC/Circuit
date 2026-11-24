@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/attributes",
+    "client/combat"
+  ],
+  "note": "Sent with haste's and mining fatigue's modifiers and the held weapon's or tool's (client/armor); the ticks an attack takes to charge (client/combat)"
+}

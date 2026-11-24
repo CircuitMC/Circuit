@@ -1,0 +1,28 @@
+{
+  "name": "Enchantment effects",
+  "milestone": "C6",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes",
+    "client/ench_dig",
+    "client/ench_air",
+    "client/ench_protect",
+    "client/ench_fire",
+    "client/ench_combat",
+    "client/ench_thorns",
+    "client/ench_unbreaking",
+    "client/ench_mending",
+    "client/ench_mending_pack",
+    "client/ench_curses",
+    "client/ench_curses_pack"
+  ],
+  "deviations": [
+    "of the enchantments' effects only their attribute modifiers, efficiency's and aqua affinity's digging, respiration's air, the protection values against damage, the immunity to damage, the burning time, the damage and knockback they add to attacks, post-attack ignite, thorns' damage and wear, the sweeping damage ratio, unbreaking's share of players' items' wear, mending's repair with the orbs players take and the curses of binding and vanishing are modeled: the other post-attack effects (bane of arthropods' slowness, which reaches no player; channeling; wind burst; damage of other types), unbreaking on what dispensers wear and the walking enchantments are not yet; explosion knockback resistance, sneaking speed and water movement efficiency only reach the client, and projectile and blast protection protect against nothing Circuit deals yet",
+    "respiration's chance is drawn from Circuit's own random (the official servers draw from theirs)",
+    "the modifiers of what a joining or respawning player wears and holds follow a tick after their arrival (the official servers send them in a later packet; the tick was not recorded)",
+    "the burning time's ticks are rounded down by Circuit's choice (the recorded hurt counts after lava and fire aspect are the same rounded to the nearest), a burning time of 0 leaves the fire ticks as they are, and fire's 160 ticks scaled alike were not recorded (fire's ignition draws at random)",
+    "random chances (thorns' and unbreaking's) are drawn from Circuit's own random, and thorns' damage too; the item mending repairs and a repair effect's remove_binomial units from the level random (the official servers draw from theirs)"
+  ],
+  "note": "From the official data packs' definitions (refused when they ask for an attribute, operation, slot group, value form, damage protection, damage or knockback effect other than an added value, a post-attack effect it cannot read, an item damage effect other than remove_binomial, a repair effect other than add, multiply, set, remove_binomial or all of them, a curse effect other than an object, or requirement Circuit does not know (damage type tags, an attack's directness, the entity types of the player hurt, the attacker and the direct attacker, a post-attack random chance, the items or item tag of the item worn, all of, any of, inverted), or a modifier outside the minecraft namespace): in an equipment slot its enchantment works in (whatever the item), an enchanted item gives the definition's attribute modifiers, their ids with the slot appended and their amounts the level-based values in single precision, taken away and added again last whenever the slot's stack changes, after the first look a tick after a join or respawn; the mining efficiency adds to a tool's speed above 1 and the submerged mining speed replaces 0.2 under water in digging; the oxygen bonus keeps the air by chance; the protection values whose requirements the damage type meets are added, counted between 0 and 20, and take 4% a point after armor and resistance in floats (none against the bypasses_effects and bypasses_enchantments types: starvation); an immunity keeps the damage off without a hurt or wear (frost walker on magma); the burning time scales lava's fire ticks and fire aspect's (rounded down by Circuit's choice); the main hand's damage effects (sharpness; smite, bane of arthropods, impaling and power read, meeting no melee attack on a player) and knockback effects add to attacks, its ignite sets the target and the players swept burning (a longer burning kept), and the sweeping damage ratio adds to sweeps (client/ench_combat); after an attack that hurt, the target's post-attack effects then the attacker's: thorns on a piece or an item held hurts the attacker by the thorns damage type for 1 to 5 and wears its item by 2, 1.21.8 and 1.21.4 with their own sounds (client/ench_thorns); unbreaking spares each point of a player's item's wear (tools, weapons, shields, armor, thorns' wear) by its chance at the level, 2L/(5L+5) for the enchantable/armor items and L/(L+1) for the others, nothing sent when all is spared (client/ench_unbreaking); the repair effects of an orb's points (mending's factor 2; a data pack's factors by level, added values, set values, all of them and remove_binomial) repair a damaged item in the hands or armor, picked with equal chances among those with such enchantments working there, by the lesser of the durability they give (rounded down) and its damage, using that repair times the points over the durability, the rest repairing another such item and then going to the player, a durability of 0 or less losing the points (client/ench_mending, client/ench_mending_pack); a piece with binding's effect (prevent_armor_change) stays in its armor slot outside creative mode, no click or use taking it off, and a stack with vanishing's (prevent_equipment_drop) is gone at its holder's death, whatever their slots and on other enchantments too (client/ench_curses, client/ench_curses_pack)"
+}

@@ -1,0 +1,15 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Dispensers set it on rails",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases",
+    "trace/dispenser_items",
+    "trace/dispenser_tnt_rule"
+  ],
+  "deviations": [
+    "players do not place it"
+  ]
+}

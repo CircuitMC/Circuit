@@ -1,0 +1,16 @@
+{
+  "name": "Food, equipment and item use",
+  "milestones": [
+    "C5",
+    "C6"
+  ],
+  "mechanics": [
+    "placement",
+    "tools",
+    "eating_and_drinking",
+    "ranged_weapons",
+    "use_actions",
+    "item_cooldowns",
+    "equipment"
+  ]
+}

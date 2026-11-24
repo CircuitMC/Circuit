@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Placed facing the player and paired",
+  "cases": [
+    "trace/trapped_chest_pairs"
+  ]
+}

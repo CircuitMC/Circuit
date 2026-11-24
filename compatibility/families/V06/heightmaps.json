@@ -1,0 +1,14 @@
+{
+  "name": "Heightmaps",
+  "milestone": "C2",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "heightmap/official_states",
+    "observation/heightmap_chunk"
+  ],
+  "note": "The heightmaps clients get are computed from the blocks: WORLD_SURFACE, MOTION_BLOCKING (states that are solid or hold a fluid, minecraft.wiki \"Heightmap\") and, for 1.21.8, MOTION_BLOCKING_NO_LEAVES; which states count matches both official servers for every state",
+  "deviations": [
+    "server-side heightmaps (OCEAN_FLOOR and the world-generation ones) are not kept; generation and mob spawning need them (C7, C8)"
+  ]
+}

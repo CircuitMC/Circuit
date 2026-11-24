@@ -1,0 +1,17 @@
+{
+  "name": "RNG and global event order",
+  "milestones": [
+    "C0",
+    "C2",
+    "C4"
+  ],
+  "mechanics": [
+    "scheduled_tick_order",
+    "block_event_order",
+    "neighbor_update_order",
+    "block_entity_order",
+    "entity_order",
+    "level_random",
+    "random_tick_order"
+  ]
+}

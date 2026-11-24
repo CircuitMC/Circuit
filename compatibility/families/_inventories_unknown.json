@@ -1,0 +1,89 @@
+{
+  "comment": "Hand-written. Inventories not yet collected: their counts are unknown, not zero.",
+  "inventories": [
+    {
+      "id": "gamerules",
+      "family": "V31",
+      "milestone": "C9",
+      "note": "Game rule names and defaults per release; to be collected from cited documentation"
+    },
+    {
+      "id": "server_properties",
+      "family": "V31",
+      "milestone": "C9",
+      "note": "server.properties keys per release"
+    },
+    {
+      "id": "data_pack_resource_types",
+      "family": "V30",
+      "milestone": "C1",
+      "note": "Data-pack directories and dynamic registries per pack format"
+    },
+    {
+      "id": "data_components",
+      "family": "V03",
+      "milestone": "C1",
+      "note": "Item data component types per release"
+    },
+    {
+      "id": "menu_types",
+      "family": "V25",
+      "milestone": "C5",
+      "note": "Menu types of the protocol registry; generic_9x3, generic_9x6, hopper, furnace, smoker and blast_furnace are verified"
+    },
+    {
+      "id": "ticket_types",
+      "family": "V05",
+      "milestone": "C2",
+      "note": "Chunk ticket types and their levels"
+    },
+    {
+      "id": "loot_tables",
+      "family": "V25",
+      "milestone": "C5",
+      "note": "minecraft-data's tables date from 1.20 and are not used as an inventory"
+    },
+    {
+      "id": "advancements",
+      "family": "V30",
+      "milestone": "C9",
+      "note": "Advancement identifiers"
+    },
+    {
+      "id": "structures",
+      "family": "V09",
+      "milestone": "C7",
+      "note": "Structure and template pool identifiers"
+    },
+    {
+      "id": "placed_features",
+      "family": "V09",
+      "milestone": "C7",
+      "note": "Configured and placed features"
+    },
+    {
+      "id": "poi_types",
+      "family": "V28",
+      "milestone": "C8",
+      "note": "Point-of-interest types"
+    },
+    {
+      "id": "game_events",
+      "family": "V14",
+      "milestone": "C4",
+      "note": "Vibration game events"
+    },
+    {
+      "id": "statistics",
+      "family": "V31",
+      "milestone": "C9",
+      "note": "Statistic types and custom statistics"
+    },
+    {
+      "id": "criteria_triggers",
+      "family": "V30",
+      "milestone": "C9",
+      "note": "Advancement criteria triggers"
+    }
+  ]
+}

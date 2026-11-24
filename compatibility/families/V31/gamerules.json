@@ -1,0 +1,14 @@
+{
+  "name": "Game rules",
+  "milestone": "C9",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "registries/official",
+    "observation/gamerule_command"
+  ],
+  "note": "Each bundle lists its game rules with their types and defaults (55 for 1.21.8, 52 for 1.21.4, and the experimental minecartMaxSpeed). Rules are world state: a logged command sets them within the official bounds, checkpoints keep them, and /gamerule queries and sets them with the official replies",
+  "deviations": [
+    "only randomTickSpeed (random ticks) and spawnChunkRadius (the spawn chunks) have behavior; the other rules are kept but change nothing"
+  ]
+}

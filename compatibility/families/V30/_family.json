@@ -1,0 +1,15 @@
+{
+  "name": "Data-pack execution",
+  "milestones": [
+    "C1",
+    "C5",
+    "C9"
+  ],
+  "mechanics": [
+    "functions",
+    "predicates_and_modifiers",
+    "data_driven_registries",
+    "advancements",
+    "game_tests"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Hangs under a sturdy face and breaks at once when an update finds it unsupported, as both official servers do; placed by players",
+  "cases": [
+    "collision/plants",
+    "trace/vines"
+  ]
+}

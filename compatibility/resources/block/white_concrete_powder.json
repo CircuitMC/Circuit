@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Falls when the block below can be replaced and lands as the official servers do; becomes concrete when it falls into water",
+  "cases": [
+    "trace/falling_column",
+    "trace/falling_drop",
+    "trace/falling_onto",
+    "trace/falling_void"
+  ],
+  "deviations": [
+    "does not become concrete beside water"
+  ]
+}

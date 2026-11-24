@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/place-snow.js; tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "Players stacking snow layers from one to eight and a ninth above them, snow on grass, ice, a bottom slab and beside a layer, stone, a torch, a lantern and planks placed at a single layer and stone onto two, snow blocks on the floor and into a layer: 40 placed states identical with both official servers"
+}

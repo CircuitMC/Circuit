@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-harness/experiments/c22 (forced rings, spawn radius, idle level) and circuit-clienttest/ticking.js",
+  "status": "unsupported",
+  "description": "What each chunk level runs, the start ticket's level for each spawnChunkRadius, the idle-level rule and where random ticks run, observed on both official servers. Circuit does not compare these recordings: they observe chunk-loading timing that varies between runs, random ticks and spawnChunkRadius changes; trace/ring_blocks and trace/unload_reload compare the repeatable part"
+}

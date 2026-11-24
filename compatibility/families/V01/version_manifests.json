@@ -1,0 +1,7 @@
+{
+  "name": "Exact version manifests verified against the official artifacts",
+  "milestone": "C0",
+  "impl": "implemented",
+  "evidence": "documented",
+  "note": "compatibility/versions/; values read from the official jars, whose hashes match Mojang's published metadata"
+}

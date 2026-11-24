@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/shulker_boxes",
+    "client/shulker",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "the lid's push of entities and the sounds"
+  ],
+  "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
+}

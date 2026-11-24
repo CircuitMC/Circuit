@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/shulker.js",
+  "status": "passing",
+  "description": "12 steps at shulker boxes facing up and north, one with a stone over its lid and one under a hopper: a window (type 20, container.shulkerBox), iron and planks shift-clicked in and a shulker box refused, its lid events (on opening and closing only), a comparator reading it, the boxes kept shut by the stone over the lid and by the hopper but not by a stone beside the lid, the filled box broken in survival dropping one item, which, picked up and placed again, opens with the same contents; Circuit and both official servers give identical output"
+}

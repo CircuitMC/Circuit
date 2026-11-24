@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Falls when the block below can be replaced and lands as the official servers do",
+  "cases": [
+    "trace/falling_column",
+    "trace/falling_drop",
+    "trace/falling_onto",
+    "trace/falling_void"
+  ]
+}

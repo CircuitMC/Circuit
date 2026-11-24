@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/beacon2.js",
+  "status": "passing",
+  "description": "15 steps with two players at a one-level beacon, each step a moment after a cycle: a payment left in the window's slot thrown out when the window closes (an item entity, not back in the inventory), strength chosen, the second player as a spectator 4 blocks away getting no powers (but the sounds), in creative mode getting them, flying above the beacon at y 330 and 345.5 getting them and at 346.5 and 350 not, cleared, a beacon without a pyramid set (no sounds at its cycles) and removed (the deactivate sound), and a named beacon placed from a creative slot and opened (its name as the window's title); Circuit and both official servers give identical output"
+}

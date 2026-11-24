@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/special-a.js, special-a-counts.js, special-b.js",
+  "status": "passing",
+  "description": "35 steps of special recipes at a crafting table: enchanted damaged swords and boots repaired (curses kept, more than whole), a sword with a pickaxe, leather helmets dyed with each of the 16 dyes, dyes mixed on a dyed helmet and on horse armor, iron armor and a stray item, a patterned banner copied (the original kept) and refused with another color or two blank banners, shields decorated with a patterned and a blank banner and a decorated one refused; Circuit and both official servers give identical windows, and the slot packets of each step (special-a-counts.js) are the same. Ten more steps (special-b.js, components compared by type): undamaged swords repaired, dyed helmets repaired (the color goes), a curse at two levels (the higher kept), eight dyes mixed, a patterned banner with two blank ones or another patterned one, a shield with a base color alone decorated and one with patterns alone refused"
+}

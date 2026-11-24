@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/attributes-order.js",
+  "status": "passing",
+  "description": "35 steps: the order of an attribute's modifiers as levels change and come back; the attributes when an effect is lengthened, refused, put underneath, given with hidden particles, sent again at 600 ticks left and ending; health boost with the health regenerated to 24, kept across a rejoin and cut to 20; absorption given, refused, lengthened, kept across a rejoin and taken first by a fall (1 point left of 8); falls of 5.5 blocks (3 points on 1.21.4, 2 on 1.21.8) and of 10 with jump boost; Circuit and both official servers give the same"
+}

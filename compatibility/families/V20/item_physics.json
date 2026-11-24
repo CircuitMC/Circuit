@@ -1,0 +1,32 @@
+{
+  "name": "Item entity motion and collision",
+  "milestone": "C3",
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "moving blocks push items differently (trace/item_piston_push)",
+    "entities of a reloaded chunk come back in coordinate order, not the official chunk-map order"
+  ],
+  "cases": [
+    "trace/item_chest_scatter",
+    "trace/item_chunk_edge",
+    "trace/item_hopper_pickup",
+    "trace/item_merge_crossing",
+    "trace/item_piston_push",
+    "trace/item_water_channel",
+    "trace/item_water_current",
+    "trace/item_water_fall",
+    "trace/item_water_falling",
+    "trace/item_water_ice_corner",
+    "trace/item_water_spread",
+    "trace/item_water_still",
+    "trace/cactus_damage",
+    "trace/items_in_fire",
+    "trace/entities_in_lava",
+    "trace/item_inside_block",
+    "trace/item_inside_ways",
+    "trace/item_inside_piston",
+    "trace/item_inside_thrown"
+  ],
+  "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water (water surfaces in single precision), damage from cacti, burning in fire, soul fire and lava and floating in lava (netherite), moving out of blocks (through the nearest face free of a full cube, at a speed from the item's own random, through blocks), identical with both official servers in the passing traces"
+}

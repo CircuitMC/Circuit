@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/ench_combat"
+  ],
+  "note": "A player's, from netherite armor (the double 0.1); not sent, as on both official servers (client/armor); takes its share off the knockback of attacks, the hurt's and the attack's (client/ench_combat: knockback II against a netherite chestplate)"
+}

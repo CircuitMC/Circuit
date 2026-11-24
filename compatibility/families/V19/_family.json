@@ -1,0 +1,13 @@
+{
+  "name": "General entity lifecycle",
+  "milestones": [
+    "C3"
+  ],
+  "mechanics": [
+    "entity_model",
+    "tracking",
+    "passengers_and_leashes",
+    "entity_persistence",
+    "chunk_ownership"
+  ]
+}

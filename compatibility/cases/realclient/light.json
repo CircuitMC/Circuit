@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-client-harness/scripts/light-build.txt and light-check.txt",
+  "status": "passing",
+  "description": "The unmodified client builds a lit lamp and a stone overhang with a glass pane, then joins again so that its light comes from the server's chunk data; the light it holds at 14 positions is identical with the official server and with Circuit, in both runs, on both versions"
+}

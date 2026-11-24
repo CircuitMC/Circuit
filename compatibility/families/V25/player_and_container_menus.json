@@ -1,0 +1,9 @@
+{
+  "name": "Player window, chest, double-chest and hopper menus with every click mode",
+  "milestone": "C5",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "client/windows"
+  ]
+}

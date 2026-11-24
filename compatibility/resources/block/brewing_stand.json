@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities",
+    "placement/official_items",
+    "trace/brewing",
+    "trace/brewing_hoppers",
+    "collision/brewing",
+    "trace/item_inside_thrown",
+    "client/brewing"
+  ],
+  "note": "Placed by players as both official servers place it; it brews with fuel, ingredients and bottles from hoppers, and players use its menu, as both official servers do"
+}

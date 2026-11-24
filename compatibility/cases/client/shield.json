@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/shield.js; Circuit's side also in tests/server/server_tests.cpp",
+  "status": "passing",
+  "description": "Three survival players: one attacks another who holds a shield, the third beside him: the shield into the off hand, raised, the fist and an iron sword on it, lowered; raised 2 ticks before a hit; raised with him turned away, with the attacker behind him and at four places around him; blocked, lowered and hit 6 ticks later; an iron axe on him, then on the raised shield (disabling it), raised again within and after its cooldown; a sprinting hit on it; the shield in his main hand; each step's health, damage events, velocities, entity statuses, swings counted, hurt animations, the shared and living flags, effects, cooldowns, slots, equipment, attributes, sounds and particles; Circuit and both official servers give identical output"
+}

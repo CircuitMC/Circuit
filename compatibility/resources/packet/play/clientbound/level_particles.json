@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/combat"
+  ],
+  "note": "The damage indicator and sweep particles of attacks only"
+}

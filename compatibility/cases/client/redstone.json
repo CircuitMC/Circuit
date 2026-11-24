@@ -1,0 +1,9 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/redstone.js",
+  "status": "passing",
+  "description": "Player placement of dust, levers, a step, a wall lever and repeaters"
+}

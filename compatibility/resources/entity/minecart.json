@@ -1,0 +1,16 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Off rails and on rails; spawned to clients",
+  "cases": [
+    "trace/minecart_ground",
+    "trace/minecart_water",
+    "trace/minecart_rails",
+    "trace/minecart_tracks",
+    "trace/minecart_meeting",
+    "trace/minecart_meeting_more"
+  ],
+  "deviations": [
+    "riders, and picking up boats"
+  ]
+}

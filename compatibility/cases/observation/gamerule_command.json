@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/gamerule-compare.js; Circuit's side also in tests/server/server_tests.cpp",
+  "status": "passing",
+  "description": "45 /gamerule commands (queries, sets, bounds, malformed integers and booleans, quoted values, unknown and experimental rules, extra arguments and spaces) sent by a protocol client; Circuit's replies, as text components, are identical with each official server's, error context lines included"
+}

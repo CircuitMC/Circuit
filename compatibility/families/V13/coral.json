@@ -1,0 +1,14 @@
+{
+  "name": "Coral dying without water",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/coral_fans"
+  ],
+  "deviations": [
+    "coral blocks and plants (not fans) are inert",
+    "currents that push entities do not see waterlogged fans' water"
+  ],
+  "note": "Coral fans and wall fans of every kind die 60 to 99 ticks (a level-random draw) after they are left without water, when placed or updated; they need a sturdy top or face and leave their water when they break; pistons break living fans and move dead ones"
+}

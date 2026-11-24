@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "As both official servers wear it: put on by use from the off hand in creative mode with nothing worn, a copy going on (client/armor3), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces",
+  "cases": [
+    "client/armor3"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Snowy while a snow layer, snow block or powder snow is on it, as both official servers do; plants grow on it",
+  "cases": [
+    "trace/snow_layers",
+    "collision/plants"
+  ],
+  "deviations": [
+    "does not spread or die"
+  ]
+}

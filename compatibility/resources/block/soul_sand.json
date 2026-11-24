@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Slows what moves on it to 40% (items and primed TNT compared); otherwise inert",
+  "deviations": [
+    "no bubble columns, no soul fire"
+  ]
+}

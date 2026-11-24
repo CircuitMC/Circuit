@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "documented",
+  "note": "Eaten with the nutrition and saturation of minecraft-data (the 1.21.4 values; 1.21.8's file gives the saturation doubled as saturationRatio) and the effects and remainder of minecraft.wiki, as the recorded foods are (client/eat); not recorded itself",
+  "deviations": [
+    "the stack's own food, consumable, use remainder and use cooldown components are not read"
+  ]
+}

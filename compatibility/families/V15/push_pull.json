@@ -1,0 +1,12 @@
+{
+  "name": "Pushing, pulling and quasi-connectivity",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/piston_timing",
+    "trace/quasi_connectivity",
+    "trace/piston_observed"
+  ]
+}

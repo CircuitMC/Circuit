@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Dig speed, harvest tier and wear; held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor)",
+  "cases": [
+    "client/armor"
+  ]
+}

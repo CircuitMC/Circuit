@@ -1,0 +1,16 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Stands on a cactus or sand with nothing solid or lava beside it and no liquid above, and breaks with its drop a tick after an update finds it unsupported, as both official servers do; placed by players where it stands; hurts the items whose boxes reach into its cell, a point of health at each move; hurts survival players whose box meets its cell (cactus, 1, armor reducing it) as both official servers do (client/drown)",
+  "cases": [
+    "collision/plants",
+    "collision/plant_contexts",
+    "trace/plant_supports",
+    "trace/cactus_damage",
+    "client/drown"
+  ],
+  "deviations": [
+    "does not grow",
+    "hurts only items and players"
+  ]
+}

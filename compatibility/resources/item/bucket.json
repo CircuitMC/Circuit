@@ -1,0 +1,17 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Players fill it along their view, and dispensers in front of them, from water and lava sources, bubble columns, powder snow and blocks holding water",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases",
+    "trace/dispenser_items",
+    "trace/dispenser_tnt_rule",
+    "trace/dispenser_buckets",
+    "client/buckets"
+  ],
+  "deviations": [
+    "milk from cows and fish from water are not taken"
+  ]
+}

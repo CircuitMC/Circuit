@@ -1,0 +1,17 @@
+{
+  "name": "Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/door_basics",
+    "trace/door_more",
+    "trace/note_instruments",
+    "trace/note_play"
+  ],
+  "deviations": [
+    "bells, copper bulbs and the other consumers are not modeled",
+    "player heads with a note block sound of their own play nothing"
+  ],
+  "note": "Doors, trapdoors and fence gates of every kind open and close with the power around them and by hand (iron ones only by power), quietly, with a level-random draw for the sound; note blocks take the instrument of the block below or a head above and play on a rising signal and when used, as block events that draw for the sound"
+}

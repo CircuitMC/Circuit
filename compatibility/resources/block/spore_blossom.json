@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Hangs under a bottom whose middle holds it and breaks at once when an update finds it unsupported, as both official servers do; placed by players",
+  "cases": [
+    "collision/plants",
+    "trace/vines"
+  ],
+  "deviations": [
+    "gives no particles"
+  ]
+}

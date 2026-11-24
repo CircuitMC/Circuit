@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Placed and paired",
+  "cases": [
+    "client/chests",
+    "client/windows"
+  ]
+}

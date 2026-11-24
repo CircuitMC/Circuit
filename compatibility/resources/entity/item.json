@@ -1,0 +1,18 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "reloaded entities come back in coordinate order"
+  ],
+  "cases": [
+    "trace/item_chest_scatter",
+    "trace/item_drop_piston",
+    "trace/item_hopper_pickup",
+    "trace/item_merge",
+    "trace/item_piston_push",
+    "trace/item_water_channel",
+    "trace/item_water_current",
+    "trace/piston_entities",
+    "trace/slime_entities"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/spectators.js",
+  "status": "passing",
+  "description": "Two players: a survival player sneaking for a second (the shift flag and crouching pose, to her and to the other), the other becoming a spectator (the abilities, the game mode event and again the abilities, the player list's game mode, his invisibility, removed from her view), she a spectator too and back (each sees the other while both are spectators), the spectator digging (one correction), placing (corrections), using a chest (its window, no lid event), beside an item he does not pick up, attacking her (her view), sneaking (back to his, with the shift flag), teleporting to her by the spectator menu, moving into the ground (no correction), and back to survival (seen again); Circuit and both official servers give identical output"
+}

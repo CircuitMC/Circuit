@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_curses",
+    "client/ench_curses_pack",
+    "client/ench_curses_table"
+  ],
+  "note": "Its prevent_equipment_drop effect (its slots: any, not heeded): a stack with it in a dying player's hotbar, main inventory, armor or off hand is gone instead of dropped (without keepInventory), its slot told; not a book storing it, a shulker box's or bundle's contents, the crafting grids' items or the carried stack; as both official servers, also moved to the head's slots or given to unbreaking by a data pack"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/building",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, blocks facing the player, the clicked face or back along the view, rods, torches, lanterns, ladders, carpets, flowers, saplings, tall flowers, signs, banners, heads, beds and the blocks with block entities that use these rules (furnaces, smokers, blast furnaces, lecterns, beehives, ender chests, chiseled bookshelves, shulker boxes, barrels, beacons, jukeboxes, brewing stands, enchanting tables) are placed from their items besides the blocks with rules of their own; hanging signs and other blocks are not",
+    "spawners, sponges and test instance blocks are not placed"
+  ],
+  "note": "Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, facing blocks toward the player or out of the clicked face, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do; every placed state checked against a report of every block item"
+}

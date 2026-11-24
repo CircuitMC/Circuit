@@ -1,0 +1,11 @@
+{
+  "name": "Real-client step scripts against Circuit",
+  "milestone": "C0",
+  "impl": "partial",
+  "evidence": "none",
+  "cases": [
+    "realclient/survival",
+    "realclient/redstone"
+  ],
+  "note": "Checks Circuit with the unmodified client; not a comparison with the official server"
+}

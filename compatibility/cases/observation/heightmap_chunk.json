@@ -1,0 +1,9 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/heightmap-build.txt and heightmap-probe.js",
+  "status": "passing",
+  "description": "35 test columns built with /setblock on the official 1.21.8 server (torches, dust, signs, carpets, candles, lanterns, open fence gates, slabs, leaves over stone and others), the world imported into Circuit through Anvil: the WORLD_SURFACE, MOTION_BLOCKING and MOTION_BLOCKING_NO_LEAVES heightmaps both servers send for the chunk are identical"
+}

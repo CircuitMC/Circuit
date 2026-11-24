@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/effects4.js",
+  "status": "passing",
+  "description": "17 steps: effects of 620 and 1220 ticks sent again 20 ticks later, none for 600 ticks or an infinite time, an instant effect's default of one tick, its seconds counted as ticks and an infinite one, and saturation ending; Circuit and both official servers send the same"
+}

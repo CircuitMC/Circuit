@@ -1,0 +1,14 @@
+{
+  "name": "Tag synchronization and evaluation",
+  "milestone": "C1",
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "With the official jar's data pack: every tag of block, item, entity type, fluid and the synchronized registries, as many per registry as the official servers send; without it, the biome tags 1.21.4 needs",
+  "cases": [
+    "data/official_packs"
+  ],
+  "deviations": [
+    "tags of game events, points of interest and 1.21.8 dialogs are not loaded",
+    "tags are not reloaded while the server runs"
+  ]
+}

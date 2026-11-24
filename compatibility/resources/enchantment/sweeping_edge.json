@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes",
+    "client/ench_combat"
+  ],
+  "note": "Its sweeping damage ratio modifier in the main hand (L/(L+1)), sent as both official servers send it and adding the ratio of the charged attack damage to sweeps, as both official servers"
+}

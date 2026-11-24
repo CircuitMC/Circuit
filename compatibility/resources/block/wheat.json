@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "growth ignores hydration and neighboring crops"
+  ],
+  "cases": [
+    "trace/loot_rolls",
+    "trace/loot_single"
+  ],
+  "note": "Planted on farmland, broken with its drops by an update that finds no farmland below, and with data packs dropping what its loot table rolls, as both official servers do; grows only with light 9 or more"
+}

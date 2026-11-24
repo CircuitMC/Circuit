@@ -1,0 +1,17 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/lava_flow",
+    "trace/lava_water",
+    "trace/lava_edges",
+    "trace/fluid_sources",
+    "trace/fluid_washes",
+    "collision/flows",
+    "client/fire"
+  ],
+  "deviations": [
+    "the Nether's lava, the fire it starts and entities in lava other than items, arrows and players are not modeled"
+  ],
+  "note": "Spreads, falls, recedes and hardens into obsidian, cobblestone, stone and basalt as both official servers do; players in it are hurt and set burning as both official servers do (client/fire)"
+}

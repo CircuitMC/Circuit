@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/fire"
+  ],
+  "note": "A player's, from the armor worn, sent as both official servers send it; it lessens the reduction's fall with stronger hits (client/fire: 2 and 5 toughness)"
+}

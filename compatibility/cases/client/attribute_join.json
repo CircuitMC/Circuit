@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/attributes-join.js",
+  "status": "passing",
+  "description": "12 steps: where the attribute packets come for the player and for a viewer on a first join, game mode changes, rejoins in survival, with effects and in creative, and respawns in survival and creative (before or after the health, twice for a viewer, creative mode's reach after); Circuit and both official servers give the same"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/stonecutter.js and recipes-dump.js",
+  "status": "passing",
+  "description": "27 steps at a stonecutter: shift-clicks into the input by recipe and across the inventory, recipe buttons (one beyond the list), results by click, onto the cursor, by number key and shift-clicked until the input runs out, another item clearing the choice, the input given back on closing and dropped when the player leaves; and the update_recipes packet (254 stonecutter recipes in order, seven property sets) equal to both official servers'"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/fireworks-a.js, fireworks-b.js",
+  "status": "passing",
+  "description": "31 steps of firework stars at a crafting table (gunpowder with each of the 16 dyes, dyes in either order and twice, each shape item and the seven mob heads, a diamond, glowstone dust, both with a feather, and ten stacks that make nothing; a star taken) and 31 steps of rockets and fades (one to four gunpowder, two paper, stars made and taken, rockets with them in both orders and with plain stars, fades of one and two dyes, of a plain star and of a faded star, stacks that make nothing; rockets taken); Circuit and both official servers give identical windows"
+}

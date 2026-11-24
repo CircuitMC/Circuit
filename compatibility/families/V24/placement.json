@@ -1,0 +1,16 @@
+{
+  "name": "Placing blocks from items",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": {
+    "java-1.21.4": "none",
+    "java-1.21.8": "compared"
+  },
+  "cases": [
+    "client/building",
+    "client/chests",
+    "client/redstone",
+    "placement/official_items"
+  ],
+  "note": "17 item cases, building blocks on both versions (client/building), and every placed state of every block item in fifteen contexts (placement/official_items)"
+}

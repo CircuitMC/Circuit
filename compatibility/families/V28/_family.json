@@ -1,0 +1,13 @@
+{
+  "name": "Villages, raids and trading",
+  "milestones": [
+    "C8"
+  ],
+  "mechanics": [
+    "poi",
+    "villagers",
+    "trading",
+    "raids",
+    "wandering_trader"
+  ]
+}

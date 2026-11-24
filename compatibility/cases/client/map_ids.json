@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/map-ids.js",
+  "status": "passing",
+  "description": "Maps extended at a crafting table taken by a shift-click (two map ids used, the first for the map), a click, a number key and a throw (one each), and a copy (none), each followed by a new map from an empty one; Circuit and both official servers give identical inventories, thrown items and map data packets"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Item sorters, clocks and pulse circuits",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/observer_clock",
+    "trace/hopper_chained",
+    "trace/item_sorter",
+    "trace/item_sorter_overflow",
+    "trace/pulse_generators",
+    "trace/pulse_limiters"
+  ],
+  "note": "The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); documented pulse generators and limiters; clocks as component cases",
+  "deviations": [
+    "other sorter designs, clocks, pulse extenders and edge detectors are not established as machines"
+  ]
+}

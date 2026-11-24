@@ -1,0 +1,10 @@
+{
+  "name": "Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports",
+  "milestone": "C0",
+  "impl": "partial",
+  "evidence": "none",
+  "note": "tools/scenario.py runs a skeleton sequentially, in parallel and on each harness, and reports the first difference of every pair (circuit-server --diff-fixtures)",
+  "deviations": [
+    "real-client checks are separate scripts, not driven from skeletons"
+  ]
+}

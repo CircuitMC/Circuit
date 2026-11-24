@@ -1,0 +1,9 @@
+{
+  "name": "Configuration phase and reconfiguration",
+  "milestone": "C10",
+  "impl": "partial",
+  "evidence": "none",
+  "deviations": [
+    "no reconfiguration"
+  ]
+}

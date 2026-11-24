@@ -1,0 +1,35 @@
+{
+  "name": "Fire spread, burning and extinguishing",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/fire",
+    "trace/fire_basics",
+    "trace/fire_stone",
+    "trace/fire_netherrack",
+    "trace/fire_planks",
+    "trace/fire_log",
+    "trace/fire_tnt",
+    "trace/fire_wool",
+    "trace/fire_spread",
+    "trace/items_in_fire",
+    "trace/entities_in_lava",
+    "trace/lava_fire",
+    "collision/lava_ignites",
+    "trace/flint_and_steel_use",
+    "trace/fire_charge_use",
+    "trace/dispenser_flint",
+    "client/fire_items",
+    "client/fire"
+  ],
+  "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer; items and arrows in fire, soul fire and lava burn, by each version's timing in lava; lava sets fire beside the blocks it ignites in its random ticks, as the official 1.21.8 server does draw for draw; flint and steel and fire charges set fire beside the face used (where it can stay) and light campfires and candles, and flint and steel in dispensers sets fire in front, as both official servers do; players in fire catch fire from their 20th tick in it, burn (a hurt every 20 fire ticks, the on-fire flag), are set burning by lava for 15 seconds and put out by water and rain (1.21.8 with the extinguish sound for all, 1.21.4 for the others), as both official servers do",
+  "deviations": [
+    "rain and humid biomes do not put fire blocks out sooner",
+    "entities other than items, arrows and players are not hurt or set burning",
+    "a player's fire ticks grow by one or two a tick in fire after catching it, by Circuit's own draws (the official servers' draws were not recorded tick by tick)",
+    "rain reaches a player with nothing above their feet or head that stops movement or holds a fluid (Circuit's rule; a player under a roof was not recorded)",
+    "lightning does not set fire",
+    "nether portals are not lit (C7)"
+  ]
+}

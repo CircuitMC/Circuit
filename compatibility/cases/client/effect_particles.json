@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/effect-colors.js",
+  "status": "passing",
+  "description": "Each of the 39 effects given to a creative player and cleared: its effect packet, its particle (an entity_effect color, or the particle of its own of the omens, wind charged, weaving, oozing and infested), the invisibility and glowing flags and the replies; Circuit and both official servers send the same"
+}

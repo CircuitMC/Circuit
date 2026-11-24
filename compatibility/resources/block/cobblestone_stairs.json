@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/stairs"
+  ],
+  "note": "Takes its corner shapes from the stairs beside it, as both official servers do for every combination of stairs around it"
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions",
+  "milestone": "C3",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases_planned": [
+    "TNT-01"
+  ],
+  "cases": [
+    "trace/tnt_ignition",
+    "trace/tnt_explodes_disabled",
+    "trace/tnt_chain_edge",
+    "trace/tnt_power",
+    "trace/arrow_tnt",
+    "trace/dispensers",
+    "trace/fire_tnt",
+    "trace/flint_and_steel_use",
+    "trace/fire_charge_use",
+    "trace/dispenser_flint",
+    "client/fire_items"
+  ],
+  "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; fire burning it primes it; a burning arrow primes the TNT it hits; dispensers prime TNT items; flint and steel and fire charges a player uses on TNT prime it, and so does flint and steel in a dispenser",
+  "deviations": [
+    "fire charges from dispensers (small fireballs) are not modeled; of the burning projectiles only arrows are modeled"
+  ]
+}

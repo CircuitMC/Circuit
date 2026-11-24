@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/drown"
+  ],
+  "note": "Drowning: 2 as the air supply would reach -20, after entity event 67 on 1.21.8; no velocity (no_impact); armor does not reduce it"
+}

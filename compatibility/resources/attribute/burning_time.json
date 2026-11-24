@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes",
+    "client/ench_fire"
+  ],
+  "note": "Fire protection's modifier on each armor piece, sent as both official servers send it; scales the fire ticks lava sets, giving the burning hurts both official servers give",
+  "deviations": [
+    "rounded down by Circuit's choice (the recorded counts are the same rounded to the nearest), and fire's 160 ticks scaled alike were not recorded"
+  ]
+}

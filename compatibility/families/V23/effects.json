@@ -1,0 +1,28 @@
+{
+  "name": "Status effects",
+  "milestone": "C6",
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "slow falling only keeps falls from hurting (its slow descent is the client's), water breathing only keeps the air, conduit power keeps the air (not recorded) and speeds digging; the omens do nothing (but for the sound each makes when it comes), nor do the effects that act on death or when hurt; of the attributes effects change, the movement speed and luck only reach the client",
+    "amplifiers above 28 of instant health and damage double without the official servers' integer overflow (not recorded)",
+    "only players have effects; /effect takes players by name, @s, @p, @a and @e",
+    "on 1.21.4 the health regenerated after a levitation's fall differs from the fourth heal (0.33 points where the official server healed 0.5); the fall itself hurts as on both official servers",
+    "a player's effects come in id order and players' entity data of one tick in the order they connected; the official servers' orders are their own (for effects one that varies from run to run)",
+    "the entity data of a command's effects comes in the next tick, 50 ms after the effect packet, where the official 1.21.8 server took 80 ms (25 ms or more on both official servers)"
+  ],
+  "cases": [
+    "client/effects",
+    "client/effect_rules",
+    "client/effect_particles",
+    "client/effect_time",
+    "client/effect_edges",
+    "client/attributes",
+    "client/effects_heal",
+    "client/eat",
+    "client/fire",
+    "client/drown",
+    "client/combat"
+  ],
+  "note": "/effect give and clear with the official parser and replies; an effect given again combines with the one a player has (a stronger level replacing it with the old one underneath while it lasts longer, the same amplifier lengthening it, a weaker longer level underneath), every level counts down (one underneath that runs out is shown with no time left when the level above it ends, and the effect is removed in that tick, with any level still under it), an effect is sent again at each multiple of 600 ticks left and removed when it ends; the effect packets go to the player at once and the entity data they decide (invisibility and glowing flags, effect particles, ambience) in the next tick to the player and to whoever sees them; levitating players are not kicked for flying; effects are saved with the player and sent on joining; a respawned player has none; the effects that heal, hurt or feed act by the time their shown level has left before each tick and their amplifier: instant health and damage, hunger and saturation every tick they last, regeneration, poison and wither every 50, 25 and 40 ticks halved per level, through the hurt cooldown; absorption ends once its absorption is used up, and an omen that comes plays its sound to everyone nearby; foods, potions and ominous bottles give effects (eating_and_drinking); resistance takes 20% of damage a level and fire resistance keeps off fire's, as both official servers reduce it; water breathing and conduit power keep a player's air (it comes back under water with them), the turtle shell gives water breathing each tick out of water, slow falling keeps falls from hurting"
+}

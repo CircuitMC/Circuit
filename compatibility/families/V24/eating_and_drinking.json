@@ -1,0 +1,17 @@
+{
+  "name": "Eating and drinking",
+  "milestone": "C6",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/eat"
+  ],
+  "note": "Every food of both versions, milk, potions and ominous bottles: a use refused at full hunger in survival for all but the always eaten, lasting 32 ticks (dried kelp 16, honey 40), shown by the living flags and heard by others; when it runs out the item used up (not in creative mode) with its bowl, bucket or bottle left, then, in the order both official servers act: the finished use's event, a suspicious stew's effects, a food's sound and burp, a potion's and an ominous bottle's effects, milk and honey clearing effects, a chorus fruit's teleport with its event, sound and cooldown, the item's own effects by their chances, the food and saturation, the health packet, the living flags and the slot; the 18 kinds client/eat eats compared, the others from minecraft-data and minecraft.wiki",
+  "deviations": [
+    "a stack's own food, consumable, use remainder and use cooldown components and 1.21.8's potion duration scale are not read: each item eats as its kind does by default",
+    "a chorus fruit's tries follow minecraft.wiki (up to 16 within 8 blocks, down to the ground, where the player fits out of fluids), drawn from Circuit's own random, with a position sent for each try that finds ground: both official servers sent one to nine positions in a use and failed more tries than Circuit does, by rules not determined",
+    "the chances of raw chicken's, rotten flesh's and poisonous potatoes' effects (minecraft.wiki), and the volume and pitch of the use sounds, are drawn from Circuit's own random",
+    "the foods eaten at full hunger beyond honey and chorus fruit (golden apples, suspicious stew), the chance effects, a remainder going into the inventory or thrown out, and spectating or death ending a use were not recorded",
+    "a use in progress and item cooldowns are not saved"
+  ]
+}

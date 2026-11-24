@@ -1,0 +1,15 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Players pour it along their view, and dispensers in front of them, into blocks that hold water and into air and what fluids replace; it leaves a bucket",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases",
+    "trace/dispenser_items",
+    "trace/dispenser_tnt_rule",
+    "trace/dispenser_buckets",
+    "client/buckets",
+    "trace/waterlogged_flow"
+  ]
+}

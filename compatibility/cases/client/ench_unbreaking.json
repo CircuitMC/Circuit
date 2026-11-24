@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-unbreaking.js; Circuit's side also in tests/server/server_tests.cpp, tests/rules/rules_tests.cpp and tests/contracts/contract_tests.cpp",
+  "status": "passing",
+  "description": "Two survival players wear items without unbreaking, then with unbreaking III: an iron sword's and an iron axe's hits, full iron armor hurt by fists, a shield raised against an iron sword, a chestplate of thorns VII hit by fists, an efficiency V iron shovel breaking dirt at once, flint and steel lighting fire and shears carving pumpkins; the wear told to each item's holder (slots and equipment in a stats file: without unbreaking exact, with it within four standard deviations of its chance, uses of several points worn in part, no unchanged slot told) and each client's health (the attacker's in the thorns steps masked), damage events, velocities, statuses, animations, shared flags, effects, sounds, particles and deaths; Circuit and both official servers give identical output"
+}

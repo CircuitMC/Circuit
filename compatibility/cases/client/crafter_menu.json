@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/crafter-menu.js",
+  "status": "passing",
+  "description": "20 steps in a crafter's window: its type and slots, shift-clicks into the first enabled slot and out to the hotbar's end, an empty slot disabled and enabled again, a slot holding logs refusing to be disabled, a disabled slot refusing items, the result shown and refusing clicks, the window's ten properties (disabled slots, triggered) kept across closing; Circuit and both official servers give identical windows"
+}

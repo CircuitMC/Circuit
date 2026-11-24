@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-curses-pack.js with circuit-clienttest/cursepack, a data pack giving binding the main hand's slots, vanishing the head's, protection the binding effect (as {\"note\": 1}) and unbreaking the vanishing effect (in the official servers' world/datapacks before their first start, and as Circuit's data-pack); Circuit's side also in tests/rules/rules_tests.cpp and tests/server/server_tests.cpp",
+  "status": "passing",
+  "description": "With the curses' slots moved and their effects given to protection and unbreaking, a survival player clicks and uses a plain helmet over a bound helmet and over protection pieces, picks a bound sword up from the main hand, then dies with a vanishing sword, ingot and helmet, unbreaking items, protection leggings and stone: the curses act whatever their slots and on the other enchantments; Circuit and both official servers give identical output"
+}

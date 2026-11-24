@@ -1,0 +1,16 @@
+{
+  "name": "The level random source and its draw order",
+  "milestone": "C3",
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "weather durations use Circuit's own derived stream, and other draws of the target versions (random ticks of blocks other than farmland, mobs and the rest) are not made yet"
+  ],
+  "cases": [
+    "trace/item_chest_scatter",
+    "trace/item_drop_piston",
+    "trace/piston_draws",
+    "trace/tnt_redstone_ignition"
+  ],
+  "note": "Each level's java.util.Random-compatible sequence, its state saved with the world; fixtures seed it with 0 as the harness does and compare raw draw counts per stage"
+}

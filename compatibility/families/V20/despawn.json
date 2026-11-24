@@ -1,0 +1,10 @@
+{
+  "name": "Despawning",
+  "milestone": "C3",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "trace/item_merge_timers"
+  ],
+  "note": "Age 6000, -32768 never; the age goes up after the item's move and merges"
+}

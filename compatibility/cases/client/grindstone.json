@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/grindstone.js",
+  "status": "passing",
+  "description": "25 steps at a grindstone: a cursed and enchanted pickaxe disenchanted (the curse and a repair cost of 1 kept), two damaged pickaxes merged, enchanted books into books (1.21.4 keeps an empty stored_enchantments, 1.21.8 none), a plain damaged pickaxe alone making nothing, quick moves into both inputs and across, stone refused, closing; experience orbs left out; Circuit and both official servers give identical windows"
+}

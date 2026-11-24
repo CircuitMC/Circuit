@@ -1,0 +1,14 @@
+{
+  "name": "Movement and player modes",
+  "milestones": [
+    "C6"
+  ],
+  "mechanics": [
+    "game_modes",
+    "adventure_and_hardcore",
+    "collision_movement",
+    "floating_kick",
+    "poses",
+    "reach_and_digging"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_protect"
+  ],
+  "note": "Its protection (3 a level) against falls, counted with the others up to 20, as both official servers"
+}

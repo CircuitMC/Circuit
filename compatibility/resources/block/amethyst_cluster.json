@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+  "cases": [
+    "trace/loot_tools",
+    "trace/loot_bonus"
+  ]
+}

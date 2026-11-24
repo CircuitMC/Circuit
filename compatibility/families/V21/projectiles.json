@@ -1,0 +1,20 @@
+{
+  "name": "Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers",
+  "milestone": "C3",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/arrow_flight",
+    "trace/arrow_tnt",
+    "trace/arrow_life",
+    "trace/arrow_reload"
+  ],
+  "note": "Arrows and snowballs (summoned): flight, drag in air and water, sticking 0.05 short of the shape they hit, falling again when their block goes, life and despawn, fire counted down and put out by water, burning arrows priming TNT, snowballs breaking on blocks",
+  "deviations": [
+    "projectiles pass through entities",
+    "bows, crossbows, dispensers and players do not shoot",
+    "currents do not push arrows",
+    "tridents, thrown potions, eggs, ender pearls, fireworks, wind charges and fishing bobbers are missing",
+    "after an unload the official servers remove a chunk's arrows a tick later than Circuit in trace/arrow_reload (their unload timing varies)"
+  ]
+}

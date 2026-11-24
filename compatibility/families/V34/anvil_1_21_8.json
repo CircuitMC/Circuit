@@ -1,0 +1,19 @@
+{
+  "name": "Anvil import and export of DataVersion 4440",
+  "milestone": "C11",
+  "impl": {
+    "java-1.21.4": "not_applicable",
+    "java-1.21.8": "partial"
+  },
+  "evidence": {
+    "java-1.21.8": "compared"
+  },
+  "absent_reason": {
+    "java-1.21.4": "DataVersion 4440 is the 1.21.8 format"
+  },
+  "note": "Every block state; item components with a save form; container names; block entities of blocks without rules kept as saved; modeled entities and scheduled ticks",
+  "cases": [
+    "anvil/showcase",
+    "anvil/components"
+  ]
+}

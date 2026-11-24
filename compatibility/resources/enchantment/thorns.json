@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_thorns"
+  ],
+  "note": "Its post-attack effect from a piece worn or an item held (its slots: any): by chance (0.15 a level; VII always), the attacker hurt for 1 to 5 by the thorns damage type and the item worn by 2, also when the hurt did not come (the attacker in creative mode or within their hurt cooldown); after the attack's sound, a swept player's right after their hurt; also on a hit within the target's hurt cooldown; not when blocked by a shield or against a creative target; two pieces: one hurt, both worn; as both official servers",
+  "deviations": [
+    "its chance and damage are drawn from Circuit's own random",
+    "thorns from projectiles and against shields are not modeled"
+  ]
+}

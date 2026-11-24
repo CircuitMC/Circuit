@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/craft-loot.js (craft); tests/fixtures/crafting/own-window.tsv, replayed by tests/server/server_tests.cpp with the operator's 1.21.8 jar",
+  "status": "passing",
+  "description": "48 steps in the own window: results following the grid, taking them by click, right click, shift-click (also with room for part of the result), number key and throwing, mirrored shapes, honey bottle remainders, transmuting a shulker box and refusing to transmute a box into itself; Circuit and both official servers give identical windows"
+}

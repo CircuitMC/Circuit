@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/maps"
+  ],
+  "note": "Used, it becomes a filled map of a new map as on both official servers (with the official data packs)"
+}

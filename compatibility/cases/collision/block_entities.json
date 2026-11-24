@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/block-entities-*.txt, checked by tests/anvil/anvil_tests.cpp; external: circuit-harness block entity report",
+  "status": "passing",
+  "description": "Every block with a block entity and the data it saves right after its default state is set, reported by both official servers (173 blocks of 1.21.8, 171 of 1.21.4); Circuit's registry gives each its type and its defaults match every one"
+}

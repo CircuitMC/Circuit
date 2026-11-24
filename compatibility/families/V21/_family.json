@@ -1,0 +1,14 @@
+{
+  "name": "Projectiles, vehicles and mounts",
+  "milestones": [
+    "C3",
+    "C6"
+  ],
+  "mechanics": [
+    "projectiles",
+    "boats",
+    "minecarts",
+    "riding",
+    "happy_ghast_harness"
+  ]
+}

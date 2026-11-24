@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/special-c.js",
+  "status": "passing",
+  "description": "19 steps of book and map cloning at a crafting table: a signed book copied with one and with eight books and quills (the original kept), a copy copied, a copy of a copy, stone, two written books or the book alone refused, a book and quill with pages used; a filled map copied with one and three empty maps, refused with stone or two filled maps, and a map without data copied; Circuit and both official servers give identical windows, components and map packets"
+}

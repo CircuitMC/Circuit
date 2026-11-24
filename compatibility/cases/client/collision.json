@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/collision.js",
+  "status": "passing",
+  "description": "19 moves against a chest, repeaters, a hopper and a full block"
+}

@@ -1,0 +1,7 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "interactions with blocks the rules do not model"
+  ]
+}

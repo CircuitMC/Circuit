@@ -1,0 +1,15 @@
+{
+  "name": "Item and entity components and registries",
+  "milestones": [
+    "C1",
+    "C5",
+    "C6"
+  ],
+  "mechanics": [
+    "stack_core",
+    "item_components",
+    "component_schema_1_21_5",
+    "hashed_stack_predictions",
+    "entity_data_components"
+  ]
+}

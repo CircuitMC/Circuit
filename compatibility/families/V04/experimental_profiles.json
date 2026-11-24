@@ -1,0 +1,7 @@
+{
+  "name": "Experimental feature flags and built-in experimental packs",
+  "milestone": "C12",
+  "impl": "missing",
+  "evidence": "none",
+  "note": "minecart_improvements, redstone_experiments, trade_rebalance in both releases"
+}

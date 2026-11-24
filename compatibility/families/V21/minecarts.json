@@ -1,0 +1,21 @@
+{
+  "name": "Minecarts of every kind",
+  "milestone": "C3",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/minecart_ground",
+    "trace/minecart_water",
+    "trace/minecart_rails",
+    "trace/minecart_tracks",
+    "trace/minecart_meeting",
+    "trace/minecart_meeting_more"
+  ],
+  "note": "Empty minecarts (summoned) off rails — falling, the 0.4 (0.2 in water) speed limit, halving on the ground, 5% drag in the air, water as their last tick ended — and on rails: following the rail's line at up to 0.4 a tick, 4% drag, speeding up down slopes and slowing up them, turning through curves, stopped by blocks, braked by unpowered and boosted by powered powered rails; minecarts collide with each other's and boats' boxes and push each other by their yaw",
+  "deviations": [
+    "a moving minecart picks up the boats it touches (riding is not modeled; it neither picks them up nor pushes them)",
+    "yaw from an exact arctangent (the official servers use an approximation; only the push test reads it)",
+    "chest, hopper, furnace, TNT, spawner and command block minecarts",
+    "riders"
+  ]
+}

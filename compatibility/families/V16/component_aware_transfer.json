@@ -1,0 +1,7 @@
+{
+  "name": "Component-aware automation (stacking of items with components)",
+  "milestone": "C5",
+  "impl": "implemented",
+  "evidence": "none",
+  "note": "Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components"
+}

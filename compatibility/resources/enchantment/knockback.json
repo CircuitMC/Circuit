@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_combat"
+  ],
+  "note": "Its knockback (1 a level) in the main hand: the target knocked half as much along the attacker's facing after the hurt, with a strong sprint's 1, also on a weak hit, ending a sprint, as both official servers"
+}

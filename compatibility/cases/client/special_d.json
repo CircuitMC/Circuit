@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/special-d.js",
+  "status": "passing",
+  "description": "33 steps at a crafting table: eight arrows around lingering potions of a potion, water, none and a custom color, refused around a splash potion, with seven arrows, in a corner or with tipped arrows; decorated pots of bricks, sherds and both, refused with stone in a corner, a brick in the middle, stone in the shape (four bricks in a square make bricks); decorated_pot_simple placed from the book; doLimitedCrafting on: the pot and the arrows by hand, a recipe taken away while its result shows, a click elsewhere, the result taken; Circuit and both official servers give identical windows, components and recipe book additions (compared as sets)"
+}

@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_combat"
+  ],
+  "note": "Read: its damage and slowness require an arthropod target, so it adds nothing against players (no slowness), recorded on both official servers; the slowness is not acted on and attacks on other entities are not modeled"
+}

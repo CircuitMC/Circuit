@@ -1,0 +1,13 @@
+{
+  "defaults": {
+    "impl": "data_only",
+    "evidence": "none",
+    "note": "Sent in the biome registry; no world uses it"
+  },
+  "classification": [
+    [
+      "V08",
+      ".*"
+    ]
+  ]
+}

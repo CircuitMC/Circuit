@@ -1,0 +1,14 @@
+{
+  "name": "Rain, thunder, snow and their effects",
+  "milestone": "C2",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "observation/weather_command"
+  ],
+  "note": "Rain and thunder flags with their timers and the clear timer, advanced while doWeatherCycle is on; rain and thunder levels fading by 0.01 a tick in single precision; /weather with the official parser and replies; the client events as both official servers send them, on joining too; saved in checkpoints and carried through Anvil (minecraft.wiki \"Weather\", \"Commands/weather\")",
+  "deviations": [
+    "durations are drawn from Circuit's own stream, not the level's random sequence: the same ranges, other values",
+    "snow and ice, filling cauldrons, extinguishing fire, wet farmland and other effects of rain are not modeled; sleeping does not end the weather"
+  ]
+}

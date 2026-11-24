@@ -1,0 +1,21 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Summoned experience orbs (of a negative value too, taken without effect): motion, bouncing, floating, merging and despawning, as both official servers run them; drawn to and taken by players, their points mending items first, shown to clients (1.21.8: the value again a tick on, none for 0); dropped by players who die",
+  "cases": [
+    "trace/orbs",
+    "trace/orbs_merge",
+    "trace/orbs_more",
+    "trace/xp_ores",
+    "trace/xp_merge",
+    "trace/xp_merge_more",
+    "client/orbs",
+    "client/xp_death",
+    "client/ench_mending"
+  ],
+  "deviations": [
+    "mobs give none yet; how players draw them is not compared tick by tick",
+    "1.21.8: the second values of several orbs that appear in one tick come in Circuit's order",
+    "a respawned player is not sent the orbs near them again (both official servers remove and spawn them again)"
+  ]
+}

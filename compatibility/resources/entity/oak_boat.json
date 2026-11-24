@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients",
+  "cases": [
+    "trace/boat_land"
+  ],
+  "deviations": [
+    "riders and paddling"
+  ]
+}

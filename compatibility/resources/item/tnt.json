@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Placed as TNT; dispensers prime it unless tntExplodes is off",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases",
+    "trace/dispenser_items",
+    "trace/dispenser_tnt_rule"
+  ]
+}

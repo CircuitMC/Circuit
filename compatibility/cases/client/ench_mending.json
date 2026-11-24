@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-mending.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "A survival player takes experience orbs summoned at their feet, a second player watching: an orb with nothing to mend; a mending iron pickaxe in the main hand with damages from 1 to 249 and orbs of 1 to 37 (the repair, the points used and the rest to the bar); a whole one, one in another hotbar slot, one also of unbreaking; an orb merged from 4; in creative mode; orbs of -5 (also with levels and points) and 0; mending on both hands and all armor, the boots whole and a mending pickaxe in another hotbar slot, with 150 orbs of 1 (the choice in a stats file: each damaged item within four standard deviations, never the boots or the other slot, no point to the bar); a pickaxe 2 from whole and a shield of damage 100 with an orb of 10, twelve times (the rest repairing the shield in the same pickup); each client's orbs (spawns, values, pickups, removals), experience, slots, equipment and sounds; Circuit and both official servers give identical output"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/armor3.js",
+  "status": "passing",
+  "description": "Two players: a creative player with nothing worn uses an iron helmet and iron boots from her off hand (a copy goes on and the hand keeps the piece), then a diamond helmet over the iron one (swapped); her attributes, slot changes and sounds and the other's view of her equipment and attributes; Circuit and both official servers give identical output"
+}

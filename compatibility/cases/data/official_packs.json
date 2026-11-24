@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/data/data_tests.cpp with the operator's jars; external: client harness smoke with vanilla-server-jar",
+  "status": "passing",
+  "description": "The official jars' built-in packs load (SHA-1 and version.json checked); each registry Circuit numbers has as many tags as the official servers send; the unmodified clients of both versions join with the enchantment registry and every tag; enchanted items round-trip through Anvil and the official server"
+}

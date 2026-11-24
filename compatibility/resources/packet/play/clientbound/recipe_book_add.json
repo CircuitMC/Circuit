@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/recipes"
+  ],
+  "deviations": [
+    "the recipes unlocked in one tick come in advancement id order; the official servers' order varies"
+  ]
+}

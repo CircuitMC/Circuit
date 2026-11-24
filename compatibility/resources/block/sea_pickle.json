@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Sits on a top its collision shape reaches and breaks with its pickles when an update finds it unsupported, as both official servers do; placed by players where it sits",
+  "cases": [
+    "collision/plants",
+    "trace/plant_supports"
+  ],
+  "deviations": [
+    "players cannot add pickles to it"
+  ]
+}

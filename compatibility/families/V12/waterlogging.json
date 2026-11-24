@@ -1,0 +1,13 @@
+{
+  "name": "Waterlogged blocks",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/waterlogged_flow",
+    "client/building",
+    "client/buckets"
+  ],
+  "note": "Blocks waterlogged by placement in water, buckets and dispensers; their water moves to the sides their collision shapes leave open after shape updates and once poured; entities' currents do not see it yet"
+}

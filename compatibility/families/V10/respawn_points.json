@@ -1,0 +1,12 @@
+{
+  "name": "Beds, respawn anchors and spawn points",
+  "milestone": "C6",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals"
+  ],
+  "deviations": [
+    "respawn at the exact world spawn; the target version picks a random position around it"
+  ]
+}

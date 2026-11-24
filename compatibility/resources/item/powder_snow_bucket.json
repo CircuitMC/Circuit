@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Filled from powder snow by players and dispensers",
+  "cases": [
+    "trace/dispenser_buckets"
+  ],
+  "deviations": [
+    "placing powder snow from it is not modeled"
+  ]
+}

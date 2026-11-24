@@ -2,8 +2,11 @@
 """Checks that tools/compat_ledger.py accepts the committed ledger inputs and
 rejects inputs with the defects its validation exists to catch."""
 import copy
+import json
 import os
+import shutil
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools"))
@@ -107,6 +110,127 @@ class LedgerValidation(unittest.TestCase):
         def mutate(i):
             i["families"]["classification"]["entity"] = [r for r in i["families"]["classification"]["entity"] if r[1] != ".*"]
         self.assert_rejected(mutate, "no classification rule matches")
+
+
+class LedgerSources(unittest.TestCase):
+    """The per-entry source files: what read_inputs() refuses and how it orders entries."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="compat-ledger-tests-")
+        self.compat = os.path.join(self.tmp, "compatibility")
+        os.mkdir(self.compat)
+        for name in sorted(os.listdir(compat_ledger.COMPAT)):
+            source = os.path.join(compat_ledger.COMPAT, name)
+            if name in ("inventory", "versions"):
+                os.symlink(source, os.path.join(self.compat, name))
+            elif os.path.isdir(source):
+                shutil.copytree(source, os.path.join(self.compat, name))
+            elif name != "ledger.json":
+                shutil.copy(source, self.compat)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp)
+
+    def write(self, rel, data):
+        path = os.path.join(self.compat, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(data if isinstance(data, str) else compat_ledger.canonical(data))
+
+    def read(self, rel):
+        with open(os.path.join(self.compat, rel), encoding="utf-8") as f:
+            return json.load(f)
+
+    def errors(self):
+        try:
+            inputs = compat_ledger.read_inputs(self.compat)
+        except compat_ledger.Failure as e:
+            return [str(e)]
+        return compat_ledger.produce(inputs)[2]
+
+    def assert_rejected(self, fragment):
+        errors = self.errors()
+        self.assertTrue(any(fragment in e for e in errors), f"expected an error containing {fragment!r}, got {errors[:5]}")
+
+    def test_copied_sources_are_valid(self):
+        self.assertEqual(self.errors(), [])
+
+    def test_sources_join_into_the_documents(self):
+        inputs = compat_ledger.read_inputs(self.compat)
+        families = inputs["families"]["families"]
+        self.assertEqual([f["id"] for f in families], [f"V{i:02d}" for i in range(1, 37)])
+        self.assertEqual(families[13]["mechanics"][0]["id"], self.read("families/V14/_family.json")["mechanics"][0])
+        self.assertEqual(inputs["resources"]["overrides"]["packet"]["play/serverbound/container_click"],
+                         self.read("resources/packet/play/serverbound/container_click.json"))
+        self.assertIn("client/windows", [c["id"] for c in inputs["cases"]["cases"]])
+        self.assertEqual(sorted(inputs["families"]["classification"]), sorted(compat_ledger.NAMED_KINDS))
+
+    def test_an_unlisted_mechanic_follows_the_listed_ones_by_id(self):
+        listed = self.read("families/V17/_family.json")["mechanics"]
+        mechanic = {"name": "A new mechanic", "milestone": "C3", "impl": "missing", "evidence": "none"}
+        self.write("families/V17/zz_new.json", mechanic)
+        self.write("families/V17/aa_new.json", mechanic)
+        inputs = compat_ledger.read_inputs(self.compat)
+        ids = [m["id"] for m in next(f for f in inputs["families"]["families"] if f["id"] == "V17")["mechanics"]]
+        self.assertEqual(ids, listed + ["aa_new", "zz_new"])
+        ledger, _, errors = compat_ledger.produce(inputs)
+        self.assertEqual(errors, [])
+        self.assertIn("V17.zz_new", [f["id"] for f in ledger["features"]])
+
+    def test_new_entries_need_no_other_file(self):
+        self.write("cases/client/zz_new.json", {"kind": "planned", "versions": ["java-1.21.8"], "location": "none yet",
+                                                "status": "planned", "description": "A new case"})
+        self.write("resources/block/dirt.json", {"impl": "partial", "evidence": "none", "deviations": ["a gap"]})
+        ledger, _, errors = compat_ledger.produce(compat_ledger.read_inputs(self.compat))
+        self.assertEqual(errors, [])
+        self.assertIn("client/zz_new", [c["id"] for c in ledger["cases"]])
+        dirt = next(f for f in ledger["features"] if f["id"] == "block/minecraft:dirt")
+        self.assertEqual(dirt["versions"]["java-1.21.8"]["impl"], "partial")
+
+    def test_listed_mechanic_without_a_file(self):
+        os.remove(os.path.join(self.compat, "families/V17/tnt_block.json"))
+        self.assert_rejected("mechanic tnt_block is listed but has no file")
+
+    def test_mechanic_listed_twice(self):
+        head = self.read("families/V17/_family.json")
+        head["mechanics"].append(head["mechanics"][0])
+        self.write("families/V17/_family.json", head)
+        self.assert_rejected("is listed twice")
+
+    def test_key_given_twice(self):
+        # What a merge of two branches adding the same key on different lines leaves behind.
+        self.write("families/V17/tnt_block.json", '{\n  "name": "a",\n  "milestone": "C3",\n  "impl": "missing",\n  "impl": "partial"\n}\n')
+        self.assert_rejected("families/V17/tnt_block.json: key impl is given twice")
+
+    def test_file_that_is_not_json(self):
+        self.write("cases/client/windows.json", "<<<<<<< ours\n{}\n")
+        self.assert_rejected("compatibility/cases/client/windows.json:")
+
+    def test_file_not_in_canonical_form(self):
+        data = self.read("cases/client/windows.json")
+        self.write("cases/client/windows.json", json.dumps(data))
+        self.assert_rejected("cases/client/windows.json: not in canonical form")
+
+    def test_unexpected_file(self):
+        self.write("resources/block/stone.json.orig", "{}\n")
+        self.assert_rejected("resources/block/stone.json.orig: unexpected file")
+
+    def test_badly_named_entry(self):
+        self.write("families/V17/Bad-Name.json", {"name": "a", "milestone": "C3", "impl": "missing"})
+        self.assert_rejected("families/V17/Bad-Name.json: unexpected file")
+
+    def test_mechanic_in_a_subdirectory(self):
+        self.write("families/V17/sub/thing.json", {"name": "a", "milestone": "C3", "impl": "missing"})
+        self.assert_rejected("mechanics are files of the family's directory")
+
+    def test_unknown_resource_kind(self):
+        os.mkdir(os.path.join(self.compat, "resources", "gadget"))
+        self.assert_rejected("its directories must be the kinds")
+
+    def test_case_file_defining_a_trace(self):
+        self.write("cases/trace/vertical_slice.json", {"kind": "official_trace", "versions": ["java-1.21.8"], "location": "x",
+                                                       "status": "passing", "description": "x"})
+        self.assert_rejected("defined twice")
 
 
 if __name__ == "__main__":

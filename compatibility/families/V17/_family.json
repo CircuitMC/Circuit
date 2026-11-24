@@ -1,0 +1,16 @@
+{
+  "name": "TNT and explosions",
+  "milestones": [
+    "C3",
+    "C4"
+  ],
+  "mechanics": [
+    "tnt_block",
+    "ignition",
+    "primed_tnt",
+    "explosions",
+    "tnt_persistence",
+    "gamerule_tnt_explodes",
+    "other_explosions"
+  ]
+}

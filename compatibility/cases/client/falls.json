@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/falls.js",
+  "status": "passing",
+  "description": "4 falls in survival with positions set directly: 5.5 blocks landing apart, 6.3 landing 0.5 blocks down, 9 landing 0.416 down as a client falling from rest lands, 4.4 landing 0.4 down; 1.21.8 counts the landing move and rounds down, 1.21.4 leaves it out and rounds up; Circuit and both official servers give the same health"
+}

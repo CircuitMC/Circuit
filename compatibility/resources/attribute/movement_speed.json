@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes",
+    "client/drown"
+  ],
+  "note": "Sent with sprinting's, the effects' and powder snow's (powder_snow, -0.05 times the share frozen) modifiers; only the client uses it"
+}

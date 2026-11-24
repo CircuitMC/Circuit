@@ -1,0 +1,9 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/chests.js",
+  "status": "passing",
+  "description": "Seven chest placement and pairing cases"
+}

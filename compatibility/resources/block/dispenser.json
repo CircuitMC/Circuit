@@ -1,0 +1,17 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Fired 4 ticks after power reaches it or the block above it, from a random filled slot; ejects items, primes TNT, pours and fills water buckets, sets minecarts on rails, puts armor and elytras on the player in front whose slot for it is empty (else ejects them), with its sound and smoke (level events 1000 and 2000) when it ejects an item or puts armor on; read by comparators, filled and emptied by hoppers",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases",
+    "trace/dispenser_items",
+    "trace/dispenser_tnt_rule",
+    "client/armor2"
+  ],
+  "deviations": [
+    "projectiles, fire, bone meal, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, minecarts other than the empty one, spawn eggs, armor stands and shulker boxes are not dispensed: they stay",
+    "heads and saddles eject; armor goes onto the first player by key but spectators (not recorded); the level events of its other uses are not sent"
+  ]
+}

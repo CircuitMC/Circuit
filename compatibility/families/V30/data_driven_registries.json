@@ -1,0 +1,12 @@
+{
+  "name": "Data-driven recipes, loot tables, enchantments, damage types and worldgen",
+  "milestone": "C1",
+  "impl": "partial",
+  "evidence": "reference_only",
+  "cases": [
+    "data/official_packs",
+    "data/block_drops",
+    "client/crafting"
+  ],
+  "note": "Enchantment definitions come from the official pack and are synchronized by name; every recipe is checked (1,407 in 1.21.8 and 1,370 in 1.21.4 are valid) and crafting recipes and block loot tables are used; worldgen and damage types are not read"
+}

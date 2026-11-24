@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/composter_use",
+    "trace/composters_items",
+    "client/composter"
+  ],
+  "deviations": [
+    "the sounds"
+  ],
+  "note": "Composts by its items' chances and gives bone meal as both official servers do (composters_items, composter_use, client/composter)"
+}

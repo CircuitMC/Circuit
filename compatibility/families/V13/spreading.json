@@ -1,0 +1,15 @@
+{
+  "name": "Grass, mycelium, nylium, moss and sculk spread",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Grass blocks and mycelium die under blocks their light cannot pass and under water, and spread to dirt within reach in random ticks, and nylium under such blocks becomes netherrack, as the official 1.21.8 server does draw for draw",
+  "cases": [
+    "trace/grass_spread",
+    "trace/eggs_blossoms"
+  ],
+  "deviations": [
+    "nylium, moss and sculk do not spread",
+    "1.21.4's spreading is not compared (its random ticks run only near players, and the harness has none)"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Barrels",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Barrels facing any side are 27-slot containers that hoppers fill and empty and comparators read, conducting power as solid blocks; they open under a solid block, are open from their first viewer to their last by the viewer counts and rechecks of chests (no block events), keep an open state they were set to, and drop their contents when removed; the harness traces and client scenarios match both official servers",
+  "cases": [
+    "trace/barrel_containers",
+    "client/barrel",
+    "client/openers"
+  ],
+  "deviations": [
+    "the open and close sounds and the game events sculk sensors hear are not modeled"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Handshake, status, login, compression, encryption and session verification",
+  "milestone": "C10",
+  "impl": "implemented",
+  "evidence": "none",
+  "cases": [
+    "client/join_message"
+  ],
+  "note": "Checked with protocol clients and the real client against Circuit; the message that a player joined goes to everyone but the newcomer, as on both official servers"
+}

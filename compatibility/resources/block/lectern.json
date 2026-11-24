@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "a book put on from the off hand is not modeled"
+  ],
+  "note": "Placed by players as both official servers place it; it takes a book, turns its pages with a pulse and a comparator reading, and players use its window, as both official servers do (lectern_pages, client/lectern)"
+}

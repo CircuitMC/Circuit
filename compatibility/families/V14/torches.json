@@ -1,0 +1,17 @@
+{
+  "name": "Redstone torches and burnout",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/torch_basics",
+    "trace/torch_button_piston",
+    "trace/water_torch_button"
+  ],
+  "deviations": [
+    "players place torches on the clicked face, not by their view",
+    "floor support comes from collision shapes",
+    "no burnout sound or smoke"
+  ],
+  "note": "Floor and wall torches power every neighbor but their block and the block above them strongly; power in their block turns them off two ticks after an update; the eighth turn-off of a position within 60 ticks burns a torch out for 160 ticks"
+}

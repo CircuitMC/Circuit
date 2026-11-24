@@ -1,0 +1,20 @@
+{
+  "name": "Buttons, pressure plates, tripwire and targets",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/button_basics",
+    "trace/torch_button_piston",
+    "trace/water_torch_button",
+    "trace/pressure_plates",
+    "trace/plate_target_more",
+    "trace/target_block"
+  ],
+  "deviations": [
+    "tripwire is not modeled",
+    "no mobs or players press plates yet; only arrows press wooden buttons",
+    "of the projectiles only arrows and snowballs hit target blocks"
+  ],
+  "note": "Buttons of every kind on floors, walls and ceilings: 20 ticks for stone and polished blackstone, 30 for wooden ones, which arrows press and hold; pressure plates of every kind sensing the entities on them (weighted ones counting them); target blocks grading projectile hits"
+}

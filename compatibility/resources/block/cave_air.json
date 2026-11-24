@@ -1,0 +1,5 @@
+{
+  "impl": "implemented",
+  "evidence": "none",
+  "note": "Air with its own state; the rules treat it as air"
+}

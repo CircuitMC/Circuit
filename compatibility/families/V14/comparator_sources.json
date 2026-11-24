@@ -1,0 +1,10 @@
+{
+  "name": "Comparator readings of every container and special block",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/double_chest"
+  ],
+  "note": "Chests and hoppers"
+}

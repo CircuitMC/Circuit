@@ -1,0 +1,15 @@
+{
+  "name": "Crops, growth and ecology",
+  "milestones": [
+    "C5"
+  ],
+  "mechanics": [
+    "wheat",
+    "farmland",
+    "other_crops",
+    "trees",
+    "spreading",
+    "bone_meal",
+    "coral"
+  ]
+}

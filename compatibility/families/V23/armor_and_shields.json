@@ -1,0 +1,19 @@
+{
+  "name": "Armor protection, toughness and shields",
+  "milestone": "C6",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/fire",
+    "client/shield",
+    "client/ench_unbreaking",
+    "client/ench_curses"
+  ],
+  "note": "Armor's points, toughness and netherite's knockback resistance (the double 0.1: client/ench_combat) as attribute modifiers of each armor slot, as both official servers send them; damage armor reduces (not in the bypasses_armor damage type tag: fire, lava, magma blocks, cacti and sweet berry bushes so far) is reduced by the documented formula, to the float as both official servers reduce it, and wears each piece worn by a quarter of it, at least one (netherite not by fire; less the points its unbreaking spares: client/ench_unbreaking), through the rules at the next tick, breaking it at its durability; shields raised from either hand block players' attacks from the half their holder faces once raised 5 ticks (minecraft.wiki; recorded: 2 not, 12 blocking): no damage, 1.21.8's block sound or 1.21.4's entity event 29, the hurt sound for others, the shield worn by 1 and the damage from 3, less the points its unbreaking spares (minecraft.wiki; recorded: 6 and 9 worn, 1 not; unbreaking: client/ench_unbreaking), the holder knocked 0.5 towards the attacker then 0.4 away (told to the others only), the hurt cooldown started as by a hurt of nothing, the attack failing; axes disable them for 100 ticks (the cooldown, 1.21.8's break sound and damage event or 1.21.4's entity events 30 and 29, lowered); 1.21.8 knocks a holder hit from behind 0.5 towards the attacker first; the equip sound of a shield put into the off hand",
+  "deviations": [
+    "a piece broken by a hurt's wear gives its slot's break event to the player and those who see them (client/ench_curses: a helmet); several broken in one hurt go from the feet up (not recorded); a piece broken by thorns' wear, and tools', weapons' and shields' breaking, give no event, and the unbreakable component is not honored",
+    "shields block only players' attacks (not projectiles, explosions or mobs), every shield as the shield item (1.21.8's blocks_attacks component of a stack is not read), and the block and break sounds' pitch is Circuit's own draw",
+    "weak and critical hits on a raised shield, axes other than the iron axe, sweeps reaching a raised shield, the block and break sounds' range and a raised shield at death were not recorded"
+  ]
+}

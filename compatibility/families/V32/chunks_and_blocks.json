@@ -1,0 +1,10 @@
+{
+  "name": "Chunks, block updates and acknowledgements",
+  "milestone": "C10",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/redstone",
+    "realclient/redstone"
+  ]
+}

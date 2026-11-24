@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/effects5.js",
+  "status": "passing",
+  "description": "23 steps: a level underneath that runs out before the one above it ends (shown with no time left, then removed at once), the same under an infinite level across a rejoin (the infinite level kept) and over a third level (removed with it), an effect sent again at 1800 ticks left, the entity data of effects given and ending 25 ms or more after their packets, and levitation in survival (not kicked for flying, and where the player lands; the health after the fall is left out: the fall hurts as on both official servers since C6.1b, the regeneration after it on 1.21.4 is a deviation); Circuit and both official servers give the same"
+}

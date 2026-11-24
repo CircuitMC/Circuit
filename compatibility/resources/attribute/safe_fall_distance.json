@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes",
+    "client/attribute_rules",
+    "client/falls"
+  ],
+  "note": "Sent with jump boost's modifier; fall damage uses it"
+}

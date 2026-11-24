@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/crafter-special.js",
+  "status": "passing",
+  "description": "8 steps: four crafters filled with a patterned and a blank banner, two damaged enchanted swords, a leather helmet and a red dye, and a shield and a patterned banner, then powered; Circuit and both official servers give the same grids and window results and throw out the same items (the copy and the patterned banner, the repaired sword, the dyed helmet, the decorated shield)"
+}

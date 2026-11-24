@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/armor.js",
+  "status": "passing",
+  "description": "Two players: a survival player puts on armor of every material by use (swapping a worn helmet and chestplate, an elytra and a turtle shell; not a carved pumpkin), by clicks and shift-clicks (and takes pieces off), holds a sword, an axe, stone and a pickaxe that wears breaking glass, throws one of a held stack, swaps her hands, swings both arms, and appears again to the other, then uses armor in creative mode; each step's attributes (sorted), slot changes, sounds, the other's view of her equipment, attributes, animations and entity events; Circuit and both official servers give identical output"
+}

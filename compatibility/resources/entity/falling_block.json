@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Sand, gravel and concrete powder: motion, landing, breaking, time limits; spawned to clients with their block",
+  "cases": [
+    "trace/falling_column",
+    "trace/falling_drop",
+    "trace/falling_onto",
+    "trace/falling_void"
+  ],
+  "deviations": [
+    "falling anvils, dripstone and scaffolding; damage"
+  ]
+}

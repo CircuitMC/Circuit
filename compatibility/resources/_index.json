@@ -1,0 +1,4 @@
+{
+  "schema": "circuit-compatibility-resources-2",
+  "comment": "Hand-written. One directory per kind of enumerated resource. _kind.json holds the kind's default status and its classification rules; every other file is the status of the resource it is named after where that differs from the default. Statuses apply to both versions unless a version is named. Traces that place a block are linked to it automatically; packets referenced by the server code default to partial. Classification rules are ordered: the first matching pattern assigns a resource to a family, and the last rule of each kind matches everything, as an explicit default."
+}

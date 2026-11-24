@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/beacon.js",
+  "status": "passing",
+  "description": "35 steps with two players at a beacon on an iron pyramid, each step a moment after a cycle: the beacon set on one layer (its block entity data, then the ambient and activate sounds), its window (type 9, title container.beacon, the levels and both powers as properties), cobblestone refused by the payment slot, two iron ingots shift-clicked into the main inventory, one into the payment slot and back, powers chosen with a payment at one level (strength, speed and regeneration, speed twice, haste) and at four (haste and regeneration, speed twice), the effects each cycle gives (ambient, 9 seconds and 2 per level, the secondary and the stronger primary at four levels) to the player standing by and to the second player only within range (23 and then 19 blocks away), a corner of the lowest layer gone (three levels), the beam blocked by stone (levels kept, nothing played), passing glass and open again, and the pyramid gone (the deactivate sound); effect removals of one tick sorted; Circuit and both official servers give identical output"
+}

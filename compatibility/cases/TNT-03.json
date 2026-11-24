@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "trace/tnt_motion, trace/tnt_water_current, trace/tnt_void",
+  "status": "passing",
+  "description": "Primed TNT on the ground, in the air, in water and at chunk edges"
+}

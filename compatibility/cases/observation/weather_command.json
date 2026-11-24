@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/packet-probe.js with weather-compare.txt, weather-join2.txt and (official only) weather-probe.txt, weather-timers.txt and weather-clear1.txt; Circuit's side also in tests/server/server_tests.cpp",
+  "status": "passing",
+  "description": "16 /weather commands and a doWeatherCycle change, each from settled levels (rain, clear spells ending in thunderstorms, the cycle stopped, malformed durations), and a player joining in the rain: Circuit's 1,348 replies and game events per segment, every rain and thunder level value included, are identical with each official server's. The official servers' saved level data showed what each command does to the timers"
+}

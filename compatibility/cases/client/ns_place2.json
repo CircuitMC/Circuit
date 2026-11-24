@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ns-place2.js",
+  "status": "passing",
+  "description": "With the same test pack and only bbb:same_mix known, at a crafting table: a full placement shift-clicked makes one birch log and stops at the first recipe's oak log; clicks outside the grid and a second placement keep the placed recipe, a grid stack taken and put back or one more stick ends it; a grid filled by hand makes the oak log, and placing onto it the birch log; with doLimitedCrafting on a grid filled by hand makes nothing, a placement the birch log and nothing once one is taken; a full placement in the own window makes 64 oak logs; Circuit and both official servers give the same windows, logs and recipes (those unlocked at once compared as sets)"
+}

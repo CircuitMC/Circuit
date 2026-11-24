@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "documented",
+  "cases": [
+    "collision/stairs"
+  ],
+  "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+}

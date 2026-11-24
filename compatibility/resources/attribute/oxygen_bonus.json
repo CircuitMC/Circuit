@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/drown",
+    "client/ench_attributes",
+    "client/ench_air"
+  ],
+  "note": "A player's from the first tick they lose air or a respiration helmet gives it, sent as both official servers do; with a bonus each tick keeps the air with a chance of 1 - 1/(bonus + 1)",
+  "deviations": [
+    "the chance is drawn from Circuit's own random"
+  ]
+}

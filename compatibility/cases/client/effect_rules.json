@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/effects3.js",
+  "status": "passing",
+  "description": "51 steps of an effect given again, each case from no effects: the same amplifier shorter and longer, weaker and stronger levels shorter and longer, three levels shown in turn, an infinite level underneath a stronger one, a level cleared with one underneath, particles hidden and shown, only hidden particles, and one effect of two ending; Circuit and both official servers send the same effect packets, entity data and replies"
+}

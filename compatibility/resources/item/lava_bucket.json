@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Players pour it along their view, and dispensers in front of them, into air and what fluids replace; it leaves a bucket",
+  "cases": [
+    "trace/dispenser_buckets",
+    "client/buckets"
+  ]
+}

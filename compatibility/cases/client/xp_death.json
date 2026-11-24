@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/xp-death.js, and xp-levelup.js for the level-up sound; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "A survival player given experience and a stack of stone dies by /kill while another watches, then collects what she dropped: with 3 levels, 20 levels, 5 points, 3 levels and 5 points, 3 levels in creative mode, and 3 levels with keepInventory on; her experience packets, the packets from her death to her second experience after the respawn by name, the items and orbs that appear in their order, the orbs collected, the watcher's experience changes and level-up sound; and (xp-levelup.js) the level-up sound the player and another hear as levels and points are added and set, within and after 100 ticks, up to level 40 and down; Circuit and both official servers give identical output"
+}

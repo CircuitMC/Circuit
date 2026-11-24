@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/barrel.js",
+  "status": "passing",
+  "description": "5 steps at a barrel under a stone with a comparator reading it: its window (type 2, title container.barrel, 63 slots) opening the barrel, three stacks moved in by shift-clicks (the comparator 2), closed, and broken in survival dropping itself and its contents (totals by item, the stacks splitting at random); Circuit and both official servers give identical output"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/furnace-menu.js",
+  "status": "passing",
+  "description": "26 steps in furnace, smoker and blast furnace windows: their window types, the fuel and result slots refusing stone, shift-clicks routed by recipe and fuel (a bucket is no fuel to shift-click), cooking in the window, taking and shift-clicking results, and the burn and cooking times the windows show"
+}

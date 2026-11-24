@@ -1,0 +1,7 @@
+{
+  "name": "Reference harness recording v2 observations on both releases, with repeat runs",
+  "milestone": "C0",
+  "impl": "implemented",
+  "evidence": "none",
+  "note": "Both releases; repeat runs on fresh worlds; the level random is seeded with 0"
+}

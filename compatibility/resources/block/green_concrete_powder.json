@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "documented",
+  "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+  "deviations": [
+    "does not become concrete beside water"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "defaults": {
+    "impl": "data_only",
+    "evidence": "none",
+    "note": "In the item registry with its stack size and durability: stored, moved, thrown and picked up, with no other use"
+  },
+  "classification": [
+    [
+      "V27",
+      "_spawn_egg$"
+    ],
+    [
+      "V23",
+      "^(.*_sword|.*_helmet|.*_chestplate|.*_leggings|.*_boots|turtle_helmet|shield|bow|crossbow|trident|mace|totem_of_undying|potion|splash_potion|lingering_potion|.*_horse_armor|wolf_armor|elytra)$"
+    ],
+    [
+      "V21",
+      "^(.*_boat|.*_chest_boat|.*_raft|.*_chest_raft|minecart|.*_minecart|arrow|spectral_arrow|tipped_arrow|egg|blue_egg|brown_egg|snowball|ender_pearl|ender_eye|fire_charge|wind_charge|firework_rocket|experience_bottle|saddle|.*_harness|lead)$"
+    ],
+    [
+      "V24",
+      "^(.*_pickaxe|.*_axe|.*_shovel|.*_hoe|shears|flint_and_steel|fishing_rod|carrot_on_a_stick|warped_fungus_on_a_stick|brush|spyglass|compass|recovery_compass|clock|name_tag|bucket|.*_bucket|bone_meal|music_disc_.*|goat_horn|bundle|.*_bundle|map|filled_map|writable_book|written_book|book|enchanted_book|knowledge_book|debug_stick|glass_bottle|honey_bottle|milk_bucket)$"
+    ],
+    [
+      "V24",
+      "^(apple|golden_apple|enchanted_golden_apple|bread|.*_stew|cooked_.*|beef|porkchop|chicken|mutton|rabbit|cod|salmon|tropical_fish|pufferfish|carrot|golden_carrot|potato|baked_potato|poisonous_potato|beetroot|melon_slice|glistering_melon_slice|sweet_berries|glow_berries|chorus_fruit|cookie|pumpkin_pie|cake|dried_kelp|rotten_flesh|spider_eye|suspicious_stew|honey_bottle)$"
+    ],
+    [
+      "V31",
+      "^(command_block_minecart|structure_block|jigsaw|barrier|light|command_block|repeating_command_block|chain_command_block|structure_void|test_block|test_instance_block)$"
+    ],
+    [
+      "block",
+      ""
+    ],
+    [
+      "V25",
+      ".*"
+    ]
+  ]
+}

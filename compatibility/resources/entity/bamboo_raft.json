@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "documented",
+  "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+  "deviations": [
+    "riders and paddling"
+  ]
+}

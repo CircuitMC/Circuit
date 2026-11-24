@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/plant-contexts-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness plant context report",
+  "status": "passing",
+  "description": "Whether sugar cane stays on every block state with water beside it and on sand with every state beside the sand, whether a cactus stays on sand with every state beside it and above it, whether mushrooms stay on every state at light 0 and a small dripleaf's waterlogged lower half on every state, as both official servers decide it; Circuit's rules match every pair of both versions but the states that do not stay where they are set and, for the mushrooms, states that emit light"
+}

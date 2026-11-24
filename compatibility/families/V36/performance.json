@@ -1,0 +1,7 @@
+{
+  "name": "Performance under accepted semantics",
+  "milestone": "C12",
+  "impl": "partial",
+  "evidence": "none",
+  "note": "Profiles of the declared subset"
+}

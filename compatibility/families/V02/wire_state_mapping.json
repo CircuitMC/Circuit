@@ -1,0 +1,10 @@
+{
+  "name": "Per-version mapping between internal states and protocol state ids",
+  "milestone": "C1",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "trace/dust_shape"
+  ],
+  "note": "Every state of both releases maps to one Circuit state and back"
+}

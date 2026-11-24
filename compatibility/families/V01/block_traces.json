@@ -1,0 +1,9 @@
+{
+  "name": "Reference traces of block state changes (circuit-trace v1)",
+  "milestone": "C0",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "trace/vertical_slice"
+  ]
+}

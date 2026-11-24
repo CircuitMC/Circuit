@@ -1,0 +1,10 @@
+{
+  "name": "Cartography tables",
+  "milestone": "C5",
+  "impl": "implemented",
+  "evidence": "compared",
+  "note": "The cartography table's window copies a filled map with an empty map, zooms it with paper to a new map of the next scale (up to 4) and locks it with a glass pane to a new locked map, taking only the items each slot takes, with shift-clicks, as both official servers do (with the official data packs)",
+  "cases": [
+    "client/maps"
+  ]
+}

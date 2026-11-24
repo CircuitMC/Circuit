@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/maps",
+    "placement/official_items"
+  ],
+  "note": "Placed by players as both official servers place it; its window copies, zooms and locks filled maps as both official servers do (client/maps)"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/armor2.js",
+  "status": "passing",
+  "description": "Two players: a survival player uses a carved pumpkin and a zombie head with nothing worn (neither goes on) and armor from her off hand, then stands before a dispenser that is given one item at a time and powered: a helmet goes on, a second helmet and an elytra over a chestplate are ejected, boots go on; each step's attributes, slot changes, sounds, level events, the items that appear and the other's view of her equipment; Circuit and both official servers give identical output"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Repeaters and comparators",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/repeater_lock",
+    "trace/comparator_signal",
+    "trace/comparator_priority"
+  ]
+}

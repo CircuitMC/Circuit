@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "no sleeping, respawning or explosions in other dimensions"
+  ],
+  "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+}

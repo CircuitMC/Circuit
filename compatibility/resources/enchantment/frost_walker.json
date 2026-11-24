@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_fire"
+  ],
+  "note": "Its immunity to the burn_from_stepping types: no hurt and no wear on a magma block, lava still hurting and wearing, as both official servers",
+  "deviations": [
+    "it does not freeze water into frosted ice yet"
+  ]
+}

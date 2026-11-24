@@ -1,0 +1,15 @@
+{
+  "name": "Daylight detectors, sculk sensors, lightning rods and other sources",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/daylight_basics",
+    "trace/daylight_cycle",
+    "trace/daylight_more"
+  ],
+  "deviations": [
+    "sculk sensors, lightning rods and the other sensors are not modeled"
+  ],
+  "note": "Daylight detectors, normal and inverted, set their output every 20 game ticks from the sky light in their cell, the time of day, rain and thunder; using one inverts it at once"
+}

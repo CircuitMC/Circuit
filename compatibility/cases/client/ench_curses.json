@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-curses.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "A survival player wears a bound iron helmet and clicks it every way (pickup with either button, shift-click, number keys onto an empty and a full hotbar slot, F, Q, Ctrl+Q, clone, a plain helmet carried onto it, a drag of stone over it alone and with another slot, a double click), uses a plain helmet over it, double clicks with bound and plain carved pumpkins, then does the same in creative mode; moves bound items in the hotbar and the off hand; puts a bound helmet on by click, shift-click, number key and use, over nothing and over a plain helmet; has a bound helmet broken by a second player's fist; then dies by /kill, respawning 3 seconds later, with vanishing items in the hotbar, the main inventory, armor (one also bound), the off hand, the 2x2 grid and on the cursor, a shulker box and a bundle holding vanishing items, a book storing the curse and plain items, and again with keepInventory; each window click claims no change; the slots, whole windows (by a stale click), cursor, health, death and respawn, armor attribute, the equipment and entity events the second player sees, the items that appear to them and sounds; Circuit and both official servers give identical output"
+}

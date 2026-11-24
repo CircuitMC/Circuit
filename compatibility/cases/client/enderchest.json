@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/enderchest.js",
+  "status": "passing",
+  "description": "9 steps with two players, two ender chests and one under a stone: the first player's window (type 2, title container.enderchest, 63 slots), two stacks shift-clicked in, the second player's window at the same ender chest (their own, empty), both closing, the first player's window at the other ender chest holding the two stacks, and no window under the stone; the lid events and counts (a recheck every 5 ticks as for chests), a comparator behind an ender chest reading nothing; Circuit and both official servers give identical output"
+}

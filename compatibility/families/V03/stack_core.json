@@ -1,0 +1,9 @@
+{
+  "name": "Item stacks with count, stack size and damage",
+  "milestone": "C1",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/windows"
+  ]
+}

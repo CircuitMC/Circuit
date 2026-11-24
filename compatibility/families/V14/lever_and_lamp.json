@@ -1,0 +1,11 @@
+{
+  "name": "Levers and redstone lamps",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/lamp_timing",
+    "trace/lever_attachment"
+  ]
+}

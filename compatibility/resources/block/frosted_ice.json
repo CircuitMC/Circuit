@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Draws its block ticks from the level random and ages and melts in them by its frosted neighbors and the light, and melts when an update from frosted ice leaves it fewer than two frosted neighbors; broken by a player, becomes water like ice, as both official servers do",
+  "cases": [
+    "trace/frosted_ice",
+    "trace/frosted_ice_ticks",
+    "trace/ice_break"
+  ],
+  "deviations": [
+    "frost walker does not make it"
+  ]
+}

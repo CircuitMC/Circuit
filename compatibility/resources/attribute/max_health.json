@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes",
+    "client/attribute_rules"
+  ],
+  "note": "Sent with health boost's modifier; regeneration, rejoins and the health cut when it falls use it"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Mob AI and navigation",
+  "milestones": [
+    "C8"
+  ],
+  "mechanics": [
+    "behavior_framework",
+    "navigation",
+    "breeding_and_taming",
+    "species",
+    "creaking"
+  ]
+}

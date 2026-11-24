@@ -1,0 +1,14 @@
+{
+  "name": "Stairs taking corner shapes from the stairs beside them",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/stairs",
+    "trace/stairs_shapes"
+  ],
+  "deviations": [
+    "currents that push entities do not see waterlogged ones' water"
+  ],
+  "note": "On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared"
+}

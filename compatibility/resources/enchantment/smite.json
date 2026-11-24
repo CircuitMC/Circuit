@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_combat"
+  ],
+  "note": "Read: its damage requires an undead target (sensitive_to_smite), so it adds nothing against players, recorded on both official servers; attacks on other entities are not modeled"
+}

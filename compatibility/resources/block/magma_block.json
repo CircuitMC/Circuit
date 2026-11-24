@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/fire"
+  ],
+  "note": "Hurts a player standing on it without sneaking (hot_floor) as both official servers do (recorded on its middle; its edge by minecraft.wiki); its bubble columns and other entities on it are not modeled"
+}

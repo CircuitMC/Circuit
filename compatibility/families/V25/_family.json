@@ -1,0 +1,22 @@
+{
+  "name": "Menus, recipes and production",
+  "milestones": [
+    "C5"
+  ],
+  "mechanics": [
+    "player_and_container_menus",
+    "crafting",
+    "smelting",
+    "stonecutting",
+    "smithing",
+    "grindstone",
+    "loom",
+    "brewing",
+    "anvil",
+    "enchanting",
+    "cartography_tables",
+    "beacons",
+    "other_menus",
+    "loot"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Combat, attributes and effects",
+  "milestones": [
+    "C6"
+  ],
+  "mechanics": [
+    "health_and_hunger",
+    "damage_sources",
+    "death_and_respawn",
+    "melee_combat",
+    "armor_and_shields",
+    "effects",
+    "enchantment_effects",
+    "attributes"
+  ]
+}

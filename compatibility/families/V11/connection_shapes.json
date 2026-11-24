@@ -1,0 +1,16 @@
+{
+  "name": "Fences, panes, bars and walls joining their neighbors",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/connection",
+    "trace/connections",
+    "trace/connections_moved",
+    "trace/tnt_duper_wall"
+  ],
+  "deviations": [
+    "currents that push entities do not see waterlogged ones' water"
+  ],
+  "note": "On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared"
+}

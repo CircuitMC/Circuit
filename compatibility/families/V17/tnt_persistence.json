@@ -1,0 +1,17 @@
+{
+  "name": "Live fuses across save, reload and unload",
+  "milestone": "C3",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases_planned": [
+    "TNT-05"
+  ],
+  "cases": [
+    "trace/tnt_reload",
+    "trace/tnt_reload_pending"
+  ],
+  "note": "Fuse, position and motion kept by checkpoints, Anvil and unloading chunks",
+  "deviations": [
+    "after an unload the official servers run a pending tick of the chunk one tick later than Circuit in trace/tnt_reload_pending (their unload timing varies; Circuit unloads dropped chunks at once)"
+  ]
+}

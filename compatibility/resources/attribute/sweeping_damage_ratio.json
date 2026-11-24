@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes",
+    "client/ench_combat"
+  ],
+  "note": "Sweeping edge's modifier in the main hand, sent as both official servers send it; a sweep hurts each swept player for 1 and the ratio of the charged attack damage, with their enchantment damage, all times the charge, as both official servers"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Bedrock breaking",
+  "milestone": "C6",
+  "impl": "missing",
+  "evidence": "none",
+  "note": "The method documented in text for 1.21 (minecraft.wiki \"Tutorial:Breaking bedrock\", exploding piston) has a player place a piston while TNT explodes beside them, which needs player-timed placement and explosions that hurt players (C6); the headless-piston method is documented only in videos"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Pistons and moving structures",
+  "milestones": [
+    "C3",
+    "C4"
+  ],
+  "mechanics": [
+    "push_pull",
+    "slime",
+    "honey",
+    "destroyed_blocks",
+    "entity_pushing",
+    "push_reactions"
+  ]
+}

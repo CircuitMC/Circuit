@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Its lower half grows on clay or moss, or waterlogged on soil and clay, its upper half on its lower half, and both break at once when an update finds them unsupported, as both official servers do",
+  "cases": [
+    "collision/plants",
+    "collision/plant_contexts",
+    "trace/dripleaves"
+  ],
+  "deviations": [
+    "players cannot place it yet",
+    "does not grow"
+  ]
+}

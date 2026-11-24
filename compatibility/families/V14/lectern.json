@@ -1,0 +1,15 @@
+{
+  "name": "Lecterns",
+  "milestone": "C5",
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "A writable or written book goes on a lectern without one (the item tag lectern_books; used up outside creative mode); its window turns to the previous or next page, to a page by its number or takes the book, a click on its slot takes the book too and the window closes without it; a page turn powers the lectern until its block tick 2 ticks later, every neighbor and the block below strongly, a turn while powered adding nothing; comparators read 1 more than 14 times the page's place, dust connects to it, and a removed lectern's book pops out on top toward its front; the harness traces and a 22-step client scenario match both official servers",
+  "deviations": [
+    "a book put on from the off hand is not modeled",
+    "written books' pages are not resolved for the player who puts them on"
+  ],
+  "cases": [
+    "trace/lectern_pages",
+    "client/lectern"
+  ]
+}

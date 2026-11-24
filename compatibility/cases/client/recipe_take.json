@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/recipe-take.js",
+  "status": "passing",
+  "description": "27 steps with doLimitedCrafting on, at a crafting table and in the own window: oak_planks taken away while a log's planks show, an empty slot clicked, the logs moved and swapped by a number key (the result stays), the result shift-clicked out (taken; the recipe given back), another log; taken away again, a log (nothing), the recipe given and a click elsewhere (still nothing), the log picked up and put back (the planks); then at the table with the recipe unknown, planks with the rule off, the rule turned on and a click elsewhere (they stay), the log picked up and put back (nothing), the rule turned off (still nothing); Circuit and both official servers give identical windows and recipe book packets"
+}

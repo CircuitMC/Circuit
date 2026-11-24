@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Summoned snowballs: flight and breaking on blocks; spawned to clients",
+  "cases": [
+    "trace/arrow_tnt"
+  ],
+  "deviations": [
+    "passes through entities; not thrown by players or dispensers"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/openers.js",
+  "status": "passing",
+  "description": "14 steps with two players and a scene built with /setblock: a trapped chest opened by one player and then the other, an item moved in, each closing it; a double trapped chest opened and closed; a barrel and a chest opened and closed; the power of dust beside the trapped chest and beside the block below it, the dust beside the double trapped chest and a comparator reading the trapped chest, and the lid block events (positions, counts and rechecks) the first player receives; Circuit and both official servers give identical output"
+}

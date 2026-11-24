@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/eat.js",
+  "status": "passing",
+  "description": "Two players: a survival player made hungry eats and drinks from both hands (cooked beef, a golden apple, spider eyes, milk, honey, dried kelp, beetroot soup, a potion of regeneration, bread, a golden carrot, an apple from the off hand, glow and sweet berries, suspicious stew, an ominous bottle, a potion of healing, honey and a chorus fruit at full hunger), lets go early, switches slots while eating, is refused at full hunger and during the chorus fruit's cooldown, gets the omens by command and eats an enchanted golden apple, a pufferfish and a golden carrot in creative mode, while the other watches; each step's health packets, effects (with their flags), slot changes, living flags (entity data 8), entity events, particles, cooldowns, teleports (one line for a chorus fruit's tries, which vary) and sounds (a use's own by name, their volume being random); Circuit and both official servers give identical output"
+}

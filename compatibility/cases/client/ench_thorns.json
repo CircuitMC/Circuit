@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-thorns.js; Circuit's side also in tests/server/server_tests.cpp, tests/rules/rules_tests.cpp and tests/contracts/contract_tests.cpp",
+  "status": "passing",
+  "description": "A survival player attacks another with a third watching: once without thorns; with thorns VII on the target's chestplate by the fist and an iron sword at full charge, again 2 ticks later, harder within the target's hurt cooldown (strength II), the attacker under resistance V, in diamond armor and in protection IV leather armor; against a raised shield and a creative target; thorns VII on a sword held; the attacker poisoned to 1 health and killed by thorns; thorns on chestplate and leggings; the attacker in creative mode; the third, beside the target in a sweep, in thorns; a hit within the target's hurt cooldown with a sword of fire aspect II switched to, in the tick of the switch and 3 ticks after; each client's health (the attacker's after a thorns hurt, and the target's in the last step, masked: their values come from each server's random and timing), damage events, velocities, statuses, animations, shared flags, effects, slots and equipment (components compared by type, enchantments by id), sounds, particles and death messages; Circuit and both official servers give identical output"
+}

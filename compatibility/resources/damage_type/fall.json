@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals",
+    "client/effects_heal",
+    "client/ench_protect"
+  ]
+}

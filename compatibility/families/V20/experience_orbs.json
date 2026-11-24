@@ -1,0 +1,32 @@
+{
+  "name": "Experience orbs",
+  "milestone": "C6",
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, jump in lava, take in orbs of their value 40 ids apart every 20 ticks, move out of blocks (each version its own way) and go at age 6000, as both official servers do tick by tick; experience comes in orbs of the official values that join orbs nearby by a draw of 40; mined ores and sculk give theirs, Silk Touch none; players within 8 blocks draw orbs and take one every 2 ticks (also orbs of a negative value or 0, which change nothing), their points mending damaged items with repair effects first (the rest to another such item, then to the player), gaining the official servers' levels, totals and progress; a player who dies drops 7 points a level, at most 100; the level-up sound at multiples of 5 and the experience sent again after /xp and advancements",
+  "cases": [
+    "trace/orbs",
+    "trace/orbs_merge",
+    "trace/orbs_more",
+    "trace/xp_ores",
+    "trace/xp_merge",
+    "trace/xp_merge_more",
+    "trace/xp_furnaces",
+    "trace/xp_explosion",
+    "trace/item_inside_block",
+    "trace/item_inside_ways",
+    "trace/item_inside_piston",
+    "client/orbs",
+    "client/furnace_xp",
+    "client/xp_death",
+    "client/ench_mending",
+    "client/ench_mending_pack"
+  ],
+  "deviations": [
+    "how players draw orbs is not compared tick by tick",
+    "the item mending repairs is picked by a draw of the level random",
+    "1.21.8: the second values of several orbs that appear in one tick come in Circuit's order (orb-data.js: a death's three orbs in another order)",
+    "a respawned player is not sent the removal and the spawn again of the entities other than players near them, which both official servers send (orb-data.js: the orbs of their death)",
+    "mobs, breeding, fishing and trading give no experience yet"
+  ]
+}

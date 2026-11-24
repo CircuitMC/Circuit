@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/armor2"
+  ],
+  "note": "As both official servers wear it: put on by use, swapped for a chestplate; ejected by a dispenser over a chestplate (client/armor, client/armor2), with its sound, shown to others; the other ways of wearing it as the recorded pieces",
+  "deviations": [
+    "gliding and its wear are not modeled"
+  ]
+}

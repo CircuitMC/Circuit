@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/eat"
+  ],
+  "note": "Eaten as both official servers run it (client/eat)",
+  "deviations": [
+    "the stack's own food, consumable, use remainder and use cooldown components are not read"
+  ]
+}

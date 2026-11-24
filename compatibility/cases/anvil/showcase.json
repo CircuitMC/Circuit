@@ -1,0 +1,9 @@
+{
+  "kind": "round_trip",
+  "versions": [
+    "java-1.21.8"
+  ],
+  "location": "external: showcase world round trip (docs/PERSISTENCE.md)",
+  "status": "passing",
+  "description": "A world exported by Circuit, opened and saved by the official server, imported again"
+}

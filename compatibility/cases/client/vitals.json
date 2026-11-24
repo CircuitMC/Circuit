@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/vitals.js",
+  "status": "passing",
+  "description": "Wall correction, falls, regeneration, death, respawn, the void and the floating kick"
+}

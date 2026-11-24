@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/fire",
+    "client/ench_fire",
+    "client/ench_combat"
+  ],
+  "note": "Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it; also after fire aspect's hits"
+}

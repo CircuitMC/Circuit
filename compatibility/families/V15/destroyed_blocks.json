@@ -1,0 +1,10 @@
+{
+  "name": "Blocks destroyed by pistons and their drops",
+  "milestone": "C4",
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/piston_destroys",
+    "trace/item_drop_piston"
+  ]
+}

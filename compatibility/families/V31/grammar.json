@@ -1,0 +1,9 @@
+{
+  "name": "Command grammar, suggestions and the command tree",
+  "milestone": "C9",
+  "impl": "partial",
+  "evidence": "none",
+  "deviations": [
+    "a few chat commands with an empty command tree"
+  ]
+}

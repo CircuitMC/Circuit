@@ -1,0 +1,13 @@
+{
+  "name": "Strong and weak power through solid blocks",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "collision/conductor",
+    "trace/strong_power",
+    "trace/weak_power"
+  ],
+  "note": "Every state of both versions conducts or not as both official servers report; the rules' answer for blocks with rules of their own matches as well"
+}

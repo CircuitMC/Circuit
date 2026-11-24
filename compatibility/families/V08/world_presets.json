@@ -1,0 +1,7 @@
+{
+  "name": "World presets (default, flat, large biomes, amplified, single biome, debug)",
+  "milestone": "C7",
+  "impl": "partial",
+  "evidence": "none",
+  "note": "A one-layer stone floor only"
+}

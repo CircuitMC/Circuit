@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": {
+    "java-1.21.4": "none",
+    "java-1.21.8": "compared"
+  },
+  "note": "Placed as dust",
+  "cases": [
+    "client/redstone"
+  ]
+}

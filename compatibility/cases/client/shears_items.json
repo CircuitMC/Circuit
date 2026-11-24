@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/shears-items.js",
+  "status": "passing",
+  "description": "23 steps of shears used by a player in survival and creative mode: tripwire, leaves, a cobweb, wool, a vine, grass and dirt broken at the client's shears speeds with their drops and each break's wear, pumpkins carved from a side and from above (facing the player), a full beehive emptied of honeycomb and one at level 3 left alone; Circuit and both official servers give identical blocks, held stacks and dropped items"
+}
