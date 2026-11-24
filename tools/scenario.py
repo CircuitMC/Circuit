@@ -14,7 +14,7 @@ For a skeleton, the script:
   4. compares the official recordings of different versions with each other;
 
 and prints a Markdown report (also written to <out>/report.md). Real-client
-checks are client scripts with their own expectations (compatibility/cases.json);
+checks are client scripts with their own expectations (compatibility/cases/);
 they are not driven from trace skeletons.
 
 Usage:
@@ -118,7 +118,7 @@ def main():
             report.append(f"- {a} against {b}: {'identical observations' if code == 0 else text.split(': ', 1)[-1]}")
         report.append("")
 
-    report += ["Real-client checks are separate client scripts (`compatibility/cases.json`); trace skeletons do not drive them.", ""]
+    report += ["Real-client checks are separate client scripts (`compatibility/cases/`); trace skeletons do not drive them.", ""]
     text = "\n".join(report)
     with open(os.path.join(out, "report.md"), "w", encoding="utf-8") as f:
         f.write(text)
