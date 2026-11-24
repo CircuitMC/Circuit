@@ -1950,7 +1950,7 @@ int main() {
 
     suite.run("empty maps become filled maps whose data the player gets, and cartography tables open", [] {
         // Item components come from the official data packs (CIRCUIT_VANILLA_JAR_1_21_8).
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the map checks did not run)");
             return;
@@ -2037,12 +2037,12 @@ int main() {
 
     suite.run("the recipe book: displays, unlocking and the books of players who come back", [] {
         // Recipes and advancements come from the official data packs (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the recipe book checks did not run)");
             return;
         }
-        if (const char* old = std::getenv("CIRCUIT_VANILLA_JAR_1_21_4"); old && *old) {
+        if (const char* old = official_jar("CIRCUIT_VANILLA_JAR_1_21_4"); old && *old) {
             const auto d = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.4"), {old, {}});
             require(d.has_value() && d->recipe_book, "1.21.4 data");
             const auto& b = *d->recipe_book;
@@ -2132,7 +2132,7 @@ int main() {
     });
 
     suite.run("recipes of the book are placed into windows, with ghosts for those missing items", [] {
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the recipe placement checks did not run)");
             return;
@@ -2184,7 +2184,7 @@ int main() {
     });
 
     suite.run("the rules learn the crafting recipes of each player's book, for doLimitedCrafting", [] {
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the known recipe checks did not run)");
             return;
@@ -2242,7 +2242,7 @@ int main() {
             };
             require(parse(100, 1024, 32) && !parse(101, 1, std::nullopt) && !parse(1, 1025, std::nullopt) && !parse(1, 1, 33), "the limits");
         }
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the book editing checks did not run)");
             return;
@@ -2280,7 +2280,7 @@ int main() {
     });
 
     suite.run("knowledge books give their recipes when every one is a recipe, and are used up", [] {
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the knowledge book checks did not run)");
             return;
@@ -2900,7 +2900,7 @@ int main() {
 
     suite.run("recipe books are saved with the players", [] {
         // The recipe book needs the official data packs (CIRCUIT_VANILLA_JAR_1_21_8).
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the saved recipe book checks did not run)");
             return;
@@ -5138,7 +5138,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -5329,7 +5329,7 @@ int main() {
     });
 
     suite.run("data packs whose enchantments ask for what Circuit cannot do are refused", [] {
-        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        const char* jar = official_jar("CIRCUIT_VANILLA_JAR_1_21_8");
         if (!jar || !*jar) {
             std::puts("  (no official 1.21.8 server jar given: the enchantment refusal checks did not run)");
             return;
@@ -5528,7 +5528,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -5795,7 +5795,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -6176,7 +6176,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -6502,7 +6502,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -6707,7 +6707,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -6893,7 +6893,7 @@ int main() {
         using I = server::Intent;
         bool ran = false;
         for (const auto& [version, variable] : {std::pair{"1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             ran = true;
             const auto& bundle = **contracts::BundleRegistry::find(std::format("java-{}", version));
@@ -9032,7 +9032,7 @@ int main() {
         const fs::path fixtures = std::string(CIRCUIT_SOURCE_DIR) + "/tests/fixtures";
         for (const auto& [variable, bundle_id, directory] : {std::tuple{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "harness"},
                                                               std::tuple{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "harness-1.21.4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = official_jar(variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(bundle_id);
             const auto loaded = server::load_server_data(bundle, {jar, {}});
@@ -9085,7 +9085,7 @@ int main() {
         // refused: they copy components).
         for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 925, 887, 1407, 984},
                               Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 917, 879, 1370, 948}}) {
-            const char* jar = std::getenv(e.variable);
+            const char* jar = official_jar(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);
             auto d = server::load_server_data(bundle, {jar, {}});

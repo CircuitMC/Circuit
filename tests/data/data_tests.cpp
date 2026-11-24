@@ -185,7 +185,7 @@ int main() {
     // CIRCUIT_VANILLA_JAR_1_21_4), the built-in pack loads.
     suite.run("the official built-in pack, when a jar is given", [] {
         for (const auto& [id, variable] : {std::pair{"java-1.21.8", "CIRCUIT_VANILLA_JAR_1_21_8"}, std::pair{"java-1.21.4", "CIRCUIT_VANILLA_JAR_1_21_4"}}) {
-            const char* jar = std::getenv(variable);
+            const char* jar = circuit::test::official_jar(variable);
             if (!jar) {
                 std::cout << std::format("  {} not set: the official {} pack is not checked\n", variable, id);
                 continue;
