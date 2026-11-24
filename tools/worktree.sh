@@ -75,7 +75,8 @@ need_existing_slot() {
     is_worktree "$path" || die "slot $1 does not exist ($path is not a worktree of $main)"
 }
 
-is_clean() { [[ -z $(git -C "$1" status --porcelain) ]]; }
+# Clean means no change and no untracked file; the slot's own settings file does not count.
+is_clean() { [[ -z $(git -C "$1" status --porcelain -- . ":(exclude)$ENV_FILE") ]]; }
 
 find_asio() {
     local found candidate
@@ -240,6 +241,8 @@ cmd_list() {
     for hook in "${HOOKS[@]}"; do
         if [[ ! -x $hooks/$hook ]]; then
             status="missing"
+        elif [[ ! -f $main/tools/hooks/$hook ]]; then
+            status="present; the main checkout has no tools/hooks/$hook to compare it with"
         elif cmp -s "$hooks/$hook" "$main/tools/hooks/$hook"; then
             status="installed"
         else
