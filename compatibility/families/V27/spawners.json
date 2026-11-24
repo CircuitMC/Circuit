@@ -1,6 +1,10 @@
 {
   "name": "Spawners and trial spawners",
   "milestone": "C8",
+  "packages": [
+    "MB4",
+    "MB5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

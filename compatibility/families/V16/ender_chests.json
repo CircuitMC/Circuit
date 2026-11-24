@@ -1,6 +1,11 @@
 {
   "name": "Ender chests",
   "milestone": "C5",
+  "packages": [
+    "BL2",
+    "CI1",
+    "CI3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Each player's 27-slot ender inventory, saved with the player and kept on death, through every ender chest's window; viewers counted with lid events and rechecks as chests; no opening under a conductor; comparators, hoppers and pistons do not act on them; drops by the loot table; the harness trace and a two-player client scenario match both official servers",

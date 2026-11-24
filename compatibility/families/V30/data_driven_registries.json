@@ -1,6 +1,9 @@
 {
   "name": "Data-driven recipes, loot tables, enchantments, damage types and worldgen",
   "milestone": "C1",
+  "packages": [
+    "WG1"
+  ],
   "impl": "partial",
   "evidence": "reference_only",
   "cases": [

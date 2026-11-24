@@ -1,6 +1,9 @@
 {
   "name": "Functions and macros",
   "milestone": "C9",
+  "packages": [
+    "CD3"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

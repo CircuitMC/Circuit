@@ -1,6 +1,9 @@
 {
   "name": "Boats and rafts",
   "milestone": "C3",
+  "packages": [
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

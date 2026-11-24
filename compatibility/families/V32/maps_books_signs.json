@@ -1,6 +1,10 @@
 {
   "name": "Maps, books, signs and displays",
   "milestone": "C10",
+  "packages": [
+    "EF8",
+    "BL6"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

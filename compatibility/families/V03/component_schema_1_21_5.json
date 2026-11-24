@@ -1,6 +1,9 @@
 {
   "name": "Component and entity-data schema changes of 1.21.5",
   "milestone": "C1",
+  "packages": [
+    "EF3"
+  ],
   "impl": {
     "java-1.21.4": "not_applicable",
     "java-1.21.8": "partial"

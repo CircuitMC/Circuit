@@ -1,6 +1,9 @@
 {
   "name": "Happy Ghast harnesses and leash changes",
   "milestone": "C8",
+  "packages": [
+    "MB2"
+  ],
   "impl": {
     "java-1.21.4": "not_applicable",
     "java-1.21.8": "missing"

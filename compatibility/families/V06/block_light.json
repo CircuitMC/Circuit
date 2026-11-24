@@ -1,6 +1,9 @@
 {
   "name": "Block light emission and propagation",
   "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

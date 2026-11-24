@@ -1,6 +1,11 @@
 {
   "name": "Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus",
   "milestone": "C5",
+  "packages": [
+    "EF9",
+    "BL4",
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

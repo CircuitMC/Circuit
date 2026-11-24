@@ -1,6 +1,9 @@
 {
   "name": "Mob despawning",
   "milestone": "C8",
+  "packages": [
+    "MB4"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

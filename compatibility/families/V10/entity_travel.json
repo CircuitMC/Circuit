@@ -1,6 +1,9 @@
 {
   "name": "Players and entities changing dimension",
   "milestone": "C7",
+  "packages": [
+    "WG3"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

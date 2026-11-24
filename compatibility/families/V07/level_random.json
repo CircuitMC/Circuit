@@ -1,6 +1,10 @@
 {
   "name": "The level random source and its draw order",
   "milestone": "C3",
+  "packages": [
+    "PL7",
+    "MB4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

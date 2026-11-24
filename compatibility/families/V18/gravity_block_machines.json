@@ -1,6 +1,9 @@
 {
   "name": "Gravity-block machines and duplication",
   "milestone": "C4",
+  "packages": [
+    "WG4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

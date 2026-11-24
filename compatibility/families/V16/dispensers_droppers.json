@@ -1,6 +1,9 @@
 {
   "name": "Dispensers and droppers with dispense behaviors",
   "milestone": "C4",
+  "packages": [
+    "BL5"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

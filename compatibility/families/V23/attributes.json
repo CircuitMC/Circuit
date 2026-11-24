@@ -1,6 +1,10 @@
 {
   "name": "Attributes and modifiers",
   "milestone": "C6",
+  "packages": [
+    "PL2",
+    "PL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

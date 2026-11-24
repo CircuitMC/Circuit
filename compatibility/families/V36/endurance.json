@@ -1,6 +1,9 @@
 {
   "name": "Endurance and multiplayer load runs",
   "milestone": "C12",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

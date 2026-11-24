@@ -1,6 +1,9 @@
 {
   "name": "Anvil import and export of DataVersion 4189",
   "milestone": "C11",
+  "packages": [
+    "CI3"
+  ],
   "impl": {
     "java-1.21.4": "missing",
     "java-1.21.8": "not_applicable"

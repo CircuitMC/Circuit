@@ -1,6 +1,13 @@
 {
   "name": "Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions",
   "milestone": "C8",
+  "packages": [
+    "EF7",
+    "EF8",
+    "PL3",
+    "MB3",
+    "MB5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

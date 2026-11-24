@@ -1,6 +1,11 @@
 {
   "name": "Armor protection, toughness and shields",
   "milestone": "C6",
+  "packages": [
+    "PL1",
+    "PL4",
+    "PL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

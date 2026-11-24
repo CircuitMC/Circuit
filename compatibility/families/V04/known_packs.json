@@ -1,6 +1,9 @@
 {
   "name": "Known-pack exchange and registry data by name",
   "milestone": "C10",
+  "packages": [
+    "CI2"
+  ],
   "impl": "partial",
   "evidence": "none",
   "note": "Vanilla pack only"

@@ -1,6 +1,9 @@
 {
   "name": "Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds",
   "milestone": "C5",
+  "packages": [
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

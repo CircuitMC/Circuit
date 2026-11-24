@@ -1,6 +1,9 @@
 {
   "name": "View distance and simulation distance",
   "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "reference_only",
   "cases": [

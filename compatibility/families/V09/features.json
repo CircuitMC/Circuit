@@ -1,6 +1,10 @@
 {
   "name": "Placed features: ores, trees, vegetation, lakes, geodes and others",
   "milestone": "C7",
+  "packages": [
+    "WG2",
+    "WG8"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

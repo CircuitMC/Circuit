@@ -1,6 +1,9 @@
 {
   "name": "Pathfinding and navigation",
   "milestone": "C8",
+  "packages": [
+    "MB1"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

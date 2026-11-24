@@ -1,6 +1,10 @@
 {
   "name": "Grass, mycelium, nylium, moss and sculk spread",
   "milestone": "C5",
+  "packages": [
+    "BL4",
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Grass blocks and mycelium die under blocks their light cannot pass and under water, and spread to dirt within reach in random ticks, and nylium under such blocks becomes netherrack, as the official 1.21.8 server does draw for draw",

@@ -1,6 +1,12 @@
 {
   "name": "Vanilla ticket types (player, forced, portal, spawn, post-teleport and others)",
   "milestone": "C2",
+  "packages": [
+    "EF7",
+    "WG3",
+    "WG4",
+    "MB5"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

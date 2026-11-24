@@ -1,6 +1,9 @@
 {
   "name": "Torches, lanterns, ladders, carpets, flowers, saplings, signs and banners on their supports",
   "milestone": "C5",
+  "packages": [
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

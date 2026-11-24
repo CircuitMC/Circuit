@@ -1,6 +1,10 @@
 {
   "name": "Trapped chests and chest openers",
   "milestone": "C5",
+  "packages": [
+    "BL2",
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Trapped chests pair with trapped chests only and are containers as chests are; each chest half counts the players viewing it and queues its lid's block event with the count at every change and every 5-tick recheck while viewed; a trapped chest gives its count as power on every side and strongly to the block below, and dust connects to it; the harness traces and a 14-step client scenario with two players match both official servers",

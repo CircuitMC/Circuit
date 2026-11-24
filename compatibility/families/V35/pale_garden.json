@@ -1,6 +1,10 @@
 {
   "name": "Pale Garden, pale oak and resin families, eyeblossoms",
   "milestone": "C7",
+  "packages": [
+    "BL4",
+    "WG2"
+  ],
   "impl": "data_only",
   "evidence": "none",
   "note": "Names in the registries; present in both releases"

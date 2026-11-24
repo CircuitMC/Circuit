@@ -1,6 +1,10 @@
 {
   "name": "Redstone torches and burnout",
   "milestone": "C4",
+  "packages": [
+    "BL4",
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

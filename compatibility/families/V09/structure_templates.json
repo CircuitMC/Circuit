@@ -1,6 +1,10 @@
 {
   "name": "Structure templates and structure blocks",
   "milestone": "C9",
+  "packages": [
+    "WG9",
+    "CD5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

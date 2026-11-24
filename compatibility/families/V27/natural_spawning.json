@@ -1,6 +1,9 @@
 {
   "name": "Natural spawning, caps and distances",
   "milestone": "C8",
+  "packages": [
+    "MB4"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

@@ -1,6 +1,9 @@
 {
   "name": "Moving blocks pushing entities and players",
   "milestone": "C3",
+  "packages": [
+    "EF4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

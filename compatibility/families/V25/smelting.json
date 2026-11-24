@@ -1,6 +1,10 @@
 {
   "name": "Furnaces, smokers, blast furnaces and campfires",
   "milestone": "C5",
+  "packages": [
+    "PL7",
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Furnaces, smokers and blast furnaces burn their fuel and cook by the official data packs' recipes (the first by the id's path, then its namespace), light and go out, fill and empty through hoppers by their faces and drive comparators, as both official servers do tick by tick; every item's burn time as both report it",

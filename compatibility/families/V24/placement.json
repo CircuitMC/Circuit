@@ -1,6 +1,9 @@
 {
   "name": "Placing blocks from items",
   "milestone": "C5",
+  "packages": [
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": {
     "java-1.21.4": "none",

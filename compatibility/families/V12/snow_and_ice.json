@@ -1,6 +1,9 @@
 {
   "name": "Snow, ice, freezing and melting",
   "milestone": "C5",
+  "packages": [
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

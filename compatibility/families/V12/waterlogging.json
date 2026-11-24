@@ -1,6 +1,9 @@
 {
   "name": "Waterlogged blocks",
   "milestone": "C5",
+  "packages": [
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "tier": "L0",

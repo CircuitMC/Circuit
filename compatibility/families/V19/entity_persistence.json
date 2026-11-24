@@ -1,6 +1,9 @@
 {
   "name": "Entity persistence across save and reload",
   "milestone": "C3",
+  "packages": [
+    "EF2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Item entities saved with their chunk come back a tick after it reloads, under new ids with new tick counts; checkpoints keep entities waiting to come back",

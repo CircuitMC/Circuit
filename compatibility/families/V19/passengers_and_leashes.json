@@ -1,6 +1,10 @@
 {
   "name": "Passengers and leashes",
   "milestone": "C3",
+  "packages": [
+    "EF6",
+    "MB2"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

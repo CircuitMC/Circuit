@@ -1,6 +1,9 @@
 {
   "name": "Real-client step scripts against Circuit",
   "milestone": "C0",
+  "packages": [
+    "CI4"
+  ],
   "impl": "partial",
   "evidence": "none",
   "cases": [

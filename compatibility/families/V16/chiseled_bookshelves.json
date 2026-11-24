@@ -1,6 +1,10 @@
 {
   "name": "Chiseled bookshelves",
   "milestone": "C5",
+  "packages": [
+    "BL2",
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Six book slots shown in the block state, filled and emptied by players by the sixth of the front they click, filled by hoppers and droppers and emptied by hoppers below; comparators read the last slot touched; the harness trace and a client scenario match both official servers",

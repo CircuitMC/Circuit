@@ -1,6 +1,10 @@
 {
   "name": "Tools, durability and harvest rules",
   "milestone": "C5",
+  "packages": [
+    "BL4",
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": "documented",
   "note": "Pickaxes and axes"

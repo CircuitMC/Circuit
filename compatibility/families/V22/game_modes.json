@@ -1,6 +1,10 @@
 {
   "name": "Survival, creative and spectator modes",
   "milestone": "C6",
+  "packages": [
+    "EF3",
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

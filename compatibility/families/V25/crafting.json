@@ -1,6 +1,10 @@
 {
   "name": "Crafting (2x2 and table) and the recipe book",
   "milestone": "C5",
+  "packages": [
+    "PL7",
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

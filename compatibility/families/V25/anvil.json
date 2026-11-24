@@ -1,6 +1,10 @@
 {
   "name": "Anvils",
   "milestone": "C5",
+  "packages": [
+    "PL7",
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Anvils repair with their items' materials and by combining two of a kind, join enchantments from books and like items within their highest levels, supported items and exclusive sets, and rename by the typed name (filtered and at most 50 UTF-16 code units, kept for the next items, compared with the names items show in English); prior work penalties, the 39-level cap for renaming, too expensive results and the level cost taken from the player as both official servers give them; the /xp command sets and adds levels and points; 48 steps give the same windows, costs, components and experience as both official servers",

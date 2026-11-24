@@ -1,6 +1,9 @@
 {
   "name": "Beds, respawn anchors and spawn points",
   "milestone": "C6",
+  "packages": [
+    "PL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

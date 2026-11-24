@@ -1,6 +1,9 @@
 {
   "name": "Enchanting tables",
   "milestone": "C5",
+  "packages": [
+    "PL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Enchanting tables make three offers from the bookshelves around them (the power provider and transmitter block tags) and the player's enchantment seed: their level costs, the enchantments each shows and their levels, drawn as both official servers draw them from the data packs' in_enchanting_table enchantments, weights, cost ranges, primary items and exclusive sets and the wiki's enchantability by material; an offer is taken for its place in levels and lapis (any in creative mode), a book becoming an enchanted book that loses one enchantment; 320 windows of the official servers with two other seeds and a 97-step scenario and a 64-step survey give the same windows, offers, enchantments and levels as both official servers",

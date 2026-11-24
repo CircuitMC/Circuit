@@ -1,6 +1,12 @@
 {
   "name": "The overworld dimension",
   "milestone": "C2",
+  "packages": [
+    "WG1",
+    "WG5",
+    "WG6",
+    "WG7"
+  ],
   "impl": "partial",
   "evidence": "none",
   "note": "Flat floor, plains"

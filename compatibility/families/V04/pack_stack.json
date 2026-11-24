@@ -1,6 +1,9 @@
 {
   "name": "Data-pack stack, selection, ordering and reload",
   "milestone": "C9",
+  "packages": [
+    "CD3"
+  ],
   "impl": "partial",
   "evidence": "none",
   "note": "The official jar's built-in pack, then directories and archives in configured order; later files replace earlier ones, tag files merge; pack formats checked",

@@ -1,6 +1,9 @@
 {
   "name": "Goals, brains and sensors",
   "milestone": "C8",
+  "packages": [
+    "MB1"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

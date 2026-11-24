@@ -1,6 +1,9 @@
 {
   "name": "Chunk loaders",
   "milestone": "C7",
+  "packages": [
+    "WG4"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

@@ -1,6 +1,9 @@
 {
   "name": "Professions, schedules, gossip and reputation",
   "milestone": "C8",
+  "packages": [
+    "MB5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

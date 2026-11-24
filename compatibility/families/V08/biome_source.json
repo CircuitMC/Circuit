@@ -1,6 +1,9 @@
 {
   "name": "Biome allocation",
   "milestone": "C7",
+  "packages": [
+    "WG5"
+  ],
   "impl": "missing",
   "evidence": "none",
   "note": "Every column is plains"

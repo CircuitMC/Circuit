@@ -1,6 +1,11 @@
 {
   "name": "Enchantment effects",
   "milestone": "C6",
+  "packages": [
+    "PL1",
+    "PL7",
+    "MB3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

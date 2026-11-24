@@ -1,6 +1,10 @@
 {
   "name": "End portals, strongholds and End gateways",
   "milestone": "C7",
+  "packages": [
+    "WG4",
+    "WG9"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

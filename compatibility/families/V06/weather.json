@@ -1,6 +1,11 @@
 {
   "name": "Rain, thunder, snow and their effects",
   "milestone": "C2",
+  "packages": [
+    "PL3",
+    "PL7",
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

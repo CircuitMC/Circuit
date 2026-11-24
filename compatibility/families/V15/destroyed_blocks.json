@@ -1,6 +1,9 @@
 {
   "name": "Blocks destroyed by pistons and their drops",
   "milestone": "C4",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

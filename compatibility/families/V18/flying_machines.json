@@ -1,6 +1,9 @@
 {
   "name": "Flying machines",
   "milestone": "C4",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

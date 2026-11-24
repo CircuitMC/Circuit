@@ -1,6 +1,11 @@
 {
   "name": "Melee attacks between players: the attack's charge, critical hits, sweeping and knockback",
   "milestone": "C6",
+  "packages": [
+    "EF4",
+    "PL7",
+    "MB3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

@@ -1,6 +1,9 @@
 {
   "name": "Predicates and item modifiers",
   "milestone": "C9",
+  "packages": [
+    "CD2"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

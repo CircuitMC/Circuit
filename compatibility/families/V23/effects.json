@@ -1,6 +1,11 @@
 {
   "name": "Status effects",
   "milestone": "C6",
+  "packages": [
+    "EF3",
+    "PL7",
+    "MB5"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

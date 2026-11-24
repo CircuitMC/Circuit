@@ -1,6 +1,9 @@
 {
   "name": "Grindstones",
   "milestone": "C5",
+  "packages": [
+    "PL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Grindstones take what wears or holds enchantments; one input loses all but its curses (an enchanted book becomes a book), two of a kind merge their durabilities with 5% of the most and the curses of both; the repair cost counts the curses kept; quick moves fill the upper input, then the lower; 25 steps give the same windows and components as both official servers",

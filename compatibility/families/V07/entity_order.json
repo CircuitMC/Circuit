@@ -1,6 +1,10 @@
 {
   "name": "Entity tick order",
   "milestone": "C3",
+  "packages": [
+    "EF1",
+    "EF2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

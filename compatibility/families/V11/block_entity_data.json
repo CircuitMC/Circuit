@@ -1,6 +1,9 @@
 {
   "name": "Signs, banners, heads, pots and other block-entity data",
   "milestone": "C5",
+  "packages": [
+    "BL6"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

@@ -1,6 +1,9 @@
 {
   "name": "Command blocks",
   "milestone": "C9",
+  "packages": [
+    "CD5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

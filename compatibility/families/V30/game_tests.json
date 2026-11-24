@@ -1,6 +1,9 @@
 {
   "name": "Data-driven game tests",
   "milestone": "C9",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": {
     "java-1.21.4": "not_applicable",
     "java-1.21.8": "missing"

@@ -1,6 +1,10 @@
 {
   "name": "Shulker boxes",
   "milestone": "C5",
+  "packages": [
+    "BL3",
+    "CI3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "27-slot containers of every color facing any side that refuse shulker boxes, open only when their lid can rise, count their viewers with lid events (no rechecks), and drop one item keeping their contents and name, which gives them back when placed; a creative player's break drops a filled box only; the harness trace and client scenarios match both official servers",

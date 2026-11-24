@@ -1,6 +1,11 @@
 {
   "name": "Damage sources and the hurt cooldown",
   "milestone": "C6",
+  "packages": [
+    "PL2",
+    "PL7",
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

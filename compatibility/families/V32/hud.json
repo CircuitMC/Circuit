@@ -1,6 +1,9 @@
 {
   "name": "Boss bars, titles, scoreboards, world border and tab list",
   "milestone": "C10",
+  "packages": [
+    "CD4"
+  ],
   "impl": "partial",
   "evidence": "none",
   "note": "Tab list"

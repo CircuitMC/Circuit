@@ -1,6 +1,9 @@
 {
   "name": "Two-part blocks: doors, beds, tall plants",
   "milestone": "C5",
+  "packages": [
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

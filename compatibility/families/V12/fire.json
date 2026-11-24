@@ -1,6 +1,12 @@
 {
   "name": "Fire spread, burning and extinguishing",
   "milestone": "C5",
+  "packages": [
+    "EF8",
+    "EF9",
+    "BL3",
+    "WG4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

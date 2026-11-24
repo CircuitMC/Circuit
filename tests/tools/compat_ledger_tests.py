@@ -112,6 +112,135 @@ class LedgerValidation(unittest.TestCase):
         self.assert_rejected(mutate, "no classification rule matches")
 
 
+class WorkPackages(unittest.TestCase):
+    """Work packages and the mechanics that name them."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.inputs = compat_ledger.read_inputs()
+
+    def errors_for(self, mutate):
+        inputs = copy.deepcopy(self.inputs)
+        mutate(inputs)
+        _, _, errors = compat_ledger.produce(inputs)
+        return errors
+
+    def assert_rejected(self, mutate, fragment):
+        errors = self.errors_for(mutate)
+        self.assertTrue(any(fragment in e for e in errors), f"expected an error containing {fragment!r}, got {errors[:5]}")
+
+    def mechanic(self, inputs, family, mechanic):
+        fam = next(f for f in inputs["families"]["families"] if f["id"] == family)
+        return next(m for m in fam["mechanics"] if m["id"] == mechanic)
+
+    def package(self, inputs, pid):
+        return next(p for p in inputs["packages"]["packages"] if p["id"] == pid)
+
+    def test_every_open_mechanic_names_a_package(self):
+        ledger, _, errors = compat_ledger.produce(copy.deepcopy(self.inputs))
+        self.assertEqual(errors, [])
+        known = {p["id"] for p in ledger["packages"]}
+        for f in ledger["features"]:
+            if f["kind"] == "mechanic":
+                self.assertEqual(bool(f.get("packages")), compat_ledger.is_open(f), f["id"])
+                self.assertLessEqual(set(f.get("packages", [])), known)
+
+    def test_open_mechanic_without_a_package(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").pop("packages"),
+                             "V17.tnt_block: not implemented and names no package")
+
+    def test_open_mechanic_with_an_empty_package_list(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").update(packages=[]), "names no package")
+
+    def test_unknown_package(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block")["packages"].append("ZZ9"),
+                             "V17.tnt_block: unknown package ZZ9")
+
+    def test_package_named_twice(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "explosions").update(packages=["EF5", "EF5"]), "without repeats")
+
+    def test_closed_package_with_an_open_mechanic(self):
+        self.assert_rejected(lambda i: self.package(i, "EF5").update(state="closed"), "package EF5: closed, but V")
+
+    def test_closed_package_without_open_mechanics(self):
+        # PL8 is a gate: no mechanic names it, so nothing keeps it open.
+        self.assertEqual(self.errors_for(lambda i: self.package(i, "PL8").update(state="closed")), [])
+
+    def test_closing_a_package_after_its_last_mechanic(self):
+        def mutate(i):
+            for family in i["families"]["families"]:
+                for m in family["mechanics"]:
+                    if "EF1" in m.get("packages", []):
+                        m["packages"] = [q for q in m["packages"] if q != "EF1"] or ["UNASSIGNED"]
+            self.package(i, "EF1").update(state="closed")
+        self.assertEqual(self.errors_for(mutate), [])
+
+    def test_implemented_mechanic_naming_a_package(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V01", "version_manifests").update(packages=["CI4"]),
+                             "V01.version_manifests: names a package but is not open")
+
+    def test_a_mechanic_is_open_per_version(self):
+        ledger, _, _ = compat_ledger.produce(copy.deepcopy(self.inputs))
+        anvil = next(f for f in ledger["features"] if f["id"] == "V34.anvil_1_21_4")
+        self.assertTrue(compat_ledger.is_open(anvil, "java-1.21.4"))
+        self.assertFalse(compat_ledger.is_open(anvil, "java-1.21.8"))
+        self.assertTrue(compat_ledger.is_open(anvil))
+
+    def test_package_defined_twice(self):
+        self.assert_rejected(lambda i: i["packages"]["packages"].append(copy.deepcopy(self.package(i, "EF1"))),
+                             "package EF1: defined twice")
+
+    def test_bad_package_fields(self):
+        self.assert_rejected(lambda i: self.package(i, "EF1").update(id="ef1"), "package ef1: bad id")
+        self.assert_rejected(lambda i: self.package(i, "EF1").update(size="XXL"), "package EF1: size XXL")
+        self.assert_rejected(lambda i: self.package(i, "EF1").update(state="done"), "package EF1: state done")
+        self.assert_rejected(lambda i: self.package(i, "EF1").update(title=""), "package EF1: needs a title")
+        self.assert_rejected(lambda i: self.package(i, "EF1").pop("hard"), "package EF1: needs a list of hard prerequisites")
+        self.assert_rejected(lambda i: self.package(i, "EF1").update(owner="nobody"), "package EF1: unknown key owner")
+
+    def test_unknown_prerequisite(self):
+        self.assert_rejected(lambda i: self.package(i, "EF2")["evidence"].append("ZZ9"),
+                             "package EF2: evidence prerequisite ZZ9 is not a package")
+        self.assert_rejected(lambda i: self.package(i, "EF2")["hard"].append("EF2"),
+                             "package EF2: hard prerequisite EF2 is the package itself")
+
+    def test_hard_prerequisite_cycle(self):
+        # EF9 needs EF2 already; EF2 needing MB1, which needs EF9, closes a cycle.
+        self.assert_rejected(lambda i: self.package(i, "EF2")["hard"].append("MB1"), "hard prerequisites form a cycle")
+
+    def test_unknown_keys(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").update(package="EF5"), "V17.tnt_block: unknown key package")
+        self.assert_rejected(lambda i: i["resources"]["overrides"]["block"]["tnt"].update(packages=["EF5"]),
+                             "block/minecraft:tnt: unknown key packages")
+        self.assert_rejected(lambda i: i["cases"]["cases"][0].update(script="x.js"), "unknown key script")
+
+    def test_package_table(self):
+        inputs = copy.deepcopy(self.inputs)
+        ledger, manifests, _ = compat_ledger.produce(inputs)
+        text = compat_ledger.packages_summary(ledger, manifests)
+        for b in ledger["versions"]:
+            for p in ledger["packages"]:
+                self.assertIn(f"| {p['id']} {p['title']} |", text)
+        named = [f for f in ledger["features"] if "CI3" in f.get("packages", [])]
+        counts = " | ".join(str(sum(1 for f in named if compat_ledger.is_open(f, b))) for b in ledger["versions"])
+        row = next(line for line in text.splitlines() if line.startswith("| CI3 "))
+        self.assertTrue(row.endswith(f"| {counts} |"), row)
+        self.assertIn("| `V34.anvil_1_21_4` Anvil import and export of DataVersion 4189 | C11 | missing | not_applicable |", text)
+        # A mechanic moved to another package moves in the table.
+        self.mechanic(inputs, "V34", "anvil_1_21_4").update(packages=["UNASSIGNED"])
+        ledger, manifests, errors = compat_ledger.produce(inputs)
+        self.assertEqual(errors, [])
+        moved = compat_ledger.packages_summary(ledger, manifests)
+        section = moved[moved.index("### CI3 "):moved.index("### CI4 ")]
+        self.assertNotIn("V34.anvil_1_21_4", section)
+
+    def test_generation_is_repeatable(self):
+        first = compat_ledger.produce(copy.deepcopy(self.inputs))
+        second = compat_ledger.produce(copy.deepcopy(self.inputs))
+        self.assertEqual(compat_ledger.ledger_text(first[0]), compat_ledger.ledger_text(second[0]))
+        self.assertEqual(compat_ledger.packages_summary(first[0], first[1]), compat_ledger.packages_summary(second[0], second[1]))
+
+
 class ReferencedPackets(unittest.TestCase):
     def test_lookups_are_found_in_subdirectories(self):
         with tempfile.TemporaryDirectory(prefix="compat-ledger-tests-") as tmp:
@@ -184,7 +313,7 @@ class LedgerSources(unittest.TestCase):
 
     def test_an_unlisted_mechanic_follows_the_listed_ones_by_id(self):
         listed = self.read("families/V17/_family.json")["mechanics"]
-        mechanic = {"name": "A new mechanic", "milestone": "C3", "impl": "missing", "evidence": "none"}
+        mechanic = {"name": "A new mechanic", "milestone": "C3", "packages": ["EF2"], "impl": "missing", "evidence": "none"}
         self.write("families/V17/zz_new.json", mechanic)
         self.write("families/V17/aa_new.json", mechanic)
         inputs = compat_ledger.read_inputs(self.compat)

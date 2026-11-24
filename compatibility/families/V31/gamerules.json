@@ -1,6 +1,10 @@
 {
   "name": "Game rules",
   "milestone": "C9",
+  "packages": [
+    "PL7",
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

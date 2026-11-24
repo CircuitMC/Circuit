@@ -1,6 +1,13 @@
 {
   "name": "Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books",
   "milestone": "C5",
+  "packages": [
+    "PL6",
+    "BL5",
+    "MB2",
+    "MB4",
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

@@ -1,6 +1,9 @@
 {
   "name": "Sounds and particles",
   "milestone": "C10",
+  "packages": [
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

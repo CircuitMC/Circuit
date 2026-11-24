@@ -1,6 +1,11 @@
 {
   "name": "Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding",
   "milestone": "C3",
+  "packages": [
+    "EF5",
+    "BL3",
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

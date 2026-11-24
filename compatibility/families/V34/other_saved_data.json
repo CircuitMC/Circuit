@@ -1,6 +1,9 @@
 {
   "name": "POIs, maps, raids, scoreboards and other saved data",
   "milestone": "C11",
+  "packages": [
+    "CI3"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

@@ -1,6 +1,9 @@
 {
   "name": "Day-night cycle and time advancement",
   "milestone": "C2",
+  "packages": [
+    "PL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

@@ -1,6 +1,9 @@
 {
   "name": "Protocol-client scenarios compared between the official servers and Circuit",
   "milestone": "C0",
+  "packages": [
+    "CI4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

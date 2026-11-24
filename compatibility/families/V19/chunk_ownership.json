@@ -1,6 +1,9 @@
 {
   "name": "Entity sections, migration between chunks and unloaded chunks",
   "milestone": "C3",
+  "packages": [
+    "EF2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

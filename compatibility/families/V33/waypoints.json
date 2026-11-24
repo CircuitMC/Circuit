@@ -1,6 +1,10 @@
 {
   "name": "Locator bar waypoints",
   "milestone": "C10",
+  "packages": [
+    "EF3",
+    "PL3"
+  ],
   "impl": {
     "java-1.21.4": "not_applicable",
     "java-1.21.8": "missing"

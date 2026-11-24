@@ -1,6 +1,11 @@
 {
   "name": "Buttons, pressure plates, tripwire and targets",
   "milestone": "C4",
+  "packages": [
+    "EF5",
+    "EF9",
+    "BL1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

@@ -1,6 +1,10 @@
 {
   "name": "Honey blocks and slime-honey separation",
   "milestone": "C4",
+  "packages": [
+    "EF9",
+    "PL2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

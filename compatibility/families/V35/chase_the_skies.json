@@ -1,6 +1,9 @@
 {
   "name": "1.21.6 additions: Happy Ghast, dried ghasts, harnesses",
   "milestone": "C8",
+  "packages": [
+    "MB2"
+  ],
   "impl": {
     "java-1.21.4": "not_applicable",
     "java-1.21.8": "data_only"

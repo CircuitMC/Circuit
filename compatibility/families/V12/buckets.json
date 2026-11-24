@@ -1,6 +1,10 @@
 {
   "name": "Filling and emptying buckets",
   "milestone": "C5",
+  "packages": [
+    "BL3",
+    "MB2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

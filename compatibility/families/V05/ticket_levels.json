@@ -1,6 +1,9 @@
 {
   "name": "Ticket level propagation and entity-ticking versus block-ticking chunks",
   "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

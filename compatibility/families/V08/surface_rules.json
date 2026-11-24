@@ -1,6 +1,9 @@
 {
   "name": "Surface rules",
   "milestone": "C7",
+  "packages": [
+    "WG7"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

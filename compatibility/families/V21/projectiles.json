@@ -1,6 +1,11 @@
 {
   "name": "Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers",
   "milestone": "C3",
+  "packages": [
+    "EF4",
+    "EF7",
+    "PL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

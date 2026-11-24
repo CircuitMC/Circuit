@@ -1,6 +1,9 @@
 {
   "name": "TNT duplication with a named design",
   "milestone": "C4",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

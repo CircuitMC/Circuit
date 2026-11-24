@@ -1,6 +1,9 @@
 {
   "name": "Random-tick chunk order and positions",
   "milestone": "C2",
+  "packages": [
+    "BL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

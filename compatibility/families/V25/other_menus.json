@@ -1,6 +1,10 @@
 {
   "name": "Merchants and mount inventories",
   "milestone": "C5",
+  "packages": [
+    "MB2",
+    "MB5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

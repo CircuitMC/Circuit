@@ -1,6 +1,10 @@
 {
   "name": "Item entity motion and collision",
   "milestone": "C3",
+  "packages": [
+    "EF2",
+    "EF4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "deviations": [

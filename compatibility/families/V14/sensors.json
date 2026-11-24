@@ -1,6 +1,10 @@
 {
   "name": "Daylight detectors, sculk sensors, lightning rods and other sources",
   "milestone": "C4",
+  "packages": [
+    "BL1",
+    "BL2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

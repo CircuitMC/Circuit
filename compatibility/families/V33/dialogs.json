@@ -1,6 +1,9 @@
 {
   "name": "Server dialogs",
   "milestone": "C10",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": {
     "java-1.21.4": "not_applicable",
     "java-1.21.8": "missing"

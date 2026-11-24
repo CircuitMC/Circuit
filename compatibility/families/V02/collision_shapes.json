@@ -1,6 +1,9 @@
 {
   "name": "Collision shapes of block states",
   "milestone": "C1",
+  "packages": [
+    "BL4"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

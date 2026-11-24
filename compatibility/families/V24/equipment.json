@@ -1,6 +1,10 @@
 {
   "name": "Equipment slots and wearing armor",
   "milestone": "C6",
+  "packages": [
+    "EF3",
+    "PL2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

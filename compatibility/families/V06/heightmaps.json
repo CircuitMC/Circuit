@@ -1,6 +1,9 @@
 {
   "name": "Heightmaps",
   "milestone": "C2",
+  "packages": [
+    "WG1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

@@ -1,6 +1,9 @@
 {
   "name": "Unload and reload of chunks with pending ticks, block events and entities",
   "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

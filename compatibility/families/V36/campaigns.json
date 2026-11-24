@@ -1,6 +1,9 @@
 {
   "name": "Survival, machine and farm campaigns",
   "milestone": "C12",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "missing",
   "evidence": "none"
 }

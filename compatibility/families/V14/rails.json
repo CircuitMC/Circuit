@@ -1,6 +1,10 @@
 {
   "name": "Rails, powered, detector and activator rails",
   "milestone": "C4",
+  "packages": [
+    "EF8",
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

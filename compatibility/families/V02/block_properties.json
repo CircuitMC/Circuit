@@ -1,6 +1,10 @@
 {
   "name": "Hardness, blast resistance, harvest tools, light emission and opacity, friction, sounds",
   "milestone": "C1",
+  "packages": [
+    "BL7",
+    "CI1"
+  ],
   "impl": "partial",
   "evidence": "documented",
   "note": "Hardness, effective tool and harvest tier of every block from public data, the tool and tier from the block tags when the official data pack is loaded; opacity from its light filtering"

@@ -1,6 +1,9 @@
 {
   "name": "Death, drops and respawning",
   "milestone": "C6",
+  "packages": [
+    "PL7"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

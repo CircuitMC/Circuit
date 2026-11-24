@@ -1,6 +1,9 @@
 {
   "name": "Synchronized registries with data for clients without the vanilla pack",
   "milestone": "C1",
+  "packages": [
+    "CI2"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "note": "Each bundle names its registry set: 17 registries for 1.21.8 and 11 for 1.21.4 sent by name to clients with the vanilla pack, the same entries as the official servers; clients without the pack get a documented minimal set with data",

@@ -1,6 +1,9 @@
 {
   "name": "TNT placement and breaking",
   "milestone": "C3",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases_planned": [

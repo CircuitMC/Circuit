@@ -1,6 +1,9 @@
 {
   "name": "Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers",
   "milestone": "C4",
+  "packages": [
+    "BL1"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

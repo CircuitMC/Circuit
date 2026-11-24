@@ -1,6 +1,9 @@
 {
   "name": "Stairs taking corner shapes from the stairs beside them",
   "milestone": "C5",
+  "packages": [
+    "BL3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

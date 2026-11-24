@@ -1,6 +1,10 @@
 {
   "name": "Operators, whitelist, bans, server properties, console, RCON and query",
   "milestone": "C9",
+  "packages": [
+    "CD1",
+    "CD5"
+  ],
   "impl": "partial",
   "evidence": "none",
   "note": "Circuit's own configuration file; no vanilla files"

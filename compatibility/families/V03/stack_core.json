@@ -1,6 +1,9 @@
 {
   "name": "Item stacks with count, stack size and damage",
   "milestone": "C1",
+  "packages": [
+    "UNASSIGNED"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

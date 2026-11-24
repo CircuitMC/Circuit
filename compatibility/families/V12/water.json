@@ -1,6 +1,9 @@
 {
   "name": "Water flow, sources and washing away",
   "milestone": "C5",
+  "packages": [
+    "WG3"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "tier": "L0",

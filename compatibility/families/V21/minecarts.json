@@ -1,6 +1,11 @@
 {
   "name": "Minecarts of every kind",
   "milestone": "C3",
+  "packages": [
+    "EF6",
+    "EF8",
+    "PL5"
+  ],
   "impl": "partial",
   "evidence": "compared",
   "cases": [

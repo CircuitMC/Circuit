@@ -1,6 +1,11 @@
 {
   "name": "Species-specific behavior",
   "milestone": "C8",
+  "packages": [
+    "MB2",
+    "MB3",
+    "MB5"
+  ],
   "impl": "missing",
   "evidence": "none"
 }
