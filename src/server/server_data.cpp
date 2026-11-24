@@ -8,10 +8,12 @@
 #include <circuit/auth/json.hpp>
 #include <circuit/gameplay/potions.hpp>
 #include <circuit/protocol/content.hpp>
+#include <circuit/evidence/content.hpp>
 #include <algorithm>
 #include <functional>
 #include <array>
 #include <cctype>
+#include <cmath>
 #include <format>
 #include <initializer_list>
 #include <set>
@@ -319,6 +321,162 @@ std::optional<gameplay::enchantments::ItemRequirement> item_requirement(const au
     return r;
 }
 
+// A location-changed effect's requirement on the enchanted entity (its
+// `requirements`), of the forms EntityRequirement knows: entity_properties
+// of `this` whose predicate asks the flag is_on_ground alone (flags) and/or
+// any vehicle (an empty vehicle predicate), all_of, any_of and inverted;
+// nullopt for any other (another flag, a vehicle predicate with members,
+// another entity or condition).
+std::optional<gameplay::enchantments::EntityRequirement> entity_requirement(const auth::Json& json) {
+    using gameplay::enchantments::EntityRequirement;
+    using Kind = EntityRequirement::Kind;
+    const auto* condition = json.find("condition");
+    if (!condition || condition->kind() != auth::Json::Kind::string) return std::nullopt;
+    auto c = condition->as_string();
+    if (c.starts_with("minecraft:")) c.erase(0, 10);
+    EntityRequirement r;
+    const auto term = [&](const auth::Json& t) {
+        auto part = entity_requirement(t);
+        if (part) r.terms.push_back(std::move(*part));
+        return part.has_value();
+    };
+    if (c == "entity_properties") {
+        const auto* entity = json.find("entity");
+        const auto* predicate = json.find("predicate");
+        if (!entity || entity->kind() != auth::Json::Kind::string || entity->as_string() != "this" || !predicate
+            || predicate->kind() != auth::Json::Kind::object)
+            return std::nullopt;
+        for (const auto& [key, value] : predicate->members()) {
+            if (key == "flags") {
+                const auto* ground = value.kind() == auth::Json::Kind::object && value.members().size() == 1 ? value.find("is_on_ground") : nullptr;
+                if (!ground || ground->kind() != auth::Json::Kind::boolean) return std::nullopt;
+                r.on_ground = ground->as_bool();
+            } else if (key == "vehicle") {
+                if (value.kind() != auth::Json::Kind::object || !value.members().empty()) return std::nullopt;
+                r.riding = true;
+            } else {
+                return std::nullopt;
+            }
+        }
+    } else if (c == "all_of" || c == "any_of") {
+        r.kind = c == "all_of" ? Kind::all_of : Kind::any_of;
+        const auto* terms = json.find("terms");
+        if (!terms || terms->kind() != auth::Json::Kind::array) return std::nullopt;
+        for (const auto& t : terms->items())
+            if (!term(t)) return std::nullopt;
+    } else if (c == "inverted") {
+        r.kind = Kind::inverted;
+        const auto* t = json.find("term");
+        if (!t || !term(*t)) return std::nullopt;
+    } else {
+        return std::nullopt;
+    }
+    return r;
+}
+
+// The largest offset a disk effect may give on each axis (Circuit's bound).
+constexpr std::int32_t max_disk_offset = 16;
+
+// A replace_disk effect (minecraft.wiki "Enchantment definition") of the
+// form DiskEffect knows: a simple_state_provider's block state the content
+// mapping knows, a level-based radius and height, an offset of three
+// integers (none: 0 0 0; each within 16), the predicate frost walker's gives
+// (all_of, in any order, of matching_block_tag of the block tag
+// minecraft:air one block up, which must hold air, cave air and void air
+// alone; matching_blocks of minecraft:water; matching_fluids of
+// minecraft:water; unobstructed; none of them offset otherwise) and a game
+// event to trigger, read and not acted on (Circuit has no game events);
+// nullopt for any other.
+std::optional<gameplay::enchantments::DiskEffect> disk_effect(const auth::Json& effect, const data::DataPacks& packs,
+                                                              const evidence::ContentMapping* mapping) {
+    gameplay::enchantments::DiskEffect d;
+    const auto named = [](const auth::Json* j) {
+        std::string s = j && j->kind() == auth::Json::Kind::string ? j->as_string() : std::string{};
+        if (s.starts_with("minecraft:")) s.erase(0, 10);
+        return s;
+    };
+    // An offset of three integers within the bound (absent: none).
+    const auto offset = [](const auth::Json* j, std::array<std::int32_t, 3>& into) {
+        into = {};
+        if (!j) return true;
+        if (j->kind() != auth::Json::Kind::array || j->items().size() != 3) return false;
+        for (std::size_t k = 0; k < 3; ++k) {
+            const auto& v = j->items()[k];
+            if (v.kind() != auth::Json::Kind::number) return false;
+            const double n = v.as_number();
+            if (n != std::floor(n) || std::abs(n) > max_disk_offset) return false;
+            into[k] = static_cast<std::int32_t>(n);
+        }
+        return true;
+    };
+    // The state.
+    const auto* provider = effect.find("block_state");
+    if (!mapping || !provider || provider->kind() != auth::Json::Kind::object || named(provider->find("type")) != "simple_state_provider")
+        return std::nullopt;
+    const auto* state = provider->find("state");
+    const auto* block = state && state->kind() == auth::Json::Kind::object ? state->find("Name") : nullptr;
+    if (!block || block->kind() != auth::Json::Kind::string || block->as_string().empty()) return std::nullopt;
+    auto notation = block->as_string().find(':') == std::string::npos ? "minecraft:" + block->as_string() : block->as_string();
+    if (const auto* properties = state->find("Properties")) {
+        if (properties->kind() != auth::Json::Kind::object) return std::nullopt;
+        std::string list;
+        for (const auto& [key, value] : properties->members()) {
+            if (value.kind() != auth::Json::Kind::string) return std::nullopt;
+            list += (list.empty() ? "" : ",") + key + "=" + value.as_string();
+        }
+        if (!list.empty()) notation += "[" + list + "]";
+    }
+    const auto resolved = mapping->block(notation);
+    // Piston heads, moving pistons and extended pistons arise from piston
+    // actions alone (as contracts::SetBlock's rules refuse them).
+    if (!resolved || resolved->is(gameplay::BlockType::piston_head) || resolved->is(gameplay::BlockType::moving_piston)
+        || (gameplay::is_piston(resolved->type()) && resolved->flag()))
+        return std::nullopt;
+    d.state = resolved->raw();
+    // The size and place.
+    const auto* radius = effect.find("radius");
+    const auto* height = effect.find("height");
+    auto r = radius ? level_value(*radius) : std::nullopt;
+    auto h = height ? level_value(*height) : std::nullopt;
+    if (!r || !h || !offset(effect.find("offset"), d.offset)) return std::nullopt;
+    d.radius = std::move(*r);
+    d.height = std::move(*h);
+    if (const auto* event = effect.find("trigger_game_event"); event && event->kind() != auth::Json::Kind::string) return std::nullopt;
+    // The predicate: frost walker's, its terms in any order.
+    const auto* predicate = effect.find("predicate");
+    if (!predicate || named(predicate->find("type")) != "all_of") return std::nullopt;
+    const auto* terms = predicate->find("predicates");
+    if (!terms || terms->kind() != auth::Json::Kind::array || terms->items().size() != 4) return std::nullopt;
+    const auto water = [&](const auth::Json* j) {
+        if (!j) return false;
+        if (j->kind() == auth::Json::Kind::array) return j->items().size() == 1 && named(&j->items()[0]) == "water";
+        return j->kind() == auth::Json::Kind::string && named(j) == "water";
+    };
+    const std::vector<std::string> airs{"minecraft:air", "minecraft:cave_air", "minecraft:void_air"};
+    std::set<std::string> seen;
+    for (const auto& t : terms->items()) {
+        const auto type = named(t.find("type"));
+        std::array<std::int32_t, 3> at{};
+        if (!offset(t.find("offset"), at) || !seen.insert(type).second) return std::nullopt;
+        if (type == "matching_block_tag") {
+            const auto* tag = t.find("tag");
+            if (at != std::array<std::int32_t, 3>{0, 1, 0} || !tag || tag->kind() != auth::Json::Kind::string) return std::nullopt;
+            const auto name = tag->as_string().find(':') == std::string::npos ? "minecraft:" + tag->as_string() : tag->as_string();
+            const auto* blocks = packs.tag("block", name);
+            if (!blocks || *blocks != airs) return std::nullopt; // flattened and sorted
+        } else if (type == "matching_blocks") {
+            if (at != std::array<std::int32_t, 3>{} || !water(t.find("blocks"))) return std::nullopt;
+        } else if (type == "matching_fluids") {
+            if (at != std::array<std::int32_t, 3>{} || !water(t.find("fluids"))) return std::nullopt;
+        } else if (type == "unobstructed") {
+            if (at != std::array<std::int32_t, 3>{}) return std::nullopt;
+        } else {
+            return std::nullopt;
+        }
+    }
+    return d;
+}
+
 // A value effect (minecraft.wiki "Enchantment definition"): add and set
 // with a level-based `value`, multiply with a `factor`, remove_binomial with
 // a `chance`, all_of with a list of `effects`; nullopt for another type or
@@ -371,9 +529,16 @@ std::optional<gameplay::enchantments::ValueOperation> value_operation(const auth
 // (mending) of every value effect form, with requirements on the item, are
 // read; another type or an unreadable requirement refuses the packs. Its
 // prevent_armor_change and prevent_equipment_drop effects (the curses) are
-// read as an object; another kind refuses the packs.
+// read as an object; another kind refuses the packs. Its location_changed
+// effects of type replace_disk (alone or in all_of) of the form
+// DiskEffect knows (frost walker's), with requirements EntityRequirement
+// knows, are read, block states by `mapping`; an unreadable one refuses the
+// packs. Other location-changed effects (soul speed's attributes and wear)
+// are not acted on yet, nor their requirements read; tick effects are not
+// read.
 std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(std::string_view name, const auth::Json& json,
-                                                                               const data::DataPacks& packs) {
+                                                                               const data::DataPacks& packs,
+                                                                               const evidence::ContentMapping* mapping) {
     namespace en = gameplay::enchantments;
     namespace at = gameplay::attributes;
     en::Effects out;
@@ -550,6 +715,45 @@ std::expected<gameplay::enchantments::Effects, std::string> enchantment_effects(
             return std::unexpected(std::format("enchantment {}: a {} effect Circuit cannot read", name, component));
         out.*flag = true;
     }
+    if (const auto* list = effects ? effects->find("minecraft:location_changed") : nullptr) {
+        if (list->kind() != auth::Json::Kind::array)
+            return std::unexpected(std::format("enchantment {}: location-changed effects are not a list", name));
+        const auto unreadable = [&] { return std::unexpected(std::format("enchantment {}: a location-changed effect Circuit cannot read", name)); };
+        // The disks of an effect (all_of's parts in order, nested or not)
+        // into `into`; false when one cannot be read.
+        std::function<bool(const auth::Json&, std::vector<en::DiskEffect>&)> disks = [&](const auth::Json& effect,
+                                                                                          std::vector<en::DiskEffect>& into) {
+            const auto* type = effect.kind() == auth::Json::Kind::object ? effect.find("type") : nullptr;
+            if (!type || type->kind() != auth::Json::Kind::string) return false;
+            auto t = type->as_string();
+            if (t.starts_with("minecraft:")) t.erase(0, 10);
+            if (t == "all_of") {
+                const auto* parts = effect.find("effects");
+                if (!parts || parts->kind() != auth::Json::Kind::array) return false;
+                for (const auto& part : parts->items())
+                    if (!disks(part, into)) return false;
+                return true;
+            }
+            if (t != "replace_disk") return true; // not acted on yet
+            auto read = disk_effect(effect, packs, mapping);
+            if (!read) return false;
+            into.push_back(std::move(*read));
+            return true;
+        };
+        for (const auto& e : list->items()) {
+            const auto* effect = e.kind() == auth::Json::Kind::object ? e.find("effect") : nullptr;
+            if (!effect || effect->kind() != auth::Json::Kind::object) return unreadable();
+            std::vector<en::DiskEffect> read;
+            if (!disks(*effect, read)) return unreadable();
+            if (read.empty()) continue; // not acted on yet, nor its requirement read (soul speed's)
+            if (const auto* r = e.find("requirements")) {
+                auto requirement = entity_requirement(*r);
+                if (!requirement) return std::unexpected(std::format("enchantment {}: an entity requirement Circuit cannot read", name));
+                for (auto& d : read) d.requirement = *requirement;
+            }
+            for (auto& d : read) out.location_changed.push_back(std::move(d));
+        }
+    }
     const auto* list = effects ? effects->find("minecraft:attributes") : nullptr;
     if (!list) return out;
     if (list->kind() != auth::Json::Kind::array) return std::unexpected(std::format("enchantment {}: attributes are not a list", name));
@@ -588,6 +792,8 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
     const auto* base = synced_registries(bundle.schema.registries);
     const auto* tables = protocol::ContentTables::for_protocol(bundle.protocol);
     if (!base || !tables) return std::unexpected(std::format("no registries for {}", bundle.id));
+    // Block states the data names (an enchantment's disk), as /setblock reads them.
+    const auto* mapping = evidence::ContentMapping::for_game_version(bundle.schema.content_release);
     out.registries = *base;
     if (!options.vanilla_jar.empty() || !options.packs.empty()) {
         // Tags may list entries of these registries; others are not loaded.
@@ -792,7 +998,7 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 game->enchantment_rules.emplace(*id, std::move(rules));
                 // What it does to players: its slots and attribute modifiers
                 // (refused when the data asks for what Circuit cannot do).
-                auto effects = enchantment_effects(name, *json, *packs);
+                auto effects = enchantment_effects(name, *json, *packs, mapping);
                 if (!effects) return std::unexpected(effects.error());
                 if (!effects->empty()) game->enchantment_effects.emplace(*id, std::move(*effects));
             }

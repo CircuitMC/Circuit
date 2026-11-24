@@ -140,8 +140,10 @@ private:
 // 40 SwapHands, 41 SetBeacon, 42 ConsumeItem, 43 WearArmor, 44 WearHeld,
 // 45 LoseExperience, 46 PlayerBreak whose tool's wear is spared (tag 8's
 // is not), 47 PlayerUse whose held item's wear is spared (tag 25's is
-// not), 48 WearArmor with the points spared each piece (tag 43 spares none).
+// not), 48 WearArmor with the points spared each piece (tag 43 spares none),
+// 49 ReplaceDisk.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<ReplaceDisk>(body)) return 49;
     if (const auto* wear = std::get_if<WearArmor>(&body); wear && wear->spared != std::array<std::int32_t, 4>{}) return 48;
     if (const auto* use = std::get_if<PlayerUse>(&body); use && use->spared) return 47;
     if (const auto* broken = std::get_if<PlayerBreak>(&body); broken && broken->spared) return 46;
@@ -351,6 +353,18 @@ void encode_command(Writer& w, const Command& c) {
             w.player(body.player);
             w.vec(body.at);
             w.put(static_cast<std::uint8_t>(body.drops));
+        } else if constexpr (std::is_same_v<T, ReplaceDisk>) {
+            w.player(body.player);
+            w.vec(body.position);
+            w.pos(body.offset);
+            w.put(std::bit_cast<std::uint32_t>(body.radius));
+            w.put(std::bit_cast<std::uint32_t>(body.height));
+            w.put(body.state);
+            w.put(static_cast<std::uint16_t>(body.bodies.size()));
+            for (const auto& b : body.bodies) {
+                w.vec(b.min);
+                w.vec(b.max);
+            }
         } else if constexpr (std::is_same_v<T, SetBeacon>) {
             w.player(body.player);
             w.put(static_cast<std::uint8_t>(body.container.has_value()));
@@ -678,6 +692,22 @@ bool decode_command(Reader& r, Command& c) {
         if (primary > 0) b.primary = primary - 1;
         if (secondary > 0) b.secondary = secondary - 1;
         c.body = b;
+        return true;
+    }
+    case 49: {
+        ReplaceDisk b;
+        std::uint32_t radius{}, height{};
+        std::uint16_t count{};
+        if (!r.player(b.player) || !r.vec(b.position) || !r.pos(b.offset) || !r.get(radius) || !r.get(height) || !r.get(b.state) || !r.get(count)
+            || count > max_disk_bodies)
+            return false;
+        b.radius = std::bit_cast<float>(radius);
+        b.height = std::bit_cast<float>(height);
+        b.bodies.resize(count);
+        for (auto& body : b.bodies)
+            if (!r.vec(body.min) || !r.vec(body.max)) return false;
+        if (!valid_disk(b)) return false;
+        c.body = std::move(b);
         return true;
     }
     case 45: {

@@ -4,6 +4,7 @@
 #include <circuit/contracts/ids.hpp>
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <map>
 #include <optional>
@@ -542,11 +543,56 @@ struct ChangeExperience {
     bool operator==(const ChangeExperience&) const = default;
 };
 
+// A disk of blocks an enchanted player's move places around them (an
+// enchantment's minecraft:location_changed effect replace_disk: frost
+// walker's ice; client/ench_frost): the server admits it in the tick the
+// player's block changes while they meet the effect's requirement. When
+// applied, `state` (encoded as SetBlock's) is placed, as SetBlock places a
+// block, in each cell of the layers from `offset` below the player's block
+// (`height` layers, at least one) whose middle lies less than `radius` from
+// `position` horizontally, that holds still water (a source block: not
+// flowing or falling water, nor a waterlogged block) with air above it
+// (air, cave air or void air) and whose block meets none of `bodies` (the
+// boxes of the players who block building there, as the server saw them;
+// a box touching a face does not), cells outside the world or unloaded
+// left alone.
+inline constexpr float max_disk_radius = 16.0f;
+inline constexpr float max_disk_height = 16.0f;
+inline constexpr std::int32_t max_disk_offset = 16;
+inline constexpr std::size_t max_disk_bodies = 256;
+struct ReplaceDisk {
+    struct Body {
+        Vec3 min, max;
+        bool operator==(const Body&) const = default;
+    };
+    PlayerKey player;
+    Vec3 position;
+    BlockPos offset{0, -1, 0};
+    float radius{};
+    float height{1.0f};
+    std::uint32_t state{};
+    std::vector<Body> bodies;
+    bool operator==(const ReplaceDisk&) const = default;
+};
+// Whether a disk's numbers are within their bounds (a finite position within
+// the border, radius and height finite in [0, max], offsets within
+// max_disk_offset, at most max_disk_bodies finite bodies whose minimum is
+// not above their maximum).
+[[nodiscard]] inline bool valid_disk(const ReplaceDisk& d) noexcept {
+    const auto within = [](float v, float max) { return std::isfinite(v) && v >= 0.0f && v <= max; };
+    const auto offset = [](std::int32_t v) { return v >= -max_disk_offset && v <= max_disk_offset; };
+    return within_border(d.position) && within(d.radius, max_disk_radius) && within(d.height, max_disk_height)
+           && offset(d.offset.x) && offset(d.offset.y) && offset(d.offset.z) && d.bodies.size() <= max_disk_bodies
+           && std::ranges::all_of(d.bodies, [](const ReplaceDisk::Body& b) {
+                  return finite(b.min) && finite(b.max) && b.min.x <= b.max.x && b.min.y <= b.max.y && b.min.z <= b.max.z;
+              });
+}
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
                                  SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands,
-                                 SetBeacon, ConsumeItem, WearArmor, WearHeld, LoseExperience>;
+                                 SetBeacon, ConsumeItem, WearArmor, WearHeld, LoseExperience, ReplaceDisk>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -590,6 +636,8 @@ public:
             beacon && std::ranges::any_of(std::array{beacon->primary, beacon->secondary},
                                           [](std::optional<std::int32_t> e) { return e && (*e < 0 || *e > max_beacon_effect); }))
             return std::unexpected(ErrorCode::invalid_argument);
+        // Records hold finite numbers alone (Reader::vec refuses others).
+        if (const auto* disk = std::get_if<ReplaceDisk>(&body); disk && !valid_disk(*disk)) return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* weather = std::get_if<SetWeather>(&body);
             weather && (static_cast<std::uint8_t>(weather->kind) >= weather_kind_count || weather->duration < 0))
             return std::unexpected(ErrorCode::invalid_argument);

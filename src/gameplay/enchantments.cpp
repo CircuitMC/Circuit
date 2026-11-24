@@ -15,7 +15,12 @@ float LevelValue::at(std::int32_t level) const noexcept {
         const float denominator = part(1);
         return denominator == 0.0f ? 0.0f : part(0) / denominator;
     }
-    case Kind::clamped: return std::clamp(part(0), a, b);
+    case Kind::clamped: {
+        // Below the minimum the minimum, else at most the maximum (a pack's
+        // minimum above its maximum gives one or the other).
+        const float v = part(0);
+        return v < a ? a : std::min(v, b);
+    }
     case Kind::lookup:
         return level >= 1 && static_cast<std::size_t>(level) <= values.size() ? values[static_cast<std::size_t>(level - 1)] : part(0);
     case Kind::exponent: return std::pow(part(0), part(1));
@@ -54,6 +59,16 @@ bool DamageRequirement::matches(const DamageContext& damage) const {
         return !type.empty() && std::ranges::binary_search(entities, type);
     }
     case Kind::chance: return damage.draw && (*damage.draw)() < chance.at(damage.level);
+    }
+    return false;
+}
+
+bool EntityRequirement::matches(const EntityContext& entity) const {
+    switch (kind) {
+    case Kind::properties: return (!on_ground || *on_ground == entity.on_ground) && (!riding || entity.riding);
+    case Kind::all_of: return std::ranges::all_of(terms, [&](const EntityRequirement& r) { return r.matches(entity); });
+    case Kind::any_of: return std::ranges::any_of(terms, [&](const EntityRequirement& r) { return r.matches(entity); });
+    case Kind::inverted: return !terms.empty() && !terms.front().matches(entity);
     }
     return false;
 }

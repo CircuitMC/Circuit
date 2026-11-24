@@ -157,6 +157,40 @@ struct RepairEffect {
     ValueOperation operation;
     std::optional<ItemRequirement> requirement;
 };
+// What a location-changed effect's requirement is tested against: whether
+// the enchanted entity is on the ground (a player's: as its client last
+// told) and whether it rides a vehicle (Circuit's players never do).
+struct EntityContext {
+    bool on_ground{};
+    bool riding{};
+};
+// A requirement on the enchanted entity of a location-changed effect, of the
+// forms frost walker's gives (minecraft.wiki "Predicate"): entity_properties
+// of `this` with the flag is_on_ground and whether it rides a vehicle (an
+// empty vehicle predicate: any), each asked or not; all or any of other
+// requirements, or one inverted.
+struct EntityRequirement {
+    enum class Kind : std::uint8_t { properties, all_of, any_of, inverted };
+    Kind kind{};
+    std::optional<bool> on_ground;        // properties: the flag, if asked
+    bool riding{};                        // properties: whether it must ride a vehicle
+    std::vector<EntityRequirement> terms; // all_of, any_of; inverted: the one inverted
+    bool matches(const EntityContext& entity) const;
+};
+// A disk of blocks an entity's move places around it (the effect
+// minecraft:replace_disk of minecraft:location_changed), of the form frost
+// walker's gives: the block state `state` (simple_state_provider; raw, as
+// contracts::SetBlock's) placed in the disk's cells, `offset` from the
+// entity's block, of `radius` and `height` by level, that hold still water
+// with air above and nothing in the way (the predicate all_of of
+// matching_block_tag air above, matching_blocks and matching_fluids water and
+// unobstructed, which the rules test), when the entity meets the requirement.
+struct DiskEffect {
+    std::uint32_t state{};
+    LevelValue radius, height;
+    std::array<std::int32_t, 3> offset{};
+    std::optional<EntityRequirement> requirement;
+};
 // What an enchantment does that Circuit models: in the slots of its `slots`
 // groups (whatever the item; client/ench_attributes: efficiency on a stick
 // held counts, swift sneak on a chestplate does not), its attribute
@@ -166,9 +200,11 @@ struct RepairEffect {
 // enchantment sets, a victim's thorns) and the repair experience gives (an
 // enchantment with repair effects makes its item take part, whatever their
 // requirements; client/ench_mending_pack: shears meeting none repaired a
-// point a point); and, wherever the enchanted item is, the wear it is spared,
-// whether it stays on in an armor slot (minecraft:prevent_armor_change, the
-// curse of binding) and whether it vanishes at its holder's death
+// point a point), and the disks of blocks a move places
+// (minecraft:location_changed's replace_disk effects: frost walker's ice);
+// and, wherever the enchanted item is, the wear it is spared, whether it
+// stays on in an armor slot (minecraft:prevent_armor_change, the curse of
+// binding) and whether it vanishes at its holder's death
 // (minecraft:prevent_equipment_drop, the curse of vanishing).
 struct Effects {
     std::uint8_t slots{};
@@ -180,11 +216,13 @@ struct Effects {
     std::vector<PostAttackEffect> post_attack;
     std::vector<ItemDamageEffect> item_damage;
     std::vector<RepairEffect> repair_with_xp;
+    std::vector<DiskEffect> location_changed;
     bool prevent_armor_change{};
     bool prevent_equipment_drop{};
     bool empty() const noexcept {
         return attributes.empty() && protection.empty() && immunity.empty() && damage.empty() && knockback.empty() && post_attack.empty()
-               && item_damage.empty() && repair_with_xp.empty() && !prevent_armor_change && !prevent_equipment_drop;
+               && item_damage.empty() && repair_with_xp.empty() && location_changed.empty() && !prevent_armor_change
+               && !prevent_equipment_drop;
     }
 };
 
