@@ -134,7 +134,7 @@ Their counts are unknown, not zero.
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
-Trace cases are the reference traces in `tests/fixtures/`; the other cases are listed in `compatibility/cases.json`, most of them client scripts kept outside this repository.
+Trace cases are the reference traces in `tests/fixtures/`; the other cases are the files of `compatibility/cases/`, most of them client scripts kept outside this repository.
 
 ## Mechanics
 

@@ -112,6 +112,23 @@ class LedgerValidation(unittest.TestCase):
         self.assert_rejected(mutate, "no classification rule matches")
 
 
+class ReferencedPackets(unittest.TestCase):
+    def test_lookups_are_found_in_subdirectories(self):
+        with tempfile.TemporaryDirectory(prefix="compat-ledger-tests-") as tmp:
+            os.makedirs(os.path.join(tmp, "net", "play"))
+            with open(os.path.join(tmp, "top.cpp"), "w", encoding="utf-8") as f:
+                f.write('auto a = cb(State::play, "keep_alive");\n')
+            with open(os.path.join(tmp, "net", "play", "deep.cpp"), "w", encoding="utf-8") as f:
+                f.write('auto b = sb(State::play, "chat");\nauto c = clientbound(State::login, "hello");\n')
+            with open(os.path.join(tmp, "net", "notes.txt"), "w", encoding="utf-8") as f:
+                f.write('cb(State::play, "ignored")\n')
+            self.assertEqual(compat_ledger.referenced_packets(tmp),
+                             {"play/clientbound/keep_alive", "play/serverbound/chat", "login/clientbound/hello"})
+
+    def test_the_server_sources_reference_packets(self):
+        self.assertIn("play/clientbound/keep_alive", compat_ledger.referenced_packets())
+
+
 class LedgerSources(unittest.TestCase):
     """The per-entry source files: what read_inputs() refuses and how it orders entries."""
 

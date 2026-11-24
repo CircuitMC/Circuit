@@ -277,17 +277,20 @@ def trace_cases(bundles):
     return cases, blocks
 
 
-def referenced_packets():
-    """Packet names the server code looks up, as state/bound/name."""
+def referenced_packets(directory=None):
+    """Packet names the server code looks up, as state/bound/name, in every
+    source file below src/server."""
     out = set()
-    for name in sorted(os.listdir(os.path.join(ROOT, "src", "server"))):
-        if not name.endswith(".cpp"):
-            continue
-        text = read_text(os.path.join(ROOT, "src", "server", name))
-        for short, state, packet in re.findall(r"\b(cb|sb)\(State::(\w+), \"(\w+)\"\)", text):
-            out.add(f"{state}/{'clientbound' if short == 'cb' else 'serverbound'}/{packet}")
-        for bound, state, packet in re.findall(r"\b(serverbound|clientbound)\(State::(\w+), \"(\w+)\"\)", text):
-            out.add(f"{state}/{bound}/{packet}")
+    for base, dirs, files in os.walk(directory or os.path.join(ROOT, "src", "server")):
+        dirs.sort()
+        for name in sorted(files):
+            if not name.endswith(".cpp"):
+                continue
+            text = read_text(os.path.join(base, name))
+            for short, state, packet in re.findall(r"\b(cb|sb)\(State::(\w+), \"(\w+)\"\)", text):
+                out.add(f"{state}/{'clientbound' if short == 'cb' else 'serverbound'}/{packet}")
+            for bound, state, packet in re.findall(r"\b(serverbound|clientbound)\(State::(\w+), \"(\w+)\"\)", text):
+                out.add(f"{state}/{bound}/{packet}")
     return out
 
 
@@ -600,7 +603,7 @@ def validate(ledger, manifests, family_ids, inputs):
         for name in entries:
             fid = f"{kind}/{name}" if kind == "packet" else f"{kind}/minecraft:{name}"
             if fid not in seen:
-                errors.append(f"resources.json: {fid} is not in any inventory")
+                errors.append(f"compatibility/resources/{kind}/{name}.json: {fid} is not in any inventory")
     return errors
 
 
@@ -704,7 +707,7 @@ def summary(ledger, manifests):
     for (kind, status), n in sorted(kinds.items()):
         w(f"| {kind} | {status} | {n} |")
     w("")
-    w("Trace cases are the reference traces in `tests/fixtures/`; the other cases are listed in `compatibility/cases.json`, "
+    w("Trace cases are the reference traces in `tests/fixtures/`; the other cases are the files of `compatibility/cases/`, "
       "most of them client scripts kept outside this repository.")
     w("")
     w("## Mechanics")
