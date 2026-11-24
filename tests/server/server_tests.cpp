@@ -3,6 +3,7 @@
 // small client built on Circuit's codec. They check protocol state handling,
 // limits and the translation of player actions into simulation commands.
 #include "../support/check.hpp"
+#include "../support/fixture_parts.hpp"
 #include "test_client.hpp"
 #include "../../src/server/command_reader.hpp"
 #include "../../src/server/game.hpp"
@@ -9023,17 +9024,24 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
-    suite.run("every official trace passes with the official data packs", [] {
-        // With the operator's jars (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4), the
-        // rules run as a server with them does: every trace of the version
-        // passes, those of loot tables among them, and their skeletons record
-        // as the committed reference recordings.
-        namespace fs = std::filesystem;
-        const fs::path fixtures = std::string(CIRCUIT_SOURCE_DIR) + "/tests/fixtures";
-        for (const auto& [variable, bundle_id, directory] : {std::tuple{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "harness"},
-                                                              std::tuple{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "harness-1.21.4"}}) {
+    // With the operator's jars (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4), the
+    // rules run as a server with them does: every trace of the version
+    // passes, those of loot tables among them, and their skeletons record
+    // as the committed reference recordings. One case per version and part of
+    // its directory (tests/support/fixture_parts.hpp); the first part of each
+    // version also counts the directory.
+    for (const auto& [variable_name, bundle_name, directory_name] : {std::tuple{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "harness"},
+                                                                    std::tuple{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "harness-1.21.4"}})
+      for (std::size_t part = 0; part < fixture_parts; ++part) {
+        const char* const variable = variable_name;
+        const char* const bundle_id = bundle_name;
+        const char* const directory = directory_name;
+        suite.run(std::format("every official trace passes with the official data packs ({}, part {} of {})", bundle_id, part + 1, fixture_parts),
+                  [variable, bundle_id, directory, part] {
+            namespace fs = std::filesystem;
+            const fs::path fixtures = std::string(CIRCUIT_SOURCE_DIR) + "/tests/fixtures";
             const char* jar = official_jar(variable);
-            if (!jar || !*jar) continue;
+            if (!jar || !*jar) return;
             const auto& bundle = **contracts::BundleRegistry::find(bundle_id);
             const auto loaded = server::load_server_data(bundle, {jar, {}});
             require(loaded.has_value(), loaded ? "" : loaded.error());
@@ -9043,24 +9051,29 @@ int main() {
                 std::ifstream in(p, std::ios::binary);
                 return std::string{std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
             };
-            std::size_t traces = 0, loot = 0;
-            for (const auto& entry : fs::directory_iterator(fixtures / directory)) {
+            const auto of_loot = [](const evidence::Fixture& f) { return std::ranges::find(f.mechanisms, "loot") != f.mechanisms.end(); };
+            const auto all = sorted_entries({fixtures / directory});
+            for (const auto& entry : part_of(all, part, fixture_parts)) {
                 const auto trace = evidence::parse_fixture(text(entry.path()));
                 require(trace.has_value(), entry.path().string());
                 const auto r = evidence::evaluate_fixture(*trace, executor);
                 require(r.outcome == evidence::FixtureReport::Outcome::passed, std::format("{}: {}", entry.path().string(), r.detail));
-                ++traces;
-                if (std::ranges::find(trace->mechanisms, "loot") == trace->mechanisms.end()) continue;
-                ++loot;
+                if (!of_loot(*trace)) continue;
                 if (std::string_view(bundle_id) != "java-1.21.8") continue;
                 const auto skeleton = evidence::parse_fixture(text(fixtures / "skeletons" / entry.path().filename()));
                 const auto recorded = evidence::record_fixture(*skeleton, executor);
                 require(recorded && evidence::write_fixture(*recorded) == text(fixtures / "reference" / entry.path().filename()),
                         std::format("{}: the reference recording no longer matches", entry.path().filename().string()));
             }
-            require(traces >= 140 && loot >= 3, std::format("{}: {} traces, {} of loot", bundle_id, traces, loot));
-        }
-    });
+            if (part == 0) {
+                const auto loot = std::ranges::count_if(all, [&](const fs::directory_entry& e) {
+                    const auto trace = evidence::parse_fixture(text(e.path()));
+                    return trace && of_loot(*trace);
+                });
+                require(all.size() >= 140 && loot >= 3, std::format("{}: {} traces, {} of loot", bundle_id, all.size(), loot));
+            }
+        });
+      }
 
     suite.run("loot tables and recipes of the official packs agree with the official servers", [] {
         // The operator's jars, when given (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
