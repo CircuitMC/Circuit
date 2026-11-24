@@ -14,10 +14,14 @@
 #   CIRCUIT_PROBE_DIR            the directory of the probes
 #   CIRCUIT_REFERENCE_DIR        the directory of the official reference outputs
 #   CIRCUIT_SCENARIO_CPUS        optional CPU list that keeps the probes off busy cores
+#   CIRCUIT_SCENARIO_CONFIG_1_21_8, CIRCUIT_SCENARIO_CONFIG_1_21_4
+#                                optional server properties per version (default: the version
+#                                and its official jar)
+#   CIRCUIT_PROBE_COMMAND        optional interpreter of the probes (default node)
 # One line per step; exit status 0 only when every step passed.
 set -u
 
-usage() { sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; }
 
 gate_directory=$(cd "$(dirname "$0")" && pwd)
 tree=$(cd "$gate_directory/../.." && pwd)
@@ -55,7 +59,7 @@ else
 fi
 
 run_scenarios() {
-    local variable missing=() work out server binary version jar
+    local variable missing=() work out server binary version jar given configs=()
     for variable in CIRCUIT_PORT_BASE CIRCUIT_WORK CIRCUIT_SCENARIO_MANIFEST CIRCUIT_PROBE_DIR CIRCUIT_REFERENCE_DIR \
                     "${GATE_JAR_VARIABLES[@]}"; do
         [[ -n ${!variable:-} ]] || missing+=("$variable")
@@ -84,13 +88,19 @@ run_scenarios() {
     fi
     for version in 1_21_8 1_21_4; do
         jar=CIRCUIT_VANILLA_JAR_$version
-        printf 'game-version=java-%s\nvanilla-server-jar=%s\n' "${version//_/.}" "${!jar}" >"$work/$version.properties"
+        given=CIRCUIT_SCENARIO_CONFIG_$version
+        if [[ -n ${!given:-} ]]; then
+            configs+=(--config "${version//_/.}=${!given}")
+        else
+            printf 'game-version=java-%s\nvanilla-server-jar=%s\n' "${version//_/.}" "${!jar}" >"$work/$version.properties"
+            configs+=(--config "${version//_/.}=$work/$version.properties")
+        fi
     done
     start=$(gate_now)
     python3 "$gate_directory/scenarios.py" run --manifest "$CIRCUIT_SCENARIO_MANIFEST" \
         --references "$CIRCUIT_REFERENCE_DIR" --probes "$CIRCUIT_PROBE_DIR" --server "$server" \
-        --config "1.21.8=$work/1_21_8.properties" --config "1.21.4=$work/1_21_4.properties" \
-        --port $((CIRCUIT_PORT_BASE + 2)) --work "$work" --out "$out" \
+        "${configs[@]}" --port $((CIRCUIT_PORT_BASE + 2)) --work "$work" --out "$out" \
+        --probe-command "${CIRCUIT_PROBE_COMMAND:-node}" \
         ${CIRCUIT_SCENARIO_CPUS:+--cpus "$CIRCUIT_SCENARIO_CPUS"} "${selection[@]}"
     local rc=$?
     echo

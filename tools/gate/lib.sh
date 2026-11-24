@@ -79,7 +79,7 @@ gate_require_jars() {
 # shows only the warnings of what it compiled.
 gate_build() {
     local prefix=$1 tree=$2 mode=$3 jobs=$4 logs=$5 clean=$6 zero_warnings=$7
-    local log=$logs/build-$mode.log start rc compiled warnings
+    local log=$logs/build-$mode.log start rc compiled warnings crashes=0 note=
     local configure=(-m "$mode" -y) build=(-y -j "$jobs" --all)
     if [[ -n ${CIRCUIT_ASIO_INCLUDE:-} ]]; then
         configure+=("--asio_include=$CIRCUIT_ASIO_INCLUDE")
@@ -96,16 +96,26 @@ gate_build() {
             timeout "${CIRCUIT_GATE_BUILD_TIMEOUT:-3600}" xmake build "${build[@]}"
     ) >"$log" 2>&1
     rc=$?
+    # The compiler itself can crash at random on a loaded host. That says nothing about the
+    # tree, so the build continues from where it stopped, at most twice; the log keeps every
+    # attempt and the step says how often it happened. Any other failure is final.
+    while ((rc != 0 && crashes < 2)) && [[ $(grep -c 'internal compiler error' "$log") -gt $crashes ]]; do
+        crashes=$((crashes + 1))
+        echo "== attempt $((crashes + 1)) after an internal compiler error" >>"$log"
+        (cd "$tree" && timeout "${CIRCUIT_GATE_BUILD_TIMEOUT:-3600}" xmake build -y -j "$jobs" --all) >>"$log" 2>&1
+        rc=$?
+    done
     compiled=$(grep -c "compiling\.$mode" "$log")
     warnings=$(grep -c 'warning:' "$log")
+    if ((crashes)); then note=", continued after $crashes compiler crashes"; fi
     if ((rc != 0)); then
-        gate_record FAIL "${prefix}build" $(($(gate_now) - start)) "exit $rc, see $log"
+        gate_record FAIL "${prefix}build" $(($(gate_now) - start)) "exit $rc$note, see $log"
         if ((zero_warnings)); then
             gate_record NOT-RUN "${prefix}warnings" 0 "the build failed"
         fi
         return 1
     fi
-    gate_record PASS "${prefix}build" $(($(gate_now) - start)) "$compiled files compiled, $warnings warnings, $log"
+    gate_record PASS "${prefix}build" $(($(gate_now) - start)) "$compiled files compiled, $warnings warnings$note, $log"
     if ((zero_warnings)); then
         if ((warnings != 0)); then
             gate_record FAIL "${prefix}warnings" 0 "$warnings warnings in $log"
