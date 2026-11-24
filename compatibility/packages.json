@@ -1,6 +1,6 @@
 {
   "schema": "circuit-compatibility-packages-1",
-  "comment": "Hand-written. Work packages: the units in which open mechanics are planned and closed. size is S (up to 3 sub-tasks), M (4 to 8), L (9 to 20), XL (more, or a new subsystem) or null when the package is named only; hard lists the packages without which it cannot be implemented, evidence those needed before it can be verified; state is planned, active or closed. A mechanic that is not implemented names its packages in its own file; tools/compat_ledger.py refuses unknown ids and a closed package that an open mechanic still names, and generates compatibility/PACKAGES.md.",
+  "comment": "Hand-written. Work packages: the units in which open mechanics are planned and closed. size is S (up to 3 sub-tasks), M (4 to 8), L (9 to 20), XL (more, or a new subsystem) or null when the package is named only; hard lists the packages without which it cannot be implemented, evidence those needed before it can be verified; state is planned, active or closed, and a package is closed only after its hard prerequisites. A mechanic that is not implemented names its packages in its own file; a package with a mechanics list takes only the mechanics listed. tools/compat_ledger.py refuses unknown ids and a closed package that an open mechanic still names, and generates compatibility/PACKAGES.md.",
   "packages": [
     {
       "id": "EF1",
@@ -610,7 +610,34 @@
       "hard": [],
       "evidence": [],
       "state": "planned",
-      "note": "A holding entry, not planned work."
+      "note": "A holding entry, not planned work. It takes no mechanic besides those listed in mechanics; a new open mechanic names a real package.",
+      "mechanics": [
+        "V03.stack_core",
+        "V04.experimental_profiles",
+        "V05.ticket_levels",
+        "V05.unload_reload",
+        "V05.view_and_simulation_distance",
+        "V06.block_light",
+        "V06.sky_light",
+        "V15.destroyed_blocks",
+        "V15.push_pull",
+        "V17.tnt_block",
+        "V17.tnt_persistence",
+        "V18.flying_machines",
+        "V18.item_sorters_and_clocks",
+        "V18.tnt_duplication",
+        "V20.pickup",
+        "V30.game_tests",
+        "V32.chunks_and_blocks",
+        "V33.dialogs",
+        "V34.upgrades",
+        "V35.experiment_minecart_improvements",
+        "V35.experiment_redstone",
+        "V35.experiment_trade_rebalance",
+        "V36.campaigns",
+        "V36.endurance",
+        "V36.performance"
+      ]
     }
   ]
 }

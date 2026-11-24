@@ -13,13 +13,38 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import compat_ledger  # noqa: E402
 
 
-class LedgerValidation(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.inputs = compat_ledger.read_inputs()
+def setUpModule():
+    """The suite builds the ledger about seventy times. The committed inputs,
+    the trace fixtures and the server sources do not change during a run, so
+    each is read once."""
+    global INPUTS
+    INPUTS = compat_ledger.read_inputs()
+    read_traces, read_packets = compat_ledger.trace_cases, compat_ledger.referenced_packets
+    read = {}
+
+    def trace_cases(bundles):
+        key = tuple(bundles)
+        if key not in read:
+            read[key] = read_traces(bundles)
+        cases, blocks = read[key]
+        return copy.deepcopy(cases), blocks
+
+    def referenced_packets(directory=None):
+        if directory is not None:
+            return read_packets(directory)
+        if None not in read:
+            read[None] = read_packets()
+        return set(read[None])
+    compat_ledger.trace_cases, compat_ledger.referenced_packets = trace_cases, referenced_packets
+    unittest.addModuleCleanup(setattr, compat_ledger, "trace_cases", read_traces)
+    unittest.addModuleCleanup(setattr, compat_ledger, "referenced_packets", read_packets)
+
+
+class Mutations(unittest.TestCase):
+    """Tests that change a copy of the committed inputs in memory."""
 
     def errors_for(self, mutate):
-        inputs = copy.deepcopy(self.inputs)
+        inputs = copy.deepcopy(INPUTS)
         mutate(inputs)
         _, _, errors = compat_ledger.produce(inputs)
         return errors
@@ -32,18 +57,23 @@ class LedgerValidation(unittest.TestCase):
         fam = next(f for f in inputs["families"]["families"] if f["id"] == family)
         return next(m for m in fam["mechanics"] if m["id"] == mechanic)
 
+    def package(self, inputs, pid):
+        return next(p for p in inputs["packages"]["packages"] if p["id"] == pid)
+
+
+class LedgerValidation(Mutations):
     def test_committed_inputs_are_valid(self):
         self.assertEqual(self.errors_for(lambda i: None), [])
 
     def test_every_enumerated_name_has_a_feature(self):
-        ledger, _, _ = compat_ledger.produce(copy.deepcopy(self.inputs))
+        ledger, _, _ = compat_ledger.produce(copy.deepcopy(INPUTS))
         ids = {f["id"] for f in ledger["features"]}
-        for bundle, inv in self.inputs["inventories"].items():
+        for bundle, inv in INPUTS["inventories"].items():
             for name in inv["kinds"]["block"]["names"]:
                 self.assertIn(f"block/minecraft:{name}", ids)
 
     def test_version_only_names_are_not_applicable_elsewhere(self):
-        ledger, _, _ = compat_ledger.produce(copy.deepcopy(self.inputs))
+        ledger, _, _ = compat_ledger.produce(copy.deepcopy(INPUTS))
         ghast = next(f for f in ledger["features"] if f["id"] == "entity/minecraft:happy_ghast")
         self.assertEqual(ghast["versions"]["java-1.21.4"]["impl"], "not_applicable")
         self.assertEqual(ghast["versions"]["java-1.21.8"]["impl"], "missing")
@@ -95,7 +125,7 @@ class LedgerValidation(unittest.TestCase):
 
     def test_resource_milestone_within_its_family(self):
         # V14 lists C4 and C5: the components handed to C5 carry that label, others the family's first.
-        ledger, _, _ = compat_ledger.produce(copy.deepcopy(self.inputs))
+        ledger, _, _ = compat_ledger.produce(copy.deepcopy(INPUTS))
         by_id = {f["id"]: f for f in ledger["features"]}
         self.assertEqual(by_id["block/minecraft:bell"]["milestone"], "C5")
         self.assertEqual(by_id["block/minecraft:lever"]["milestone"], "C4")
@@ -121,32 +151,11 @@ class LedgerValidation(unittest.TestCase):
         self.assert_rejected(mutate, "no classification rule matches")
 
 
-class WorkPackages(unittest.TestCase):
+class WorkPackages(Mutations):
     """Work packages and the mechanics that name them."""
 
-    @classmethod
-    def setUpClass(cls):
-        cls.inputs = compat_ledger.read_inputs()
-
-    def errors_for(self, mutate):
-        inputs = copy.deepcopy(self.inputs)
-        mutate(inputs)
-        _, _, errors = compat_ledger.produce(inputs)
-        return errors
-
-    def assert_rejected(self, mutate, fragment):
-        errors = self.errors_for(mutate)
-        self.assertTrue(any(fragment in e for e in errors), f"expected an error containing {fragment!r}, got {errors[:5]}")
-
-    def mechanic(self, inputs, family, mechanic):
-        fam = next(f for f in inputs["families"]["families"] if f["id"] == family)
-        return next(m for m in fam["mechanics"] if m["id"] == mechanic)
-
-    def package(self, inputs, pid):
-        return next(p for p in inputs["packages"]["packages"] if p["id"] == pid)
-
     def test_every_open_mechanic_names_a_package(self):
-        ledger, _, errors = compat_ledger.produce(copy.deepcopy(self.inputs))
+        ledger, _, errors = compat_ledger.produce(copy.deepcopy(INPUTS))
         self.assertEqual(errors, [])
         known = {p["id"] for p in ledger["packages"]}
         for f in ledger["features"]:
@@ -171,25 +180,57 @@ class WorkPackages(unittest.TestCase):
     def test_closed_package_with_an_open_mechanic(self):
         self.assert_rejected(lambda i: self.package(i, "EF5").update(state="closed"), "package EF5: closed, but V")
 
-    def test_closed_package_without_open_mechanics(self):
-        # PL8 is a gate: no mechanic names it, so nothing keeps it open.
-        self.assertEqual(self.errors_for(lambda i: self.package(i, "PL8").update(state="closed")), [])
+    def test_closed_package_before_its_hard_prerequisites(self):
+        # PL8 is a gate that no mechanic names; it still waits for PL1 to PL6.
+        self.assert_rejected(lambda i: self.package(i, "PL8").update(state="closed"),
+                             "package PL8: closed, but its hard prerequisite PL1 is not")
+        self.assert_rejected(lambda i: [self.package(i, q).update(state="closed") for q in ("PL8", "PL1", "PL2", "PL3", "PL4", "PL5")],
+                             "package PL8: closed, but its hard prerequisite PL6 is not")
 
     def test_closing_a_package_after_its_last_mechanic(self):
+        # EF1 has no prerequisite, and EF2 waits for it only for evidence.
         def mutate(i):
             for family in i["families"]["families"]:
                 for m in family["mechanics"]:
                     if "EF1" in m.get("packages", []):
-                        m["packages"] = [q for q in m["packages"] if q != "EF1"] or ["UNASSIGNED"]
+                        m["packages"] = [q for q in m["packages"] if q != "EF1"] or ["EF2"]
             self.package(i, "EF1").update(state="closed")
         self.assertEqual(self.errors_for(mutate), [])
+
+    def test_the_holding_entry_takes_no_new_mechanic(self):
+        holding = compat_ledger.HOLDING
+        listed = self.package(INPUTS, holding)["mechanics"]
+        self.assertIn("V17.tnt_block", listed)
+        self.assertNotIn("V17.explosions", listed)
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "explosions").update(packages=[holding]),
+                             f"package {holding}: takes no mechanic besides those it lists, but V17.explosions names it")
+        self.assert_rejected(lambda i: self.package(i, holding).pop("mechanics"),
+                             f"package {holding}: needs the list of the mechanics it holds")
+        self.assert_rejected(lambda i: self.package(i, holding)["mechanics"].append("V17.no_such_mechanic"),
+                             f"package {holding}: lists V17.no_such_mechanic, which is not a mechanic")
+        self.assert_rejected(lambda i: self.package(i, holding)["mechanics"].append(listed[0]),
+                             f"package {holding}: mechanics must be a list of mechanic ids without repeats")
+        # A mechanic may leave the entry; the list is then longer than needed, which is allowed.
+        self.assertEqual(self.errors_for(lambda i: self.mechanic(i, "V17", "tnt_block").update(packages=["EF5"])), [])
+
+    def test_malformed_packages(self):
+        self.assert_rejected(lambda i: i["packages"]["packages"].append("EF1"), "packages.json: packages must be a list of objects")
+        self.assert_rejected(lambda i: i["packages"].update(packages={}), "packages.json: packages must be a list of objects")
+        self.assert_rejected(lambda i: self.package(i, "EF2")["hard"].append(["EF1"]),
+                             "package EF2: hard prerequisite ['EF1'] is not a package")
+        self.assert_rejected(lambda i: self.package(i, "EF2")["evidence"].append(7),
+                             "package EF2: evidence prerequisite 7 is not a package")
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "explosions").update(packages=[["EF5"]]),
+                             "V17.explosions: packages must be a list of package ids without repeats")
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "explosions").update(packages="EF5"),
+                             "V17.explosions: packages must be a list of package ids without repeats")
 
     def test_implemented_mechanic_naming_a_package(self):
         self.assert_rejected(lambda i: self.mechanic(i, "V01", "version_manifests").update(packages=["CI4"]),
                              "V01.version_manifests: names a package but is not open")
 
     def test_a_mechanic_is_open_per_version(self):
-        ledger, _, _ = compat_ledger.produce(copy.deepcopy(self.inputs))
+        ledger, _, _ = compat_ledger.produce(copy.deepcopy(INPUTS))
         anvil = next(f for f in ledger["features"] if f["id"] == "V34.anvil_1_21_4")
         self.assertTrue(compat_ledger.is_open(anvil, "java-1.21.4"))
         self.assertFalse(compat_ledger.is_open(anvil, "java-1.21.8"))
@@ -224,19 +265,18 @@ class WorkPackages(unittest.TestCase):
         self.assert_rejected(lambda i: i["cases"]["cases"][0].update(script="x.js"), "unknown key script")
 
     def test_package_table(self):
-        inputs = copy.deepcopy(self.inputs)
+        inputs = copy.deepcopy(INPUTS)
         ledger, manifests, _ = compat_ledger.produce(inputs)
         text = compat_ledger.packages_summary(ledger, manifests)
-        for b in ledger["versions"]:
-            for p in ledger["packages"]:
-                self.assertIn(f"| {p['id']} {p['title']} |", text)
+        for p in ledger["packages"]:
+            self.assertIn(f"| {p['id']} {p['title']} |", text)
         named = [f for f in ledger["features"] if "CI3" in f.get("packages", [])]
         counts = " | ".join(str(sum(1 for f in named if compat_ledger.is_open(f, b))) for b in ledger["versions"])
         row = next(line for line in text.splitlines() if line.startswith("| CI3 "))
         self.assertTrue(row.endswith(f"| {counts} |"), row)
         self.assertIn("| `V34.anvil_1_21_4` Anvil import and export of DataVersion 4189 | C11 | missing | not_applicable |", text)
         # A mechanic moved to another package moves in the table.
-        self.mechanic(inputs, "V34", "anvil_1_21_4").update(packages=["UNASSIGNED"])
+        self.mechanic(inputs, "V34", "anvil_1_21_4").update(packages=["CI4"])
         ledger, manifests, errors = compat_ledger.produce(inputs)
         self.assertEqual(errors, [])
         moved = compat_ledger.packages_summary(ledger, manifests)
@@ -244,8 +284,8 @@ class WorkPackages(unittest.TestCase):
         self.assertNotIn("V34.anvil_1_21_4", section)
 
     def test_generation_is_repeatable(self):
-        first = compat_ledger.produce(copy.deepcopy(self.inputs))
-        second = compat_ledger.produce(copy.deepcopy(self.inputs))
+        first = compat_ledger.produce(copy.deepcopy(INPUTS))
+        second = compat_ledger.produce(copy.deepcopy(INPUTS))
         self.assertEqual(compat_ledger.ledger_text(first[0]), compat_ledger.ledger_text(second[0]))
         self.assertEqual(compat_ledger.packages_summary(first[0], first[1]), compat_ledger.packages_summary(second[0], second[1]))
 
@@ -268,29 +308,62 @@ class ReferencedPackets(unittest.TestCase):
 
 
 class LedgerSources(unittest.TestCase):
-    """The per-entry source files: what read_inputs() refuses and how it orders entries."""
+    """The per-entry source files: what read_inputs() refuses and how it orders entries.
+    The sources are copied once; a test's changes to the copy are undone after it."""
 
-    def setUp(self):
-        self.tmp = tempfile.mkdtemp(prefix="compat-ledger-tests-")
-        self.compat = os.path.join(self.tmp, "compatibility")
-        os.mkdir(self.compat)
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.mkdtemp(prefix="compat-ledger-tests-")
+        cls.addClassCleanup(shutil.rmtree, cls.tmp)
+        cls.compat = os.path.join(cls.tmp, "compatibility")
+        os.mkdir(cls.compat)
         for name in sorted(os.listdir(compat_ledger.COMPAT)):
             source = os.path.join(compat_ledger.COMPAT, name)
             if name in ("inventory", "versions"):
-                os.symlink(source, os.path.join(self.compat, name))
+                os.symlink(source, os.path.join(cls.compat, name))
             elif os.path.isdir(source):
-                shutil.copytree(source, os.path.join(self.compat, name))
+                shutil.copytree(source, os.path.join(cls.compat, name))
             elif name != "ledger.json":
-                shutil.copy(source, self.compat)
+                shutil.copy(source, cls.compat)
 
-    def tearDown(self):
-        shutil.rmtree(self.tmp)
+    def setUp(self):
+        self.before = {}   # path of a changed file -> its text before the test, None where it did not exist
+        self.made = []     # directories the test created
+        self.addCleanup(self.restore)
+
+    def restore(self):
+        for path, text in self.before.items():
+            if text is None:
+                if os.path.exists(path):
+                    os.remove(path)
+            else:
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(text)
+        for path in reversed(self.made):
+            os.rmdir(path)
+
+    def touch(self, rel):
+        """Notes a file's state before the test changes it; returns its path."""
+        path = os.path.join(self.compat, rel)
+        if path not in self.before:
+            self.before[path] = compat_ledger.read_text(path) if os.path.exists(path) else None
+        return path
 
     def write(self, rel, data):
-        path = os.path.join(self.compat, rel)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        path = self.touch(rel)
+        missing = []
+        directory = os.path.dirname(path)
+        while not os.path.isdir(directory):
+            missing.append(directory)
+            directory = os.path.dirname(directory)
+        for directory in reversed(missing):
+            os.mkdir(directory)
+            self.made.append(directory)
         with open(path, "w", encoding="utf-8") as f:
             f.write(data if isinstance(data, str) else compat_ledger.canonical(data))
+
+    def remove(self, rel):
+        os.remove(self.touch(rel))
 
     def read(self, rel):
         with open(os.path.join(self.compat, rel), encoding="utf-8") as f:
@@ -343,7 +416,7 @@ class LedgerSources(unittest.TestCase):
         self.assertEqual(dirt["versions"]["java-1.21.8"]["impl"], "partial")
 
     def test_listed_mechanic_without_a_file(self):
-        os.remove(os.path.join(self.compat, "families/V17/tnt_block.json"))
+        self.remove("families/V17/tnt_block.json")
         self.assert_rejected("mechanic tnt_block is listed but has no file")
 
     def test_mechanic_listed_twice(self):
@@ -391,8 +464,49 @@ class LedgerSources(unittest.TestCase):
         self.assert_rejected("mechanics are files of the family's directory")
 
     def test_unknown_resource_kind(self):
-        os.mkdir(os.path.join(self.compat, "resources", "gadget"))
+        self.write("resources/gadget/_kind.json", {"defaults": {"impl": "missing"}, "classification": []})
         self.assert_rejected("its directories must be the kinds")
+
+    def test_file_that_is_not_an_object(self):
+        self.write("cases/client/windows.json", "[]\n")
+        self.assert_rejected("compatibility/cases/client/windows.json: not an object")
+
+    def test_only_the_known_underscore_files_are_skipped(self):
+        # A mechanic, an override or a note under an underscore name would otherwise be ignored unread.
+        mechanic = {"name": "A new mechanic", "milestone": "C3", "packages": ["EF2"], "impl": "missing", "evidence": "none"}
+        for rel, data in (("families/V17/_new_mechanic.json", mechanic),
+                          ("resources/block/_note.json", "not json"),
+                          ("cases/_notes.json", "not json"),
+                          ("cases/client/_index.json", {"schema": "x"}),
+                          ("families/_stray.json", "x"),
+                          ("resources/_stray.json", "x"),
+                          ("resources/notes.txt", "x")):
+            with self.subTest(rel):
+                self.write(rel, data)
+                self.assert_rejected(f"compatibility/{rel}: unexpected file")
+                self.remove(rel)
+
+    def test_unexpected_file_beside_the_directories(self):
+        # The single files the directories replaced must not come back unread.
+        self.write("cases.json", {"schema": "x", "cases": []})
+        self.assert_rejected("compatibility/cases.json: unexpected file")
+
+    def test_directory_without_its_own_file(self):
+        self.remove("resources/block/_kind.json")
+        self.assert_rejected("compatibility/resources/block/_kind.json:")
+
+    def test_changes_are_undone(self):
+        self.write("families/V17/sub/thing.json", "x")
+        self.remove("families/V17/tnt_block.json")
+        self.write("cases/client/windows.json", "x")
+        self.restore()
+        self.before.clear()
+        self.made.clear()
+        self.assertFalse(os.path.exists(os.path.join(self.compat, "families/V17/sub")))
+        for rel in ("families/V17/tnt_block.json", "cases/client/windows.json"):
+            self.assertEqual(compat_ledger.read_text(os.path.join(self.compat, rel)),
+                             compat_ledger.read_text(os.path.join(compat_ledger.COMPAT, rel)))
+        self.assertEqual(self.errors(), [])
 
     def test_case_file_defining_a_trace(self):
         self.write("cases/trace/vertical_slice.json", {"kind": "official_trace", "versions": ["java-1.21.8"], "location": "x",

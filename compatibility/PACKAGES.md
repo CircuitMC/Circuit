@@ -708,7 +708,7 @@ Named, not sized: beyond the next phase. It follows the packages listed as hard 
 
 Open mechanics whose remaining gaps no work package covers: experimental profiles, release qualification, machine designs not yet established, timing the official servers vary between runs, and rows that are partial without a listed gap. Each needs a package or a recorded decision.
 
-A holding entry, not planned work.
+A holding entry, not planned work. It takes no mechanic besides those listed in mechanics; a new open mechanic names a real package.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |

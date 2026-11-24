@@ -68,7 +68,11 @@ MECHANIC_KEYS = {"id", "name", "milestone", "packages", "tier", "impl", "evidenc
                  "deviations", "note", "prerequisites"}
 OVERRIDE_KEYS = {"impl", "evidence", "cases", "deviations", "note", "milestone"}
 CASE_KEYS = {"id", "kind", "versions", "location", "status", "description"}
-PACKAGE_KEYS = {"id", "title", "content", "size", "hard", "evidence", "evidence_note", "state", "note"}
+PACKAGE_KEYS = {"id", "title", "content", "size", "hard", "evidence", "evidence_note", "state", "note", "mechanics"}
+# The entry for open mechanics that no package covers. It takes no mechanic besides those it lists.
+HOLDING = "UNASSIGNED"
+# What the compatibility directory itself may hold.
+TOP_LEVEL = {"README.md", "PACKAGES.md", "ledger.json", "packages.json", "cases", "families", "inventory", "resources", "versions"}
 # Resource kinds with one feature per name, and kinds counted only.
 NAMED_KINDS = ["block", "item", "entity", "effect", "enchantment", "attribute", "damage_type", "biome", "particle", "command", "packet"]
 COUNTED_KINDS = ["block_state", "sound_event", "recipe", "instrument"]
@@ -204,28 +208,28 @@ class Sources:
         self.files[rel] = (text, data)
         return data
 
-    def directories(self, rel):
-        """Subdirectories of a directory, sorted; anything else in it must be a file named _*.json."""
+    def directories(self, rel, own):
+        """Subdirectories of a directory, sorted; anything else in it must be one of the directory's `own` files."""
         out = []
         for name in sorted(os.listdir(self.path(rel))):
             if name.startswith("."):
                 continue
             if os.path.isdir(self.path(rel, name)):
                 out.append(name)
-            elif not re.fullmatch(r"_[a-z_]+\.json", name):
+            elif name not in own:
                 raise Failure(f"compatibility/{rel}/{name}: unexpected file")
         return out
 
-    def entries(self, rel, part):
+    def entries(self, rel, part, own):
         """Entry files below a directory as {name: relative path}. A name is
         the path below the directory without its extension, each part
-        matching `part`; files named _*.json belong to the directory itself."""
+        matching `part`; the file `own` belongs to the directory itself."""
         out = {}
         top = self.path(rel)
         for base, dirs, files in os.walk(top):
             dirs[:] = sorted(d for d in dirs if not d.startswith("."))
             for name in sorted(files):
-                if name.startswith(".") or (base == top and re.fullmatch(r"_[a-z_]+\.json", name)):
+                if name.startswith(".") or (base == top and name == own):
                     continue
                 below = os.path.relpath(os.path.join(base, name), top).replace(os.sep, "/")
                 entry = below[: -len(".json")]
@@ -328,12 +332,15 @@ def read_inputs(compat=None):
     per-entry files joined into one document for the families, one for the
     resources and one for the cases."""
     src = Sources(compat or COMPAT)
+    for name in sorted(os.listdir(src.compat)):
+        if not name.startswith(".") and name not in TOP_LEVEL:
+            raise Failure(f"compatibility/{name}: unexpected file")
     index = src.load("families/_index.json", ("schema", "versions"))
     bundles = index["versions"]
     families = []
-    for fid in src.directories("families"):
+    for fid in src.directories("families", ("_index.json", "_inventories_unknown.json")):
         head = src.load(f"families/{fid}/_family.json", ("name", "milestones"))
-        files = src.entries(f"families/{fid}", r"[a-z][a-z0-9_]*")
+        files = src.entries(f"families/{fid}", r"[a-z][a-z0-9_]*", "_family.json")
         if any("/" in m for m in files):
             raise Failure(f"compatibility/families/{fid}: mechanics are files of the family's directory")
         order = head.get("mechanics", [])
@@ -345,7 +352,7 @@ def read_inputs(compat=None):
         families.append({"id": fid, "name": head["name"], "milestones": head["milestones"],
                          "mechanics": [{"id": m, **src.load(files[m], ("name", "milestone", "impl"))} for m in ids]})
     resources_index = src.load("resources/_index.json", ("schema",))
-    kinds = src.directories("resources")
+    kinds = src.directories("resources", ("_index.json",))
     if sorted(kinds) != sorted(NAMED_KINDS):
         raise Failure(f"compatibility/resources: its directories must be the kinds {', '.join(sorted(NAMED_KINDS))}")
     defaults, classification, overrides = {}, {}, {}
@@ -353,10 +360,10 @@ def read_inputs(compat=None):
         head = src.load(f"resources/{kind}/_kind.json", ("defaults", "classification"))
         defaults[kind] = head["defaults"]
         classification[kind] = head["classification"]
-        overrides[kind] = {name: src.load(rel) for name, rel in src.entries(f"resources/{kind}", r"[a-z0-9][a-z0-9_]*").items()}
+        overrides[kind] = {name: src.load(rel) for name, rel in src.entries(f"resources/{kind}", r"[a-z0-9][a-z0-9_]*", "_kind.json").items()}
     cases_index = src.load("cases/_index.json", ("schema",))
     case_keys = ("kind", "versions", "location", "status", "description")
-    cases = [{"id": name, **src.load(rel, case_keys)} for name, rel in src.entries("cases", r"[A-Za-z0-9][A-Za-z0-9_-]*").items()]
+    cases = [{"id": name, **src.load(rel, case_keys)} for name, rel in src.entries("cases", r"[A-Za-z0-9][A-Za-z0-9_-]*", "_index.json").items()]
     families_doc = {"schema": index["schema"], "versions": bundles, "families": families, "classification": classification,
                     "inventories_unknown": src.load("families/_inventories_unknown.json", ("inventories",))["inventories"]}
     return {
@@ -377,6 +384,9 @@ def build(inputs):
     case_doc = inputs["cases"]
     manifests = inputs["manifests"]
     inventories = inputs["inventories"]
+    packages = inputs["packages"]["packages"]
+    if not isinstance(packages, list) or not all(isinstance(p, dict) for p in packages):
+        raise Failure("compatibility/packages.json: packages must be a list of objects")
     traces, trace_blocks = trace_cases(bundles)
     cases = dict(traces)
     for c in case_doc["cases"]:
@@ -460,7 +470,7 @@ def build(inputs):
         "comment": "Generated by tools/compat_ledger.py; do not edit.",
         "versions": bundles,
         "families": [{"id": f["id"], "name": f["name"], "milestones": f["milestones"]} for f in families_doc["families"]],
-        "packages": [dict(p) for p in inputs["packages"]["packages"]],
+        "packages": [dict(p) for p in packages],
         "kind_notes": {k: v["note"] for k, v in resources["defaults"].items() if v.get("note")},
         "inventories": {b: {k: ({"source": v["source"], "exact": v["exact"], "count": len(v["names"]) if "names" in v else v["count"]})
                             for k, v in inventories[b]["kinds"].items()} for b in bundles},
@@ -650,6 +660,7 @@ def validate_packages(ledger, doc):
     names known packages, and none of them is closed."""
     errors = []
     by_id = {}
+    mechanics = {f["id"]: f for f in ledger["features"] if f["kind"] == "mechanic"}
     for p in doc["packages"]:
         pid = p.get("id")
         if not isinstance(pid, str) or not re.fullmatch(r"[A-Z][A-Z0-9]*", pid):
@@ -672,8 +683,21 @@ def validate_packages(ledger, doc):
                 errors.append(f"package {pid}: needs a list of {key} prerequisites")
                 continue
             for q in p[key]:
-                if q not in by_id or q == pid:
+                if not isinstance(q, str) or q not in by_id or q == pid:
                     errors.append(f"package {pid}: {key} prerequisite {q} is {'the package itself' if q == pid else 'not a package'}")
+                elif key == "hard" and p.get("state") == "closed" and by_id[q].get("state") != "closed":
+                    errors.append(f"package {pid}: closed, but its hard prerequisite {q} is not")
+        # A package that lists mechanics takes no others: the list can only shrink.
+        listed = p.get("mechanics")
+        if listed is None:
+            if pid == HOLDING:
+                errors.append(f"package {pid}: needs the list of the mechanics it holds")
+        elif not isinstance(listed, list) or not all(isinstance(m, str) for m in listed) or len(set(listed)) != len(listed):
+            errors.append(f"package {pid}: mechanics must be a list of mechanic ids without repeats")
+        else:
+            for m in listed:
+                if m not in mechanics:
+                    errors.append(f"package {pid}: lists {m}, which is not a mechanic")
     # Hard prerequisites give an order of work: no package may need itself through others.
     state = {}
 
@@ -685,23 +709,25 @@ def validate_packages(ledger, doc):
             return
         state[pid] = "open"
         for q in by_id[pid].get("hard") or []:
-            if q in by_id and q != pid:
+            if isinstance(q, str) and q in by_id and q != pid:
                 visit(q, path + [pid])
         state[pid] = "done"
     for pid in by_id:
         visit(pid, [])
-    for f in ledger["features"]:
-        if f["kind"] != "mechanic":
-            continue
+    for f in mechanics.values():
         named = f.get("packages", [])
-        if not isinstance(named, list) or len(set(named)) != len(named):
-            errors.append(f"{f['id']}: packages must be a list without repeats")
+        if not isinstance(named, list) or not all(isinstance(q, str) for q in named) or len(set(named)) != len(named):
+            errors.append(f"{f['id']}: packages must be a list of package ids without repeats")
             continue
         for q in named:
             if q not in by_id:
                 errors.append(f"{f['id']}: unknown package {q}")
-            elif by_id[q].get("state") == "closed" and is_open(f):
+                continue
+            if by_id[q].get("state") == "closed" and is_open(f):
                 errors.append(f"package {q}: closed, but {f['id']} is still open")
+            listed = by_id[q].get("mechanics")
+            if isinstance(listed, list) and f["id"] not in listed:
+                errors.append(f"package {q}: takes no mechanic besides those it lists, but {f['id']} names it")
         if is_open(f) and not named:
             errors.append(f"{f['id']}: not implemented and names no package")
         if named and not is_open(f):
@@ -935,7 +961,7 @@ def cmd_check(args):
         for e in errors:
             print(f"error: {e}", file=sys.stderr)
         sys.exit(1)
-    if not args.sources_only:
+    if not args.sources_only and not errors:
         if not os.path.exists(LEDGER) or read_text(LEDGER) != ledger_text(ledger):
             errors.append("compatibility/ledger.json is out of date: run tools/compat_ledger.py generate")
         if not os.path.exists(SUMMARY) or read_text(SUMMARY) != summary(ledger, manifests) + "\n":
