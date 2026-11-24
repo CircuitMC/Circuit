@@ -1340,7 +1340,9 @@ int main() {
         server.stop();
     });
 
+    // The cases run in finish(); the directory goes after them.
+    const int code = suite.finish();
     std::error_code ec;
     fs::remove_all(root, ec);
-    return suite.finish();
+    return code;
 }
