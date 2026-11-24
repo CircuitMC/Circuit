@@ -361,6 +361,18 @@ class LedgerSources(unittest.TestCase):
         self.write("cases/client/windows.json", "<<<<<<< ours\n{}\n")
         self.assert_rejected("compatibility/cases/client/windows.json:")
 
+    def test_entry_lacking_a_key(self):
+        data = self.read("families/V17/tnt_block.json")
+        del data["milestone"]
+        self.write("families/V17/tnt_block.json", data)
+        self.assert_rejected("compatibility/families/V17/tnt_block.json: lacks milestone")
+
+    def test_case_lacking_a_key(self):
+        data = self.read("cases/client/windows.json")
+        del data["status"]
+        self.write("cases/client/windows.json", data)
+        self.assert_rejected("compatibility/cases/client/windows.json: lacks status")
+
     def test_file_not_in_canonical_form(self):
         data = self.read("cases/client/windows.json")
         self.write("cases/client/windows.json", json.dumps(data))

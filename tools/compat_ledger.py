@@ -184,7 +184,7 @@ class Sources:
     def path(self, *parts):
         return os.path.join(self.compat, *parts)
 
-    def load(self, rel):
+    def load(self, rel, required=()):
         def pairs(items):
             keys = [k for k, _ in items]
             for k in keys:
@@ -198,6 +198,9 @@ class Sources:
             raise Failure(f"compatibility/{rel}: {e}")
         if not isinstance(data, dict):
             raise Failure(f"compatibility/{rel}: not an object")
+        for key in required:
+            if key not in data:
+                raise Failure(f"compatibility/{rel}: lacks {key}")
         self.files[rel] = (text, data)
         return data
 
@@ -325,11 +328,11 @@ def read_inputs(compat=None):
     per-entry files joined into one document for the families, one for the
     resources and one for the cases."""
     src = Sources(compat or COMPAT)
-    index = src.load("families/_index.json")
+    index = src.load("families/_index.json", ("schema", "versions"))
     bundles = index["versions"]
     families = []
     for fid in src.directories("families"):
-        head = src.load(f"families/{fid}/_family.json")
+        head = src.load(f"families/{fid}/_family.json", ("name", "milestones"))
         files = src.entries(f"families/{fid}", r"[a-z][a-z0-9_]*")
         if any("/" in m for m in files):
             raise Failure(f"compatibility/families/{fid}: mechanics are files of the family's directory")
@@ -340,26 +343,27 @@ def read_inputs(compat=None):
         # Listed mechanics come first, in the listed order; the others follow by id.
         ids = order + sorted(set(files) - set(order))
         families.append({"id": fid, "name": head["name"], "milestones": head["milestones"],
-                         "mechanics": [{"id": m, **src.load(files[m])} for m in ids]})
-    resources_index = src.load("resources/_index.json")
+                         "mechanics": [{"id": m, **src.load(files[m], ("name", "milestone", "impl"))} for m in ids]})
+    resources_index = src.load("resources/_index.json", ("schema",))
     kinds = src.directories("resources")
     if sorted(kinds) != sorted(NAMED_KINDS):
         raise Failure(f"compatibility/resources: its directories must be the kinds {', '.join(sorted(NAMED_KINDS))}")
     defaults, classification, overrides = {}, {}, {}
     for kind in kinds:
-        head = src.load(f"resources/{kind}/_kind.json")
+        head = src.load(f"resources/{kind}/_kind.json", ("defaults", "classification"))
         defaults[kind] = head["defaults"]
         classification[kind] = head["classification"]
         overrides[kind] = {name: src.load(rel) for name, rel in src.entries(f"resources/{kind}", r"[a-z0-9][a-z0-9_]*").items()}
-    cases_index = src.load("cases/_index.json")
-    cases = [{"id": name, **src.load(rel)} for name, rel in src.entries("cases", r"[A-Za-z0-9][A-Za-z0-9_-]*").items()]
+    cases_index = src.load("cases/_index.json", ("schema",))
+    case_keys = ("kind", "versions", "location", "status", "description")
+    cases = [{"id": name, **src.load(rel, case_keys)} for name, rel in src.entries("cases", r"[A-Za-z0-9][A-Za-z0-9_-]*").items()]
     families_doc = {"schema": index["schema"], "versions": bundles, "families": families, "classification": classification,
-                    "inventories_unknown": src.load("families/_inventories_unknown.json")["inventories"]}
+                    "inventories_unknown": src.load("families/_inventories_unknown.json", ("inventories",))["inventories"]}
     return {
         "families": families_doc,
         "resources": {"schema": resources_index["schema"], "defaults": defaults, "overrides": overrides},
         "cases": {"schema": cases_index["schema"], "cases": cases},
-        "packages": src.load("packages.json"),
+        "packages": src.load("packages.json", ("schema", "packages")),
         "manifests": {b: load(src.path("versions", f"{b}.json")) for b in bundles},
         "inventories": {b: load(src.path("inventory", f"{b}.json")) for b in bundles},
         "source_errors": src.errors(),
