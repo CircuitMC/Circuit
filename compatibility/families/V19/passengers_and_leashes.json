@@ -1,10 +1,11 @@
 {
   "name": "Passengers and leashes",
-  "milestone": "C3",
+  "milestone": "C6",
   "packages": [
     "EF6",
     "MB2"
   ],
   "impl": "missing",
-  "evidence": "none"
+  "evidence": "none",
+  "note": "Passengers and riding moved from C3 to C6 with the non-living vehicles (players are the only riders before mobs); leashes follow in C8"
 }

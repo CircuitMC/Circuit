@@ -93,6 +93,15 @@ class LedgerValidation(unittest.TestCase):
         self.assert_rejected(lambda i: i["resources"]["overrides"]["block"].update({"no_such_block": {"impl": "partial"}}),
                              "not in any inventory")
 
+    def test_resource_milestone_within_its_family(self):
+        # V14 lists C4 and C5: the components handed to C5 carry that label, others the family's first.
+        ledger, _, _ = compat_ledger.produce(copy.deepcopy(self.inputs))
+        by_id = {f["id"]: f for f in ledger["features"]}
+        self.assertEqual(by_id["block/minecraft:bell"]["milestone"], "C5")
+        self.assertEqual(by_id["block/minecraft:lever"]["milestone"], "C4")
+        self.assert_rejected(lambda i: i["resources"]["overrides"]["block"]["bell"].update(milestone="C9"),
+                             "block/minecraft:bell: milestone C9 is not one of family V14")
+
     def test_manifest_disagreeing_with_the_bundle(self):
         self.assert_rejected(lambda i: i["manifests"]["java-1.21.4"].update(protocol=770), "differs from src/contracts/version.cpp")
 

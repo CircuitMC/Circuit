@@ -68,10 +68,10 @@ Mechanics by milestone label, how many are open, and the packages the open ones 
 | C0 | 8 | 3 | 3 | CI4 |
 | C1 | 10 | 7 | 8 | EF3, PL1, PL7, BL2, BL4, BL7, CD3, WG1, WG4, CI1, CI2, UNASSIGNED |
 | C2 | 12 | 12 | 12 | EF7, PL3, PL7, BL3, BL7, WG1, WG3, WG4, WG5, WG6, WG7, MB5, UNASSIGNED |
-| C3 | 23 | 20 | 20 | EF1, EF2, EF3, EF4, EF5, EF6, EF7, EF8, PL4, PL5, PL7, BL1, BL3, BL5, BL7, MB2, MB4, UNASSIGNED |
+| C3 | 22 | 19 | 19 | EF1, EF2, EF3, EF4, EF5, EF6, EF7, EF8, PL4, PL5, PL7, BL1, BL3, BL5, BL7, MB4, UNASSIGNED |
 | C4 | 29 | 15 | 15 | EF5, EF8, EF9, PL2, BL1, BL2, BL3, BL4, BL5, WG4, CI1, UNASSIGNED |
 | C5 | 46 | 41 | 41 | EF5, EF8, EF9, PL6, PL7, BL2, BL3, BL4, BL5, BL6, BL7, CD2, WG2, WG3, WG4, WG9, MB2, MB4, CI1, CI3, MB5 |
-| C6 | 22 | 18 | 18 | EF3, EF4, EF5, PL1, PL2, PL3, PL4, PL5, PL7, BL7, MB2, MB3, CI1, MB5 |
+| C6 | 23 | 19 | 19 | EF3, EF4, EF5, EF6, PL1, PL2, PL3, PL4, PL5, PL7, BL7, MB2, MB3, CI1, MB5 |
 | C7 | 13 | 13 | 13 | BL4, WG1, WG2, WG3, WG4, WG5, WG6, WG7, WG8, WG9 |
 | C8 | 21 | 18 | 21 | EF7, EF8, PL3, BL4, WG4, MB1, MB2, MB3, MB4, MB5 |
 | C9 | 12 | 11 | 12 | PL7, BL4, CD1, CD2, CD3, CD4, WG9, CD5, UNASSIGNED |
@@ -148,7 +148,7 @@ Rider graph, mount and dismount, region ownership of stacks, passenger packets.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V19.passengers_and_leashes` Passengers and leashes | C3 | missing | missing | MB2 |
+| `V19.passengers_and_leashes` Passengers and leashes | C6 | missing | missing | MB2 |
 | `V21.minecarts` Minecarts of every kind | C3 | partial | partial | EF8, PL5 |
 
 ### EF7 Projectile kinds
@@ -578,7 +578,7 @@ Passive animals, breeding, taming, tempting, shearing, milking, leads, mounts an
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
 | `V12.buckets` Filling and emptying buckets | C5 | partial | partial | BL3 |
-| `V19.passengers_and_leashes` Passengers and leashes | C3 | missing | missing | EF6 |
+| `V19.passengers_and_leashes` Passengers and leashes | C6 | missing | missing | EF6 |
 | `V20.experience_orbs` Experience orbs | C6 | partial | partial | PL7 |
 | `V21.riding` Riding and mount controls | C6 | missing | missing | PL5 |
 | `V21.happy_ghast_harness` Happy Ghast harnesses and leash changes | C8 | not_applicable | missing | — |

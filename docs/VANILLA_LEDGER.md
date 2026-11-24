@@ -354,7 +354,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are t
 | --- | --- | --- | --- | --- |
 | Typed entities with UUIDs, attributes and components | C3 | partial, compared | partial, compared | `trace/item_chunk_edge`, `trace/item_merge`; entity UUIDs are derived from ids by the server, not world state (C11); the engine models item entities only (more kinds follow in C3.3 and C3.4); Explicit kind, double-precision state, tick count, signed age |
 | Entity tracking ranges, metadata and visibility for clients | C10 | partial, none | partial, none | Items and players |
-| Passengers and leashes | C3 | missing, none | missing, none |  |
+| Passengers and leashes | C6 | missing, none | missing, none | Passengers and riding moved from C3 to C6 with the non-living vehicles (players are the only riders before mobs); leashes follow in C8 |
 | Entity persistence across save and reload | C3 | partial, compared | partial, compared | `trace/item_chunk_edge`; recovery after a restart keeps ids and tick counts, where an official server loads entities with new ones; Item entities saved with their chunk come back a tick after it reloads, under new ids with new tick counts; checkpoints keep entities waiting to come back |
 | Entity sections, migration between chunks and unloaded chunks | C3 | partial, compared | partial, compared | `trace/item_chunk_edge`; entities of a reloaded chunk come back in coordinate order, not the official chunk-map order; Items stop ticking in chunks that are not entity ticking and collide with unloaded cells as with full blocks |
 
