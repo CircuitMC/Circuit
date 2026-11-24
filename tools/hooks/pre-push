@@ -1,0 +1,25 @@
+#!/bin/sh
+# Publication guard. Normal source is public; ignored documents, runtime data and archives are
+# not. The guard of the pushing checkout runs, so it also covers linked worktrees, and a linked
+# worktree may not push main. Installed by tools/worktree.sh install-hooks.
+top=$(git rev-parse --show-toplevel) || exit 1
+cd "$top" || exit 1
+updates=$(cat)
+git_dir=$(git rev-parse --path-format=absolute --git-dir) || exit 1
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir) || exit 1
+if [ "$git_dir" != "$common_dir" ]; then
+    case "$updates" in
+        *" refs/heads/main "*)
+            echo "Push rejected: main is pushed from the main checkout only, not from this linked worktree." >&2
+            exit 1
+            ;;
+    esac
+fi
+if [ ! -f tools/check_public_tree.py ]; then
+    echo "Push rejected: tools/check_public_tree.py is missing in $top." >&2
+    exit 1
+fi
+if [ -z "$updates" ]; then
+    exec python3 tools/check_public_tree.py --pre-push </dev/null
+fi
+printf '%s\n' "$updates" | python3 tools/check_public_tree.py --pre-push

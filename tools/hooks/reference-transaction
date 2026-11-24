@@ -1,0 +1,24 @@
+#!/bin/sh
+# Only the main checkout moves refs/heads/main. Lanes work on their own branches in linked
+# worktrees, and the integrator merges them in the main checkout. This stops an accidental
+# update of main from a linked worktree; it is installed by tools/worktree.sh install-hooks.
+[ "$1" = prepared ] || exit 0
+protected=refs/heads/main
+target=
+# Lines are "<old> <new> <ref>". The old value is all zeros when the caller named none, so
+# only the new value is compared, with the value main has now.
+while read -r _ new ref; do
+    [ "$ref" = "$protected" ] && target=$new
+done
+[ -n "$target" ] || exit 0
+git_dir=$(git rev-parse --path-format=absolute --git-dir) || exit 1
+common_dir=$(git rev-parse --path-format=absolute --git-common-dir) || exit 1
+[ "$git_dir" = "$common_dir" ] && exit 0
+# A transaction that leaves main where it is changes nothing.
+current=$(git rev-parse --quiet --verify "$protected" 2>/dev/null) || current=
+case $target in
+    *[!0]*) [ "$current" = "$target" ] && exit 0 ;;
+    *) [ -z "$current" ] && exit 0 ;;
+esac
+echo "Refused: $protected can only be moved from the main checkout, not from this linked worktree." >&2
+exit 1

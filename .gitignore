@@ -13,6 +13,7 @@
 /.aws/
 /.xmake/
 /.xmake-global/
+/.circuit-worktree.env
 /build/
 /compile_commands.json
 /worlds/
