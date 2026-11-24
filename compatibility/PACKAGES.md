@@ -259,7 +259,7 @@ Casting, bite timing, loot, lure and luck, experience, hooked entities.
 
 ### PL7 C6 evidence and decisions
 
-The roughly 40 unrecorded clauses; the three recorded mismatches (orb attraction, levitation regeneration, doTileDrops elsewhere); stale ledger text; the decision records for random streams, orders and command timing.
+Official recordings for the roughly 40 player and survival clauses of C6 that have none yet; the three recorded mismatches (how players draw experience orbs, regeneration after a levitation fall on 1.21.4, the game rule doTileDrops); ledger text that the implementation has overtaken; written decisions on random streams, processing orders and command timing.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
@@ -346,7 +346,7 @@ Evidence prerequisites: WG1 for weather by biome.
 
 ### BL4 Tools, attached plants, placement, loot corrections
 
-Tool uses on blocks; chorus, moss and nylium; the unplaced items; coral; flower pots; crops in darkness; loot of modeled blocks; doTileDrops; component reads in recipes, smithing and anvils; collision offsets.
+Tool uses on blocks; chorus, moss and nylium; the block items Circuit does not place as the official servers do (about 170); coral; flower pots; crops in darkness; loot of modeled blocks; doTileDrops; component reads in recipes, smithing and anvils; collision offsets.
 
 Evidence prerequisites: CD2 for archaeology loot.
 
@@ -397,7 +397,7 @@ The data packet and its timing for every block entity; sign editing, dyes and wa
 
 ### BL7 C5 evidence, ledger derivation, C5 checkpoint
 
-1.21.4 random-tick recordings; players' bone meal; derive resource rows from every-state reports; correct stale rows; collect the menu and loot-table inventories; rule-set bump with a migrated world and one final-build rerun.
+1.21.4 random-tick recordings; players' bone meal; deriving the status of block and item rows without behavior of their own from the reports that cover every block state; correcting rows that understate what is implemented; collecting the menu and loot-table inventories; the C5 checkpoint: a rule-set bump with a migrated world and one rerun of the comparisons on the final build.
 
 Evidence prerequisites: EF1 for 1.21.4.
 
@@ -673,7 +673,7 @@ Evidence prerequisites: CD1 (/tick).
 
 Villagers and their professions, trading, raids, wandering traders, the Wither, the Ender Dragon fight, trial chambers and vaults.
 
-Named, not sized: beyond the next phase. It follows the packages listed as hard prerequisites; the analysis does not separate hard from evidence prerequisites for it.
+Named, not sized: later work. It follows the packages listed as hard prerequisites; which of them are needed only for its evidence is not determined yet.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
@@ -696,7 +696,7 @@ Named, not sized: beyond the next phase. It follows the packages listed as hard 
 
 Command blocks, structure blocks, server operation files, RCON and query.
 
-Named, not sized: beyond the next phase. It follows the packages listed as hard prerequisites; the analysis does not separate hard from evidence prerequisites for it.
+Named, not sized: later work. It follows the packages listed as hard prerequisites; which of them are needed only for its evidence is not determined yet.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |

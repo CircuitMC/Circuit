@@ -201,7 +201,7 @@
     {
       "id": "PL7",
       "title": "C6 evidence and decisions",
-      "content": "The roughly 40 unrecorded clauses; the three recorded mismatches (orb attraction, levitation regeneration, doTileDrops elsewhere); stale ledger text; the decision records for random streams, orders and command timing.",
+      "content": "Official recordings for the roughly 40 player and survival clauses of C6 that have none yet; the three recorded mismatches (how players draw experience orbs, regeneration after a levitation fall on 1.21.4, the game rule doTileDrops); ledger text that the implementation has overtaken; written decisions on random streams, processing orders and command timing.",
       "size": "M",
       "hard": [],
       "evidence": [
@@ -266,7 +266,7 @@
     {
       "id": "BL4",
       "title": "Tools, attached plants, placement, loot corrections",
-      "content": "Tool uses on blocks; chorus, moss and nylium; the unplaced items; coral; flower pots; crops in darkness; loot of modeled blocks; doTileDrops; component reads in recipes, smithing and anvils; collision offsets.",
+      "content": "Tool uses on blocks; chorus, moss and nylium; the block items Circuit does not place as the official servers do (about 170); coral; flower pots; crops in darkness; loot of modeled blocks; doTileDrops; component reads in recipes, smithing and anvils; collision offsets.",
       "size": "L",
       "hard": [],
       "evidence": [
@@ -304,7 +304,7 @@
     {
       "id": "BL7",
       "title": "C5 evidence, ledger derivation, C5 checkpoint",
-      "content": "1.21.4 random-tick recordings; players' bone meal; derive resource rows from every-state reports; correct stale rows; collect the menu and loot-table inventories; rule-set bump with a migrated world and one final-build rerun.",
+      "content": "1.21.4 random-tick recordings; players' bone meal; deriving the status of block and item rows without behavior of their own from the reports that cover every block state; correcting rows that understate what is implemented; collecting the menu and loot-table inventories; the C5 checkpoint: a rule-set bump with a migrated world and one rerun of the comparisons on the final build.",
       "size": "M",
       "hard": [],
       "evidence": [
@@ -586,7 +586,7 @@
       ],
       "evidence": [],
       "state": "planned",
-      "note": "Named, not sized: beyond the next phase. It follows the packages listed as hard prerequisites; the analysis does not separate hard from evidence prerequisites for it."
+      "note": "Named, not sized: later work. It follows the packages listed as hard prerequisites; which of them are needed only for its evidence is not determined yet."
     },
     {
       "id": "CD5",
@@ -600,7 +600,7 @@
       ],
       "evidence": [],
       "state": "planned",
-      "note": "Named, not sized: beyond the next phase. It follows the packages listed as hard prerequisites; the analysis does not separate hard from evidence prerequisites for it."
+      "note": "Named, not sized: later work. It follows the packages listed as hard prerequisites; which of them are needed only for its evidence is not determined yet."
     },
     {
       "id": "UNASSIGNED",
