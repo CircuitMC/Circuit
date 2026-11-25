@@ -183,10 +183,12 @@ gate_launch() {
     echo "$rc $(($(gate_now) - start))" >"$log.rc"
 }
 
-# Decides one finished program from its exit status and its log.
+# Decides one finished program from its exit status and its log, and leaves the number of
+# cases it counted as passed in gate_judged_cases.
 # gate_judge <step> <log> <allow no cases: 0|1>
 gate_judge() {
     local step=$1 log=$2 allow_empty=$3 rc seconds totals passed failed line
+    gate_judged_cases=0
     if [[ ! -s $log.rc ]]; then
         gate_record NOT-RUN "$step" 0 "did not finish, see $log"
         return 1
@@ -212,6 +214,10 @@ gate_judge() {
         gate_record FAIL "$step" "$seconds" "a case was skipped: $(grep -m1 'SKIPPED' "$log" | cut -c1-60)"
         return 1
     fi
+    if grep -qE '[1-9][0-9]* skipped for a missing jar' "$log"; then
+        gate_record FAIL "$step" "$seconds" "cases left out the checks that need an official jar, see $log"
+        return 1
+    fi
     # A program that ran its cases says so: "<suite>: N passed, M failed" for the suites with
     # cases, a line with "passed" for the others. Exit 0 without it means no test ran.
     totals=$(grep -E '[0-9]+ passed, [0-9]+ failed' "$log")
@@ -231,6 +237,7 @@ gate_judge() {
             gate_record FAIL "$step" "$seconds" "no case ran, see $log"
             return 1
         fi
+        gate_judged_cases=$passed
         gate_record PASS "$step" "$seconds" "$passed passed, 0 failed"
         return 0
     fi
@@ -248,7 +255,8 @@ gate_run_programs() {
     local prefix=$1 tree=$2 mode=$3 jobs=$4 logs=$5 jars=$6
     shift 6
     local programs=("$@") program bin shards shard index running=0 start wall sum=0 failed=0
-    local queue=() item step log rc seconds
+    local queue=() item step log rc seconds sharded=
+    local -A shard_cases=()
     ((${#programs[@]})) || programs=("${GATE_PROGRAMS[@]}")
     if ! bin=$(gate_binary_directory "$tree" "$mode"); then
         for program in "${programs[@]}"; do
@@ -263,7 +271,8 @@ gate_run_programs() {
         fi
         shards=$(gate_shards_of "$program")
         if ((shards > 1)) && grep -q CIRCUIT_TEST_SHARD "$bin/$program"; then
-            for ((index = 1; index <= shards; index++)); do
+            # Shard indices start at 0: CIRCUIT_TEST_SHARD=i/n with 0 <= i < n.
+            for ((index = 0; index < shards; index++)); do
                 queue+=("$program|$index/$shards|")
             done
         else
@@ -296,9 +305,19 @@ gate_run_programs() {
         fi
         log=$logs/$mode-$program${shard:+-shard-${shard%%/*}}.log
         gate_judge "$step" "$log" "$([[ -n $shard ]] && echo 1 || echo 0)" || failed=1
+        if [[ -n $shard ]]; then
+            shard_cases[$program]=$((${shard_cases[$program]:-0} + gate_judged_cases))
+        fi
         if [[ -s $log.rc ]]; then
             read -r rc seconds <"$log.rc"
             sum=$((sum + seconds))
+        fi
+    done
+    # One shard may be empty, but a program whose shards ran no case at all did not run.
+    for sharded in "${!shard_cases[@]}"; do
+        if ((shard_cases[$sharded] == 0)); then
+            gate_record FAIL "${prefix}$sharded" 0 "no case ran in any shard"
+            failed=1
         fi
     done
     echo "${prefix}programs: $wall s side by side with $jobs at a time; $sum s one after another"
