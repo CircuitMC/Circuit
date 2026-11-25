@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // The worker threads of the runtime: what PoolRunner and StageExecutor
-// guarantee when a job throws.
+// guarantee when a job throws, and which threads they start.
 #include "../support/check.hpp"
 #include "threads.hpp"
+#include <circuit/contracts/version.hpp>
+#include <circuit/runtime/engine.hpp>
 #include <circuit/runtime/executor.hpp>
 #include <circuit/runtime/job_runner.hpp>
 #include <atomic>
@@ -20,6 +22,7 @@ using circuit::runtime::StageExecutor;
 using circuit::runtime::Task;
 using circuit::test::eventually;
 using circuit::test::require;
+using circuit::test::settled_thread_count;
 
 namespace {
 
@@ -181,6 +184,35 @@ CIRCUIT_TEST("pool runner completes many batches at 2/4/8 workers") {
     }
 }
 
+CIRCUIT_TEST("pool runner and engine start no thread at one worker") {
+    const auto before = settled_thread_count();
+    require(before.has_value(), "the threads of the process cannot be counted (/proc/self/task)");
+    {
+        PoolRunner runner(1);
+        require(settled_thread_count() == before, "a pool runner of one worker started a thread");
+        require(runs_a_plain_batch(runner, 16), "the tasks did not run");
+        require(settled_thread_count() == before, "a pool runner of one worker started a thread in run()");
+    }
+    {
+        // The count does see worker threads: workers - 1 helpers, gone with the runner.
+        PoolRunner runner(4);
+        require(settled_thread_count() == *before + 3, "a pool runner of four workers does not have three helper threads");
+        require(runs_a_plain_batch(runner, 16), "the tasks did not run");
+        require(settled_thread_count() == *before + 3, "run() changed the number of threads");
+    }
+    require(eventually([&] { return settled_thread_count() == before; }), "the helper threads outlived the runner");
+    {
+        const auto bundle = circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.8");
+        require(bundle.has_value(), "no bundle for java-1.21.8");
+        circuit::runtime::EngineOptions options;
+        options.workers = 1;
+        circuit::runtime::Engine engine(**bundle, 1, options);
+        require(settled_thread_count() == before, "an engine of one worker started a thread");
+        for (int tick = 0; tick < 3; ++tick) engine.advance({});
+        require(settled_thread_count() == before, "an engine of one worker started a thread while ticking");
+    }
+}
+
 CIRCUIT_TEST("pool runner and stage executor reject worker counts outside their range") {
     const auto invalid = [](const std::function<void()>& make) {
         try {
@@ -234,4 +266,15 @@ CIRCUIT_TEST("stage executor runs every submitted job before it is destroyed") {
         (void)pool.submit(std::move(jobs));
     }
     require(count == 200, "the destructor left submitted jobs behind");
+}
+
+CIRCUIT_TEST("stage executor starts the threads it is given and joins them") {
+    const auto before = settled_thread_count();
+    require(before.has_value(), "the threads of the process cannot be counted (/proc/self/task)");
+    {
+        StageExecutor pool(5);
+        require(settled_thread_count() == *before + 5, "an executor of five threads does not have five threads");
+        pool.submit({}).get();
+    }
+    require(eventually([&] { return settled_thread_count() == before; }), "the threads outlived the executor");
 }

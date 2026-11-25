@@ -11,6 +11,10 @@
 
 namespace circuit::runtime {
 
+PoolRunner::PoolRunner(unsigned workers) : workers_(workers) {
+    if (workers > 1) pool_.emplace(workers - 1);
+}
+
 void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
     const auto drain = [](Task* task) {
         while (task->step()) {
@@ -38,7 +42,7 @@ void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
         }
     };
     const auto helpers = std::min<std::size_t>(workers_, tasks.size()) - 1;
-    auto done = pool_.submit(std::vector<std::function<void()>>(helpers, take));
+    auto done = pool_->submit(std::vector<std::function<void()>>(helpers, take));
     take();
     // The helpers work on the caller's tasks, so nothing leaves this function
     // before they have finished, whichever thread a task threw on. `take`
@@ -66,7 +70,7 @@ double SeededRunner::unit() { return static_cast<double>(next() >> 11) * 0x1.0p-
 
 void SeededRunner::run(std::span<Task* const> tasks, std::uint32_t attempt) {
     std::vector<Task*> live(tasks.begin(), tasks.end());
-    // Priority strategy: a random initial order; the running task occasionally
+    // Priority strategy: a random initial order; the running task now and then
     // drops to the lowest priority, which yields a different interleaving.
     if (options_.strategy == ExplorationOptions::Strategy::priority)
         for (std::size_t i = live.size(); i > 1; --i) std::swap(live[i - 1], live[next() % i]);
