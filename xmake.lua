@@ -263,6 +263,15 @@ target("chunk_bench")
     add_deps("circuit_server", "circuit_runtime")
 target_end()
 
+-- Engine tick times on recorded and constructed workloads
+-- (docs/PERFORMANCE.md); tools/bench/run.sh runs a release build of it.
+target("engine_bench")
+    set_kind("binary")
+    set_default(false)
+    add_files("tools/bench/engine_bench.cpp")
+    add_deps("circuit_evidence")
+target_end()
+
 target("protocol_tests")
     set_kind("binary")
     set_default(false)
