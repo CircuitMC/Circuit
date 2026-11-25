@@ -10,12 +10,16 @@
 #   CIRCUIT_GATE_BUILD_TIMEOUT    seconds for configure plus build (default 3600)
 #   CIRCUIT_GATE_TEST_TIMEOUT     seconds per test program (default 7200)
 #   CIRCUIT_GATE_SHARDS           "program=n ..." runs a program as n shards (CIRCUIT_TEST_SHARD=i/n)
-#                                 when the program supports sharding; otherwise it runs whole
+#                                 when the program supports sharding; otherwise it runs whole.
+#                                 Unset: GATE_DEFAULT_SHARDS. Empty: no shards
 
 # Longest first, so the side-by-side run is bounded by the longest program.
 GATE_PROGRAMS=(evidence_tests storage_tests simulation_tests server_tests rules_tests anvil_tests
                protocol_tests data_tests extension_tests contract_tests control_tests runtime_tests
                interface_tests validation_tests plugin_tests parallel_models)
+
+# The four programs that take minutes, split so that no shard bounds the side-by-side run.
+GATE_DEFAULT_SHARDS="evidence_tests=4 storage_tests=3 simulation_tests=4 server_tests=3"
 
 GATE_JAR_VARIABLES=(CIRCUIT_VANILLA_JAR_1_21_8 CIRCUIT_VANILLA_JAR_1_21_4)
 
@@ -139,10 +143,11 @@ gate_binary_directory() {
     printf '%s\n' "${found[0]}"
 }
 
-# gate_shards_of <program>: the shard count asked for in CIRCUIT_GATE_SHARDS (default 1).
+# gate_shards_of <program>: the shard count asked for in CIRCUIT_GATE_SHARDS, or in
+# GATE_DEFAULT_SHARDS when that variable is unset; 1 for a program neither names.
 gate_shards_of() {
     local entry
-    for entry in ${CIRCUIT_GATE_SHARDS:-}; do
+    for entry in ${CIRCUIT_GATE_SHARDS-$GATE_DEFAULT_SHARDS}; do
         if [[ ${entry%%=*} == "$1" && ${entry#*=} =~ ^[1-9][0-9]*$ ]]; then
             printf '%s\n' "${entry#*=}"
             return

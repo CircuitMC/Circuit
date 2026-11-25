@@ -110,7 +110,7 @@ bash tools/check.sh --lane   # incremental debug build with zero warnings, every
 bash tools/check.sh --full   # the same plus the ledger checks and the Java SPI compilation
 ```
 
-Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. On the development machine the side-by-side run took 15 minutes against 37 minutes one after another; the longest program bounds it.
+Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. The four programs that take minutes run as several shards each when they are built with shard support (`CIRCUIT_TEST_SHARD`). On the development machine the programs took 37 minutes one after another, 15 minutes side by side as whole programs, where the longest one bounds the run, and 8 minutes with shards.
 
 The tiers built on this are in `tools/gate/` and described in [its guide](../tools/gate/README.md):
 
