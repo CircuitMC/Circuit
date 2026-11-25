@@ -1,0 +1,14 @@
+{
+  "name": "Item entities and experience",
+  "milestones": [
+    "C3",
+    "C6"
+  ],
+  "mechanics": [
+    "item_physics",
+    "merging",
+    "pickup",
+    "despawn",
+    "experience_orbs"
+  ]
+}

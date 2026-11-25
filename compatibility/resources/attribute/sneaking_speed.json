@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes"
+  ],
+  "note": "Swift sneak's modifier on leggings, sent as both official servers send it; the client uses it"
+}

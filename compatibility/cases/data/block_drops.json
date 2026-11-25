@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/loot/block-drops.tsv, checked by tests/server/server_tests.cpp with the operator's jars; external: circuit-clienttest/craft-loot.js (place, dig)",
+  "status": "passing",
+  "description": "23 blocks and tools per version broken on the official servers; Circuit drops the same items in the 19 cases whose tables are deterministic (on 1.21.8 also live, from the imported world), and nothing in the 4 that draw random numbers"
+}

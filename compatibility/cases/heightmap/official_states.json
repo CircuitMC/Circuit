@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/heightmap/, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness heightmap report",
+  "status": "passing",
+  "description": "Whether every block state counts for MOTION_BLOCKING, reported by both official servers (27,946 states of 1.21.8, 27,866 of 1.21.4, identical where both have them); Circuit's rules match every one, and MOTION_BLOCKING_NO_LEAVES is the same without leaves on both"
+}

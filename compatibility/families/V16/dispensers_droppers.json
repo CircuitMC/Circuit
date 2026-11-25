@@ -1,0 +1,23 @@
+{
+  "name": "Dispensers and droppers with dispense behaviors",
+  "milestone": "C4",
+  "packages": [
+    "BL5"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases",
+    "trace/dispenser_items",
+    "trace/dispenser_tnt_rule",
+    "client/armor2"
+  ],
+  "deviations": [
+    "dispensed projectiles, fire, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay",
+    "armor goes onto the first player by key but spectators whose standing box meets the cell in front (a crouching player's lower box is not used), and also onto a dead player who has not respawned (none of it recorded); heads and saddles still eject",
+    "level events are sent for items a dispenser ejects (not minecarts off rails) and armor put on only, not for droppers, the other uses or a dispenser that fails"
+  ],
+  "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails, put armor and elytras on the player in front whose slot for it is empty (else eject them), with their sound and smoke (level events 1000 and 2000)"
+}

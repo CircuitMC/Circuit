@@ -1,0 +1,25 @@
+{
+  "name": "Torches, lanterns, ladders, carpets, flowers, saplings, signs and banners on their supports",
+  "milestone": "C5",
+  "packages": [
+    "BL4"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/building",
+    "collision/support",
+    "collision/plants",
+    "placement/official_items",
+    "trace/signs_beds",
+    "trace/supported_blocks",
+    "trace/tall_flowers",
+    "trace/plant_grounds"
+  ],
+  "deviations": [
+    "flowers and saplings do not grow or spread (no random ticks for them)",
+    "other attached blocks (vines on walls, glow lichen, amethyst) are not modeled",
+    "a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions)"
+  ],
+  "note": "Placed by players where supported, and broken with their drops when the support goes (torches, lanterns, ladders, signs and banners on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do; signs and banners stand and hang on solid blocks"
+}

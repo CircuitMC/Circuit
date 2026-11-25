@@ -1,0 +1,14 @@
+{
+  "name": "Item merging",
+  "milestone": "C3",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "trace/item_merge",
+    "trace/item_merge_moving",
+    "trace/item_merge_crossing",
+    "trace/item_merge_vertical",
+    "trace/item_merge_timers"
+  ],
+  "note": "Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept"
+}

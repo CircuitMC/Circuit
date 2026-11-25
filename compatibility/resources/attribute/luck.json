@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes"
+  ],
+  "note": "Sent with luck's and bad luck's modifiers; nothing rolls with it"
+}

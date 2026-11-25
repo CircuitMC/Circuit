@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/loom.js",
+  "status": "passing",
+  "description": "32 steps at a loom: pattern buttons in the tag's order (one beyond the list), layers in the dye's color, taking and shift-clicking results until the banners run out, a pattern item's single pattern chosen at once and dropped with it, a dye refused while another fills its slot, quick moves, a seventh layer; Circuit and both official servers give identical windows and banner pattern ids"
+}

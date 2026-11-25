@@ -1,0 +1,35 @@
+{
+  "name": "Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus",
+  "milestone": "C5",
+  "packages": [
+    "EF9",
+    "BL4",
+    "BL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/plants",
+    "collision/plant_contexts",
+    "trace/plant_grounds",
+    "trace/plant_supports",
+    "trace/vines",
+    "trace/dripleaves",
+    "trace/mushrooms",
+    "trace/cactus_damage",
+    "trace/stems_growth",
+    "trace/cane_cactus_growth",
+    "trace/wart_berry_cocoa_growth",
+    "trace/kelp_vines_growth",
+    "trace/bamboo_growth",
+    "trace/eggs_blossoms"
+  ],
+  "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported; melon and pumpkin stems grow and set their fruit on farmland or dirt, and attached stems stand ripe again when it goes; sugar cane, cacti and their flowers, nether wart, sweet berry bushes, cocoa, kelp, weeping, twisting and cave vines and bamboo grow and mushrooms spread in random ticks, as the official 1.21.8 server does draw for draw",
+  "deviations": [
+    "chorus flowers and saplings do not grow",
+    "1.21.4's growth is not compared (its random ticks run only near players, and the harness has none)",
+    "cacti hurt only items",
+    "chorus and pitcher crops are not supported yet",
+    "without data packs, plants whose loot rolls random numbers drop nothing"
+  ]
+}

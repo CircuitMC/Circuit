@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/combat",
+    "client/ench_protect",
+    "client/ench_combat"
+  ],
+  "note": "A player's melee attack and its sweep: the damage event names the attacker, without a source position; armor reduces it; exhaustion 0.1; death.attack.player; with the main hand's enchantments' damage, knockback and fire (client/ench_combat)"
+}

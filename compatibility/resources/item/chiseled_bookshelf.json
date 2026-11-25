@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Placed facing the player",
+  "cases": [
+    "placement/official_items"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/suite.js",
+  "status": "passing",
+  "description": "Six pass/fail checks calibrated on the official server, then run against Circuit"
+}

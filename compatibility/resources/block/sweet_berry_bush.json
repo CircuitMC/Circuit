@@ -1,0 +1,18 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/plants",
+    "placement/official_items",
+    "trace/loot_rolls",
+    "trace/loot_single",
+    "trace/loot_many",
+    "client/drown"
+  ],
+  "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do; grown at least once, hurts survival players who moved across it since their last tick (sweet_berry_bush, 1), the velocity told 0 (client/drown); keeps the distance fallen at 0 (minecraft.wiki; not recorded)",
+  "deviations": [
+    "does not grow",
+    "without data packs it drops nothing, since its loot rolls random numbers",
+    "it does not slow players (the client slows itself) or other entities"
+  ]
+}

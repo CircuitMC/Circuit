@@ -1,0 +1,15 @@
+{
+  "name": "Client-visible world state",
+  "milestones": [
+    "C10"
+  ],
+  "mechanics": [
+    "chunks_and_blocks",
+    "block_entity_data",
+    "entity_presentation",
+    "sounds_and_particles",
+    "hud",
+    "maps_books_signs",
+    "inventories"
+  ]
+}

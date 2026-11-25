@@ -1,0 +1,28 @@
+{
+  "name": "Damage sources and the hurt cooldown",
+  "milestone": "C6",
+  "packages": [
+    "PL2",
+    "PL7",
+    "CI1"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals",
+    "client/attribute_rules",
+    "client/falls",
+    "client/effects_heal",
+    "client/fire",
+    "client/drown",
+    "client/combat"
+  ],
+  "note": "Falls (beyond the safe fall distance: on 1.21.8 with the move that lands, rounded down; on 1.21.4 without it, rounded up), the void, starvation, the effects' magic and wither damage, fire (in_fire), burning (on_fire), lava and magma blocks (hot_floor), drowning (the air supply, entity event 67 on 1.21.8), suffocation (in_wall), cacti, sweet berry bushes moved across and freezing in powder snow (the frozen ticks and the powder_snow slowness); fire resistance keeps fire's damage off; armor wears and reduces the damage it reduces (not the bypasses_armor tag's), resistance takes 20% a level, absorption takes damage first; damage that tires costs its exhaustion; within the hurt cooldown more damage takes only the difference, without the damage event, hurt animation, knockback or sound (client/combat); the game rules fallDamage, fireDamage, drowningDamage and freezeDamage; the damage event, the hurt sound by the damage type's effects (hurt_on_fire, hurt_drown, hurt_freeze, hurt_sweet_berry_bush), death and fall sounds for the others nearby and the velocity at the next entity update (none for drowning; 0 after a teleport or a move in a sweet berry bush), as both official servers send them",
+  "deviations": [
+    "the velocity told is that of a player standing still, or at the bottom of lava, or 0 after a teleport or a move in a sweet berry bush (players hurt in the air, moving elsewhere or in water were not recorded)",
+    "the fall sound of the block landed on is not played",
+    "the hurt and death sounds' pitches come from Circuit's own draws",
+    "campfires and bubble columns' air are not modeled; the suffocating blocks are taken to be the redstone conductors (stone and glass recorded)",
+    "a magma block hurts a player standing on its edge by the nearest block under them that bears them (minecraft.wiki; not recorded); lava halves the distance fallen each tick by minecraft.wiki (not recorded)"
+  ]
+}

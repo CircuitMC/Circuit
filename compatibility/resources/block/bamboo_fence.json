@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "documented",
+  "cases": [
+    "collision/connection"
+  ],
+  "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+}

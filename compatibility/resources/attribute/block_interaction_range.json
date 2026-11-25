@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes"
+  ],
+  "note": "Sent with creative mode's modifier; the server's reach checks use their own distances"
+}

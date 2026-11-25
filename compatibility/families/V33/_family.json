@@ -1,0 +1,14 @@
+{
+  "name": "Communication and connection lifecycle",
+  "milestones": [
+    "C10"
+  ],
+  "mechanics": [
+    "handshake_status_login",
+    "configuration",
+    "signed_chat",
+    "cookies_transfer_links",
+    "dialogs",
+    "waypoints"
+  ]
+}

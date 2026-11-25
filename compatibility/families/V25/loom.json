@@ -1,0 +1,10 @@
+{
+  "name": "Looms",
+  "milestone": "C5",
+  "impl": "implemented",
+  "evidence": "compared",
+  "note": "Looms offer the patterns of the banner pattern tag no_item_required, or a pattern item's own, in the tags' order; a button chooses one while a banner and a dye are there, and the result is the banner with that pattern's layer in the dye's color on top (also beyond six layers); the choice follows the slots as on both official servers; taking the result uses a banner and a dye; 32 steps give the same windows and components as both official servers",
+  "cases": [
+    "client/loom"
+  ]
+}

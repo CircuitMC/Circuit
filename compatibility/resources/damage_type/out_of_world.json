@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals",
+    "client/ench_protect"
+  ],
+  "note": "Its sounds and the velocity told were not recorded"
+}

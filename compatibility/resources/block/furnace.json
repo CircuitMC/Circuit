@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities",
+    "placement/official_items",
+    "trace/furnaces",
+    "client/furnace_menus"
+  ],
+  "deviations": [
+    "the rest of its experience below 1 comes by a random of Circuit's own"
+  ],
+  "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
+}

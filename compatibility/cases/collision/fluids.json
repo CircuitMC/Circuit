@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/fluids-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness shape report",
+  "status": "passing",
+  "description": "The fluid of every block state, whether it takes poured water and whether water and lava replace it, reported by both official servers; Circuit's rules match all 55,812 states"
+}

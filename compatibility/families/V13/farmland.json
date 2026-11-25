@@ -1,0 +1,19 @@
+{
+  "name": "Farmland, hydration and trampling",
+  "milestone": "C5",
+  "packages": [
+    "EF5",
+    "BL3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random; in its random ticks it dries, is wetted by water and turns to dirt unless a crop or stem keeps it, as both official servers do",
+  "cases": [
+    "trace/farmland",
+    "trace/random_ticks_farmland"
+  ],
+  "deviations": [
+    "rain does not wet it",
+    "nothing tramples it (there are no living entities yet), and entities are not pushed up when it turns"
+  ]
+}

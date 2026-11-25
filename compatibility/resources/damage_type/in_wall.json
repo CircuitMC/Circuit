@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/drown"
+  ],
+  "note": "Suffocation: 1 with the eyes inside a redstone conductor's collision shape (stone recorded, glass not)"
+}

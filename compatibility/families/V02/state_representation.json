@@ -1,0 +1,7 @@
+{
+  "name": "Internal representation of every block and state property",
+  "milestone": "C1",
+  "impl": "implemented",
+  "evidence": "documented",
+  "note": "circuit-blocks-1 from public data: 1,106 internal blocks and 27,958 internal states with stable ids; every state of both releases round-trips through notation and wire ids"
+}

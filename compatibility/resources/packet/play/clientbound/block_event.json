@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/openers"
+  ],
+  "deviations": [
+    "sent for chests' lids only, not for pistons or note blocks"
+  ]
+}

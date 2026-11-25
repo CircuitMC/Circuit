@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "trace/tnt_ignition, trace/arrow_tnt, trace/tnt_chain_edge; server_tests (player placement)",
+  "status": "passing",
+  "description": "TNT placement, breaking and every ignition path"
+}

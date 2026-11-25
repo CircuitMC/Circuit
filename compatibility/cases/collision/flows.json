@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/flows-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness flow report",
+  "status": "passing",
+  "description": "Whether flowing water and flowing lava go into every block state, set on dirt with a source beside it, as both official servers decide it (54,641 states the report could tell); Circuit's fluids go into exactly those"
+}

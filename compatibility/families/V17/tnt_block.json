@@ -1,0 +1,19 @@
+{
+  "name": "TNT placement and breaking",
+  "milestone": "C3",
+  "packages": [
+    "UNASSIGNED"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases_planned": [
+    "TNT-01"
+  ],
+  "cases": [
+    "trace/tnt_ignition"
+  ],
+  "note": "TNT placed by commands, pistons and players becomes primed TNT where redstone reaches it; broken, it drops itself by its loot table",
+  "deviations": [
+    "unstable TNT is not primed when broken"
+  ]
+}

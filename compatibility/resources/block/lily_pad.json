@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Lies on a water source or ice and breaks with its drop when an update finds it unsupported, as both official servers do",
+  "cases": [
+    "collision/plants",
+    "trace/plant_supports"
+  ],
+  "deviations": [
+    "players cannot place it (it is placed by using it on water)",
+    "boats do not break it"
+  ]
+}

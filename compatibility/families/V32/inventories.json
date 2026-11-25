@@ -1,0 +1,12 @@
+{
+  "name": "Inventory and window synchronization",
+  "milestone": "C10",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "client/windows",
+    "client/own_grid_counts",
+    "client/window_sync"
+  ],
+  "note": "The server keeps each client's view of its window and sends the slots that differ after a tick, the whole window when the client describes another one or clicked on a stale state id; each window counts its own state ids. As both official servers do, an item use that changes the stack it takes from sends the whole own window (with a chest open, before the chest window's changes), one that leaves its stack as it was sends only what else changed, and a drop's change of the held slot is not sent"
+}

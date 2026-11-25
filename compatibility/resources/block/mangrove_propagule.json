@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/plants",
+    "placement/official_items",
+    "trace/plant_grounds",
+    "trace/vines"
+  ],
+  "note": "Placed by players where it grows, broken with its drop when its ground goes, and hanging, when the mangrove leaves above it go, as both official servers do",
+  "deviations": [
+    "does not grow"
+  ]
+}

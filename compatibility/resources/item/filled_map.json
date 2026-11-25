@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/maps",
+    "client/maps_explore"
+  ],
+  "deviations": [
+    "maps in the Nether do not explore; banners and item frames do not show on them"
+  ],
+  "note": "Its map's data reaches the players carrying it, with their markers; held in a hand, it explores the terrain, as on both official servers"
+}

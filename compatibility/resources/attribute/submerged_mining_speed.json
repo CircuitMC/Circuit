@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes",
+    "client/ench_dig"
+  ],
+  "note": "Aqua affinity's modifier on a helmet, sent as both official servers send it; digging under water uses it"
+}

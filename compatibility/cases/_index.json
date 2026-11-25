@@ -1,0 +1,4 @@
+{
+  "schema": "circuit-compatibility-cases-2",
+  "comment": "Hand-written cases outside the trace fixtures, one file per case; a case's id is its path below this directory without the extension. Every trace in tests/fixtures/harness*/ is a case 'trace/<name>' added by the generator. Kinds: official_trace (recorded on the official server and replayed by Circuit), black_box (the same client script against the official server and Circuit, outputs compared), real_client (the unmodified client against Circuit only), round_trip (data through the official server and back), planned (an acceptance case with no expectation recorded yet)."
+}

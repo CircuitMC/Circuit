@@ -1,0 +1,12 @@
+{
+  "name": "Integration, endurance and operating limits",
+  "milestones": [
+    "C12"
+  ],
+  "mechanics": [
+    "regression_suites",
+    "campaigns",
+    "endurance",
+    "performance"
+  ]
+}

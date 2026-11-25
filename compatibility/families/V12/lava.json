@@ -1,0 +1,19 @@
+{
+  "name": "Lava flow and lava-water interactions",
+  "milestone": "C5",
+  "packages": [
+    "WG3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/lava_flow",
+    "trace/lava_water",
+    "trace/lava_edges",
+    "trace/fluid_sources",
+    "trace/fluid_washes",
+    "collision/flows"
+  ],
+  "note": "The overworld's lava; the Nether's, fire from lava and entities in lava are not modeled"
+}

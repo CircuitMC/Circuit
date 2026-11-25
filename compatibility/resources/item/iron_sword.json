@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor); its attacks as both official servers make them: charge, sweeps and a wear of 1 a hit (client/combat)",
+  "cases": [
+    "client/armor",
+    "client/combat"
+  ]
+}

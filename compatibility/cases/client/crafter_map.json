@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/crafter-map.js",
+  "status": "passing",
+  "description": "Three crafters facing up with a map amid eight paper: a map, a map without data and a locked map; their windows' results, the new maps they throw out (one id each), the refused one keeping its grid, the thrown map's data when picked up and the next map's id; Circuit and both official servers give identical windows, thrown items, inventories and map data packets"
+}

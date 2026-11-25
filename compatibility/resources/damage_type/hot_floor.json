@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/fire",
+    "client/ench_fire"
+  ],
+  "note": "Magma blocks stood on without sneaking: 1, armor reducing it"
+}

@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Stands on sugar cane, or on soil or sand with water beside that block, and breaks with its drop a tick after an update finds it unsupported, as both official servers do; placed by players where it stands",
+  "cases": [
+    "collision/plants",
+    "collision/plant_contexts",
+    "trace/plant_supports"
+  ],
+  "deviations": [
+    "does not grow"
+  ]
+}

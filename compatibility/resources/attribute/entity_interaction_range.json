@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes",
+    "client/combat"
+  ],
+  "note": "Sent with creative mode's modifier; with 3 more, the reach of attacks (client/combat)"
+}

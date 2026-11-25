@@ -1,0 +1,20 @@
+{
+  "defaults": {
+    "impl": "missing",
+    "evidence": "none"
+  },
+  "classification": [
+    [
+      "V33",
+      "^(handshaking|status|login|configuration)/"
+    ],
+    [
+      "V33",
+      "^play/(serverbound|clientbound)/(keep_alive|ping|pong|ping_request|pong_response|disconnect|chat.*|player_chat|system_chat|disguised_chat|delete_chat|chat_session_update|chat_ack|chat_command.*|signed_chat_command|resource_pack.*|cookie.*|store_cookie|transfer|custom_payload|custom_report_details|server_links|show_dialog|clear_dialog|custom_click_action|start_configuration|configuration_acknowledged|server_data|player_loaded|client_tick_end)$"
+    ],
+    [
+      "V32",
+      ".*"
+    ]
+  ]
+}

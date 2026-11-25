@@ -1,0 +1,13 @@
+{
+  "name": "Block registry and state properties",
+  "milestones": [
+    "C1",
+    "C5"
+  ],
+  "mechanics": [
+    "state_representation",
+    "wire_state_mapping",
+    "collision_shapes",
+    "block_properties"
+  ]
+}

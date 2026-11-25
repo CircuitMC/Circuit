@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/window-sync.js",
+  "status": "passing",
+  "description": "54 steps, each one action of a player, listing the inventory packets that follow it with their state ids: held slot changes, empty maps (a stack and the last one), empty buckets on water and at the sky, water buckets poured, a knowledge book, a stick, a filled map and an empty hand used, dirt placed, an item and a stack dropped and picked up again, hands swapped, a map and a bucket used from the off hand, a crafting table with dirt in its grid and a chest opened and closed, a map used and dropped and a bucket filled and poured with the chest open, and a map, a bucket and a knowledge book used in creative mode; Circuit and both official servers send the same packets"
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest",
+  "milestone": "C1",
+  "packages": [
+    "PL1",
+    "PL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "components/official_stacks",
+    "client/creative_components",
+    "anvil/components"
+  ],
+  "note": "Every component type of both protocols is read, checked against its registries and kept losslessly in canonical form (schema compiled from minecraft-data); 29 components have a save form for Anvil interchange",
+  "deviations": [
+    "components that refer to registries the server does not synchronize (enchantments, trim materials and patterns, banner patterns, instruments, jukebox songs, data component predicates) are refused",
+    "the rules use only damage, max stack size and max damage, and for eating and drinking a potion's contents, a suspicious stew's effects and an ominous bottle's amplifier",
+    "a stack's components are written in type order; the official servers write a patch in the order its components were set (clients read it as a map; client/special_a)"
+  ]
+}

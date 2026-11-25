@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "swimming, entity currents and waterlogging"
+  ],
+  "cases": [
+    "trace/fluid_washes",
+    "collision/flows",
+    "client/fire"
+  ],
+  "note": "Spreads, falls and drains as both official servers do, washing away the blocks they let it (with their drops); puts burning players out (client/fire)"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Synchronized registries with data for clients without the vanilla pack",
+  "milestone": "C1",
+  "packages": [
+    "CI2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Each bundle names its registry set: 17 registries for 1.21.8 and 11 for 1.21.4 sent by name to clients with the vanilla pack, the same entries as the official servers; clients without the pack get a documented minimal set with data",
+  "cases": [
+    "registries/official",
+    "data/official_packs"
+  ],
+  "deviations": [
+    "1.21.8 dialogs and game-test registries are not sent",
+    "clients without the vanilla pack get only dimension types, plains and the chat type with data",
+    "enchantments are sent only with the official jar's data pack"
+  ]
+}

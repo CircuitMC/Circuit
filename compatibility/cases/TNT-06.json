@@ -1,0 +1,9 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.8"
+  ],
+  "location": "trace/tnt_explodes_disabled",
+  "status": "passing",
+  "description": "The tntExplodes game rule on and off (1.21.8 only)"
+}

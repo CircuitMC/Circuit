@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/join-order.js",
+  "status": "passing",
+  "description": "Which of the inventory, the position, health and experience a joining client reads before its spawn event (raised by the first health packet) and which in the two seconds after, and how many recipe book entries come before and after it; Circuit and both official servers send the inventory, the position and health before it and experience after it, and the first tick's unlocked recipe (the crafting table) before it (Circuit's other join packets come in an order of its own)"
+}

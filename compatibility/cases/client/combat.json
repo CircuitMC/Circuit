@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/combat.js, and combat-timing.js for the charge (its results compared between the official servers and Circuit); Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "Three survival players: one attacks another, with the third beside him: with the fist at full charge, twice 2 and 12 ticks apart, harder within the hurt cooldown (strength II, and sprinting after a weak hit), two swings at once, an iron sword at full charge (sweeping the third), twice 4 ticks apart, a sweep reaching the third within her hurt cooldown, walking away, sprinting, falling (a critical hit), with strength II and weakness, in creative mode (with the fist and the sword) and against a target in creative mode, against an iron chestplate, 5 and 7 blocks away, and to the target's death; each step's health, damage events (cause, direct entity, source position), velocities, entity statuses, animations, hurt animations (to a thousandth of a degree), the shared flags, effects, slots, equipment, attributes, sounds, particles and death messages; Circuit and both official servers give identical output. The charge's timings (combat-timing.js) give the same values on both"
+}

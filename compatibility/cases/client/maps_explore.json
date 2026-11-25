@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/maps-terrain.js",
+  "status": "passing",
+  "description": "A survival player holds filled maps over built terrain (pillars of eight blocks at five heights, a pool 1 to 12 deep, glass, waterlogged slabs, leaves, rails and grates, beds, wheat, blocks north of the map): a new map at the origin, the terrain changing under it, a map made far off and held 100 blocks away (the edge of the explored area), maps zoomed once and twice, a locked map and a map in the off hand; each map's colors after each step; Circuit and both official servers give identical output"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/craft-table.js",
+  "status": "passing",
+  "description": "47 steps at crafting tables: shift-clicks into the grid and out of it, results by click, number key and shift-click (crafting until the result changes), drags over the grid, remainders, the grid given back on closing and when a creative player breaks the table, dropped when the player dies and when they leave (with the own grid's items); Circuit and both official servers give identical windows, inventories and drops"
+}

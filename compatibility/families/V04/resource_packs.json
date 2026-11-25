@@ -1,0 +1,9 @@
+{
+  "name": "Server resource-pack offers and responses",
+  "milestone": "C10",
+  "packages": [
+    "CI2"
+  ],
+  "impl": "missing",
+  "evidence": "none"
+}

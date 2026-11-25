@@ -1,0 +1,22 @@
+{
+  "name": "Sounds and particles",
+  "milestone": "C10",
+  "packages": [
+    "CI1"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/effects_heal",
+    "client/eat",
+    "client/armor",
+    "client/beacon",
+    "client/fire",
+    "client/drown",
+    "client/combat"
+  ],
+  "note": "The sounds of the recorded scenarios as both official servers play them: players' hurt, death and fall sounds by damage type, eating, drinking and burping, equipping armor, burning and being put out, beacons', and the attack sounds; and the attacks' damage indicator and sweep particles",
+  "deviations": [
+    "other sounds and particles are not played or sent; sound pitches and seeds are Circuit's own draws"
+  ]
+}

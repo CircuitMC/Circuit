@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Dig speed and wear on chests; held, its attack speed (sent) and attack damage (kept) as both official servers give them (client/armor); it disables a raised shield it hits for 100 ticks (as the iron axe: client/shield)",
+  "cases": [
+    "client/armor"
+  ]
+}

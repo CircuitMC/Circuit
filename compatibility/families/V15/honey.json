@@ -1,0 +1,20 @@
+{
+  "name": "Honey blocks and slime-honey separation",
+  "milestone": "C4",
+  "packages": [
+    "EF9",
+    "PL2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/honey_basics",
+    "trace/honey_slide",
+    "trace/honey_entry",
+    "trace/honey_more"
+  ],
+  "deviations": [
+    "entities other than items and primed TNT do not slide down honey"
+  ],
+  "note": "Sticky in piston structures but not to slime; slows what moves on it to 40%; items and primed TNT slide down its sides; moving sideways it carries what stands on it"
+}

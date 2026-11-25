@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/fire"
+  ],
+  "note": "A player's, from the armor worn, sent as both official servers send it; it reduces the damage armor reduces (fire, lava, magma blocks) as both official servers reduce it"
+}

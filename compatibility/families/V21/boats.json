@@ -1,0 +1,20 @@
+{
+  "name": "Boats and rafts",
+  "milestone": "C3",
+  "packages": [
+    "BL3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/boat_land",
+    "trace/boat_motion"
+  ],
+  "note": "Empty boats and rafts (summoned): floating with buoyancy, sinking under water, sliding on land with the slipperiness under them, falling, landing on the surface from the air, currents, pushing each other",
+  "deviations": [
+    "a boat floating on still water differs from the official vertical velocity in the last bits after a few ticks (trace/boat_motion; positions stay within 2.2e-16)",
+    "riders and paddling",
+    "chest boats",
+    "bubble columns"
+  ]
+}

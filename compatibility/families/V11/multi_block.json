@@ -1,0 +1,20 @@
+{
+  "name": "Two-part blocks: doors, beds, tall plants",
+  "milestone": "C5",
+  "packages": [
+    "BL4"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "placement/hinges",
+    "trace/door_basics",
+    "trace/door_more",
+    "trace/signs_beds",
+    "trace/tall_flowers"
+  ],
+  "deviations": [
+    "tall grass, large ferns and other tall plants are not modeled"
+  ],
+  "note": "Doors: the halves follow each other, a half without the other breaks (the lower one with the drop), and placed doors take their hinges as both official servers do; sunflowers, lilacs, rose bushes and peonies: placed with both halves, the lower one on soil, and both gone when either half or the soil goes (the lower one with the drop); beds: placed with both halves, the foot facing the player's way, a half leaving with the other, only the head dropping the bed"
+}

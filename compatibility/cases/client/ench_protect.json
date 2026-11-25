@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-protect.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "A survival player in enchanted leather armor, another watching: a 10-block fall bare, with feather falling IV boots, with protection IV on all four pieces and feather falling IV, with protection I on the helmet, with a protection IV helmet held, with feather falling IV and resistance I, and with projectile and blast protection IV; instant damage with protection IV on the helmet, also with resistance I, with projectile and blast protection, and with fire protection IV on all four; the void and starvation with protection IV on all four; the other's iron sword at full charge through plain leather and through protection IV on all four; each step's health, food and saturation, damage events, slots and equipment (components compared by type, enchantments by id) and hurt sounds; Circuit and both official servers give identical output"
+}

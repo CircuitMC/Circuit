@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness collision report",
+  "status": "passing",
+  "description": "The collision boxes of every block state without an entity context, reported by both official servers (27,946 states of 1.21.8, 27,866 of 1.21.4); Circuit's boxes, which items and players move against, match every one through its own state representation"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Support of components",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "collision/support",
+    "trace/support"
+  ],
+  "note": "Every state's support shape from the registry (collision/support): floor torches and pressure plates on a top whose middle bears them, dust, levers, buttons and wall torches on whole faces"
+}

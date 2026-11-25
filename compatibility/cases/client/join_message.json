@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/join-message.js",
+  "status": "passing",
+  "description": "alice joins, bob joins, leaves and joins again: alice is told each time, bob never of his own joining; Circuit and both official servers show the same messages"
+}

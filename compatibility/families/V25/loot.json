@@ -1,0 +1,29 @@
+{
+  "name": "Loot tables for blocks, entities and containers",
+  "milestone": "C5",
+  "packages": [
+    "EF9",
+    "PL7",
+    "BL4",
+    "CD2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Blocks without rules of their own, and wheat, drop from their loot tables (888 of 952 tables in 1.21.8, 880 of 944 in 1.21.4; wall torches, signs, banners and heads by the standing ones' tables), with harvest tools, silk touch and shears; random counts, chances, table bonuses and fortune's ore, uniform and binomial bonuses roll from each table's random sequence, which checkpoints and Anvil worlds keep, as both official servers roll them; other modeled blocks keep fixed drops",
+  "cases": [
+    "data/block_drops",
+    "trace/loot_rolls",
+    "trace/loot_single",
+    "trace/loot_many",
+    "trace/loot_tools",
+    "trace/loot_bonus",
+    "trace/farmland"
+  ],
+  "deviations": [
+    "tables that choose between weighted entries drop nothing (no block table has them)",
+    "each level keeps its own random sequences; the official servers keep one set for the world",
+    "tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used",
+    "modeled blocks ignore their tables, so silk touch does not change their drops",
+    "entity, container and archaeology tables are not used"
+  ]
+}

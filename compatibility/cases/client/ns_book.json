@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ns-book.js",
+  "status": "passing",
+  "description": "With the same test pack and two smelting recipes of dirt in two namespaces: the display ids, groups and categories of the pack's eight recipes in the recipe book entries every recipe given adds, the number of entries, and what a furnace makes of dirt; recipes are numbered by the id's path, then its namespace, and the furnace takes the first in that order; Circuit and both official servers give identical output"
+}

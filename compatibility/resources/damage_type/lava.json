@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/fire",
+    "client/ench_fire"
+  ],
+  "note": "Lava: 4, armor reducing it, with the burn sound; 15 seconds of burning"
+}

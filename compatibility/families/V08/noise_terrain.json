@@ -1,0 +1,9 @@
+{
+  "name": "Same-seed noise terrain",
+  "milestone": "C7",
+  "packages": [
+    "WG6"
+  ],
+  "impl": "missing",
+  "evidence": "none"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Signs, banners, heads, pots and other block-entity data",
+  "milestone": "C5",
+  "packages": [
+    "BL6"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities"
+  ],
+  "note": "Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; one a player places starts empty and is written out as the official defaults of its type (every block's checked); nothing interprets the data, and clients do not receive it"
+}

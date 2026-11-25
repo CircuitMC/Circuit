@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/trapped_chest_pairs",
+    "client/openers"
+  ],
+  "deviations": [
+    "waterlogging",
+    "the open and close sounds"
+  ],
+  "note": "Placed and paired with trapped chests only; a container as chests are, powering by its viewers as both official servers do (trapped_chest_pairs, client/openers)"
+}

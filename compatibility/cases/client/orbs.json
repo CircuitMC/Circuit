@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/orbs.js",
+  "status": "passing",
+  "description": "Experience orbs summoned around a player who stands still: those within 8 blocks come and are taken, one 12 blocks away stays, five at the feet are taken one by one, an orb of three is taken three times, and a large one gives 38 levels; Circuit and both official servers give the same pickups and set_experience values, the one sent on joining included (progress bars equal as floats)"
+}

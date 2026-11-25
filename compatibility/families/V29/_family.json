@@ -1,0 +1,11 @@
+{
+  "name": "Bosses and progression",
+  "milestones": [
+    "C8"
+  ],
+  "mechanics": [
+    "ender_dragon",
+    "wither",
+    "trials"
+  ]
+}

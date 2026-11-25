@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Broken by a player without silk touch, becomes water over a solid block or a liquid, as both official servers do; slippery",
+  "cases": [
+    "trace/ice_break"
+  ],
+  "deviations": [
+    "does not melt or freeze"
+  ]
+}

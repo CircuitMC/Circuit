@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Placed out of the clicked face; its contents and name carried",
+  "cases": [
+    "client/shulker",
+    "placement/official_items"
+  ]
+}

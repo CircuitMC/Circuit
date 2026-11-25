@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_protect",
+    "client/ench_fire"
+  ],
+  "note": "Its protection (1 a level) against all but the bypasses_invulnerability types, in armor slots only, after armor and resistance, as both official servers; not against starvation"
+}

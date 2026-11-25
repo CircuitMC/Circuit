@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Hosted by the server: movement, vitals, inventory",
+  "cases": [
+    "client/vitals",
+    "client/collision",
+    "realclient/survival"
+  ]
+}

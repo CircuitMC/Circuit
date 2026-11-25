@@ -1,0 +1,15 @@
+{
+  "name": "Common building blocks",
+  "milestones": [
+    "C5"
+  ],
+  "mechanics": [
+    "orientation_and_shapes",
+    "connection_shapes",
+    "stair_shapes",
+    "supported_blocks",
+    "multi_block",
+    "block_entity_data",
+    "weathering"
+  ]
+}

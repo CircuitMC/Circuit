@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/support"
+  ],
+  "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+}

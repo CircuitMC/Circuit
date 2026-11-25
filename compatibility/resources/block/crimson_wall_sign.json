@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "sign text cannot be edited"
+  ],
+  "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+}

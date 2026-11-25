@@ -1,0 +1,22 @@
+{
+  "name": "Redstone sources and signal consumers",
+  "milestones": [
+    "C4",
+    "C5"
+  ],
+  "mechanics": [
+    "dust",
+    "conductors",
+    "diodes",
+    "observer",
+    "lever_and_lamp",
+    "support",
+    "torches",
+    "buttons_and_plates",
+    "sensors",
+    "consumers",
+    "rails",
+    "comparator_sources",
+    "lectern"
+  ]
+}

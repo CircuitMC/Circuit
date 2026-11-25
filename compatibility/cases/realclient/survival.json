@@ -1,0 +1,10 @@
+{
+  "kind": "real_client",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-client-harness/scripts/survival.txt",
+  "status": "passing",
+  "description": "66 steps of walking, jumping, sprinting, falling, death and respawning"
+}

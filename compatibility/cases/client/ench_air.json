@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-air.js; Circuit's side also in tests/server/server_tests.cpp",
+  "status": "passing",
+  "description": "A survival player stays under water for about 120 ticks without a helmet and with respiration III and I; whether the air lost is one a tick without it and within 4.5 standard deviations of respiration's chance with it (the draws are random); Circuit and both official servers give identical output"
+}

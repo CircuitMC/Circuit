@@ -1,0 +1,30 @@
+{
+  "name": "Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding",
+  "milestone": "C3",
+  "packages": [
+    "EF5",
+    "BL3",
+    "BL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/falling_drop",
+    "trace/falling_column",
+    "trace/falling_onto",
+    "trace/falling_void",
+    "trace/anvils_falling",
+    "trace/anvils_falling_more",
+    "trace/anvils_falling_far",
+    "collision/replaceable",
+    "trace/dripstone_shapes",
+    "trace/dripstone_growth"
+  ],
+  "note": "Sand, red sand, gravel, the concrete powders and anvils: when they fall, the falling block's motion, landing, breaking into items, concrete powder in water, anvils wearing as they land by their own random (and gone when worn past damaged), and the 100- and 600-tick limits; pointed dripstone's thickness, its stalagmites breaking and stalactites falling and breaking where they land, and its growth and drips into cauldrons in random ticks",
+  "deviations": [
+    "concrete powder placed beside water or reached by flowing water does not become concrete",
+    "scaffolding and suspicious sand and gravel do not fall",
+    "1.21.4's dripstone growth and drips are not compared (its random ticks run only near players, and the harness has none)",
+    "falling blocks hurt nothing"
+  ]
+}

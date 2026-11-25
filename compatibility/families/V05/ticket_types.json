@@ -1,0 +1,21 @@
+{
+  "name": "Vanilla ticket types (player, forced, portal, spawn, post-teleport and others)",
+  "milestone": "C2",
+  "packages": [
+    "EF7",
+    "WG3",
+    "WG4",
+    "MB5"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/ring_blocks",
+    "trace/unload_reload",
+    "observation/chunk_levels"
+  ],
+  "note": "Typed tickets with a level, a square radius and a lifetime (minecraft.wiki \"Chunk\"). The server adds the start ticket (level 32 - spawnChunkRadius, none at 0; it follows /gamerule) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers; /forceload adds forced tickets (level 31), which persist",
+  "deviations": [
+    "post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet"
+  ]
+}

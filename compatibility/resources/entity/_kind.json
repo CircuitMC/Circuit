@@ -1,0 +1,48 @@
+{
+  "defaults": {
+    "impl": "missing",
+    "evidence": "none"
+  },
+  "classification": [
+    [
+      "V22",
+      "^player$"
+    ],
+    [
+      "V20",
+      "^(item|experience_orb)$"
+    ],
+    [
+      "V17",
+      "^(tnt|tnt_minecart)$"
+    ],
+    [
+      "V12",
+      "^falling_block$"
+    ],
+    [
+      "V06",
+      "^lightning_bolt$"
+    ],
+    [
+      "V21",
+      "^(arrow|spectral_arrow|trident|snowball|egg|ender_pearl|eye_of_ender|potion|splash_potion|lingering_potion|experience_bottle|fireball|small_fireball|dragon_fireball|wither_skull|shulker_bullet|llama_spit|firework_rocket|fishing_bobber|wind_charge|breeze_wind_charge|.*_boat|.*_chest_boat|.*_raft|.*_chest_raft|minecart|chest_minecart|furnace_minecart|hopper_minecart|spawner_minecart|command_block_minecart)$"
+    ],
+    [
+      "V29",
+      "^(ender_dragon|wither|end_crystal|ominous_item_spawner)$"
+    ],
+    [
+      "V28",
+      "^(villager|wandering_trader|pillager|vindicator|evoker|ravager|witch|illusioner|iron_golem)$"
+    ],
+    [
+      "V19",
+      "^(area_effect_cloud|marker|interaction|block_display|item_display|text_display|armor_stand|item_frame|glow_item_frame|painting|leash_knot|evoker_fangs)$"
+    ],
+    [
+      "V26",
+      ".*"
+    ]
+  ]
+}

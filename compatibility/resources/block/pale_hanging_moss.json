@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Hangs under itself, leaves or a whole bottom face, is the tip when no moss hangs under it, and breaks a tick after an update finds it unsupported, as both official servers do; placed by players",
+  "cases": [
+    "collision/plants",
+    "trace/vines"
+  ],
+  "deviations": [
+    "does not grow"
+  ]
+}

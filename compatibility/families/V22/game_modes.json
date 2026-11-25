@@ -1,0 +1,19 @@
+{
+  "name": "Survival, creative and spectator modes",
+  "milestone": "C6",
+  "packages": [
+    "EF3",
+    "BL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals",
+    "client/spectators"
+  ],
+  "note": "/gamemode's abilities, game mode event and the player list's game mode as both official servers send them; spectators seen by spectators only, invisible, flying through blocks, opening windows without using or taking anything, taking an entity's view by attacking it until the shift key, teleporting by the spectator menu; the shift key's flag and the crouching pose shown to others",
+  "deviations": [
+    "adventure and hardcore modes are not modeled",
+    "a spectator's windows other than a chest's (an ender chest's and a lectern's not opened) were not recorded"
+  ]
+}

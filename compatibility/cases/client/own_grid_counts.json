@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/own-grid-counts.js, own-grid-counts2.js, own-grid-counts3.js, table-grid-counts.js",
+  "status": "passing",
+  "description": "40 steps counting the slot packets of clicks in the own window's 2x2 grid and a crafting table's grid: items put in, whole stacks and single items picked up by either button, halves, merges, shift-clicks, number keys both ways, throws of one and of all, a cursor swap, a remainder left by a honey bottle, and the window closed with the grid full; Circuit and both official servers send the same packets"
+}

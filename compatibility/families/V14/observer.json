@@ -1,0 +1,12 @@
+{
+  "name": "Observers",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/observer_pulse",
+    "trace/observer_clock",
+    "trace/observer_moved"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "players place it on the clicked face, not by their view",
+    "no burnout sound or smoke"
+  ]
+}

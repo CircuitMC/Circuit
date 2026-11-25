@@ -1,0 +1,12 @@
+{
+  "name": "Movement checks against block shapes, step-up and corrections",
+  "milestone": "C6",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "client/collision",
+    "client/vitals",
+    "realclient/survival"
+  ],
+  "note": "Walking, jumping and sprinting"
+}

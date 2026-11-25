@@ -1,0 +1,19 @@
+{
+  "name": "Entity tick order",
+  "milestone": "C3",
+  "packages": [
+    "EF1",
+    "EF2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "ascending id, compared with the target versions for item entities only"
+  ],
+  "cases": [
+    "trace/item_hopper_pickup",
+    "trace/item_merge",
+    "trace/item_merge_moving",
+    "trace/item_water_current"
+  ]
+}

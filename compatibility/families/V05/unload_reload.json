@@ -1,0 +1,17 @@
+{
+  "name": "Unload and reload of chunks with pending ticks, block events and entities",
+  "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/unload_reload"
+  ],
+  "note": "A dropped chunk's pending ticks keep their remaining delay, counted from the tick after it dropped; after a reload its scheduled ticks and block entities run again two ticks later and its block events at once (both official servers)",
+  "deviations": [
+    "the official servers may keep a dropped chunk at border for one or two ticks and restore a cached chunk during the command or in the chunk stage, which moves restored ticks by a tick between runs; Circuit drops chunks at once and restores them in the chunk stage",
+    "entities of unloaded chunks are not reported as unloaded"
+  ]
+}

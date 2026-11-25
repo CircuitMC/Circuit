@@ -1,0 +1,26 @@
+{
+  "name": "Primed TNT entities: fuse, motion, collision and removal",
+  "milestone": "C3",
+  "packages": [
+    "BL3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases_planned": [
+    "TNT-02",
+    "TNT-03"
+  ],
+  "cases": [
+    "trace/tnt_ignition",
+    "trace/tnt_motion",
+    "trace/tnt_water_current",
+    "trace/tnt_reload",
+    "trace/tnt_redstone_ignition",
+    "trace/tnt_void",
+    "trace/tnt_knockback"
+  ],
+  "note": "Creation before the block goes, launch from the level random, the fuse, gravity, collision, ground friction, currents after the move, chunk edges, falling below the world without being removed; it explodes when the fuse runs out and is pushed by other explosions",
+  "deviations": [
+    "lava, bubble columns, portals and entity pushing do not move primed TNT"
+  ]
+}

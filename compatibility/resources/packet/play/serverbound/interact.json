@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/combat",
+    "client/spectators"
+  ],
+  "note": "Attacks on players (client/combat) and a spectator's camera (client/spectators); other interactions are not modeled"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Block light emission and propagation",
+  "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/light_spread",
+    "trace/light_shapes",
+    "trace/light_timing",
+    "light/official_states",
+    "realclient/light"
+  ],
+  "note": "Emission, dampening and occlusion shape of every state of both versions match the official servers; light spreads one level per block, more through dampening blocks, never through faces that occlusion shapes close together",
+  "deviations": [
+    "light at the edge of the loaded area is not compared"
+  ]
+}

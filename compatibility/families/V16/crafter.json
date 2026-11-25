@@ -1,0 +1,17 @@
+{
+  "name": "The Crafter",
+  "milestone": "C5",
+  "packages": [
+    "BL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Crafters triggered by power at the block craft their grid 4 ticks later by the official data packs' crafting recipes, deliver the result and the remainders to the container in front or throw them out whole as dispensers throw items, show that they crafted for 6 ticks, fill evenly from hoppers and droppers, give items to hoppers and drive comparators by their filled slots, as both official servers do tick by tick",
+  "cases": [
+    "trace/crafters",
+    "trace/crafters_more",
+    "trace/crafters_partial",
+    "trace/item_inside_thrown",
+    "client/crafter_menu"
+  ]
+}

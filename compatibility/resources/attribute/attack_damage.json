@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/combat"
+  ],
+  "note": "Strength's and weakness's modifiers and the held weapon's or tool's; an attack's damage before its charge (client/combat); not sent, as on both official servers"
+}

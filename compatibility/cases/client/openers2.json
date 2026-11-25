@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/openers2.js",
+  "status": "passing",
+  "description": "12 steps for a trapped chest and then a barrel: opened, the player walking 6 blocks away with the window open and back, closed, opened and closed again; the power beside the trapped chest, the barrel's open state, the window and the lid events received (the player stays a viewer while the window is open); Circuit and both official servers give identical output"
+}

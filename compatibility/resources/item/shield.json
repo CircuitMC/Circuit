@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/shield"
+  ],
+  "note": "Raised from either hand (the living flags) until let go; blocks players' attacks from before its holder once raised 5 ticks (minecraft.wiki; recorded: 2 not, 12 blocking), worn by 1 and the damage from 3 (minecraft.wiki; recorded 6 and 9); disabled by axes for 100 ticks; its equip sound in the off hand; as both official servers do",
+  "deviations": [
+    "it blocks only players' attacks"
+  ]
+}

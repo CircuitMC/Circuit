@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "bouncing entities"
+  ],
+  "note": "A redstone conductor, as both official servers report"
+}

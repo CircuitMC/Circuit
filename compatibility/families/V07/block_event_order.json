@@ -1,0 +1,13 @@
+{
+  "name": "Block-event FIFO",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/piston_timing",
+    "trace/block_event_order",
+    "trace/block_event_rings"
+  ],
+  "note": "One FIFO per level with set semantics: events queued by commands, scheduled ticks and block entities run in queue order (those of the entity and block-entity phases in the next tick), an equal event is queued once, an event runs only if its block is still there, and events queued while events run join the queue; events of chunks that do not tick blocks wait, keeping their place, until they do"
+}

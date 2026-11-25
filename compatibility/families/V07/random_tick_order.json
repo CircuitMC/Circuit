@@ -1,0 +1,22 @@
+{
+  "name": "Random-tick chunk order and positions",
+  "milestone": "C2",
+  "packages": [
+    "BL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "observation/chunk_levels",
+    "collision/random_ticks",
+    "trace/random_ticks_farmland",
+    "trace/random_ticks_chunks",
+    "trace/random_ticks_sections",
+    "trace/crops_growth"
+  ],
+  "note": "Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4; on 1.21.8 every pick, the precipitation checks' draws and the chunk order of forced areas equal the official server's, with the level's position generator, the states that take random ticks as both versions report, and sections holding only water ticked too",
+  "deviations": [
+    "the order of chunks that start ticking at different times is Circuit's model",
+    "1.21.4's order is not compared (the harness has no player to make its random ticks run)"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/attributes.js",
+  "status": "passing",
+  "description": "127 steps with two players: the attributes on joining and when the other appears, each of the 39 effects at amplifiers 0 and 2 and cleared (instant health and damage, poison, wither, hunger, levitation and saturation at 0 for a second), health boost and absorption with the absorption, two modifiers on one attribute in either order, several attributes cleared at once, sprinting alone and with speed, a rejoin and a respawn with effects; attribute ids read raw and each packet's attributes sorted; Circuit and both official servers give the same, but for the ids, which differ between the versions"
+}

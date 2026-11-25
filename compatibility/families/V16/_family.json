@@ -1,0 +1,20 @@
+{
+  "name": "Automation and storage blocks",
+  "milestones": [
+    "C4",
+    "C5"
+  ],
+  "mechanics": [
+    "chests",
+    "hoppers",
+    "dispensers_droppers",
+    "crafter",
+    "trapped_chests",
+    "barrels",
+    "composters",
+    "ender_chests",
+    "shulker_boxes",
+    "chiseled_bookshelves",
+    "component_aware_transfer"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/support-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness support and survival reports",
+  "status": "passing",
+  "description": "Whether 23 flowers and saplings, torches, carpets, lanterns standing and hanging, wall torches and ladders stay with every state as their support, reported by both official servers (52,010 states compared; rails, redstone wire and fire removed themselves in the report); Circuit's registry and rules match every one"
+}

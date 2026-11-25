@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/effects2.js",
+  "status": "passing",
+  "description": "48 steps of /effect given and cleared by alice for herself and for bob: defaults, seconds, amplifiers and hidden particles, the parser's errors, an unknown effect and target, @s and @a, a stronger effect over a weaker one coming back after it, refusals, invisibility, glowing, an instant effect, a rejoin with three effects and a death; per step each client's effect packets, both players' shared flags, effect particles and ambience, the health and the replies; Circuit and both official servers give the same, with sorted orders: those the official servers vary from run to run, and players' entity data within a step (the official servers' order is their own, Circuit's the players')"
+}

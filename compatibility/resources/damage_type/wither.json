@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/effects_heal"
+  ],
+  "note": "The wither effect"
+}

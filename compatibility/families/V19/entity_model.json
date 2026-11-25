@@ -1,0 +1,18 @@
+{
+  "name": "Typed entities with UUIDs, attributes and components",
+  "milestone": "C3",
+  "packages": [
+    "EF2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "the engine models item entities only (more kinds follow in C3.3 and C3.4)",
+    "entity UUIDs are derived from ids by the server, not world state (C11)"
+  ],
+  "cases": [
+    "trace/item_merge",
+    "trace/item_chunk_edge"
+  ],
+  "note": "Explicit kind, double-precision state, tick count, signed age"
+}

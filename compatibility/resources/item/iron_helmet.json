@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/armor2",
+    "client/armor3",
+    "client/fire"
+  ],
+  "note": "As both official servers wear it: put on by use and swapped off by a leather helmet's use (client/armor), put on by a dispenser and ejected by one over a worn helmet (client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces; wears by one at each hurt of fire, lava or a magma block (client/fire)"
+}

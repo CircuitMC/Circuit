@@ -1,0 +1,65 @@
+{
+  "defaults": {
+    "impl": "data_only",
+    "evidence": "none",
+    "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a redstone conductor as both official servers report, moved, destroyed or left in place by pistons as the official servers do, with no drops; flowing water and lava go into it where both official servers let them (water drops it, lava does not)"
+  },
+  "classification": [
+    [
+      "V02",
+      "^(air|cave_air|void_air)$"
+    ],
+    [
+      "V17",
+      "^tnt$"
+    ],
+    [
+      "V15",
+      "^(piston|sticky_piston|piston_head|moving_piston|slime_block|honey_block)$"
+    ],
+    [
+      "V14",
+      "^(lever|redstone_wire|repeater|comparator|observer|redstone_lamp|redstone_block|redstone_torch|redstone_wall_torch|.*_button|.*_pressure_plate|tripwire|tripwire_hook|target|daylight_detector|note_block|.*copper_bulb|sculk_sensor|calibrated_sculk_sensor|lectern|jukebox|redstone_ore|deepslate_redstone_ore|bell|lightning_rod|rail|powered_rail|detector_rail|activator_rail)$"
+    ],
+    [
+      "V16",
+      "^(chest|trapped_chest|ender_chest|hopper|dispenser|dropper|crafter|barrel|.*shulker_box|composter|chiseled_bookshelf|decorated_pot)$"
+    ],
+    [
+      "V10",
+      "^(nether_portal|end_portal|end_portal_frame|end_gateway|respawn_anchor|.*_bed)$"
+    ],
+    [
+      "V25",
+      "^(crafting_table|furnace|smoker|blast_furnace|brewing_stand|enchanting_table|anvil|chipped_anvil|damaged_anvil|grindstone|stonecutter|smithing_table|loom|cartography_table|fletching_table|beacon|campfire|soul_campfire)$"
+    ],
+    [
+      "V27",
+      "^(spawner|trial_spawner|infested_.*)$"
+    ],
+    [
+      "V29",
+      "^(vault|dragon_egg)$"
+    ],
+    [
+      "V31",
+      "^(command_block|repeating_command_block|chain_command_block|structure_block|structure_void|jigsaw|test_block|test_instance_block|barrier|light)$"
+    ],
+    [
+      "V12",
+      "^(water|lava|bubble_column|fire|soul_fire|snow|snow_block|powder_snow|ice|packed_ice|blue_ice|frosted_ice|sand|red_sand|suspicious_sand|gravel|suspicious_gravel|.*_concrete_powder|pointed_dripstone|scaffolding|sponge|wet_sponge|.*cauldron|magma_block)$"
+    ],
+    [
+      "V26",
+      "^(turtle_egg|sniffer_egg|frogspawn|bee_nest|beehive|creaking_heart|sculk_shrieker|dried_ghast)$"
+    ],
+    [
+      "V13",
+      "^(.*_sapling|mangrove_propagule|.*_leaves|wheat|carrots|potatoes|beetroots|.*_stem|attached_.*_stem|torchflower_crop|pitcher_crop|pitcher_plant|farmland|grass_block|mycelium|podzol|short_grass|tall_grass|fern|large_fern|dead_bush|bush|short_dry_grass|tall_dry_grass|seagrass|tall_seagrass|kelp|kelp_plant|sugar_cane|cactus|cactus_flower|bamboo|bamboo_sapling|vine|cave_vines|cave_vines_plant|weeping_vines|weeping_vines_plant|twisting_vines|twisting_vines_plant|glow_lichen|sweet_berry_bush|cocoa|nether_wart|chorus_plant|chorus_flower|brown_mushroom|red_mushroom|crimson_fungus|warped_fungus|crimson_roots|warped_roots|nether_sprouts|crimson_nylium|warped_nylium|sculk|sculk_vein|sculk_catalyst|moss_block|moss_carpet|pale_moss_block|pale_moss_carpet|pale_hanging_moss|azalea|flowering_azalea|spore_blossom|hanging_roots|big_dripleaf|big_dripleaf_stem|small_dripleaf|lily_pad|sea_pickle|.*coral.*|dandelion|poppy|blue_orchid|allium|azure_bluet|.*_tulip|oxeye_daisy|cornflower|lily_of_the_valley|wither_rose|torchflower|sunflower|lilac|rose_bush|peony|pink_petals|wildflowers|leaf_litter|firefly_bush|open_eyeblossom|closed_eyeblossom|melon|pumpkin|mangrove_roots|muddy_mangrove_roots|rooted_dirt)$"
+    ],
+    [
+      "V11",
+      ".*"
+    ]
+  ]
+}

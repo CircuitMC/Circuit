@@ -1,0 +1,20 @@
+{
+  "name": "Saplings, trees and leaf decay",
+  "milestone": "C5",
+  "packages": [
+    "BL3",
+    "BL7",
+    "WG2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Leaves take their distance from logs through block ticks after updates, as both official servers do, and decay at distance 7 unless persistent in random ticks with their loot, as the official 1.21.8 server does",
+  "cases": [
+    "trace/leaves_decay"
+  ],
+  "deviations": [
+    "saplings do not grow into trees",
+    "scaffolding's distance is not seen by leaves",
+    "1.21.4's decay is not compared (its random ticks run only near players, and the harness has none)"
+  ]
+}

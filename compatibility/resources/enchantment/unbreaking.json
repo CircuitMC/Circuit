@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_unbreaking"
+  ],
+  "note": "Its item damage effects (its slots: any): each point of a player's item's wear spared by a draw below 2L/(5L+5) for the items of the enchantable/armor tag (0.3 at III) and L/(L+1) for the others (0.75 at III): an iron sword's and an iron axe's hits, iron armor hurt (each piece drawn apart), a shield blocking, a chestplate's wear by a hurt and by thorns, an efficiency V shovel's instant breaks, flint and steel and shears; the wear left within the spread of that chance on both official servers, nothing sent when all is spared",
+  "deviations": [
+    "its chance is drawn from Circuit's own random",
+    "what dispensers wear (flint and steel, shears) wears without it"
+  ]
+}

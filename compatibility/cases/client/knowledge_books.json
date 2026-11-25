@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/knowledge-books.js",
+  "status": "passing",
+  "description": "6 knowledge books used: recipes not known yet (added with what they unlock), the same again, none, an empty list, a list with a recipe that does not exist (none added), and one in creative mode; per step the recipe book's unlocks and whether the book was kept; Circuit and both official servers give identical output"
+}

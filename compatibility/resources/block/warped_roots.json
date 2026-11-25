@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/plants",
+    "placement/official_items",
+    "trace/plant_grounds"
+  ],
+  "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+  "deviations": [
+    "does not spread or grow"
+  ]
+}

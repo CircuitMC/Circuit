@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "trace/tnt_duper_corners",
+  "status": "passing",
+  "description": "The duplication machine at chunk edges and corners (official traces), across region layouts and restarts (restored engines continue exactly)"
+}

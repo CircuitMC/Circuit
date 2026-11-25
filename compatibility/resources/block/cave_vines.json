@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Hangs (twisting vines stand) on its own kind or a sturdy face and breaks a tick after an update finds it unsupported; heads and bodies turn into each other as their kind grows on or ends, a new head taking a random age from the level random; placed by players as both official servers do",
+  "cases": [
+    "collision/plants",
+    "trace/vines"
+  ],
+  "deviations": [
+    "does not grow",
+    "its berries cannot be picked"
+  ]
+}

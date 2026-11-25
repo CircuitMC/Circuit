@@ -1,0 +1,8 @@
+{
+  "schema": "circuit-compatibility-families-2",
+  "comment": "Hand-written. Families V01-V36 of docs/VANILLA_COMPLETION.md and their named mechanics: one directory per family, _family.json with its name, milestones and the order of its mechanics, and one file per mechanic named by the mechanic's id. Statuses describe the source at the commit that changes a file; tools/compat_ledger.py validates them and generates compatibility/ledger.json and docs/VANILLA_LEDGER.md.",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ]
+}

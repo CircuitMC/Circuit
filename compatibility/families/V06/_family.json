@@ -1,0 +1,16 @@
+{
+  "name": "Lighting and environmental state",
+  "milestones": [
+    "C2",
+    "C3",
+    "C7"
+  ],
+  "mechanics": [
+    "sky_light",
+    "block_light",
+    "heightmaps",
+    "time_of_day",
+    "weather",
+    "lightning"
+  ]
+}

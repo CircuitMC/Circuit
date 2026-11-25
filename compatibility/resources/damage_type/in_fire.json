@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/fire"
+  ],
+  "note": "Fire blocks: 1, armor reducing it, counting toward catching fire; soul fire's 2 (minecraft.wiki) not recorded"
+}

@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/ender_chests",
+    "client/enderchest",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "the open and close sounds"
+  ],
+  "note": "Placed by players as both official servers place it; opens the player's ender inventory and counts its viewers as both official servers do (ender_chests, client/enderchest)"
+}

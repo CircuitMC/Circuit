@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Summoned arrows: flight, sticking, falling, life, fire, priming TNT; spawned to clients",
+  "cases": [
+    "trace/arrow_flight",
+    "trace/arrow_tnt",
+    "trace/arrow_life"
+  ],
+  "deviations": [
+    "passes through entities; not shot by bows, crossbows or dispensers"
+  ]
+}

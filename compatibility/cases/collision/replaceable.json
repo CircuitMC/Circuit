@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/replaceable-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness collision report",
+  "status": "passing",
+  "description": "Which block states can be replaced and which a falling block falls into, reported by both official servers for every state (the same states, a whole block at a time); Circuit's rule matches every one"
+}

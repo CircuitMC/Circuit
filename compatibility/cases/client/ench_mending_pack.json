@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-mending-pack.js with circuit-clienttest/mendpack, a data pack replacing mending's repair effects (in the official servers' world/datapacks before their first start, and as Circuit's data-pack); Circuit's side also in tests/rules/rules_tests.cpp and tests/server/server_tests.cpp",
+  "status": "passing",
+  "description": "With a data pack giving mending item-dependent repair effects (a factor of 0.5, 1.5, 3 or 2 by level, 1 added, a factor 2 then 1 added, set to 3 less 1 a level, all of a factor 3 and -1 added, remove_binomial 0.5; shears meeting none), a survival player takes orbs of 1 to 7 with items of damage 1 to 100: the repair, the points used, the points lost when the repair is 0 or less and the rest to the bar (the remove_binomial boots in a stats file, within four standard deviations); Circuit and both official servers give identical output"
+}

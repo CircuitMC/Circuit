@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/buckets.js; tests/server/server_tests.cpp, tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "Empty buckets used along the player's view on a water source, flowing water, a lava source and a waterlogged slab; water buckets on the floor, a bottom slab, a double slab and into a lava source; lava buckets on the floor, a bottom slab and into a water source; a bucket used looking at the sky; creative and survival inventories, one and two buckets: 32 results identical with both official servers"
+}

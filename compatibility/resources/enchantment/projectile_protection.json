@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_protect"
+  ],
+  "note": "Its protection (2 a level) against the is_projectile types; no protection against falls or magic, as both official servers",
+  "deviations": [
+    "Circuit deals no projectile damage to players yet"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/armor",
+    "client/armor2"
+  ],
+  "note": "As both official servers wear it: put on by clicks and by a dispenser (client/armor, client/armor2), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
+}

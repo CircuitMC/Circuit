@@ -1,0 +1,16 @@
+{
+  "name": "Fluids, fire and falling blocks",
+  "milestones": [
+    "C3",
+    "C5"
+  ],
+  "mechanics": [
+    "water",
+    "lava",
+    "waterlogging",
+    "buckets",
+    "fire",
+    "snow_and_ice",
+    "gravity_blocks"
+  ]
+}

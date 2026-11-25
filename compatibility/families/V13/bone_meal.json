@@ -1,0 +1,18 @@
+{
+  "name": "Bone meal",
+  "milestone": "C5",
+  "packages": [
+    "BL7",
+    "WG2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Dispensers' bone meal on crops, stems, cocoa, berry bushes, bamboo, dripleaves, petals and vines, used up only when it acts, as both official servers do draw for draw; players' bone meal acts the same way",
+  "cases": [
+    "trace/bonemeal_dispensers"
+  ],
+  "deviations": [
+    "players' bone meal is not compared",
+    "saplings, grass, moss, mushrooms and nylium (their features), glow lichen, sea pickles, seagrass, coral and propagules take none"
+  ]
+}

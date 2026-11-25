@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/dig-effects.js",
+  "status": "passing",
+  "description": "8 digs of oak planks by hand with raw packets, finished early: without effects, with haste 0 and 1, conduit power 1, mining fatigue 0, and haste with fatigue; broken at once or later, and when; Circuit and both official servers give the same"
+}

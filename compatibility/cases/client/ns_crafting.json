@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ns-crafting.js",
+  "status": "passing",
+  "description": "With a test pack of shapeless recipes in the namespaces aaa, zzz, bbb, example and test that take the same grids as each other or as the special firework_rocket, seven grids at a crafting table and in the own window: the recipe first by the id's path, then its namespace makes the result (zzz:aaa_mix before aaa:zzz_mix, aaa:same_mix before bbb:same_mix, the special minecraft:firework_rocket before example:rocket, test:a_rocket before it); Circuit and both official servers give identical results"
+}

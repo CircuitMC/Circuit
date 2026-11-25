@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/attributes",
+    "client/attribute_rules"
+  ],
+  "note": "Sent with absorption's modifier; absorption is cut to it"
+}

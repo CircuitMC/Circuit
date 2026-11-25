@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-curses-table.js; Circuit's side also in tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "A survival player opens a crafting table, puts vanishing redstone and plain clay in its grid, carries a vanishing feather, wears a vanishing helmet and a plain chestplate and has stone in the hotbar, then dies by /kill and respawns 3 seconds later, without and with keepInventory: the death's slot told in the table's window, the window kept with its grid and the carried stack until the body goes, then those thrown (the carried stack first) whatever their enchantments; Circuit and both official servers give identical output"
+}

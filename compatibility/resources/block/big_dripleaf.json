@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Stands on soil and clay, a stem or a big dripleaf, breaks at once after an update from below, turns into a stem under a big dripleaf, and tilts under entities (unstable, partial, full, back, with level-random sound draws), at once to full under arrows and snowballs, and back with a signal, as both official servers do; placed by players facing them",
+  "cases": [
+    "collision/plants",
+    "placement/official_items",
+    "trace/dripleaves",
+    "trace/dripleaf_arrows"
+  ],
+  "deviations": [
+    "does not grow"
+  ]
+}

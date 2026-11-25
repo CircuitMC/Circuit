@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/brewing.js",
+  "status": "passing",
+  "description": "36 steps at a brewing stand: blaze powder shifted into the fuel slot and burned, stone and other ingredients into the ingredient slot, bottles one per slot and kept where they are when the bottle slots are full, stacks that do not swap, brews stopped and started by taking and putting ingredients, brewed bottles (also splash potions made with gunpowder) losing their custom color and rarity, results out to the hotbar's end and by key, the brew time and fuel properties; Circuit and both official servers give identical windows"
+}

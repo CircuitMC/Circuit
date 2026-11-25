@@ -1,0 +1,7 @@
+{
+  "name": "Crash-safe checkpoints and input log",
+  "milestone": "C11",
+  "impl": "implemented",
+  "evidence": "none",
+  "note": "Circuit's own format"
+}

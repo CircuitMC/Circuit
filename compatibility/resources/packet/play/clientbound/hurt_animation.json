@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/combat"
+  ],
+  "note": "To a player hurt by an attack, with the attacker's direction less the player's yaw (the exact arctangent)"
+}

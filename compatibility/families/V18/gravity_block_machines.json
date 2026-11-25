@@ -1,0 +1,16 @@
+{
+  "name": "Gravity-block machines and duplication",
+  "milestone": "C4",
+  "packages": [
+    "WG4"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/gravity_machines"
+  ],
+  "deviations": [
+    "gravity-block duplication needs end portals and is not supported"
+  ],
+  "note": "Sand and gravel in piston machines (carried by slime, pushed off ledges, dropped by pulled supports, landing on moving pistons) as both official servers do"
+}

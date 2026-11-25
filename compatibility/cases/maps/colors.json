@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/maps/colors-*.txt",
+  "status": "passing",
+  "description": "The base color a held map drew on each official server for every block's default state, each state differing from it in one property, every waterlogged state likewise and blocks on their supports (6639 and 6538 states); evidence_tests checks Circuit's color of each"
+}

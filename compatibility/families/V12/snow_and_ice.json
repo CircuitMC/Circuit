@@ -1,0 +1,24 @@
+{
+  "name": "Snow, ice, freezing and melting",
+  "milestone": "C5",
+  "packages": [
+    "BL3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/snow",
+    "trace/snow_layers",
+    "trace/ice_break",
+    "trace/frosted_ice",
+    "trace/frosted_ice_ticks",
+    "trace/snow_explosion",
+    "client/snow",
+    "trace/melt_weather"
+  ],
+  "note": "Snow layers on their supports and breaking without them, snowy grass, podzol and mycelium, ice and frosted ice turning to water when players break them, frosted ice aging and melting in its block ticks and by updates, snow's drops, and players stacking snow layers and replacing single ones, as both official servers do; ice and snow layers melting by block light in random ticks, as the official 1.21.8 server does",
+  "deviations": [
+    "freezing and melting by weather are not modeled",
+    "powder snow is not modeled"
+  ]
+}

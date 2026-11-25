@@ -1,0 +1,16 @@
+{
+  "name": "Entity sections, migration between chunks and unloaded chunks",
+  "milestone": "C3",
+  "packages": [
+    "EF2"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "deviations": [
+    "entities of a reloaded chunk come back in coordinate order, not the official chunk-map order"
+  ],
+  "cases": [
+    "trace/item_chunk_edge"
+  ],
+  "note": "Items stop ticking in chunks that are not entity ticking and collide with unloaded cells as with full blocks"
+}

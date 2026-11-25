@@ -1,0 +1,17 @@
+{
+  "name": "Protocol-client scenarios compared between the official servers and Circuit",
+  "milestone": "C0",
+  "packages": [
+    "CI4"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/windows",
+    "client/vitals",
+    "client/collision",
+    "client/chests",
+    "client/redstone"
+  ],
+  "note": "External mineflayer scripts; outputs compared by diff"
+}

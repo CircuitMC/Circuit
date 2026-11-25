@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_combat"
+  ],
+  "note": "Its damage (1 and 0.5 a level more) in the main hand, whatever the item, times the charge, after a critical hit's half again of the attack damage alone, to the target and each player swept, with the enchanted hit's animation, as both official servers; attacks on other entities are not modeled"
+}

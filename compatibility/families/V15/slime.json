@@ -1,0 +1,9 @@
+{
+  "name": "Slime block structures",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "trace/piston_slime"
+  ]
+}

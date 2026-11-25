@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/light/, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness light report",
+  "status": "passing",
+  "description": "Emission, dampening and light occlusion shape of every block state, reported by both official servers (27,946 states of 1.21.8, 27,866 of 1.21.4, identical where both have them); Circuit's table matches every one"
+}

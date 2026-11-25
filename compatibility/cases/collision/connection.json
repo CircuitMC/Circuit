@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/connection-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness connection report",
+  "status": "passing",
+  "description": "How an oak fence, a nether brick fence, a glass pane, iron bars and a cobblestone wall join every state beside them, and a cobblestone wall's sides and post under every state, reported by both official servers (27,946 states of 1.21.8, 27,866 of 1.21.4); Circuit's registry and rules match every one"
+}

@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Stays on soul sand and soul soil only and goes when an update finds it elsewhere, as both official servers do; it neither ages nor spreads",
+  "cases": [
+    "collision/fire",
+    "trace/fire_basics",
+    "trace/fire_spread"
+  ],
+  "deviations": [
+    "hurts and ignites only items and arrows"
+  ]
+}

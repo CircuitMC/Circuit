@@ -1,0 +1,16 @@
+{
+  "name": "Data and resource-pack negotiation",
+  "milestones": [
+    "C1",
+    "C9",
+    "C10"
+  ],
+  "mechanics": [
+    "known_packs",
+    "registry_sync",
+    "tags",
+    "pack_stack",
+    "experimental_profiles",
+    "resource_packs"
+  ]
+}

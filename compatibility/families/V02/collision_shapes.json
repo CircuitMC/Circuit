@@ -1,0 +1,17 @@
+{
+  "name": "Collision shapes of block states",
+  "milestone": "C1",
+  "packages": [
+    "BL4"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/official_states",
+    "client/collision"
+  ],
+  "note": "Every state's collision boxes, from the block registry (minecraft-data), equal to both official servers' report; items and players move against them. Offsets some blocks apply by position are not modeled",
+  "deviations": [
+    "position-dependent offsets (bamboo, pointed dripstone and others) are not applied"
+  ]
+}

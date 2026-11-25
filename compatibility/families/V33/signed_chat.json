@@ -1,0 +1,12 @@
+{
+  "name": "Signed chat and chat sessions",
+  "milestone": "C10",
+  "packages": [
+    "CI2"
+  ],
+  "impl": "missing",
+  "evidence": "none",
+  "deviations": [
+    "chat relayed as system messages"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/components/",
+  "status": "passing",
+  "description": "Item stacks with components that the official servers sent after /give: 36 stacks with 93 of 96 component types (1.21.8) and 31 with 65 of 67 (1.21.4) are read, checked, written back in canonical form and read again (protocol_tests)"
+}

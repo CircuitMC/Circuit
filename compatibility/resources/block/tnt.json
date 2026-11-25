@@ -1,0 +1,15 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it; explosions prime it with a short fuse; burning arrows and fire burning it prime it",
+  "cases": [
+    "trace/tnt_ignition",
+    "trace/tnt_explodes_disabled",
+    "trace/tnt_chain_edge",
+    "trace/arrow_tnt",
+    "trace/fire_tnt"
+  ],
+  "deviations": [
+    "flint and steel and players do not ignite it yet"
+  ]
+}

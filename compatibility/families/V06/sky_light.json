@@ -1,0 +1,17 @@
+{
+  "name": "Sky light propagation",
+  "milestone": "C2",
+  "packages": [
+    "UNASSIGNED"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/sky_light",
+    "trace/light_shapes",
+    "trace/light_timing",
+    "light/official_states",
+    "realclient/light"
+  ],
+  "note": "Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick"
+}

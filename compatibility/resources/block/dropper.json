@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Fired as dispensers are; puts one item into the container in front or ejects it",
+  "cases": [
+    "trace/dispensers",
+    "trace/dispensers_more",
+    "trace/dispenser_cases"
+  ],
+  "deviations": [
+    "containers that are entities (chest and hopper minecarts) are not modeled"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Primed TNT: launch, fuse, motion, currents, chunk edges, unload and reload, its explosion; spawned to clients with its fuse",
+  "cases": [
+    "trace/tnt_ignition",
+    "trace/tnt_motion",
+    "trace/tnt_water_current",
+    "trace/tnt_reload",
+    "trace/tnt_redstone_ignition",
+    "trace/tnt_knockback",
+    "trace/tnt_chain_edge"
+  ]
+}

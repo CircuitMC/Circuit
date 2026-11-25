@@ -1,0 +1,9 @@
+{
+  "name": "Floating detection and allow-flight",
+  "milestone": "C6",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals"
+  ]
+}

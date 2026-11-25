@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "trace/tnt_reload; server_tests (rule-set migration of a world with primed TNT, restart survival); storage_tests, anvil_tests",
+  "status": "passing",
+  "description": "Live fuses across save, reload and unload"
+}

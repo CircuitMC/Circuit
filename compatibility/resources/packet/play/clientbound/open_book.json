@@ -1,0 +1,10 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/books"
+  ],
+  "deviations": [
+    "a written book given unresolved is opened without being resolved"
+  ]
+}

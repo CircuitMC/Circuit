@@ -1,0 +1,7 @@
+{
+  "impl": "partial",
+  "evidence": "none",
+  "deviations": [
+    "lists Circuit's commands"
+  ]
+}

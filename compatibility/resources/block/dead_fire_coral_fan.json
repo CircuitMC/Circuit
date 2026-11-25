@@ -1,0 +1,7 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/coral_fans"
+  ]
+}

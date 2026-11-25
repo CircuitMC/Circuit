@@ -1,0 +1,14 @@
+{
+  "name": "Save compatibility",
+  "milestones": [
+    "C11"
+  ],
+  "mechanics": [
+    "internal_world_directory",
+    "anvil_1_21_8",
+    "anvil_1_21_4",
+    "player_data",
+    "other_saved_data",
+    "upgrades"
+  ]
+}

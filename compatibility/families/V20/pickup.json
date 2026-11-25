@@ -1,0 +1,17 @@
+{
+  "name": "Pickup by players and hoppers, pickup delays",
+  "milestone": "C3",
+  "packages": [
+    "UNASSIGNED"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals",
+    "client/windows",
+    "trace/item_hopper_area",
+    "trace/item_hopper_inside",
+    "trace/item_hopper_pickup",
+    "trace/item_merge_timers"
+  ]
+}

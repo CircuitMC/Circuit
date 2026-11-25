@@ -1,0 +1,19 @@
+{
+  "name": "Copper weathering, waxing and scraping",
+  "milestone": "C5",
+  "packages": [
+    "BL4",
+    "BL7"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Copper blocks, cut copper, its stairs and slabs, chiseled copper, grates, bulbs, doors and trapdoors weather in random ticks by their chance and the copper around them, as the official 1.21.8 server does draw for draw",
+  "cases": [
+    "trace/melt_weather",
+    "trace/eggs_blossoms"
+  ],
+  "deviations": [
+    "waxing with honeycomb and scraping with axes are not modeled",
+    "1.21.4's weathering is not compared (its random ticks run only near players, and the harness has none)"
+  ]
+}

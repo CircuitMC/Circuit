@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Grows on mycelium, podzol and nylium at any light and below light 13 on blocks that occlude light whole, and breaks with its drop when an update finds it unsupported, reading the light as of the start of the tick, as both official servers do; placed by players where it grows",
+  "cases": [
+    "collision/plants",
+    "collision/plant_contexts",
+    "trace/mushrooms"
+  ],
+  "deviations": [
+    "does not spread or grow"
+  ]
+}

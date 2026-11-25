@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes"
+  ],
+  "note": "Blast protection's modifier, sent as both official servers send it",
+  "deviations": [
+    "only reaches the client: its effect is not modeled yet"
+  ]
+}

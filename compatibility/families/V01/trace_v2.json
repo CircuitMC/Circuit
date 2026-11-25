@@ -1,0 +1,7 @@
+{
+  "name": "Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations",
+  "milestone": "C0",
+  "impl": "implemented",
+  "evidence": "none",
+  "note": "circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet"
+}

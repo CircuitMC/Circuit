@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "trace/tnt_duper",
+  "status": "passing",
+  "description": "A named TNT duplication design (the Mytteri push duper) over repeated cycles"
+}

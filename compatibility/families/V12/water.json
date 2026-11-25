@@ -1,0 +1,19 @@
+{
+  "name": "Water flow, sources and washing away",
+  "milestone": "C5",
+  "packages": [
+    "WG3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/water_channel",
+    "trace/water_drop",
+    "trace/water_washes",
+    "trace/water_torch_button",
+    "trace/fluid_sources",
+    "trace/fluid_washes",
+    "collision/flows"
+  ]
+}

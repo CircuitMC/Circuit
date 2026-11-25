@@ -1,0 +1,12 @@
+{
+  "name": "Redstone dust power, shapes and steps",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/dust_shape",
+    "trace/dust_steps",
+    "trace/weak_power"
+  ]
+}

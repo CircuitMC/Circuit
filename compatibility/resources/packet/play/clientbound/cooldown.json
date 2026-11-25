@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/eat",
+    "client/shield"
+  ],
+  "note": "The chorus fruit's and a disabled shield's cooldowns and their ends"
+}

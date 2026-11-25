@@ -1,0 +1,16 @@
+{
+  "name": "Smithing tables",
+  "milestone": "C5",
+  "packages": [
+    "BL4"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Smithing tables upgrade (the base's damage and components kept) and trim (the addition's material in the recipe's or template's pattern) by the data packs' smithing recipes; each slot takes what some recipe takes there, quick moves route by them, taking the result uses one of each input; 24 steps give the same windows and components as both official servers",
+  "deviations": [
+    "on 1.21.5 and later, trim materials come from the vanilla materials' items, not from the items' provides_trim_material component"
+  ],
+  "cases": [
+    "client/smithing"
+  ]
+}

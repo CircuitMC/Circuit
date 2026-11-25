@@ -1,0 +1,22 @@
+{
+  "name": "The tntExplodes game rule",
+  "milestone": "C3",
+  "impl": {
+    "java-1.21.4": "not_applicable",
+    "java-1.21.8": "implemented"
+  },
+  "evidence": {
+    "java-1.21.4": "none",
+    "java-1.21.8": "compared"
+  },
+  "absent_reason": {
+    "java-1.21.4": "introduced in 1.21.5"
+  },
+  "cases_planned": [
+    "TNT-06"
+  ],
+  "cases": [
+    "trace/tnt_explodes_disabled"
+  ],
+  "note": "With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton, and 1.21.4 always primes TNT"
+}

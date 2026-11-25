@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/components-creative.js, components-creative-1214.js",
+  "status": "passing",
+  "description": "Creative slots with a custom name and a potion are kept and sent back with their components; an enchanted book is refused because the enchantment registry is not synchronized"
+}

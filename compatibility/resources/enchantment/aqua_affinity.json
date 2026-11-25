@@ -1,0 +1,9 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/ench_attributes",
+    "client/ench_dig"
+  ],
+  "note": "Its submerged mining speed modifier on a helmet (4 times the total), digging under water as fast as on land"
+}

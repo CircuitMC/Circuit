@@ -1,0 +1,11 @@
+{
+  "name": "Lightning strikes and lightning rods",
+  "milestone": "C3",
+  "packages": [
+    "EF8",
+    "BL1"
+  ],
+  "impl": "missing",
+  "evidence": "none",
+  "note": "Lightning is an entity: it follows the entity types of C3, then thunderstorms strike"
+}

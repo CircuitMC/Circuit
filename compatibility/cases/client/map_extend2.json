@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/map-extend2.js",
+  "status": "passing",
+  "description": "20 steps of map extending at a crafting table: the id a shift-click passes over has a map of the next scale too, an id never used none; a map locked at a cartography table is extended into an unlocked map; two maps amid two paper each shift-clicked (two crafts, four ids) and taken by clicks one at a time (the result shown again); Circuit and both official servers give identical windows, inventories and map data packets"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Technical machines and vanilla quirks",
+  "milestones": [
+    "C4",
+    "C6",
+    "C7"
+  ],
+  "mechanics": [
+    "tnt_duplication",
+    "flying_machines",
+    "chunk_loaders",
+    "gravity_block_machines",
+    "bedrock_breaking",
+    "item_sorters_and_clocks"
+  ]
+}

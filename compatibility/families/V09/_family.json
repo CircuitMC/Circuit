@@ -1,0 +1,13 @@
+{
+  "name": "Structures and decoration",
+  "milestones": [
+    "C7",
+    "C5"
+  ],
+  "mechanics": [
+    "features",
+    "structures",
+    "structure_loot",
+    "structure_templates"
+  ]
+}

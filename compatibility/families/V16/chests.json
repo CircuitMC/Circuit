@@ -1,0 +1,12 @@
+{
+  "name": "Chests and double chests",
+  "milestone": "C4",
+  "impl": "implemented",
+  "evidence": "compared",
+  "tier": "L0",
+  "cases": [
+    "trace/double_chest",
+    "trace/double_chest_left_input",
+    "client/chests"
+  ]
+}

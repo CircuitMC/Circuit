@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/registries/",
+  "status": "passing",
+  "description": "Every registry Circuit synchronizes has the same entries as the official server's configuration, and the bundles' game rules are the official /gamerule lists (server_tests); registries not sent are listed"
+}

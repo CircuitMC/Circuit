@@ -1,0 +1,12 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/block_entities",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "no sounds or player profiles"
+  ],
+  "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/placement/hinge.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness hinge report",
+  "status": "passing",
+  "description": "The hinge a placed oak door takes for each facing and click side with every combination of air, stone, glass and oak door halves beside it, below and above (19,208 placements), reported identically by both official servers; Circuit's rule matches every one"
+}

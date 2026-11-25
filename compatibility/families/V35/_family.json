@@ -1,0 +1,14 @@
+{
+  "name": "Version-specific gameplay and optional profiles",
+  "milestones": [
+    "C12"
+  ],
+  "mechanics": [
+    "pale_garden",
+    "spring_to_life",
+    "chase_the_skies",
+    "experiment_minecart_improvements",
+    "experiment_redstone",
+    "experiment_trade_rebalance"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Commands and administration",
+  "milestones": [
+    "C9"
+  ],
+  "mechanics": [
+    "grammar",
+    "selectors_and_permissions",
+    "command_blocks",
+    "gamerules",
+    "scoreboard_and_teams",
+    "server_operation"
+  ]
+}

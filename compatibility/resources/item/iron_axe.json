@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Dig speed and wear on chests; held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it disables a raised shield it hits for 100 ticks (client/shield)",
+  "cases": [
+    "client/shield"
+  ]
+}

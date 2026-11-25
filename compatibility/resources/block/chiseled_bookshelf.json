@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "trace/bookshelves",
+    "client/bookshelf",
+    "placement/official_items"
+  ],
+  "deviations": [
+    "the sounds"
+  ],
+  "note": "Placed by players as both official servers place it; takes and gives books by the slot clicked as both official servers do (bookshelves, client/bookshelf)"
+}

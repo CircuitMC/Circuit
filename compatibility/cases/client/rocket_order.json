@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/rocket-order.js",
+  "status": "passing",
+  "description": "15 steps of rockets from paper and gunpowder, which both the special firework_rocket and the data pack's firework_rocket_simple take: every recipe taken with doLimitedCrafting off and on, at a crafting table and in the own window, two gunpowder, the same window again, the simple recipe given and then taken with the rule off; the rockets are made each time and no recipe is added to the book by taking them (the special recipe, first in id order); Circuit and both official servers give identical windows and recipe book packets"
+}

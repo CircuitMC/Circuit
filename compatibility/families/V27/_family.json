@@ -1,0 +1,12 @@
+{
+  "name": "Spawning and farms",
+  "milestones": [
+    "C8"
+  ],
+  "mechanics": [
+    "natural_spawning",
+    "despawning",
+    "spawners",
+    "spawning_statistics"
+  ]
+}

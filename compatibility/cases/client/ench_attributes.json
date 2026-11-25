@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/ench-attributes.js; Circuit's side also in tests/server/server_tests.cpp and tests/rules/rules_tests.cpp",
+  "status": "passing",
+  "description": "A creative player puts on and holds enchanted pieces and tools one change at a time (respiration, aqua affinity, both on one helmet, swift sneak, depth strider, fire and blast protection, fire protection on every piece and off again, efficiency held, switched away and back at levels I and V, in the off hand and on a stick, sweeping edge, a respiration helmet held), then in survival mode rejoins and respawns wearing them while another watches; the attribute packets of her each gets (modifiers in order) and the sounds she hears; Circuit and both official servers give identical output"
+}

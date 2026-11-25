@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/windows.js",
+  "status": "passing",
+  "description": "48 steps: every click mode in a chest, the own window, a double chest and a hopper, throws and pickups"
+}

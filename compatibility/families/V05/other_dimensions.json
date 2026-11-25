@@ -1,0 +1,16 @@
+{
+  "name": "The Nether, the End and custom dimensions with dimension-scoped state",
+  "milestone": "C2",
+  "packages": [
+    "WG1",
+    "WG3"
+  ],
+  "impl": "partial",
+  "evidence": "documented",
+  "note": "Every level keeps its own columns, scheduled ticks, block events, block entities, entities and per-level counters, and levels tick in the order overworld, Nether, End (minecraft.wiki \"Tick\"); entity ids are counted over all levels. Commands, tickets, traces, checkpoints, replays and logs name the level. Differential tests prove identical coordinates in two levels independent in the engine and the oracle",
+  "deviations": [
+    "the Nether and the End are neither generated nor reachable by players",
+    "level-specific rules (ultrawarm water and lava, the Nether's roof, the End's void and dragon fight) are not modeled",
+    "custom dimensions from data packs are not supported"
+  ]
+}

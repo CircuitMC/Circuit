@@ -1,0 +1,15 @@
+{
+  "name": "Anvil import and export of DataVersion 4189",
+  "milestone": "C11",
+  "packages": [
+    "CI3"
+  ],
+  "impl": {
+    "java-1.21.4": "missing",
+    "java-1.21.8": "not_applicable"
+  },
+  "evidence": "none",
+  "absent_reason": {
+    "java-1.21.8": "DataVersion 4189 is the 1.21.4 format"
+  }
+}

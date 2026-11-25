@@ -1,0 +1,10 @@
+{
+  "name": "Structure loot and archaeology",
+  "milestone": "C5",
+  "packages": [
+    "BL4",
+    "WG9"
+  ],
+  "impl": "missing",
+  "evidence": "none"
+}

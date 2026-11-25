@@ -1,0 +1,15 @@
+{
+  "name": "Dimensions, tickets and chunk lifecycle",
+  "milestones": [
+    "C2"
+  ],
+  "mechanics": [
+    "overworld",
+    "other_dimensions",
+    "ticket_types",
+    "ticket_levels",
+    "unload_reload",
+    "view_and_simulation_distance",
+    "chunk_generation_status"
+  ]
+}

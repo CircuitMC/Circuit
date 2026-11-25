@@ -1,0 +1,21 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Stays on a sturdy top or beside a flammable block, with the faces of its flammable neighbors when nothing below bears or feeds it; ages, burns out, burns its neighbors and spreads in its block ticks, on 1.21.8 only near players unless allowFireTicksAwayFromPlayer, as both official servers do; players in it are hurt and catch fire as both official servers do (client/fire)",
+  "cases": [
+    "collision/fire",
+    "trace/fire_basics",
+    "trace/fire_stone",
+    "trace/fire_netherrack",
+    "trace/fire_planks",
+    "trace/fire_log",
+    "trace/fire_tnt",
+    "trace/fire_wool",
+    "trace/fire_spread",
+    "client/fire"
+  ],
+  "deviations": [
+    "rain and humid biomes do not put it out sooner",
+    "hurts and ignites only items, arrows and players"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Terrain and biomes",
+  "milestones": [
+    "C7"
+  ],
+  "mechanics": [
+    "noise_terrain",
+    "biome_source",
+    "carvers_aquifers",
+    "surface_rules",
+    "world_presets"
+  ]
+}

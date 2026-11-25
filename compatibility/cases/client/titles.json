@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/titles.js",
+  "status": "passing",
+  "description": "The window type and title of 19 containers and workstations opened once (chest, trapped chest, barrel, hopper, dispenser, dropper, furnace, smoker, blast furnace, crafter, brewing stand, crafting table, stonecutter, smithing table, grindstone, loom, anvil, enchanting table and a double chest): each title is a translation, as is a lectern's (titles-lectern.js, container.lectern); Circuit and both official servers give identical output"
+}

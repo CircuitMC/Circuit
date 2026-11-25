@@ -1,0 +1,8 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "collision/connection"
+  ],
+  "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside and above it"
+}

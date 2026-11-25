@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/maps.js",
+  "status": "passing",
+  "description": "A survival player fills empty maps at two places, turns, walks off and far from them, then copies, zooms to scale 4 and locks filled maps in a cartography table, with refused items, shift-clicks and a creative and a last empty map used: the window, the inventory with the map ids and each map's last data packet (scale, lock, markers, unexplored colors); Circuit and both official servers give identical output"
+}

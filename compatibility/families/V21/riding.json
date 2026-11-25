@@ -1,0 +1,10 @@
+{
+  "name": "Riding and mount controls",
+  "milestone": "C6",
+  "packages": [
+    "PL5",
+    "MB2"
+  ],
+  "impl": "missing",
+  "evidence": "none"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Interaction reach and dig timing",
+  "milestone": "C6",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "client/windows",
+    "client/dig_effects"
+  ],
+  "note": "Reach for blocks and containers; dig time from documented values, with haste, conduit power and mining fatigue (the documented factors, as both official servers count haste 0 and 1, conduit power 1 and mining fatigue 0)"
+}

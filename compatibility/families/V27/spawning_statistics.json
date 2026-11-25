@@ -1,0 +1,9 @@
+{
+  "name": "Spawning statistics and entity inspection in the technical tools",
+  "milestone": "C8",
+  "packages": [
+    "MB4"
+  ],
+  "impl": "missing",
+  "evidence": "none"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "external: circuit-clienttest/fire-items.js",
+  "status": "passing",
+  "description": "20 steps of flint and steel and fire charges used by a survival player: fire on block tops and beside planks, none where it cannot stay or the cell is taken, soul fire on soul sand, campfires and candles lit (not when lit or in water), nothing on air, TNT primed, the wear of each use and a flint and steel's last use, charges used up, and creative mode; Circuit and both official servers give identical blocks, held stacks and entities"
+}

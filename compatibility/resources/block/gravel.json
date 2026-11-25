@@ -1,0 +1,13 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "note": "Falls when the block below can be replaced and lands as the official servers do; broken by players, drops what its loot table rolls for the tool (flint by its table bonus), as both official servers do",
+  "cases": [
+    "trace/falling_column",
+    "trace/falling_drop",
+    "trace/falling_onto",
+    "trace/falling_void",
+    "trace/loot_tools",
+    "trace/loot_bonus"
+  ]
+}

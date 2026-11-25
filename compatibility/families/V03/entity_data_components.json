@@ -1,0 +1,10 @@
+{
+  "name": "Entity data and components (variants, custom names, equipment)",
+  "milestone": "C3",
+  "packages": [
+    "EF2",
+    "EF3"
+  ],
+  "impl": "missing",
+  "evidence": "none"
+}

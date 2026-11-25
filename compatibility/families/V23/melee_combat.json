@@ -1,0 +1,23 @@
+{
+  "name": "Melee attacks between players: the attack's charge, critical hits, sweeping and knockback",
+  "milestone": "C6",
+  "packages": [
+    "EF4",
+    "PL7",
+    "MB3"
+  ],
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/combat",
+    "client/shield",
+    "client/ench_combat",
+    "client/ench_thorns"
+  ],
+  "note": "A player's attack on another within the entity interaction range and 3: the attack damage by the charge (the ticks since the last attack, swing or change of the main hand's item, in floats), nothing without damage; strong attacks (charge above 0.9): sprint knockback (its sound, 0.5 more, the sprint ended), critical hits (half as much again, their sound and animation), sweeps with a sword, also walking (each player near the target hurt for 1 times the charge and knocked along the attacker's facing, 1.21.8 and 1.21.4 in their own orders, also for a player in their hurt cooldown), the sweep sound and particle; the player_attack damage event naming the attacker, the hurt animation, the knockback away from the attacker told to the target in the attack, the nodamage, strong and weak sounds, the damage indicator particles, the weapon's wear outside creative mode; more damage within the hurt cooldown without the event or the hurt's knockback, a sprint's knockback then told to the others only; a player's velocity told to the others after a knockback or a jump when it changed; the arm's swing shown from halfway through the last (two in one tick both); the sprint flag; death.attack.player; with the official data packs, the main hand's enchantments' damage times the charge (after a critical hit's half again of the attack damage alone; an attack with enchantment damage alone still hits) with the enchanted hit's animation, their knockback with a sprint's (half as much, also weak, ending a sprint), their fire on the target and the players swept, and the sweeping damage ratio in sweeps with each swept player's enchantment damage, all times the charge (client/ench_combat); the target's post-attack effects after the attack's sound (thorns: the attacker hurt and knocked, a swept player's right after that player's hurt), also on a hit within the target's hurt cooldown, and a velocity a hurt an attack dealt told right after that player's own, the knockback's rise not read as a jump (client/ench_thorns), as both official servers do",
+  "deviations": [
+    "the hurt animation's angle uses the exact arctangent; the official servers' differs in the float's last digits",
+    "attacks on other entities, the post-attack effects but fire aspect's and thorns', teams and the breaking of a weapon's sound are not modeled; the players' order in one tick's velocities is their joining's (the official servers' differs: the target's velocity put back came before its attacker's from thorns); an attacker killed by thorns does not wear their weapon (Circuit's choice)",
+    "the reach's margin of 3 is Circuit's choice between the recorded 4.7 (hit) and 6.7 (refused); the swing's length of 6 ticks is Circuit's within the recorded (2 ticks hidden, 4 shown); the sweep box by minecraft.wiki (one player inside and one beyond recorded); the weapons other than an iron sword and an iron axe (client/shield), the critical hit's conditions but falling, the attacker's exhaustion, particles' range, jump boost's and sprinting's jump velocity, other game modes in sweeps and a target in the air or moving were not recorded"
+  ]
+}

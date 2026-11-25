@@ -1,0 +1,13 @@
+{
+  "name": "Health, hunger, saturation, exhaustion and regeneration",
+  "milestone": "C6",
+  "impl": "implemented",
+  "evidence": "compared",
+  "cases": [
+    "client/vitals",
+    "client/join_order",
+    "client/attribute_rules",
+    "client/eat"
+  ],
+  "note": "Food from eating and drinking (eating_and_drinking); regeneration up to the maximum health while the naturalRegeneration game rule allows; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers"
+}

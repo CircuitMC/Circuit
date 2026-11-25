@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/maps",
+    "client/maps_explore"
+  ],
+  "deviations": [
+    "banner and frame markers are never sent"
+  ]
+}

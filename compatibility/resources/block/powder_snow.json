@@ -1,0 +1,11 @@
+{
+  "impl": "partial",
+  "evidence": "compared",
+  "cases": [
+    "client/drown"
+  ],
+  "note": "Freezes survival players whose box meets it and who wear no leather armor (the frozen ticks, the powder_snow slowness, freeze damage when fully frozen), as both official servers do; flowing water and lava wash it away as on both official servers (flow reports)",
+  "deviations": [
+    "it does not slow or hold up players (the client does), and a burning player does not melt it"
+  ]
+}

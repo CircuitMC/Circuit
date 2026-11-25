@@ -1,0 +1,10 @@
+{
+  "kind": "black_box",
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
+  "location": "tests/fixtures/collision/fuel-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness fuel report",
+  "status": "passing",
+  "description": "Each item's burn time in a furnace, as both official servers report it; Circuit's rules give the same for every item of both versions"
+}
