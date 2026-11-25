@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <atomic>
+#include <exception>
 #include <memory>
+#include <mutex>
 #include <circuit/runtime/job_runner.hpp>
 #include <algorithm>
 #include <functional>
@@ -8,6 +10,10 @@
 #include <vector>
 
 namespace circuit::runtime {
+
+PoolRunner::PoolRunner(unsigned workers) : workers_(workers) {
+    if (workers > 1) pool_.emplace(workers - 1);
+}
 
 void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
     const auto drain = [](Task* task) {
@@ -21,13 +27,43 @@ void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
     // Helpers and the calling thread take tasks from a shared index: one pool
     // job per helper instead of one per task, and no thread sits idle while
     // the caller waits.
-    auto next = std::make_shared<std::atomic<std::size_t>>(0);
-    const auto take = [tasks, next, drain] {
-        for (std::size_t i; (i = next->fetch_add(1, std::memory_order_relaxed)) < tasks.size();) drain(tasks[i]);
+    struct Shared {
+        std::atomic<std::size_t> next{0};
+        std::mutex mutex;
+        std::exception_ptr error; // the first exception of the batch, on any thread
+    };
+    auto shared = std::make_shared<Shared>();
+    const auto take = [tasks, shared, drain] {
+        std::exception_ptr caught;
+        try {
+            for (std::size_t i; (i = shared->next.fetch_add(1, std::memory_order_relaxed)) < tasks.size();) drain(tasks[i]);
+        } catch (...) {
+            caught = std::current_exception();
+        }
+        // Outside the handler, so that a helper holds no reference to the
+        // exception once it has handed it over.
+        if (caught) {
+            std::lock_guard lock(shared->mutex);
+            if (!shared->error) shared->error = std::move(caught);
+        }
     };
     const auto helpers = std::min<std::size_t>(workers_, tasks.size()) - 1;
-    auto done = pool_.submit(std::vector<std::function<void()>>(helpers, take));
+    auto done = pool_->submit(std::vector<std::function<void()>>(helpers, take));
     take();
+    // The helpers work on the caller's tasks, so nothing leaves this function
+    // before they have finished, whichever thread a task threw on. `take`
+    // does not throw; `done` holds an exception only when a helper job could
+    // not be queued.
+    done.wait();
+    // The caller takes the exception over: a helper may let go of `shared`
+    // after this function has returned, and must not be the one that frees an
+    // exception the caller has looked at.
+    std::exception_ptr error;
+    {
+        std::lock_guard lock(shared->mutex);
+        error = std::move(shared->error);
+    }
+    if (error) std::rethrow_exception(error);
     done.get();
 }
 
@@ -45,7 +81,7 @@ double SeededRunner::unit() { return static_cast<double>(next() >> 11) * 0x1.0p-
 
 void SeededRunner::run(std::span<Task* const> tasks, std::uint32_t attempt) {
     std::vector<Task*> live(tasks.begin(), tasks.end());
-    // Priority strategy: a random initial order; the running task occasionally
+    // Priority strategy: a random initial order; the running task now and then
     // drops to the lowest priority, which yields a different interleaving.
     if (options_.strategy == ExplorationOptions::Strategy::priority)
         for (std::size_t i = live.size(); i > 1; --i) std::swap(live[i - 1], live[next() % i]);

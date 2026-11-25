@@ -32,7 +32,7 @@ xmake run parallel_models
 | S12 | Random update opportunities retried after conflict | A retry consumes an extra random opportunity | Capture decisions at the correct semantic point; preserve the version's RNG consumption contract |
 | S13 | Empty queues while a producer is still active | A stage closes before descendant events arrive | Register all roots, register children before retiring parents, and count in-flight work |
 
-S01 runs on the actual Asio pool at 1/2/4/8/16 workers with forward, reversed, and rotated submission plus yield injection. Expected values and per-action observations are explicit arithmetic constants. Other scenarios are deliberately sequential models of conflicting plans and invalid state transitions. They do not claim concurrent transaction correctness.
+S01 runs on the runtime's worker threads (`StageExecutor`) at 1/2/4/8/16 workers with forward, reversed, and rotated submission plus yield injection. Expected values and per-action observations are explicit arithmetic constants. Other scenarios are deliberately sequential models of conflicting plans and invalid state transitions. They do not claim concurrent transaction correctness.
 
 Varying worker counts and submission order changes interleavings only incidentally and tends to repeat the same few schedules. It is not schedule exploration. The simulation runtime therefore has a deterministic seeded runner that replaces the pool in tests (see [the simulation core](SIMULATION.md)). Memory-level races still require ThreadSanitizer on the real pool.
 

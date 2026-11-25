@@ -468,7 +468,7 @@ Entities spawned in parallel roots hold provisional ids until commit. Commit rew
 
 **Layouts.** `adaptive` merges on conflict and, every 20 ticks, splits regions whose columns have not interacted for 40 ticks. `single_region` runs everything through one region. `perturbed` applies seeded random merges and splits for testing.
 
-**Threads.** `PoolRunner` runs each region task as one job on the Asio pool; workers never wait for other jobs. `SeededRunner` interleaves task steps deterministically on one thread from a seed, optionally injecting aborts, so any failure replays exactly.
+**Threads.** `PoolRunner` runs the region tasks of a phase on its own worker threads and the calling thread, which take tasks from a shared index; workers never wait for other jobs, a runner of one worker starts no thread, and `run()` returns or rethrows a task's exception only after every thread has left its task. `SeededRunner` interleaves task steps deterministically on one thread from a seed, optionally injecting aborts, so any failure replays exactly.
 
 ## Verification
 

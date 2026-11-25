@@ -3,6 +3,7 @@
 // on both the runtime engine and the independent oracle.
 #include "../oracle/oracle.hpp"
 #include "../support/check.hpp"
+#include "../support/fixture_parts.hpp"
 #include "../support/light_reference.hpp"
 #include "../support/scenario.hpp"
 #include <circuit/evidence/content.hpp>
@@ -29,7 +30,10 @@
 
 using namespace circuit::evidence;
 using circuit::oracle::Oracle;
+using circuit::test::fixture_parts;
+using circuit::test::part_of;
 using circuit::test::require;
+using circuit::test::sorted_entries;
 using Outcome = FixtureReport::Outcome;
 using circuit::evidence::EntityEvent;
 using circuit::evidence::EntityOrder;
@@ -1764,30 +1768,41 @@ int main(int argc, char** argv) {
         require(evaluate_fixture(parse(other), engine_executor()).outcome == Outcome::unsupported, "no mapping");
     });
 
-    suite.run("repository fixtures", [&] {
-        std::size_t evaluated = 0, rerecorded = 0;
-        for (const auto* dir : {"documented", "reference"})
-            for (const auto& entry : fs::directory_iterator(fixtures / dir)) {
+    // The repository's own fixtures pass on both executors, and its skeletons
+    // record as the committed reference recordings: one case per part of each
+    // walk (tests/support/fixture_parts.hpp). The first part of each also
+    // counts the whole walk.
+    for (std::size_t part = 0; part < fixture_parts; ++part) {
+        suite.run(std::format("repository fixtures pass (part {} of {})", part + 1, fixture_parts), [&fixtures, part] {
+            const auto all = sorted_entries({fixtures / "documented", fixtures / "reference"});
+            for (const auto& entry : part_of(all, part, fixture_parts)) {
                 const auto f = parse(read_text(entry.path()));
                 for (const auto& exec : {engine_executor(4), oracle_executor()}) {
                     const auto r = evaluate_fixture(f, exec);
                     require(r.outcome == (needs_data_packs(f) ? Outcome::unsupported : Outcome::passed),
                             std::format("{}: {}", entry.path().string(), r.detail));
                 }
-                ++evaluated;
             }
-        for (const auto& entry : fs::directory_iterator(fixtures / "skeletons")) {
-            // Scenarios of loot tables record only with the data packs (server_tests, with the operator's jars).
-            if (needs_data_packs(parse(read_text(entry.path())))) continue;
-            const auto recorded = record_fixture(parse(read_text(entry.path())), engine_executor());
-            require(recorded.has_value(), entry.path().string());
-            const auto committed = fixtures / "reference" / entry.path().filename();
-            require(write_fixture(*recorded) == read_text(committed),
-                    std::format("{} no longer matches the reference rules; re-record and review it", committed.string()));
-            ++rerecorded;
-        }
-        require(evaluated >= 9 && rerecorded >= 8, std::format("{} evaluated, {} re-recorded", evaluated, rerecorded));
-    });
+            if (part == 0) require(all.size() >= 9, std::format("{} evaluated", all.size()));
+        });
+        suite.run(std::format("repository skeletons record as the reference recordings (part {} of {})", part + 1, fixture_parts),
+                  [&fixtures, part] {
+            const auto all = sorted_entries({fixtures / "skeletons"});
+            for (const auto& entry : part_of(all, part, fixture_parts)) {
+                // Scenarios of loot tables record only with the data packs (server_tests, with the operator's jars).
+                if (needs_data_packs(parse(read_text(entry.path())))) continue;
+                const auto recorded = record_fixture(parse(read_text(entry.path())), engine_executor());
+                require(recorded.has_value(), entry.path().string());
+                const auto committed = fixtures / "reference" / entry.path().filename();
+                require(write_fixture(*recorded) == read_text(committed),
+                        std::format("{} no longer matches the reference rules; re-record and review it", committed.string()));
+            }
+            if (part == 0) {
+                const auto rerecorded = std::ranges::count_if(all, [](const auto& e) { return !needs_data_packs(parse(read_text(e.path()))); });
+                require(rerecorded >= 8, std::format("{} re-recorded", rerecorded));
+            }
+        });
+    }
 
     suite.run("profiling workloads are valid scenarios", [&] {
         std::size_t workloads = 0;
@@ -1800,11 +1815,17 @@ int main(int argc, char** argv) {
         require(workloads >= 5, "workloads present");
     });
 
-    suite.run("target-version traces pass and match their skeletons", [&] {
-      // Traces of each supported game version, recorded by the external harness.
-      for (const auto& [directory, version] : {std::pair{"harness", "1.21.8"}, std::pair{"harness-1.21.4", "1.21.4"}}) {
-        std::size_t traces = 0;
-        for (const auto& entry : fs::directory_iterator(fixtures / directory)) {
+    // Traces of each supported game version, recorded by the external harness:
+    // one case per version and part of its directory
+    // (tests/support/fixture_parts.hpp). The first part of each version also
+    // counts the directory.
+    for (const auto& [directory_name, version_name] : {std::pair{"harness", "1.21.8"}, std::pair{"harness-1.21.4", "1.21.4"}})
+      for (std::size_t part = 0; part < fixture_parts; ++part) {
+        const std::string directory = directory_name, version = version_name;
+        suite.run(std::format("target-version traces pass and match their skeletons ({}, part {} of {})", version, part + 1, fixture_parts),
+                  [&fixtures, directory, version, part] {
+        const auto all = sorted_entries({fixtures / directory});
+        for (const auto& entry : part_of(all, part, fixture_parts)) {
             const auto trace = parse(read_text(entry.path()));
             require_recorded_from_skeleton(fixtures, entry.path(), trace, version);
             for (const auto& exec : {engine_executor(4), oracle_executor()}) {
@@ -1814,11 +1835,10 @@ int main(int argc, char** argv) {
                 require(r.outcome == (needs_data_packs(trace) ? Outcome::unsupported : Outcome::passed),
                         std::format("{}: {}", entry.path().string(), r.detail));
             }
-            ++traces;
         }
-        require(traces >= 20, std::format("{} target-version traces for {}", traces, version));
+        if (part == 0) require(all.size() >= 20, std::format("{} target-version traces for {}", all.size(), version));
+        });
       }
-    });
 
     suite.run("open target-version traces keep their first mismatch", [&] {
         // Traces Circuit does not match yet stay visible, apart from the passing

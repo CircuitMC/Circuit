@@ -2,6 +2,7 @@
 #pragma once
 #include <circuit/runtime/executor.hpp>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 namespace circuit::runtime {
@@ -27,18 +28,24 @@ public:
     [[nodiscard]] virtual bool concurrent() const noexcept = 0;
 };
 
-// Runs tasks on the Asio worker pool: up to `workers` threads, the calling
-// thread included, take tasks from a shared index until none is left. A
-// single task, or a single worker, runs on the calling thread. Workers never
-// wait for other pool jobs.
+// Runs tasks on worker threads: up to `workers` threads, the calling thread
+// included, take tasks from a shared index until none is left. A single task,
+// or a single worker, runs on the calling thread, and a runner of one worker
+// starts no thread. Workers never wait for other pool jobs.
+//
+// run() returns only when no task is executing any more. When a task throws,
+// the thread it ran on takes no further task, the other threads finish the
+// tasks they can still take, and run() then rethrows the first exception; the
+// tasks nobody took have not run. The runner can be used again afterwards.
+// run() is called by one thread at a time, the engine's coordinator.
 class PoolRunner final : public JobRunner {
 public:
-    explicit PoolRunner(unsigned workers) : pool_(workers > 1 ? workers - 1 : 1), workers_(workers) {}
+    explicit PoolRunner(unsigned workers);
     void run(std::span<Task* const> tasks, std::uint32_t attempt) override;
     [[nodiscard]] bool concurrent() const noexcept override { return workers_ > 1; }
 
 private:
-    StageExecutor pool_;
+    std::optional<StageExecutor> pool_; // the workers - 1 helper threads; empty at one worker
     unsigned workers_;
 };
 

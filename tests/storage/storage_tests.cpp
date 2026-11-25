@@ -748,36 +748,50 @@ int main() {
         }
     });
 
-    suite.run("crash at every file operation keeps durable history", [&] {
-        std::mt19937_64 rng(11);
-        std::size_t cases = 0;
-        // Scheduled ticks (clock) and entities (drops); the other histories
-        // only add block entities, which the round-trip cases cover.
-        for (const auto* h_ptr : {&histories[0], &histories[2]}) {
-            const auto& h = *h_ptr;
-            for (const Policy p : {Policy{3, 7}, Policy{1, 5}, Policy{1000, 4}, Policy{2, 6, 3}}) {
-                MemoryFilesystem clean;
-                const auto all = run(clean, h, p);
-                require(all.attempted == h.ticks(), "clean run completes");
-                const auto total = clean.operations();
-                for (std::size_t k = 0; k <= total; ++k) {
-                    MemoryFilesystem fs;
-                    fs.crash_at(k);
-                    const auto o = run(fs, h, p);
-                    for (int variant = 0; variant < 2; ++variant) {
-                        auto after = variant == 0 ? fs.crashed() : fs.crashed(&rng);
-                        // Torn images continue too: a discarded tail must not
-                        // hide the records logged after recovery.
-                        check_after(std::move(after), h, o, std::format("{} sync {} ckpt {} crash at {}/{} variant {}", h.name, p.sync_every,
-                                                                        p.checkpoint_every, k, total, variant),
-                                    variant == 1 || k % 2 == 0);
-                        ++cases;
-                    }
+    // A crash at every file operation of a run, for scheduled ticks (clock)
+    // and entities (drops); the other histories only add block entities, which
+    // the round-trip cases cover. One case per history and policy, so that
+    // shards of the program (CIRCUIT_TEST_SHARD) share the crash images. The
+    // torn images of all eight come from one random stream: each case skips
+    // what the cases before it draw (`drawn`, as measured), which keeps the
+    // images those of the one walk these cases were split from.
+    struct CrashWalk {
+        std::size_t history;
+        Policy policy;
+        unsigned long long drawn;
+    };
+    for (const CrashWalk& walk : {CrashWalk{0, {3, 7}, 0}, CrashWalk{0, {1, 5}, 27}, CrashWalk{0, {1000, 4}, 27}, CrashWalk{0, {2, 6, 3}, 67},
+                                  CrashWalk{2, {3, 7}, 133}, CrashWalk{2, {1, 5}, 160}, CrashWalk{2, {1000, 4}, 160},
+                                  CrashWalk{2, {2, 6, 3}, 200}}) {
+        const auto& h = histories[walk.history];
+        const Policy p = walk.policy;
+        suite.run(std::format("crash at every file operation keeps durable history ({}, sync every {}, checkpoint every {}{})", h.name,
+                              p.sync_every, p.checkpoint_every, p.finish_after ? std::format(", finished {} later", p.finish_after) : ""),
+                  [&h, p, drawn = walk.drawn] {
+            std::mt19937_64 rng(11);
+            rng.discard(drawn);
+            std::size_t cases = 0;
+            MemoryFilesystem clean;
+            const auto all = run(clean, h, p);
+            require(all.attempted == h.ticks(), "clean run completes");
+            const auto total = clean.operations();
+            for (std::size_t k = 0; k <= total; ++k) {
+                MemoryFilesystem fs;
+                fs.crash_at(k);
+                const auto o = run(fs, h, p);
+                for (int variant = 0; variant < 2; ++variant) {
+                    auto after = variant == 0 ? fs.crashed() : fs.crashed(&rng);
+                    // Torn images continue too: a discarded tail must not
+                    // hide the records logged after recovery.
+                    check_after(std::move(after), h, o, std::format("{} sync {} ckpt {} crash at {}/{} variant {}", h.name, p.sync_every,
+                                                                    p.checkpoint_every, k, total, variant),
+                                variant == 1 || k % 2 == 0);
+                    ++cases;
                 }
             }
-        }
-        std::cout << std::format("  {} crash images recovered and continued\n", cases);
-    });
+            std::cout << std::format("  {} crash images recovered and continued\n", cases);
+        });
+    }
 
     suite.run("I/O errors fail closed and leave a recoverable world", [&] {
         const auto& h = histories[3];
