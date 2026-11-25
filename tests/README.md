@@ -16,9 +16,10 @@ file of the directory into it.
 | `anvil_tests` | `tests/anvil/` |
 | `server_tests` | `tests/server/` |
 | `extension_tests` | `tests/extensions/` (all but `sdk_probe.cpp`, the probe libraries' source) |
+| `runtime_tests` | `tests/runtime/` |
 
-`runtime_tests`, `interface_tests`, `validation_tests`, `plugin_tests` and
-`parallel_models` are single programs without named cases.
+`interface_tests`, `validation_tests`, `plugin_tests` and `parallel_models` are
+single programs without named cases.
 
 ## Adding cases
 

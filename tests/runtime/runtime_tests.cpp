@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include "../support/check.hpp"
 #include <circuit/runtime/demo_kernel.hpp>
 #include <atomic>
-#include <iostream>
 #include <stdexcept>
 
-void require(bool ok, const char* message) { if (!ok) throw std::runtime_error(message); }
+using circuit::test::require;
+
 int main() {
     using namespace circuit::runtime;
-    try {
+    circuit::test::Suite suite("runtime_tests");
+
+    suite.run("demo kernel matches the arithmetic reference at 1/2/4/8/16 workers", [] {
         // Independent arithmetic oracle for the synthetic chain (no scheduler reuse).
         for (unsigned workers : {1u, 2u, 4u, 8u, 16u}) {
             for (bool reversed : {false, true}) {
@@ -26,6 +29,9 @@ int main() {
                 }
             }
         }
+    });
+
+    suite.run("demo kernel publishes nothing from a failed tick and retries it", [] {
         DemoKernel kernel(2);
         kernel.schedule(1, 0, 12);
         const auto before = kernel.snapshot();
@@ -34,6 +40,9 @@ int main() {
         require(aborted && kernel.snapshot() == before, "partial tick published");
         kernel.advance(); // Failed attempt must retain the original queued event.
         require(kernel.snapshot().chunks[0] == ChunkCounters{1, 4}, "retry lost or duplicated event");
+    });
+
+    suite.run("stage executor drains a batch with a failing job and recovers", [] {
         StageExecutor pool(2);
         pool.submit({}).get();
         std::atomic_uint count{0};
@@ -43,7 +52,7 @@ int main() {
         require(failure_seen && count == 1, "exception did not drain all jobs");
         pool.submit({[&] { ++count; }}).get();
         require(count == 2, "executor cannot recover");
-        std::cout << "runtime tests passed: 1/2/4/8/16 workers, reversed order, future events, atomic publication, worker failure\n";
-        return 0;
-    } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
+    });
+
+    return suite.finish();
 }
