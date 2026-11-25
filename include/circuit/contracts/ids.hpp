@@ -208,11 +208,23 @@ inline constexpr std::uint8_t max_stack_size = 99;
 
 } // namespace circuit::contracts
 
+// Chunk coordinates are small neighbouring integers, and the standard
+// library may hash an integer to itself and reduce it modulo the bucket
+// count. The two coordinates packed into one word then collide by diagonal
+// wherever the bucket count divides 2^32 - 1 (257 buckets: 196 columns of a
+// 14 by 14 area in 25 of them), so every bit of both is mixed into every bit
+// of the hash (the 64-bit finalizer of MurmurHash3). Nothing may depend on the
+// order of a hashed container: results are the same under any hash.
 template <>
 struct std::hash<circuit::contracts::ChunkPos> {
     std::size_t operator()(const circuit::contracts::ChunkPos& c) const noexcept {
-        return std::hash<std::uint64_t>{}((static_cast<std::uint64_t>(static_cast<std::uint32_t>(c.x)) << 32)
-            | static_cast<std::uint32_t>(c.z));
+        std::uint64_t h = (static_cast<std::uint64_t>(static_cast<std::uint32_t>(c.x)) << 32) | static_cast<std::uint32_t>(c.z);
+        h ^= h >> 33;
+        h *= 0xFF51AFD7ED558CCDULL;
+        h ^= h >> 33;
+        h *= 0xC4CEB9FE1A85EC53ULL;
+        h ^= h >> 33;
+        return static_cast<std::size_t>(h);
     }
 };
 template <>
