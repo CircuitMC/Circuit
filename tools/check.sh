@@ -119,15 +119,7 @@ else
 fi
 
 if [[ $gate == full ]]; then
-    gate_command ledger "$logs/ledger.log" python3 tools/compat_ledger.py check
-    gate_command ledger-tools "$logs/ledger-tools.log" python3 tests/tools/compat_ledger_tests.py
-    if command -v javac >/dev/null; then
-        mkdir -p build/java-spi
-        mapfile -t sources < <(find modules/java-bridge -name '*.java' | sort)
-        gate_command java-spi "$logs/java-spi.log" javac --release 17 -d build/java-spi "${sources[@]}"
-    else
-        gate_record NOT-RUN java-spi 0 "javac 17+ is not available"
-    fi
+    gate_tree_checks "" "$tree" "$logs"
 fi
 
 gate_summary "tools/check.sh --$gate: $(($(gate_now) - started)) s"
