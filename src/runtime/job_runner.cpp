@@ -34,11 +34,17 @@ void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
     };
     auto shared = std::make_shared<Shared>();
     const auto take = [tasks, shared, drain] {
+        std::exception_ptr caught;
         try {
             for (std::size_t i; (i = shared->next.fetch_add(1, std::memory_order_relaxed)) < tasks.size();) drain(tasks[i]);
         } catch (...) {
+            caught = std::current_exception();
+        }
+        // Outside the handler, so that a helper holds no reference to the
+        // exception once it has handed it over.
+        if (caught) {
             std::lock_guard lock(shared->mutex);
-            if (!shared->error) shared->error = std::current_exception();
+            if (!shared->error) shared->error = std::move(caught);
         }
     };
     const auto helpers = std::min<std::size_t>(workers_, tasks.size()) - 1;
@@ -49,10 +55,15 @@ void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
     // does not throw; `done` holds an exception only when a helper job could
     // not be queued.
     done.wait();
+    // The caller takes the exception over: a helper may let go of `shared`
+    // after this function has returned, and must not be the one that frees an
+    // exception the caller has looked at.
+    std::exception_ptr error;
     {
         std::lock_guard lock(shared->mutex);
-        if (shared->error) std::rethrow_exception(shared->error);
+        error = std::move(shared->error);
     }
+    if (error) std::rethrow_exception(error);
     done.get();
 }
 

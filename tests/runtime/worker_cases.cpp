@@ -234,19 +234,25 @@ CIRCUIT_TEST("pool runner and stage executor reject worker counts outside their 
 
 CIRCUIT_TEST("stage executor keeps the first exception of a batch and runs the jobs after it") {
     // One thread takes the jobs in submission order, so "first" is exact here.
+    // The exceptions are told apart by type, as the older executor case does,
+    // and their text is not read: the executor's thread can be the last to
+    // let go of an exception, which ThreadSanitizer reports as a race with a
+    // read on this thread because it does not see the reference count.
     StageExecutor pool(1);
     std::vector<int> order;
-    std::string message;
+    int caught = 0;
     try {
         pool.submit({[&] { order.push_back(0); },
                      [&] { order.push_back(1); throw std::runtime_error("first"); },
-                     [&] { order.push_back(2); throw std::runtime_error("second"); },
+                     [&] { order.push_back(2); throw std::logic_error("second"); },
                      [&] { order.push_back(3); }})
             .get();
-    } catch (const std::runtime_error& e) {
-        message = e.what();
+    } catch (const std::runtime_error&) {
+        caught = 1;
+    } catch (const std::logic_error&) {
+        caught = 2;
     }
-    require(message == "first", "the batch does not hold its first exception");
+    require(caught == 1, "the batch does not hold its first exception");
     require(order == std::vector<int>{0, 1, 2, 3}, "a job after the failing one did not run, or the order changed");
     pool.submit({[&] { order.push_back(4); }}).get();
     require(order.back() == 4, "the executor cannot be used after a failed batch");
