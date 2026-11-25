@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Turns engine_bench output into Markdown tables.
 
-usage: table.py <runs.txt> [scaling|digests|phases]
+usage: table.py <runs.txt> [scaling|summary|digests|phases]
+
+  scaling  one row per workload and worker count: mean, p50, p95, p99
+  summary  one row per workload: the mean at every worker count
+  digests  one row per workload: size, regions and the world digest
+  phases   one row per workload: microseconds per tick by phase
 
 Each cell is the median over the repetitions of one workload and worker count.
 `spread` is (max - min) / median of the repetitions' mean tick time. The
@@ -58,6 +63,28 @@ def main():
                 spread = (max(means) - min(means)) / mean * 100
                 print(f"| {name} | {w} | {mean:.3f} | {median(rows, 'p50'):.3f} | {median(rows, 'p95'):.3f} | {median(rows, 'p99'):.3f} | "
                       f"{base / mean:.2f}x | {spread:.0f} % | {len(rows)} |")
+    elif mode == "summary":
+        first = workers[0]
+        print(f"| Workload | {first} worker{'s' if first > 1 else ''}: mean / p50 / p95 / p99 ms | "
+              + " | ".join(f"{w} workers: mean" for w in workers[1:]) + " | largest spread |")
+        print("| --- | --- | " + " | ".join("---" for _ in workers[1:]) + " | --- |")
+        for name in order:
+            rows = runs.get((name, first))
+            if not rows:
+                continue
+            base = median(rows, "mean")
+            cells, spreads = [], []
+            for w in workers:
+                cell = runs.get((name, w))
+                if not cell:
+                    cells.append("-")
+                    continue
+                mean = median(cell, "mean")
+                means = [float(r["mean"]) for r in cell]
+                spreads.append((max(means) - min(means)) / mean * 100)
+                cells.append(f"{mean:.3f} ({base / mean:.2f}x)")
+            print(f"| {name} | {base:.3f} / {median(rows, 'p50'):.3f} / {median(rows, 'p95'):.3f} / {median(rows, 'p99'):.3f} | "
+                  + " | ".join(cells[1:]) + f" | {max(spreads):.0f} % |")
     elif mode == "digests":
         print("| Workload | Timed ticks | Loaded columns | Regions | Tasks per attempt | Digest | Same in every run |")
         print("| --- | --- | --- | --- | --- | --- | --- |")

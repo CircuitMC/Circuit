@@ -9,6 +9,8 @@
 #     --out DIR       output directory (build/bench/<UTC date and time>)
 #     --task-times    pass --task-times to engine_bench (rule work and critical path)
 #     --build         configure the release mode and build engine_bench first
+#     --bin FILE      the engine_bench program to run (the release build of this tree)
+#     --label TEXT    copied into every output line (-)
 #     --list          print the default workloads and exit
 #
 # A workload is a .ctrace or .wl file, or the name of a recorded workload
@@ -26,7 +28,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-reps=3 workers="1 2 4 8 16" ticks=600 first_cpu=8 out="" build=0 list=0
+reps=3 workers="1 2 4 8 16" ticks=600 first_cpu=8 out="" build=0 list=0 bin="" label=-
 extra=()
 workloads=()
 while (($#)); do
@@ -38,8 +40,10 @@ while (($#)); do
         --out) out=$2; shift 2 ;;
         --task-times) extra+=(--task-times); shift ;;
         --build) build=1; shift ;;
+        --bin) bin=$2; shift 2 ;;
+        --label) label=$2; shift 2 ;;
         --list) list=1; shift ;;
-        -h|--help) sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         --*) echo "run.sh: unknown option $1" >&2; exit 2 ;;
         *) workloads+=("$1"); shift ;;
     esac
@@ -60,8 +64,10 @@ if ((build)); then
     xmake f "${args[@]}"
     xmake build -y engine_bench
 fi
-bin=$(find build -path '*/release/engine_bench' -type f 2>/dev/null | head -n 1)
 if [[ -z "$bin" ]]; then
+    bin=$(find build -path '*/release/engine_bench' -type f 2>/dev/null | head -n 1)
+fi
+if [[ -z "$bin" || ! -x "$bin" ]]; then
     echo "run.sh: no release build of engine_bench; run with --build" >&2
     exit 2
 fi
@@ -93,14 +99,17 @@ for item in "${workloads[@]}"; do
     elif [[ -f "$generated/$name.wl" ]]; then file=$generated/$name.wl
     else echo "run.sh: no workload $name" >&2; exit 2
     fi
-    for w in $workers; do
-        last=$((first_cpu + w - 1))
-        if ((last >= cpus)); then
-            echo "run.sh: $w workers from CPU $first_cpu need CPU $last; the machine has $cpus" >&2
-            exit 2
-        fi
-        for ((r = 1; r <= reps; ++r)); do
-            taskset -c "$first_cpu-$last" "$bin" "$file" --workers "$w" --ticks "$n" "${extra[@]}" >> "$out/runs.txt"
+    # One pass over the worker counts per repetition, so that a change of the
+    # machine's state during a workload reaches every worker count and shows
+    # in the spread instead of looking like an effect of the worker count.
+    for ((r = 1; r <= reps; ++r)); do
+        for w in $workers; do
+            last=$((first_cpu + w - 1))
+            if ((last >= cpus)); then
+                echo "run.sh: $w workers from CPU $first_cpu need CPU $last; the machine has $cpus" >&2
+                exit 2
+            fi
+            taskset -c "$first_cpu-$last" "$bin" "$file" --workers "$w" --ticks "$n" --label "$label" "${extra[@]}" >> "$out/runs.txt"
         done
     done
     echo "done: $name ($(cut -d' ' -f1-3 /proc/loadavg))" >&2
