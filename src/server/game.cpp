@@ -2,6 +2,7 @@
 #include "game.hpp"
 #include "command_reader.hpp"
 #include "extensions.hpp"
+#include "fan_out.hpp"
 #include "log.hpp"
 #include "movement.hpp"
 #include "world_meta.hpp"
@@ -26,7 +27,6 @@
 #include <asio/thread_pool.hpp>
 #include <chrono>
 #include <cmath>
-#include <latch>
 #include <limits>
 #include <condition_variable>
 #include <thread>
@@ -6283,33 +6283,9 @@ struct Game::Impl final : GameServices {
             for (std::size_t i; (i = index.fetch_add(1, std::memory_order_relaxed)) < jobs.size();) encode(jobs[i]);
         };
         const auto helpers = std::min<std::size_t>(config.workers - 1, jobs.size() - 1);
-        std::latch done(static_cast<std::ptrdiff_t>(helpers));
-        std::exception_ptr failure;
-        std::mutex failure_mutex;
-        // The helpers use the variables of this frame, so nothing leaves it
-        // before every posted helper has counted down: an exception on this
-        // thread, from posting or from encoding, is kept like a helper's and
-        // rethrown after the wait.
-        const auto guarded = [&](const auto& work) {
-            try {
-                work();
-            } catch (...) {
-                std::lock_guard lock(failure_mutex);
-                if (!failure) failure = std::current_exception();
-            }
-        };
-        std::size_t posted = 0;
-        guarded([&] {
-            for (; posted < helpers; ++posted)
-                asio::post(*encode_pool, [&] {
-                    guarded(take);
-                    done.count_down();
-                });
-        });
-        for (auto missing = posted; missing < helpers; ++missing) done.count_down();
-        guarded(take);
-        done.wait();
-        if (failure) std::rethrow_exception(failure);
+        // Returns, or rethrows an encoder's exception, only after every helper
+        // has finished: the helpers use `index` and `jobs` of this frame.
+        fan_out(helpers, [&](auto job) { asio::post(*encode_pool, std::move(job)); }, take);
     }
 
     void publish_players() {
