@@ -199,7 +199,11 @@ gate_judge() {
         return 1
     fi
     if ((rc != 0)); then
-        if grep -qE "$GATE_SANITIZER_PATTERN" "$log"; then
+        if grep -qE 'SUMMARY: [A-Za-z]+Sanitizer: SEGV [^ ]*libsanitizer/' "$log"; then
+            # The fault is inside the sanitizer's runtime, not in the program. Still a failure:
+            # the program did not finish its tests.
+            gate_record FAIL "$step" "$seconds" "exit $rc: the sanitizer runtime crashed in its own code, see $log"
+        elif grep -qE "$GATE_SANITIZER_PATTERN" "$log"; then
             gate_record FAIL "$step" "$seconds" "exit $rc with a sanitizer report, see $log"
         else
             gate_record FAIL "$step" "$seconds" "exit $rc, see $log"
