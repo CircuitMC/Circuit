@@ -6286,17 +6286,28 @@ struct Game::Impl final : GameServices {
         std::latch done(static_cast<std::ptrdiff_t>(helpers));
         std::exception_ptr failure;
         std::mutex failure_mutex;
-        for (std::size_t i = 0; i < helpers; ++i)
-            asio::post(*encode_pool, [&] {
-                try {
-                    take();
-                } catch (...) {
-                    std::lock_guard lock(failure_mutex);
-                    if (!failure) failure = std::current_exception();
-                }
-                done.count_down();
-            });
-        take();
+        // The helpers use the variables of this frame, so nothing leaves it
+        // before every posted helper has counted down: an exception on this
+        // thread, from posting or from encoding, is kept like a helper's and
+        // rethrown after the wait.
+        const auto guarded = [&](const auto& work) {
+            try {
+                work();
+            } catch (...) {
+                std::lock_guard lock(failure_mutex);
+                if (!failure) failure = std::current_exception();
+            }
+        };
+        std::size_t posted = 0;
+        guarded([&] {
+            for (; posted < helpers; ++posted)
+                asio::post(*encode_pool, [&] {
+                    guarded(take);
+                    done.count_down();
+                });
+        });
+        for (auto missing = posted; missing < helpers; ++missing) done.count_down();
+        guarded(take);
         done.wait();
         if (failure) std::rethrow_exception(failure);
     }

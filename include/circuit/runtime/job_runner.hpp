@@ -31,6 +31,12 @@ public:
 // thread included, take tasks from a shared index until none is left. A
 // single task, or a single worker, runs on the calling thread. Workers never
 // wait for other pool jobs.
+//
+// run() returns only when no task is executing any more. When a task throws,
+// the thread it ran on takes no further task, the other threads finish the
+// tasks they can still take, and run() then rethrows the first exception; the
+// tasks nobody took have not run. The runner can be used again afterwards.
+// run() is called by one thread at a time, the engine's coordinator.
 class PoolRunner final : public JobRunner {
 public:
     explicit PoolRunner(unsigned workers) : pool_(workers > 1 ? workers - 1 : 1), workers_(workers) {}

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <atomic>
+#include <exception>
 #include <memory>
+#include <mutex>
 #include <circuit/runtime/job_runner.hpp>
 #include <algorithm>
 #include <functional>
@@ -21,13 +23,32 @@ void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
     // Helpers and the calling thread take tasks from a shared index: one pool
     // job per helper instead of one per task, and no thread sits idle while
     // the caller waits.
-    auto next = std::make_shared<std::atomic<std::size_t>>(0);
-    const auto take = [tasks, next, drain] {
-        for (std::size_t i; (i = next->fetch_add(1, std::memory_order_relaxed)) < tasks.size();) drain(tasks[i]);
+    struct Shared {
+        std::atomic<std::size_t> next{0};
+        std::mutex mutex;
+        std::exception_ptr error; // the first exception of the batch, on any thread
+    };
+    auto shared = std::make_shared<Shared>();
+    const auto take = [tasks, shared, drain] {
+        try {
+            for (std::size_t i; (i = shared->next.fetch_add(1, std::memory_order_relaxed)) < tasks.size();) drain(tasks[i]);
+        } catch (...) {
+            std::lock_guard lock(shared->mutex);
+            if (!shared->error) shared->error = std::current_exception();
+        }
     };
     const auto helpers = std::min<std::size_t>(workers_, tasks.size()) - 1;
     auto done = pool_.submit(std::vector<std::function<void()>>(helpers, take));
     take();
+    // The helpers work on the caller's tasks, so nothing leaves this function
+    // before they have finished, whichever thread a task threw on. `take`
+    // does not throw; `done` holds an exception only when a helper job could
+    // not be queued.
+    done.wait();
+    {
+        std::lock_guard lock(shared->mutex);
+        if (shared->error) std::rethrow_exception(shared->error);
+    }
     done.get();
 }
 
