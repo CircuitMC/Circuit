@@ -72,7 +72,7 @@ xmake run circuit-server --demo --game-version java-1.21.8 --workers 4 --ticks 2
 
 ## Validation
 
-`bash tools/check.sh` configures debug mode, builds all targets, and runs the framework, contract, rule, differential simulation, control and parallel-model test programs. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). It also compiles the Java SPI/example when `javac` is installed; a missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete:
+`bash tools/check.sh` configures debug mode, builds all targets, and runs the framework, contract, rule, differential simulation, control and parallel-model test programs one after another. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). It also compiles the Java SPI/example when `javac` is installed; a missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete:
 
 ```bash
 xmake run contract_tests    # identities, coordinates, bundles, compatibility claims, replay limits
@@ -100,6 +100,59 @@ setarch "$(uname -m)" -R ./build/linux/x86_64/tsan/simulation_tests
 ```
 
 GCC warns that ThreadSanitizer does not model the `std::atomic_thread_fence` that Asio uses. A clean run is evidence about the engine's own accesses, not a proof that Asio internals are race-free. Add `--asio_include=/path/to/asio/include` to the configure step for offline builds, and run `bash tools/check.sh` afterwards to restore the debug configuration. Neither sanitizer runs nor differential tests prove vanilla gameplay compatibility.
+
+### Gates
+
+`tools/check.sh` has two further modes that end with one line per step and a non-zero exit status when any step fails or does not run:
+
+```bash
+bash tools/check.sh --lane   # incremental debug build with zero warnings, every test program side by side
+bash tools/check.sh --full   # the same plus the ledger checks and the Java SPI compilation
+```
+
+Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. The four programs that take minutes run as several shards each when they are built with shard support (`CIRCUIT_TEST_SHARD`). On the development machine the programs took 37 minutes one after another, 15 minutes side by side as whole programs, where the longest one bounds the run, and 8 minutes with shards.
+
+The tiers built on this are in `tools/gate/` and described in [its guide](../tools/gate/README.md):
+
+| Tier | When | Command |
+| --- | --- | --- |
+| T1 | every step, in a lane's worktree | `tools/gate/t1.sh [scenario...]`: the lane check plus the named client scenarios |
+| T2 | every merge into `main` | `tools/gate/t2.sh --tree <checkout> --work <directory>`: copies of one commit built clean in debug with zero warnings and under ASan, UBSan and TSan, every program in each |
+| T3 | nightly on `main` | T2 plus every client scenario |
+| T4 | end of a stage | T3 plus the stage's exit conditions |
+
+A sanitizer run that stops before its tests is a failed step. Client scenarios compare a probe's output with exactly one pinned official reference per scenario and version; `tools/gate/scenarios.py` reads the pins from a manifest and takes the probe and reference directories as arguments, because both stay outside this repository.
+
+## Worktrees
+
+Parallel lanes work in up to four linked worktrees next to the main checkout; the main checkout integrates. `tools/worktree.sh` manages them:
+
+```bash
+bash tools/worktree.sh add 2 net        # ../Circuit-wt-2 on branch lane/net, configured for debug
+bash tools/worktree.sh list             # slots, branches, state, port ranges, hook status
+bash tools/worktree.sh env 2            # the slot's exports
+bash tools/worktree.sh retarget 2 world # switch a clean slot to another lane branch
+bash tools/worktree.sh remove 2         # refused when the slot is dirty or has unpushed commits
+```
+
+`add` creates `lane/<lane>` from `main` or attaches the branch when it exists, and refuses a fifth worktree. It writes a git-ignored `.circuit-worktree.env` into the worktree, which `tools/check.sh --lane` and the gates read:
+
+| Variable | Meaning |
+| --- | --- |
+| `CIRCUIT_MAIN` | the main checkout; documents that are not tracked are read from there and never copied |
+| `CIRCUIT_SLOT`, `CIRCUIT_LANE` | the slot number and the lane |
+| `CIRCUIT_PORT_BASE` | `25600 + 20 * slot`; the slot owns twenty ports from there |
+| `CIRCUIT_WORK` | the slot's work directory for worlds, copied binaries and gate output |
+| `XMAKE_GLOBALDIR` | one xmake global directory shared by all slots; install packages into it one at a time, before lanes build |
+| `CIRCUIT_ASIO_INCLUDE`, `CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4` | taken from the environment, or found from the main checkout's configuration and its sibling directories |
+
+Each worktree has its own `build/`, so configurations and binaries never collide. Use at most six compile jobs per worktree when several build at once.
+
+Two hooks apply to every worktree once `core.hooksPath` is an absolute path: `pre-push` runs the publication guard of the pushing checkout and rejects a push of `main` from a linked worktree, and `reference-transaction` lets only the main checkout move the local `main`. Their sources are in `tools/hooks/`; install them from the main checkout:
+
+```bash
+bash tools/worktree.sh install-hooks --set-path   # --set-path points core.hooksPath at .local/public-hooks
+```
 
 ## Behavior sources
 
