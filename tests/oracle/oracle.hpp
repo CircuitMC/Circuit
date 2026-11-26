@@ -23,10 +23,19 @@ namespace circuit::oracle {
 
 class Oracle {
 public:
-    // `data`: game data from data packs, as an engine's options give it.
-    // `level_random_seed`: as EngineOptions::level_random_seed.
+    // `data`: game data from data packs.
+    // `level_random_seed`: the seed of every level's random and of its
+    // random-tick position state (the reference harness seeds the overworld's
+    // with 0); empty: both derived from `seed`.
+    // `sequence_seed`: the world seed random sequences start from (the
+    // reference harness's worlds have the seed 0); empty: `seed`.
     Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data = {},
-           std::optional<std::int64_t> level_random_seed = {});
+           std::optional<std::int64_t> level_random_seed = {}, std::optional<std::int64_t> sequence_seed = {});
+    // Continues from a state as dump() gives it. A state the rules never
+    // produce (out-of-range values, duplicates, positions in unknown columns)
+    // throws std::invalid_argument naming what is wrong.
+    Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, const gameplay::WorldDump& state,
+           std::shared_ptr<const gameplay::GameData> data = {});
     ~Oracle();
     Oracle(const Oracle&) = delete;
     Oracle& operator=(const Oracle&) = delete;
@@ -57,7 +66,8 @@ private:
         std::map<contracts::BlockPos, gameplay::BlockEntity> block_entities;
         std::map<contracts::EntityId, gameplay::Entity> entities;
         std::vector<gameplay::ScheduledTick> ticks[2];
-        std::set<TickKey> tick_index[2];
+        std::set<TickKey> tick_index[2]; // pending ticks
+        std::set<TickKey> drained;       // block ticks taken for this tick that have not run yet
         std::deque<gameplay::BlockEvent> events;
         std::set<gameplay::BlockEvent> pending_events;
         std::map<contracts::ChunkPos, gameplay::TurnOffs> turn_offs; // by column, as the runtime keeps them
@@ -91,10 +101,14 @@ private:
 
     const contracts::VersionBundle& bundle_;
     std::uint64_t seed_;
+    std::int64_t sequence_seed_;
     std::shared_ptr<const gameplay::GameData> data_;
     contracts::Tick time_{};
     contracts::Tick started_{};
+    void restore(const gameplay::WorldDump& state);
+
     std::map<std::string, std::int32_t> game_rules_;
+    gameplay::SequenceSettings sequence_settings_; // kept as restored; no command changes them
     std::int64_t day_time_{};
     std::uint8_t difficulty_{};
     gameplay::Weather weather_;

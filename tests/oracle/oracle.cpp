@@ -4,6 +4,8 @@
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/sky.hpp>
 #include <algorithm>
+#include <cmath>
+#include <format>
 #include <stdexcept>
 
 namespace circuit::oracle {
@@ -72,7 +74,8 @@ public:
     }
 
     bool has_tick(TickList list, BlockPos pos, BlockType type) override {
-        return lv().tick_index[static_cast<int>(list)].contains({pos, type});
+        const TickKey key{pos, type};
+        return lv().tick_index[static_cast<int>(list)].contains(key) || (list == TickList::block && lv().drained.contains(key));
     }
     void add_tick(TickList list, BlockPos pos, BlockType type, Tick due, std::int8_t priority, std::uint32_t) override {
         if (lv().next_suborder == UINT64_MAX) throw std::overflow_error("oracle: sub-order exhausted");
@@ -192,7 +195,7 @@ public:
     gameplay::RandomSequence& random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) override {
         auto it = lv().sequences.find(id);
         if (it == lv().sequences.end())
-            it = lv().sequences.emplace(id, gameplay::RandomSequence::create(static_cast<std::int64_t>(o_.seed_), hash, {})).first;
+            it = lv().sequences.emplace(id, gameplay::RandomSequence::create(o_.sequence_seed_, hash, o_.sequence_settings_)).first;
         return it->second;
     }
 
@@ -221,12 +224,213 @@ private:
 };
 
 Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data,
-               std::optional<std::int64_t> level_random_seed)
-    : bundle_(bundle), seed_(seed), data_(std::move(data)), ctx_(std::make_unique<Context>(*this)) {
+               std::optional<std::int64_t> level_random_seed, std::optional<std::int64_t> sequence_seed)
+    : bundle_(bundle), seed_(seed), sequence_seed_(sequence_seed.value_or(static_cast<std::int64_t>(seed))), data_(std::move(data)),
+      ctx_(std::make_unique<Context>(*this)) {
     if (!bundle.rules) throw std::invalid_argument("oracle: bundle has no executable rules");
     for (const auto level : contracts::level_order) {
         at(level).random = gameplay::initial_level_random(seed, level, level_random_seed);
         at(level).random_tick = gameplay::initial_random_tick(seed, level, level_random_seed);
+    }
+}
+
+Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, const WorldDump& state,
+               std::shared_ptr<const gameplay::GameData> data)
+    : Oracle(bundle, seed, std::move(data)) {
+    restore(state);
+}
+
+void Oracle::restore(const WorldDump& state) {
+    const auto bad = [](std::string_view what) { throw std::invalid_argument(std::format("oracle: invalid state: {}", what)); };
+    time_ = state.time;
+    next_entity_id_ = state.next_entity_id;
+    started_ = state.started;
+    for (const auto& [name, value] : state.game_rules)
+        if (!check_game_rule(bundle_, {name, value})) bad("game rule");
+    game_rules_ = state.game_rules;
+    if (state.day_time < 0) bad("day time");
+    day_time_ = state.day_time;
+    if (state.difficulty > contracts::max_difficulty) bad("difficulty");
+    difficulty_ = state.difficulty;
+    if (!valid_weather(state.weather)) bad("weather");
+    weather_ = state.weather;
+    sequence_settings_ = state.sequence_settings;
+    // As the last tick computed it, from the day time before it advanced.
+    sky_darken_ = sky_darken(weather_, day_time_ - (game_rule_value(bundle_, game_rules_, "doDaylightCycle") != 0 ? 1 : 0));
+    std::optional<DimensionId> previous;
+    std::set<EntityId> entity_ids; // over all levels, present or returning
+    for (const auto& l : state.levels) {
+        if (!contracts::valid_dimension(static_cast<std::uint8_t>(l.dimension))) bad("level");
+        if (previous && *previous >= l.dimension) bad("levels out of order");
+        previous = l.dimension;
+        const auto& shape = bundle_.shape(l.dimension);
+        auto& lv = at(l.dimension);
+        lv.next_suborder = l.next_suborder;
+        lv.next_block_entity_order = l.next_block_entity_order;
+        lv.last_active = l.last_active;
+        if (l.random > LevelRandom::mask) bad("level random");
+        lv.random = LevelRandom::from_state(l.random);
+        lv.random_tick = l.random_tick;
+        lv.sequences.clear();
+        for (const auto& [id, sequence] : l.sequences)
+            if (id.empty() || !lv.sequences.emplace(id, sequence).second) bad("random sequence");
+        for (const auto& p : l.presences) {
+            const bool elsewhere = std::ranges::any_of(levels_, [&](const Level& other) { return other.presences.contains(p.player); });
+            if (elsewhere || !lv.presences.emplace(p.player, p).second) bad("a player in two levels");
+        }
+        for (const auto& c : l.chunks) {
+            if ((c.level == ChunkLevel::unloaded && c.resumes != 0) || (c.level != ChunkLevel::unloaded && c.saved_at != 0))
+                bad("chunk reload ticks");
+            if (c.level != status_of(c.load)) bad("chunk status and load level disagree");
+            ChunkInfo info{contracts::Generation{c.generation}, c.level, {c.load, c.simulation}, c.saved_at, c.resumes};
+            if (!lv.chunks.emplace(c.pos, info).second) bad("duplicate column");
+        }
+        const auto column = [&](BlockPos p) {
+            if (!shape.contains_y(p.y) || !contracts::within_border(p)) bad("position outside the world");
+            const auto chunk = contracts::chunk_of(p);
+            if (!lv.chunks.contains(chunk)) bad("position in an unknown column");
+            return chunk;
+        };
+        for (const auto& [pos, raw] : l.blocks) {
+            const auto s = BlockState::decode(raw);
+            if (!s) bad("block state");
+            if (*s == blocks::air()) continue;
+            const auto chunk = column(pos);
+            lv.blocks[pos] = *s;
+            if (ticks_section_randomly(*s)) ++lv.random_ticking[{chunk, (pos.y - shape.min_y) >> 4}];
+        }
+        for (const auto& [pos, be] : l.block_entities) {
+            column(pos);
+            if (!lv.block_entities.emplace(pos, be).second) bad("duplicate block entity");
+        }
+        // Entities may be above or below the world height (falling out of it),
+        // within the bounds the rules can reach; everything else is checked at
+        // full width so that ticking a restored state cannot overflow. Below the
+        // world, falling blocks and primed TNT fall on until their time is up;
+        // other entities are gone a tick after passing 64 below it.
+        const double lowest = static_cast<double>(shape.min_y) - 131072.0;
+        const double highest = static_cast<double>(shape.min_y) + shape.height + 4096.0;
+        for (const auto& e : l.entities) {
+            if (!contracts::within_border(e.position) || e.id.value == 0 || e.id.value >= next_entity_id_) bad("entity");
+            if (static_cast<std::uint8_t>(e.kind) == 0 || static_cast<std::uint8_t>(e.kind) >= entity_kind_count) bad("entity kind");
+            if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
+            if (!valid_velocity(e.velocity)) bad("entity velocity");
+            if (e.piston_tick > state.time || !contracts::finite(e.piston_push) || std::abs(e.piston_push.x) > 0.51
+                || std::abs(e.piston_push.y) > 0.51 || std::abs(e.piston_push.z) > 0.51)
+                bad("entity piston push");
+            if (!std::isfinite(e.fall_distance) || e.fall_distance < 0.0 || e.fall_distance > highest - lowest) bad("entity fall distance");
+            // Each kind's own state, valid; the state of other kinds at its defaults.
+            auto rest = e;
+            switch (e.kind) {
+            case EntityKind::item:
+                if (!items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > items::max_stack(e.stack)
+                    || e.stack.damage > items::max_damage(e.stack) || e.pickup_delay > item_pickup_never)
+                    bad("entity stack");
+                if (!valid_item_age(e.age)) bad("entity age");
+                if (e.health < 1 || e.health > 32767) bad("item health");
+                if (e.fire < 0 || e.fire > 32767) bad("item fire");
+                rest.stack = {};
+                rest.fire = 0;
+                rest.age = 0;
+                rest.pickup_delay = 0;
+                rest.health = item_health;
+                break;
+            case EntityKind::falling_block:
+                if (!BlockState::decode(e.carried.raw()) || e.carried.is_air() || e.carried.is_unloaded()) bad("falling block state");
+                rest.carried = {};
+                rest.fall_time = 0;
+                break;
+            case EntityKind::primed_tnt:
+                if (e.fuse < -32768 || e.fuse > 32767) bad("primed TNT fuse");
+                rest.fuse = 0;
+                break;
+            case EntityKind::arrow:
+                if (e.life < 0 || e.life > 32767 || e.fire < -32768 || e.fire > 32767) bad("arrow state");
+                rest.in_ground = false;
+                rest.life = 0;
+                rest.fire = 0;
+                break;
+            case EntityKind::boat:
+                if (e.variant >= boat_types.size() || e.status > 5 || !std::isfinite(e.last_dy) || std::abs(e.last_dy) > 64.0)
+                    bad("boat state");
+                rest.variant = 0;
+                rest.status = 0;
+                rest.last_dy = 0.0;
+                break;
+            case EntityKind::experience_orb:
+                // 1.21.4 saves an orb's health as 0.
+                if (e.experience < -32768 || e.orbs < 1 || e.age < -32768 || e.age > 32767 || e.health < 0 || e.health > 32767)
+                    bad("experience orb state");
+                rest.experience = 0;
+                rest.orbs = 1;
+                rest.age = 0;
+                rest.health = item_health;
+                break;
+            case EntityKind::minecart:
+                if (!std::isfinite(e.yaw) || std::abs(e.yaw) >= 360.0f) bad("minecart yaw");
+                rest.in_water = false;
+                rest.yaw = 0.0f;
+                rest.flipped = false;
+                break;
+            default: break;
+            }
+            if (!rest.stack.empty() || rest.age != 0 || rest.pickup_delay != 0 || rest.health != item_health
+                || rest.carried != BlockState{} || rest.fall_time != 0 || rest.fuse != 0 || rest.in_ground || rest.life != 0
+                || rest.fire != 0 || rest.variant != 0 || rest.status != 0 || rest.last_dy != 0.0 || rest.in_water || rest.yaw != 0.0f
+                || rest.flipped || rest.experience != 0 || rest.orbs != 1)
+                bad("entity state of another kind");
+            if (!lv.chunks.contains(contracts::chunk_of(contracts::block_of(e.position)))) bad("entity in an unknown column");
+            if (!entity_ids.insert(e.id).second) bad("duplicate entity id");
+            // Saved with its column and not back yet.
+            if (e.returns != 0 && e.returns <= state.time) bad("entity return");
+            lv.entities.emplace(e.id, e);
+        }
+        for (const auto& t : l.ticks) {
+            column(t.tick.pos);
+            const int list = static_cast<int>(t.list);
+            if (!lv.tick_index[list].insert({t.tick.pos, t.tick.block}).second) bad("duplicate scheduled tick");
+            lv.ticks[list].push_back(t.tick);
+        }
+        for (const auto& e : l.block_events) {
+            column(e.pos);
+            lv.events.push_back(e);
+            lv.pending_events.insert(e);
+        }
+        for (const auto& t : l.turn_offs) {
+            if (t.second > state.time) bad("torch turn-off");
+            lv.turn_offs[column(t.first)].push_back(t);
+        }
+        ++lv.light_version;
+    }
+    for (const auto& t : state.tickets)
+        if (!contracts::valid_dimension(static_cast<std::uint8_t>(t.dimension)) || !tickets_.restore(t, bundle_.limits)) bad("ticket");
+    const auto valid_stack = [](const contracts::ItemStack& s) {
+        if (s.item == 0 && s.count == 0 && s.damage == 0 && s.components.empty()) return true;
+        return items::valid(s.item) && s.count >= 1 && s.count <= items::max_stack(s) && s.damage <= items::max_damage(s);
+    };
+    for (const auto& p : state.players) {
+        if (!valid_stack(p.cursor) || !std::ranges::all_of(p.slots, valid_stack) || !std::ranges::all_of(p.table, valid_stack)
+            || p.table_recipe < -1 || !std::ranges::all_of(p.cutter, valid_stack) || p.cutter_recipe < -1
+            || !std::ranges::all_of(p.smith, valid_stack) || !std::ranges::all_of(p.grind, valid_stack)
+            || !std::ranges::all_of(p.loom, valid_stack) || p.loom_pattern < -1 || p.xp_level < 0 || p.xp_total < 0
+            || !std::isfinite(p.xp_progress) || p.xp_progress < 0.0f || p.xp_progress > 1.0f || !std::ranges::all_of(p.anvil, valid_stack)
+            || p.anvil_name.size() > 4 * contracts::max_item_name || p.anvil_cost < 0 || !std::ranges::all_of(p.enchant, valid_stack)
+            || std::ranges::any_of(p.enchant_costs, [](std::int32_t c) { return c < 0; })
+            || std::ranges::any_of(p.enchant_clues, [](std::int32_t c) { return c < -1; })
+            || std::ranges::any_of(p.enchant_clue_levels, [](std::int32_t c) { return c < -1; }) || p.drag_stage > 1 || p.drag_type > 2
+            || p.drag_slots.size() > 256 || std::ranges::any_of(p.drag_slots, [](std::int16_t s) { return s < 0 || s >= 256; }))
+            bad("player inventory");
+        if (!players_.emplace(p.player, p).second) bad("duplicate player");
+    }
+    // Maps of ids up to the last given, each once, of a scale up to 4 in a
+    // known dimension, with all their pixels.
+    if (state.last_map_id < -1) bad("last map id");
+    last_map_id_ = state.last_map_id;
+    for (const auto& m : state.maps) {
+        if (m.id < 0 || m.id > state.last_map_id || m.scale > max_map_scale
+            || !contracts::valid_dimension(static_cast<std::uint8_t>(m.dimension)) || m.colors.size() != map_pixels)
+            bad("map");
+        if (!maps_.emplace(m.id, m).second) bad("duplicate map");
     }
 }
 // The blocks of a level at the start of a tick, kept while nothing light
@@ -476,11 +680,14 @@ void Oracle::run_tick_list(DimensionId level, TickList list) {
     const auto phase = list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks;
     // A drained block tick still counts as scheduled until it runs; a drained
     // fluid tick, or one of a block without rules of its own, does not
-    // (lava_flow, leaves_decay).
-    for (const auto& t : due)
-        if (list == TickList::fluid || t.block == BlockType::other) lv.tick_index[l].erase({t.pos, t.block});
+    // (lava_flow, leaves_decay). A tick scheduled for the same block while
+    // the drained one waits is pending on its own and stays so.
+    for (const auto& t : due) {
+        lv.tick_index[l].erase({t.pos, t.block});
+        if (list == TickList::block && t.block != BlockType::other) lv.drained.insert({t.pos, t.block});
+    }
     for (std::size_t i = 0; i < due.size(); ++i) {
-        if (list == TickList::block) lv.tick_index[l].erase({due[i].pos, due[i].block});
+        if (list == TickList::block) lv.drained.erase({due[i].pos, due[i].block});
         ctx_->begin_root(phase, i);
         run_scheduled_tick(*ctx_, list, due[i]);
     }
@@ -556,6 +763,7 @@ WorldDump Oracle::dump() const {
     d.day_time = day_time_;
     d.difficulty = difficulty_;
     d.weather = weather_;
+    d.sequence_settings = sequence_settings_;
     for (const auto level : contracts::level_order) {
         const auto& lv = levels_[static_cast<std::size_t>(level)];
         if (lv.chunks.empty() && lv.presences.empty() && lv.last_active == 0) continue;
