@@ -106,6 +106,17 @@ target("rules_tests")
     end)
 target_end()
 
+-- The engine under test against the oracle (tests/support/engine_under_test.hpp).
+target("simulation_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/sim/*.cpp")
+    add_deps("circuit_oracle")
+    on_config(function (target)
+        target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
+    end)
+target_end()
+
 target("evidence_tests")
     set_kind("binary")
     set_default(false)

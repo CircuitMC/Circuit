@@ -91,14 +91,15 @@ An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for 
 | --- | --- |
 | `include/circuit/contracts/` | Coordinates and identities, generations, logical time and order keys, stable error codes, commands, trace records, version bundles and the compatibility table, replay records |
 | `include/circuit/gameplay/`, `src/gameplay/` | Block registry, `RuleContext`, the update queue, and the reference rules |
+| `include/circuit/runtime/`, `src/runtime/` | The engine facade and its change feed; the strict runtime as it is built |
 | `include/circuit/evidence/`, `src/evidence/` | circuit-trace fixtures, content mapping, recording and evaluation |
 | `tests/oracle/` | Sequential executor in the vanilla order using the shared rules; the specification of the runtime |
 | `tests/rules/` | Rule fixtures with hand-derived expectations |
-| `tests/support/scenarios.hpp` | Scenarios shared by the storage and Anvil tests, and by the runtime's differential tests when it returns |
+| `tests/sim/`, `tests/support/scenarios.hpp` | Differential tests: the engine under test against the oracle; the scenarios they share with the storage and Anvil tests |
 | `tests/fixtures/` | Skeletons, reference recordings, target-version traces, documented fixtures and profiling workloads |
 | `tests/contracts/`, `tests/evidence/` | Contract and fixture tests |
 
-Dependencies point one way: `contracts` ← `gameplay` ← executors. Rules see the world only through `RuleContext`, so the oracle and the runtime execute the same rule functions over different storage and ordering machinery. `RuleContext::block()` reads one section, the one the executor last pointed its cursor at, without a virtual call, from a paletted view of the executor's storage (`SectionView`, the layout of the protocol's chunk data); every other read goes to the executor's `load_block`. The oracle never points the cursor.
+Dependencies point one way: `contracts` ← `gameplay` ← executors. Rules see the world only through `RuleContext`, so the oracle and the runtime execute the same rule functions over different storage and ordering machinery. `RuleContext::block()` reads one section, the one the executor last pointed its cursor at, without a virtual call, from a paletted view of the executor's storage (`SectionView`, the layout of the protocol's chunk data); every other read goes to the executor's `load_block`. The oracle never points the cursor. Everything above an executor sees the engine facade, `runtime::Engine` (`include/circuit/runtime/engine.hpp`): `advance`, the trace, the canonical dump, a per-tick change feed defined by `runtime::changes_between` of consecutive dumps, queries of the last tick's state and light; an `EngineFactory` makes a new world or one restored from a dump. `tests/oracle/oracle_engine.hpp` puts the oracle behind it.
 
 ## Tick structure
 
@@ -451,7 +452,7 @@ The table lists what is specific to each mechanism.
   - conservation in hopper races, water timing and stream locality;
   - generation checks, command validation and capacity failure;
   - ticket and spawn bounds at their endpoints and at extreme or aliasing coordinates.
-- The first generation's `simulation_tests` compared its runtime with the oracle on fourteen scenarios and 64 seeds of random machines, under several worker counts, interleavings, injected aborts and layouts. The new runtime's differential tests restore them (tag `pre-refactor`, `tests/sim/`) against the same oracle.
+- `simulation_tests` compares the engine under test (behind `runtime::Engine`) with the oracle: each of the 41 fixed scenarios of `tests/support/scenarios.hpp` (whose names the program checks against the first generation's list) trace by trace every tick, and state and change feed at checkpoints; engines restored from its dumps at four ticks; 64 seeds of random redstone components, pistons, slime, hoppers, chests and stone around a chunk corner, every tick; scenarios in several levels; the mechanisms across chunk edges; chunk levels, random ticks and light; replay records; out-of-range inputs; queries, the change feed and capacity failures. A deliberately diverging engine must fail the comparison. The first generation's cases about its region-parallel engine (worker counts, region layouts, seeded schedules, injected aborts, region merging, its statistics) went with that engine.
 - `evidence_tests` covers:
   - the [trace fixture format](TRACE_FORMAT.md) and the content mapping;
   - recording and evaluation on the oracle;

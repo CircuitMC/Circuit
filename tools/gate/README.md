@@ -20,7 +20,7 @@ T3 and T4 are combinations of the commands below; they have no script of their o
 - **Compiler crashes.** When a build stops with an internal compiler error, it is continued from where it stopped, at most twice, and the build step says how often that happened. The log keeps every attempt, so the warning count still covers every file. No other failure is retried: a test program that dies is a failed step.
 - **Timing.** Every step line carries its seconds; the programs line gives the side-by-side time and the sum of the single times. The longest program bounds the side-by-side time, so more than a few programs at a time gain little until that program is split into shards.
 
-The programs that take minutes run as shards (`CIRCUIT_TEST_SHARD=i/n`, `i` from 0 to `n - 1`), each shard its own step: `evidence_tests` in four, `storage_tests` in three. `CIRCUIT_GATE_SHARDS="evidence_tests=8 storage_tests=2"` replaces that list and an empty value turns shards off. A program built without the option runs whole, and a program whose shards together ran no case fails. `CIRCUIT_GATE_TEST_TIMEOUT` and `CIRCUIT_GATE_BUILD_TIMEOUT` bound a program and a build in seconds (defaults 7200 and 3600).
+The programs that take minutes run as shards (`CIRCUIT_TEST_SHARD=i/n`, `i` from 0 to `n - 1`), each shard its own step: `evidence_tests` and `simulation_tests` in four, `storage_tests` in three. `CIRCUIT_GATE_SHARDS="evidence_tests=8 storage_tests=2"` replaces that list and an empty value turns shards off. A program built without the option runs whole, and a program whose shards together ran no case fails. `CIRCUIT_GATE_TEST_TIMEOUT` and `CIRCUIT_GATE_BUILD_TIMEOUT` bound a program and a build in seconds (defaults 7200 and 3600).
 
 ## T1: `t1.sh`
 

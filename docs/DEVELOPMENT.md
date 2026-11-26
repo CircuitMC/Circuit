@@ -65,6 +65,7 @@ xmake run circuit-fixture --compatibility --game-version java-1.21.4
 ```bash
 xmake run contract_tests    # identities, coordinates, bundles, compatibility claims, replay limits
 xmake run rules_tests       # reference rules on the oracle against hand-derived expectations
+xmake run simulation_tests  # the engine under test against the oracle: 41 scenarios, restores, 64 random seeds
 xmake run evidence_tests    # trace fixtures, content mapping, recordings, target-version traces
 xmake run protocol_tests    # wire codec, NBT, framing limits, packet and content tables
 xmake run data_tests        # data pack loading, precedence and archives
@@ -73,7 +74,7 @@ xmake run storage_tests     # checkpoints, the input log, crash and I/O-error in
 xmake run anvil_tests       # Anvil import and export, unsupported-content policies
 ```
 
-`storage_tests` and `anvil_tests` run their worlds on the oracle until the new runtime can restore and continue a world. Cases that read the official jars skip without them, unless `CIRCUIT_REQUIRE_JARS=1` makes them fail.
+`storage_tests`, `anvil_tests` and `simulation_tests` run their worlds on the engine under test, behind the engine facade (`include/circuit/runtime/engine.hpp`); `tests/support/engine_under_test.hpp` picks it, by `CIRCUIT_ENGINE` (`oracle`, the default and so far the only one). `simulation_tests` compares that engine with the oracle tick by tick: traces, states, change feeds and restores. Cases that read the official jars skip without them, unless `CIRCUIT_REQUIRE_JARS=1` makes them fail.
 
 `evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `circuit-fixture --record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).
 
@@ -96,7 +97,7 @@ bash tools/check.sh --lane   # incremental debug build with zero warnings, every
 bash tools/check.sh --full   # the same plus the ledger checks
 ```
 
-Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. `evidence_tests` and `storage_tests`, which take minutes, run as several shards each (`CIRCUIT_TEST_SHARD`).
+Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. `evidence_tests`, `simulation_tests` and `storage_tests`, which take minutes, run as several shards each (`CIRCUIT_TEST_SHARD`).
 
 The tiers built on this are in `tools/gate/` and described in [its guide](../tools/gate/README.md):
 

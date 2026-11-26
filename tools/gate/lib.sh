@@ -16,11 +16,11 @@
 # gate_program_list fails a gate whose tree has a test target missing here, or a name here
 # that is not a target of the tree, so a program cannot drop out of the gates unnoticed.
 # Longest first, so the side-by-side run is bounded by the longest program.
-GATE_PROGRAMS=(evidence_tests storage_tests rules_tests anvil_tests content_tests protocol_tests data_tests
-               contract_tests)
+GATE_PROGRAMS=(evidence_tests simulation_tests storage_tests rules_tests anvil_tests content_tests protocol_tests
+               data_tests contract_tests)
 
 # The programs that take minutes, split so that no shard bounds the side-by-side run.
-GATE_DEFAULT_SHARDS="evidence_tests=4 storage_tests=3"
+GATE_DEFAULT_SHARDS="evidence_tests=4 simulation_tests=4 storage_tests=3"
 
 GATE_JAR_VARIABLES=(CIRCUIT_VANILLA_JAR_1_21_8 CIRCUIT_VANILLA_JAR_1_21_4)
 
