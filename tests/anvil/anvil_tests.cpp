@@ -10,7 +10,7 @@
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
-#include "../oracle/oracle.hpp"
+#include "../support/engine_under_test.hpp"
 #include <circuit/server/anvil.hpp>
 #include <cstdlib>
 #include <cstring>
@@ -29,8 +29,8 @@ using namespace circuit::test;
 namespace anvil = circuit::server::anvil;
 namespace nbt = circuit::protocol::nbt;
 namespace fs = std::filesystem;
-// The sequential reference executor stands in for the runtime.
-using Engine = circuit::oracle::Oracle;
+using circuit::test::make_engine;
+using circuit::test::restore_engine;
 using nbt::Tag;
 using nbt::TagType;
 
@@ -311,12 +311,12 @@ int main() {
     suite.run("scenario states round-trip through Anvil", [&] {
         std::size_t exported = 0, with_ticks = 0, with_entities = 0, with_moving = 0;
         for (const auto& s : all_scenarios()) {
-            Engine engine(bundle(), s.seed);
+            auto engine = make_engine(bundle(), s.seed);
             Admissions admit;
             for (Tick t = 1; t <= s.ticks; ++t) {
-                engine.advance(admit(s.inputs(t)));
+                engine->advance(admit(s.inputs(t)));
                 if (t % std::max<Tick>(1, s.ticks / 4) != 0 && t != s.ticks) continue;
-                const auto state = engine.dump();
+                const auto state = engine->dump();
                 if (!state.overworld().block_events.empty()) continue;
                 const auto target = root / std::format("{}-{}", s.name, t);
                 const auto report = anvil::export_world(state, bundle(), target, {.level_name = s.name, .seed = s.seed});
@@ -329,8 +329,8 @@ int main() {
                             && back->state.weather.thunder_level == (state.weather.thundering ? 1.0f : 0.0f),
                         "imported weather levels follow their flags");
                 // The imported state is one the engine accepts and continues.
-                Engine resumed(bundle(), s.seed, back->state);
-                resumed.advance({});
+                auto resumed = restore_engine(bundle(), s.seed, back->state);
+                resumed->advance({});
                 ++exported;
                 with_ticks += state.overworld().ticks.empty() ? 0 : 1;
                 with_entities += state.overworld().entities.empty() ? 0 : 1;
@@ -344,12 +344,12 @@ int main() {
     });
 
     suite.run("falling blocks round-trip through Anvil", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({3, -1, 3}, blocks::stone()), place({3, 6, 3}, registry_block("gravel"))}));
-        for (int i = 0; i < 4; ++i) engine.advance({});
-        const auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({3, -1, 3}, blocks::stone()), place({3, 6, 3}, registry_block("gravel"))}));
+        for (int i = 0; i < 4; ++i) engine->advance({});
+        const auto state = engine->dump();
         require(std::ranges::count_if(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::falling_block; }) == 1,
                 "gravel in the air");
         const auto target = root / "falling";
@@ -359,11 +359,11 @@ int main() {
         const auto diff = describe(kept(state), kept(back->state));
         require(diff.empty(), diff);
         // It falls on and lands after the import, once its chunk is loaded.
-        Engine resumed(bundle(), 5, back->state);
+        auto resumed = restore_engine(bundle(), 5, back->state);
         Admissions again;
-        resumed.advance(again({ticket(1, {0, 0}, 1)}));
-        for (int i = 0; i < 20; ++i) resumed.advance({});
-        require(state_at(resumed.dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
+        resumed->advance(again({ticket(1, {0, 0}, 1)}));
+        for (int i = 0; i < 20; ++i) resumed->advance({});
+        require(state_at(resumed->dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
         // How far it had fallen is saved (fall_distance) and read back.
         const auto fall = [](const WorldDump& w) {
             for (const auto& e : w.overworld().entities)
@@ -377,13 +377,13 @@ int main() {
         // Two cacti, stone set beside the lower: it breaks in its block tick
         // (plant_supports), and the upper one waits for its own, a tick
         // later; that tick is saved and read back.
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
         const auto cactus = registry_block("cactus", {{"age", "0"}});
-        engine.advance(admit({place({3, -1, 3}, registry_block("sand")), place({3, 0, 3}, cactus), place({3, 1, 3}, cactus)}));
-        engine.advance(admit({place({4, 0, 3}, blocks::stone())}));
-        const auto state = engine.dump();
+        engine->advance(admit({place({3, -1, 3}, registry_block("sand")), place({3, 0, 3}, cactus), place({3, 1, 3}, cactus)}));
+        engine->advance(admit({place({4, 0, 3}, blocks::stone())}));
+        const auto state = engine->dump();
         require(state_at(state, {3, 0, 3}).is_air() && state_at(state, {3, 1, 3}) == cactus
                     && std::ranges::any_of(state.overworld().ticks, [](const auto& t) { return t.tick.pos == BlockPos{3, 1, 3}; }),
                 "the upper cactus's tick");
@@ -393,26 +393,26 @@ int main() {
         require(back.has_value() && back->report.unsupported.empty(), back ? "unsupported content" : back.error());
         const auto diff = describe(kept(state), kept(back->state));
         require(diff.empty(), diff);
-        Engine resumed(bundle(), 5, back->state);
+        auto resumed = restore_engine(bundle(), 5, back->state);
         Admissions again;
         // Its tick runs once its chunk is loaded again.
-        resumed.advance(again({ticket(1, {0, 0}, 1)}));
-        for (int i = 0; i < 10; ++i) resumed.advance({});
-        const auto after = resumed.dump();
+        resumed->advance(again({ticket(1, {0, 0}, 1)}));
+        for (int i = 0; i < 10; ++i) resumed->advance({});
+        const auto after = resumed->dump();
         require(state_at(after, {3, 1, 3}).is_air() && after.overworld().ticks.empty(), "broken in its tick");
     });
 
     suite.run("buttons and torches round-trip through Anvil with their ticks", [&] {
         using circuit::gameplay::blocks::ButtonKind;
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({3, 0, 3}, blocks::stone()), place({4, 0, 3}, blocks::button(ButtonKind::stone, false, Direction::east)),
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({3, 0, 3}, blocks::stone()), place({4, 0, 3}, blocks::button(ButtonKind::stone, false, Direction::east)),
                               place({3, 0, 5}, blocks::stone()), place({4, 0, 5}, blocks::wall_torch(Direction::east)),
                               place({6, 0, 6}, blocks::torch()), place({2, 0, 5}, blocks::button(ButtonKind::warped, false, Direction::west))}));
-        engine.advance(admit({circuit::contracts::UseBlock{{4, 0, 3}}, circuit::contracts::UseBlock{{2, 0, 5}}}));
-        engine.advance({});
-        const auto state = engine.dump();
+        engine->advance(admit({circuit::contracts::UseBlock{{4, 0, 3}}, circuit::contracts::UseBlock{{2, 0, 5}}}));
+        engine->advance({});
+        const auto state = engine->dump();
         require(state.overworld().ticks.size() >= 2, "the pressed buttons wait for their release");
         const auto target = root / "buttons";
         require(anvil::export_world(state, bundle(), target, {.level_name = "buttons", .seed = 5}).has_value(), "export");
@@ -421,11 +421,11 @@ int main() {
         const auto diff = describe(kept(state), kept(back->state));
         require(diff.empty(), diff);
         // Released on time after the import, once the chunk is loaded.
-        Engine resumed(bundle(), 5, back->state);
+        auto resumed = restore_engine(bundle(), 5, back->state);
         Admissions again;
-        resumed.advance(again({ticket(1, {0, 0}, 1)}));
-        for (int i = 0; i < 40; ++i) resumed.advance({});
-        const auto end = resumed.dump();
+        resumed->advance(again({ticket(1, {0, 0}, 1)}));
+        for (int i = 0; i < 40; ++i) resumed->advance({});
+        const auto end = resumed->dump();
         require(!state_at(end, {4, 0, 3}).flag() && !state_at(end, {2, 0, 5}).flag(), "both released");
         require(state_at(end, {2, 0, 5}).variant() == static_cast<std::uint8_t>(ButtonKind::warped), "the warped button kept its kind");
         require(state_at(end, {4, 0, 5}) == blocks::wall_torch(Direction::east) && state_at(end, {6, 0, 6}) == blocks::torch(), "the torches");
@@ -436,18 +436,18 @@ int main() {
         // entity, written out as its type's defaults and read back as saved
         // data.
         namespace registry = circuit::gameplay::registry;
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
         const circuit::contracts::PlayerKey alex{1, 2};
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
         std::vector<CommandBody> commands;
         for (const auto& [x, item] : {std::pair{3, "minecraft:bee_nest"}, std::pair{5, "minecraft:jukebox"}}) {
             commands.push_back(place({x, 0, 3}, blocks::stone()));
             commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {circuit::gameplay::items::by_name(item).value(), 1, 0}});
             commands.push_back(circuit::contracts::PlayerUse{alex, 36, {x, 0, 3}, Direction::up, Direction::north, Direction::north, false, false, 3, 3});
         }
-        engine.advance(admit(std::move(commands)));
-        const auto state = engine.dump();
+        engine->advance(admit(std::move(commands)));
+        const auto state = engine->dump();
         for (const int x : {3, 5}) {
             const auto* be = block_entity_at(state, {x, 1, 3});
             require(be && be->kind == BlockType::other && be->saved.bytes().empty(), std::format("an empty block entity at {}", x));
@@ -468,13 +468,13 @@ int main() {
     });
 
     suite.run("furnaces round-trip through Anvil with their items and times", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::furnace(circuit::gameplay::blocks::FurnaceKind::smoker, Direction::east)),
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::furnace(circuit::gameplay::blocks::FurnaceKind::smoker, Direction::east)),
                               insert({2, 0, 2}, 0, circuit::gameplay::items::by_name("minecraft:beef").value(), 3),
                               insert({2, 0, 2}, 1, circuit::gameplay::items::by_name("minecraft:coal").value(), 2)}));
-        auto state = engine.dump();
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (be.kind == BlockType::furnace) {
@@ -498,12 +498,12 @@ int main() {
     });
 
     suite.run("crafters round-trip through Anvil with their grid, disabled slots and crafting ticks", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::crafter(Direction::down, Direction::west, true, true)),
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::crafter(Direction::down, Direction::west, true, true)),
                               insert({2, 0, 2}, 4, circuit::gameplay::items::by_name("minecraft:oak_log").value(), 7)}));
-        auto state = engine.dump();
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (be.kind == BlockType::crafter) {
@@ -521,13 +521,13 @@ int main() {
     });
 
     suite.run("brewing stands round-trip through Anvil with their slots, brew time and fuel", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
         const auto wart = circuit::gameplay::items::by_name("minecraft:nether_wart").value();
-        engine.advance(admit({place({2, 0, 2}, blocks::brewing_stand(0b010)), insert({2, 0, 2}, 1, circuit::gameplay::items::glass_bottle, 1),
+        engine->advance(admit({place({2, 0, 2}, blocks::brewing_stand(0b010)), insert({2, 0, 2}, 1, circuit::gameplay::items::glass_bottle, 1),
                               insert({2, 0, 2}, 3, wart, 5)}));
-        auto state = engine.dump();
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (be.kind == BlockType::brewing_stand) {
@@ -548,11 +548,11 @@ int main() {
     });
 
     suite.run("lecterns round-trip through Anvil with their book and page", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::lectern(Direction::east, true)), place({4, 0, 2}, blocks::lectern(Direction::south))}));
-        auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::lectern(Direction::east, true)), place({4, 0, 2}, blocks::lectern(Direction::south))}));
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (be.kind == BlockType::lectern && pos == BlockPos{2, 0, 2}) {
@@ -575,11 +575,11 @@ int main() {
 
     suite.run("beacons round-trip through Anvil with their levels and powers", [&] {
         namespace fx = circuit::gameplay::effects;
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 1, 2}, blocks::beacon()), place({5, 1, 2}, blocks::beacon())}));
-        auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 1, 2}, blocks::beacon()), place({5, 1, 2}, blocks::beacon())}));
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (be.kind == BlockType::beacon && pos == BlockPos{2, 1, 2}) {
@@ -601,13 +601,13 @@ int main() {
     });
 
     suite.run("trapped chests round-trip through Anvil as trapped chests with their contents", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::chest(Direction::north, blocks::ChestType::left, true)),
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::chest(Direction::north, blocks::ChestType::left, true)),
                               place({3, 0, 2}, blocks::chest(Direction::north, blocks::ChestType::right, true)),
                               place({5, 0, 2}, blocks::chest(Direction::south))}));
-        auto state = engine.dump();
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (pos == BlockPos{3, 0, 2}) be.slots[4] = {circuit::gameplay::items::stone, 9};
@@ -625,11 +625,11 @@ int main() {
     });
 
     suite.run("barrels round-trip through Anvil with their contents", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::barrel(Direction::down)), place({4, 0, 2}, blocks::barrel(Direction::east, true))}));
-        auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::barrel(Direction::down)), place({4, 0, 2}, blocks::barrel(Direction::east, true))}));
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (pos == BlockPos{2, 0, 2}) be.slots[26] = {circuit::gameplay::items::oak_planks, 12};
@@ -646,11 +646,11 @@ int main() {
     });
 
     suite.run("shulker boxes round-trip through Anvil with their color and contents", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::shulker_box(Direction::east, 12))}));
-        auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::shulker_box(Direction::east, 12))}));
+        auto state = engine->dump();
         for (auto& level : state.levels)
             for (auto& [pos, be] : level.block_entities)
                 if (pos == BlockPos{2, 0, 2}) be.slots[5] = {circuit::gameplay::items::iron_ingot, 7};
@@ -665,11 +665,11 @@ int main() {
     });
 
     suite.run("ender chests round-trip through Anvil", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({2, 0, 2}, blocks::ender_chest(Direction::west))}));
-        const auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({2, 0, 2}, blocks::ender_chest(Direction::west))}));
+        const auto state = engine->dump();
         const auto target = root / "ender";
         require(anvil::export_world(state, bundle(), target, {.level_name = "ender", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
@@ -680,13 +680,13 @@ int main() {
     });
 
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({circuit::contracts::SetDayTime{6000}, circuit::contracts::SetDifficulty{3}, place({3, 0, 3}, blocks::daylight_detector()),
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({circuit::contracts::SetDayTime{6000}, circuit::contracts::SetDifficulty{3}, place({3, 0, 3}, blocks::daylight_detector()),
                               place({5, 0, 3}, blocks::daylight_detector(true))}));
-        while (engine.dump().time % 20 != 0) engine.advance({});
-        const auto state = engine.dump();
+        while (engine->dump().time % 20 != 0) engine->advance({});
+        const auto state = engine->dump();
         require(state_at(state, {3, 0, 3}) == blocks::daylight_detector(false, 15) && state.difficulty == 3,
                 "the detector saw the noon sky; the world is hard");
         const auto target = root / "daylight";
@@ -699,24 +699,24 @@ int main() {
         require(std::ranges::count_if(entities, [](const auto& e) { return e.second.kind == BlockType::daylight_detector; }) == 2,
                 "both block entities");
         // The imported detectors keep ticking: at midnight the inverted one gives 11.
-        Engine resumed(bundle(), 5, back->state);
+        auto resumed = restore_engine(bundle(), 5, back->state);
         Admissions again;
-        resumed.advance(again({ticket(1, {0, 0}, 1), circuit::contracts::SetDayTime{18000}}));
-        for (int i = 0; i < 20; ++i) resumed.advance({});
-        const auto end = resumed.dump();
+        resumed->advance(again({ticket(1, {0, 0}, 1), circuit::contracts::SetDayTime{18000}}));
+        for (int i = 0; i < 20; ++i) resumed->advance({});
+        const auto end = resumed->dump();
         require(state_at(end, {3, 0, 3}) == blocks::daylight_detector() && state_at(end, {5, 0, 3}) == blocks::daylight_detector(true, 11),
                 "midnight after the import");
     });
 
     suite.run("dispensers and droppers round-trip through Anvil with their contents and pending ticks", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({3, 0, 3}, blocks::dispenser(Direction::up)), place({5, 0, 3}, blocks::dispenser(Direction::north, true))}));
-        engine.advance(admit({insert({3, 0, 3}, 4, items::stone, 7), insert({5, 0, 3}, 8, items::glass, 2)}));
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({3, 0, 3}, blocks::dispenser(Direction::up)), place({5, 0, 3}, blocks::dispenser(Direction::north, true))}));
+        engine->advance(admit({insert({3, 0, 3}, 4, items::stone, 7), insert({5, 0, 3}, 8, items::glass, 2)}));
         // Triggered, with the dispense tick pending at the export.
-        engine.advance(admit({place({3, 0, 2}, blocks::redstone_block())}));
-        const auto state = engine.dump();
+        engine->advance(admit({place({3, 0, 2}, blocks::redstone_block())}));
+        const auto state = engine->dump();
         require(state_at(state, {3, 0, 3}) == blocks::dispenser(Direction::up, false, true), "triggered");
         const auto target = root / "dispensers";
         require(anvil::export_world(state, bundle(), target, {.level_name = "dispensers", .seed = 5}).has_value(), "export");
@@ -728,23 +728,23 @@ int main() {
         require(dropper && dropper->kind == BlockType::dispenser && dropper->slots.size() == 9 && dropper->slots[8] == ItemStack{items::glass, 2},
                 "the dropper's slots");
         // The imported dispenser fires its pending tick.
-        Engine resumed(bundle(), 5, back->state);
+        auto resumed = restore_engine(bundle(), 5, back->state);
         Admissions again;
-        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        resumed->advance(again({ticket(1, {0, 0}, 1)}));
         // Its chunk ticks again once loaded; then the pending tick runs.
-        for (int i = 0; i < 40; ++i) resumed.advance({});
-        const auto end = resumed.dump();
+        for (int i = 0; i < 40; ++i) resumed->advance({});
+        const auto end = resumed->dump();
         const auto* dispenser = block_entity_at(end, {3, 0, 3});
         require(dispenser && dispenser->slots[4] == ItemStack{items::stone, 6}, "one stone dispensed after the import");
     });
 
     suite.run("primed TNT round-trips through Anvil with its fuse", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({3, 0, 3}, registry_block("tnt")), place({4, 0, 3}, blocks::redstone_block())}));
-        for (int i = 0; i < 10; ++i) engine.advance({});
-        const auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({3, 0, 3}, registry_block("tnt")), place({4, 0, 3}, blocks::redstone_block())}));
+        for (int i = 0; i < 10; ++i) engine->advance({});
+        const auto state = engine->dump();
         const auto primed = std::ranges::find_if(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
         // Primed in the tick of the placement, which counts too.
         require(primed != state.overworld().entities.end() && primed->fuse == 69,
@@ -757,28 +757,28 @@ int main() {
         require(diff.empty(), diff);
         // Its fuse runs on once its chunk is loaded again: it ticks from two
         // ticks after the load and explodes 69 ticks later.
-        Engine resumed(bundle(), 5, back->state);
+        auto resumed = restore_engine(bundle(), 5, back->state);
         Admissions again;
-        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        resumed->advance(again({ticket(1, {0, 0}, 1)}));
         const auto count = [&] {
-            return std::ranges::count_if(resumed.dump().overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
+            return std::ranges::count_if(resumed->dump().overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
         };
         int ticks = 1;
         while (count() == 1 && ticks < 100) {
-            resumed.advance({});
+            resumed->advance({});
             ++ticks;
         }
         require(ticks == 71, std::format("exploded after {} ticks", ticks));
     });
 
     suite.run("arrows round-trip through Anvil", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({8, 0, 3}, blocks::obsidian()), SummonEntity{"minecraft:arrow", {2.5, 0.5, 3.5}, {1.0, 0.05, 0.0}, 80, 100},
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({place({8, 0, 3}, blocks::obsidian()), SummonEntity{"minecraft:arrow", {2.5, 0.5, 3.5}, {1.0, 0.05, 0.0}, 80, 100},
                               SummonEntity{"minecraft:arrow", {2.5, 5.5, 3.5}, {0.2, 0.3, 0.0}, 80, 0}}));
-        for (int i = 0; i < 8; ++i) engine.advance({});
-        const auto state = engine.dump();
+        for (int i = 0; i < 8; ++i) engine->advance({});
+        const auto state = engine->dump();
         const auto stuck = std::ranges::count_if(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::arrow && e.in_ground; });
         require(stuck == 1, "one arrow stuck, one in flight");
         const auto target = root / "arrows";
@@ -795,16 +795,16 @@ int main() {
     });
 
     suite.run("experience orbs round-trip through Anvil with their value, orbs and age", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
         // Also orbs of a negative value, which summons keep (client/ench_mending).
-        engine.advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:experience_orb", {3.5, 0.0, 3.5}, {}, 80, 0, 7, 3, 100},
+        engine->advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:experience_orb", {3.5, 0.0, 3.5}, {}, 80, 0, 7, 3, 100},
                               SummonEntity{"minecraft:experience_orb", {6.5, 2.0, 6.5}, {0.0, 0.1, 0.0}, 80, 0, 2477, 1, 0},
                               SummonEntity{"minecraft:experience_orb", {9.5, 0.0, 9.5}, {}, 80, 0, -5, 1, 0},
                               SummonEntity{"minecraft:experience_orb", {12.5, 0.0, 12.5}, {}, 80, 0, -32768, 1, 0}}));
-        engine.advance({});
-        const auto state = engine.dump();
+        engine->advance({});
+        const auto state = engine->dump();
         const auto target = root / "orbs";
         require(anvil::export_world(state, bundle(), target, {.level_name = "orbs", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
@@ -820,8 +820,8 @@ int main() {
                     && std::ranges::any_of(orbs(back->state), [](const auto& o) { return std::get<2>(o) == -32768; }),
                 "orbs kept with their state (also of -5 and -32768)");
         // An engine restored from the imported world keeps them.
-        Engine resumed(bundle(), 5, back->state);
-        resumed.advance({});
+        auto resumed = restore_engine(bundle(), 5, back->state);
+        resumed->advance({});
         const auto values = [](const WorldDump& w) {
             std::vector<std::int32_t> out;
             for (const auto& e : w.overworld().entities)
@@ -829,14 +829,14 @@ int main() {
             std::ranges::sort(out);
             return out;
         };
-        require(values(resumed.dump()) == std::vector<std::int32_t>{-32768, -5, 7, 2477}, "restored with their values");
+        require(values(resumed->dump()) == std::vector<std::int32_t>{-32768, -5, 7, 2477}, "restored with their values");
     });
 
     suite.run("maps round-trip through Anvil, saved as the official servers save them", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        auto state = engine.dump();
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
+        auto state = engine->dump();
         circuit::gameplay::MapData zoomed;
         zoomed.id = 2;
         zoomed.x_center = 320;
@@ -857,14 +857,14 @@ int main() {
     });
 
     suite.run("minecarts and boats round-trip through Anvil", [&] {
-        Engine engine(bundle(), 5);
+        auto engine = make_engine(bundle(), 5);
         Admissions admit;
-        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine->advance(admit({ticket(1, {0, 0}, 1)}));
         // Moving south the minecart turns its yaw to -90, which its Rotation keeps.
-        engine.advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:minecart", {3.5, 0.0, 3.5}, {0.0, 0.0, 0.1}, 80, 0},
+        engine->advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:minecart", {3.5, 0.0, 3.5}, {0.0, 0.0, 0.1}, 80, 0},
                               SummonEntity{"minecraft:cherry_boat", {6.5, 4.0, 6.5}, {0.0, 0.0, 0.0}, 80, 0}}));
-        for (int i = 0; i < 3; ++i) engine.advance({});
-        const auto state = engine.dump();
+        for (int i = 0; i < 3; ++i) engine->advance({});
+        const auto state = engine->dump();
         const auto target = root / "vehicles";
         require(anvil::export_world(state, bundle(), target, {.level_name = "vehicles", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
@@ -920,9 +920,9 @@ int main() {
         require(in->state.sequence_settings == circuit::gameplay::SequenceSettings{}, "absent flags are true");
         // The engine continues the sequences, and an export writes them as the
         // official server does.
-        Engine resumed(bundle(), 42, in->state);
-        resumed.advance({});
-        const auto state = resumed.dump();
+        auto resumed = restore_engine(bundle(), 42, in->state);
+        resumed->advance({});
+        const auto state = resumed->dump();
         require(state.overworld().sequences == sequences, "the engine keeps the sequences");
         const auto target = root / "sequences-out";
         require(anvil::export_world(state, bundle(), target, {.level_name = "sequences", .seed = 42}).has_value(), "export");
@@ -1295,10 +1295,10 @@ int main() {
     });
 
     suite.run("exports never overwrite and leave no partial world", [&] {
-        Engine engine(bundle(), 1);
-        engine.advance({{1, AddTicket{1, {0, 0}, 1}}});
-        engine.advance({{2, SetBlock{{1, 1, 1}, blocks::stone().raw(), std::nullopt}}});
-        const auto state = engine.dump();
+        auto engine = make_engine(bundle(), 1);
+        engine->advance({{1, AddTicket{1, {0, 0}, 1}}});
+        engine->advance({{2, SetBlock{{1, 1, 1}, blocks::stone().raw(), std::nullopt}}});
+        const auto state = engine->dump();
         const auto target = root / "exists";
         fs::create_directories(target);
         require(!anvil::export_world(state, bundle(), target), "existing target refused");

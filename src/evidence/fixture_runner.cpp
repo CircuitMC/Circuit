@@ -18,6 +18,33 @@ using gameplay::BlockState;
 using Outcome = FixtureReport::Outcome;
 
 namespace {
+class EngineExecutor final : public FixtureExecutor {
+public:
+    EngineExecutor(std::unique_ptr<runtime::Engine> engine, std::shared_ptr<const gameplay::GameData> data)
+        : data_(std::move(data)), engine_(std::move(engine)) {}
+    const gameplay::GameData* data() const override { return data_.get(); }
+    void advance(const std::vector<Command>& commands) override { engine_->advance(commands); }
+    const std::vector<contracts::TraceRecord>& trace() const override { return engine_->trace(); }
+    // Fixtures run in the overworld (the runner refuses other dimensions).
+    BlockState block(BlockPos pos) const override {
+        const auto s = engine_->block(contracts::DimensionId::overworld, pos);
+        return s ? *s : BlockState::unloaded_sentinel();
+    }
+    std::optional<contracts::ItemStack> slot(BlockPos pos, std::uint8_t slot) const override {
+        const auto be = engine_->block_entity(contracts::DimensionId::overworld, pos);
+        if (!be || !*be || slot >= (*be)->slots.size()) return std::nullopt;
+        return (*be)->slots[slot];
+    }
+    std::vector<gameplay::Entity> entities() const override { return engine_->dump().overworld().entities; }
+    std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos pos) const override {
+        return engine_->light(contracts::DimensionId::overworld, pos);
+    }
+
+private:
+    std::shared_ptr<const gameplay::GameData> data_;
+    std::unique_ptr<runtime::Engine> engine_;
+};
+
 struct MappedChange {
     BlockPos pos;
     BlockState before, after;
@@ -770,6 +797,18 @@ std::size_t stream_line(const StreamEvent& e) {
     return std::visit([](const auto& v) { return v.line; }, e);
 }
 } // namespace
+
+ExecutorFactory engine_executor(runtime::EngineFactory engine, DataSource data) {
+    return [engine = std::move(engine), data = std::move(data)](const contracts::VersionBundle& bundle,
+                                                                std::uint64_t seed) -> std::unique_ptr<FixtureExecutor> {
+        runtime::EngineOptions options;
+        options.data = data ? data(bundle) : nullptr;
+        options.level_random_seed = 0;
+        options.sequence_seed = 0;
+        auto made = engine(bundle, seed, options, nullptr);
+        return std::make_unique<EngineExecutor>(std::move(made), options.data);
+    };
+}
 
 std::string_view outcome_name(Outcome outcome) noexcept {
     switch (outcome) {

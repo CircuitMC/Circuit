@@ -6,6 +6,7 @@
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/world_types.hpp>
+#include <circuit/runtime/engine.hpp>
 #include <functional>
 #include <map>
 #include <memory>
@@ -41,6 +42,11 @@ using ExecutorFactory =
     std::function<std::unique_ptr<FixtureExecutor>(const contracts::VersionBundle& bundle, std::uint64_t seed)>;
 // The data packs' data for a bundle (null: none).
 using DataSource = std::function<std::shared_ptr<const gameplay::GameData>(const contracts::VersionBundle& bundle)>;
+
+// Fixtures on any engine (runtime::Engine): the overworld's level random
+// starts from 0 and random sequences from the world seed 0, as on the
+// reference harness's worlds; `data` gives the data packs' data per bundle.
+ExecutorFactory engine_executor(runtime::EngineFactory engine, DataSource data = {});
 
 struct FixtureReport {
     enum class Outcome : std::uint8_t {

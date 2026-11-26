@@ -34,8 +34,11 @@ public:
     // Continues from a state as dump() gives it. A state the rules never
     // produce (out-of-range values, duplicates, positions in unknown columns)
     // throws std::invalid_argument naming what is wrong.
+    // The level randoms come from the state; `sequence_seed` starts the
+    // random sequences first used after it, as in the first constructor.
     Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, const gameplay::WorldDump& state,
-           std::shared_ptr<const gameplay::GameData> data = {});
+           std::shared_ptr<const gameplay::GameData> data = {}, std::optional<std::int64_t> level_random_seed = {},
+           std::optional<std::int64_t> sequence_seed = {});
     ~Oracle();
     Oracle(const Oracle&) = delete;
     Oracle& operator=(const Oracle&) = delete;

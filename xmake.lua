@@ -27,6 +27,14 @@ target("circuit_gameplay")
     add_deps("circuit_contracts")
 target_end()
 
+-- The engine facade (include/circuit/runtime/engine.hpp) and, as it grows,
+-- the strict single-threaded runtime behind it.
+target("circuit_runtime")
+    set_kind("static")
+    add_files("src/runtime/*.cpp")
+    add_deps("circuit_gameplay")
+target_end()
+
 -- Java Edition wire protocol: data types, NBT, framing and packet ids.
 target("circuit_protocol")
     set_kind("static")
@@ -63,7 +71,7 @@ target_end()
 target("circuit_evidence")
     set_kind("static")
     add_files("src/evidence/*.cpp")
-    add_deps("circuit_gameplay")
+    add_deps("circuit_runtime")
 target_end()
 
 -- A test program is every source file of its directory: a new file adds
@@ -85,7 +93,7 @@ target("circuit_oracle")
     set_kind("static")
     set_default(false)
     add_files("tests/oracle/*.cpp")
-    add_deps("circuit_gameplay")
+    add_deps("circuit_runtime")
 target_end()
 
 target("rules_tests")

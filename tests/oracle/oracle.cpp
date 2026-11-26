@@ -236,8 +236,9 @@ Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::
 }
 
 Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, const WorldDump& state,
-               std::shared_ptr<const gameplay::GameData> data)
-    : Oracle(bundle, seed, std::move(data)) {
+               std::shared_ptr<const gameplay::GameData> data, std::optional<std::int64_t> level_random_seed,
+               std::optional<std::int64_t> sequence_seed)
+    : Oracle(bundle, seed, std::move(data), level_random_seed, sequence_seed) {
     restore(state);
 }
 

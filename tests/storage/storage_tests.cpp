@@ -9,7 +9,7 @@
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/protocol/framing.hpp>
-#include "../oracle/oracle.hpp"
+#include "../support/engine_under_test.hpp"
 #include <circuit/storage/world_directory.hpp>
 #include <climits>
 #include <filesystem>
@@ -24,8 +24,8 @@
 #include <zlib.h>
 
 using namespace circuit::test;
-// The sequential reference executor stands in for the runtime.
-using Engine = circuit::oracle::Oracle;
+using circuit::test::make_engine;
+using circuit::test::restore_engine;
 using circuit::storage::Checkpoint;
 using circuit::storage::Recovery;
 using circuit::storage::WorldDirectory;
@@ -47,13 +47,13 @@ struct History {
 };
 History record(const Scenario& s, Tick limit) {
     History h{s.name, s.seed, {}, {}};
-    Engine engine(bundle(), s.seed);
+    auto engine = make_engine(bundle(), s.seed);
     Admissions admit;
-    h.dumps.push_back(engine.dump());
+    h.dumps.push_back(engine->dump());
     for (Tick t = 1; t <= std::min(limit, s.ticks); ++t) {
         h.inputs.push_back(admitted(admit, s, t));
-        engine.advance(h.inputs.back());
-        h.dumps.push_back(engine.dump());
+        engine->advance(h.inputs.back());
+        h.dumps.push_back(engine->dump());
     }
     return h;
 }
@@ -114,9 +114,9 @@ Tick check_recovery(const History& h, const Recovery& r, std::string_view label)
     for (std::size_t i = 0; i < r.inputs.size(); ++i)
         require(base + 1 + i <= h.ticks() && r.inputs[i] == input_at(h, base + 1 + i), std::format("{}: input {} after {}", label, i, base));
     const auto end = base + r.inputs.size();
-    Engine engine(bundle(), r.checkpoint.seed, r.checkpoint.state);
-    for (const auto& in : r.inputs) engine.advance(in.commands);
-    require(engine.dump() == h.dumps[end], std::format("{}: replayed state at {}", label, end));
+    auto engine = restore_engine(bundle(), r.checkpoint.seed, r.checkpoint.state);
+    for (const auto& in : r.inputs) engine->advance(in.commands);
+    require(engine->dump() == h.dumps[end], std::format("{}: replayed state at {}", label, end));
     return end;
 }
 
@@ -570,8 +570,8 @@ int main() {
             if (!d) continue;
             ++decoded;
             try {
-                Engine engine(bundle(), d->seed, d->state);
-                engine.advance({});
+                auto engine = restore_engine(bundle(), d->seed, d->state);
+                engine->advance({});
                 ++restored;
             } catch (const std::invalid_argument&) {
             }
@@ -590,7 +590,7 @@ int main() {
             auto state = h.dumps[t];
             edit(state.level(circuit::contracts::DimensionId::overworld).entities.front());
             try {
-                Engine engine(bundle(), h.seed, state);
+                auto engine = restore_engine(bundle(), h.seed, state);
             } catch (const std::invalid_argument& e) {
                 require(std::string_view(e.what()).find(what) != std::string_view::npos, std::format("refused for {}: {}", what, e.what()));
                 return;
@@ -603,8 +603,8 @@ int main() {
         refused([](circuit::gameplay::Entity& e) { e.kind = static_cast<circuit::gameplay::EntityKind>(0); }, "kind");
         refused([](circuit::gameplay::Entity& e) { e.stack.count = 0; }, "stack");
         refused([](circuit::gameplay::Entity& e) { e.stack.item = 9999; }, "stack");
-        Engine fine(bundle(), h.seed, h.dumps[t]);
-        fine.advance({});
+        auto fine = restore_engine(bundle(), h.seed, h.dumps[t]);
+        fine->advance({});
     });
 
     suite.run("world directory saves, logs and recovers", [&] {
@@ -926,8 +926,8 @@ int main() {
             const auto encoded = circuit::storage::encode_checkpoint(c);
             const auto decoded = circuit::storage::decode_checkpoint(encoded);
             require(decoded && *decoded == c, std::format("checkpoint at {} round-trips both levels", t));
-            Engine engine(bundle(), h.seed, c.state);
-            require(engine.dump() == c.state, std::format("restored at {}", t));
+            auto engine = restore_engine(bundle(), h.seed, c.state);
+            require(engine->dump() == c.state, std::format("restored at {}", t));
         }
         // Log records keep each command's level: recovery replays to the same state.
         MemoryFilesystem fs;
@@ -955,10 +955,10 @@ int main() {
         const auto r = recover(fs);
         require(r && *r && check_recovery(h, **r, "chunk levels") == h.ticks(), "recovered");
         for (const Tick t : {Tick{20}, Tick{31}, Tick{65}, Tick{92}, Tick{405}}) {
-            Engine engine(bundle(), h.seed, h.dumps[t]);
-            require(engine.dump() == h.dumps[t], std::format("restored at {}", t));
-            for (Tick next = t + 1; next <= std::min<Tick>(t + 20, h.ticks()); ++next) engine.advance(h.inputs[next - 1]);
-            require(engine.dump() == h.dumps[std::min<Tick>(t + 20, h.ticks())], std::format("continued from {}", t));
+            auto engine = restore_engine(bundle(), h.seed, h.dumps[t]);
+            require(engine->dump() == h.dumps[t], std::format("restored at {}", t));
+            for (Tick next = t + 1; next <= std::min<Tick>(t + 20, h.ticks()); ++next) engine->advance(h.inputs[next - 1]);
+            require(engine->dump() == h.dumps[std::min<Tick>(t + 20, h.ticks())], std::format("continued from {}", t));
         }
     });
 
