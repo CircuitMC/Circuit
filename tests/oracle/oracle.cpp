@@ -321,66 +321,7 @@ void Oracle::restore(const WorldDump& state) {
                 || std::abs(e.piston_push.y) > 0.51 || std::abs(e.piston_push.z) > 0.51)
                 bad("entity piston push");
             if (!std::isfinite(e.fall_distance) || e.fall_distance < 0.0 || e.fall_distance > highest - lowest) bad("entity fall distance");
-            // Each kind's own state, valid; the state of other kinds at its defaults.
-            auto rest = e;
-            switch (e.kind) {
-            case EntityKind::item:
-                if (!items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > items::max_stack(e.stack)
-                    || e.stack.damage > items::max_damage(e.stack) || e.pickup_delay > item_pickup_never)
-                    bad("entity stack");
-                if (!valid_item_age(e.age)) bad("entity age");
-                if (e.health < 1 || e.health > 32767) bad("item health");
-                if (e.fire < 0 || e.fire > 32767) bad("item fire");
-                rest.stack = {};
-                rest.fire = 0;
-                rest.age = 0;
-                rest.pickup_delay = 0;
-                rest.health = item_health;
-                break;
-            case EntityKind::falling_block:
-                if (!BlockState::decode(e.carried.raw()) || e.carried.is_air() || e.carried.is_unloaded()) bad("falling block state");
-                rest.carried = {};
-                rest.fall_time = 0;
-                break;
-            case EntityKind::primed_tnt:
-                if (e.fuse < -32768 || e.fuse > 32767) bad("primed TNT fuse");
-                rest.fuse = 0;
-                break;
-            case EntityKind::arrow:
-                if (e.life < 0 || e.life > 32767 || e.fire < -32768 || e.fire > 32767) bad("arrow state");
-                rest.in_ground = false;
-                rest.life = 0;
-                rest.fire = 0;
-                break;
-            case EntityKind::boat:
-                if (e.variant >= boat_types.size() || e.status > 5 || !std::isfinite(e.last_dy) || std::abs(e.last_dy) > 64.0)
-                    bad("boat state");
-                rest.variant = 0;
-                rest.status = 0;
-                rest.last_dy = 0.0;
-                break;
-            case EntityKind::experience_orb:
-                // 1.21.4 saves an orb's health as 0.
-                if (e.experience < -32768 || e.orbs < 1 || e.age < -32768 || e.age > 32767 || e.health < 0 || e.health > 32767)
-                    bad("experience orb state");
-                rest.experience = 0;
-                rest.orbs = 1;
-                rest.age = 0;
-                rest.health = item_health;
-                break;
-            case EntityKind::minecart:
-                if (!std::isfinite(e.yaw) || std::abs(e.yaw) >= 360.0f) bad("minecart yaw");
-                rest.in_water = false;
-                rest.yaw = 0.0f;
-                rest.flipped = false;
-                break;
-            default: break;
-            }
-            if (!rest.stack.empty() || rest.age != 0 || rest.pickup_delay != 0 || rest.health != item_health
-                || rest.carried != BlockState{} || rest.fall_time != 0 || rest.fuse != 0 || rest.in_ground || rest.life != 0
-                || rest.fire != 0 || rest.variant != 0 || rest.status != 0 || rest.last_dy != 0.0 || rest.in_water || rest.yaw != 0.0f
-                || rest.flipped || rest.experience != 0 || rest.orbs != 1)
-                bad("entity state of another kind");
+            if (const auto fault = entity_payload_fault(e)) bad(*fault);
             if (!lv.chunks.contains(contracts::chunk_of(contracts::block_of(e.position)))) bad("entity in an unknown column");
             if (!entity_ids.insert(e.id).second) bad("duplicate entity id");
             // Saved with its column and not back yet.

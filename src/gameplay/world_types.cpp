@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/gameplay/world_types.hpp>
 #include <circuit/contracts/trace.hpp>
+#include <circuit/gameplay/items.hpp>
+#include <cmath>
 #include <algorithm>
 #include <bit>
 #include <format>
@@ -487,6 +489,69 @@ std::uint64_t digest(const WorldDump& d) {
         for (const auto& holder : m.holders) { h.add(holder.player.hi); h.add(holder.player.lo); h.add(holder.step); }
     }
     return h.value();
+}
+
+std::optional<std::string_view> entity_payload_fault(const Entity& e) {
+    // Each kind's own fields, valid; the fields of other kinds at their
+    // defaults.
+    auto rest = e;
+    switch (e.kind) {
+    case EntityKind::item:
+        if (!items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > items::max_stack(e.stack)
+            || e.stack.damage > items::max_damage(e.stack) || e.pickup_delay > item_pickup_never)
+            return "entity stack";
+        if (!valid_item_age(e.age)) return "entity age";
+        if (e.health < 1 || e.health > 32767) return "item health"; // a short, as saved
+        if (e.fire < 0 || e.fire > 32767) return "item fire";
+        rest.stack = {};
+        rest.fire = 0;
+        rest.age = 0;
+        rest.pickup_delay = 0;
+        rest.health = item_health;
+        break;
+    case EntityKind::falling_block:
+        if (!BlockState::decode(e.carried.raw()) || e.carried.is_air() || e.carried.is_unloaded()) return "falling block state";
+        rest.carried = {};
+        rest.fall_time = 0;
+        break;
+    case EntityKind::primed_tnt:
+        if (e.fuse < -32768 || e.fuse > 32767) return "primed TNT fuse"; // a short, as saved
+        rest.fuse = 0;
+        break;
+    case EntityKind::arrow:
+        if (e.life < 0 || e.life > 32767 || e.fire < -32768 || e.fire > 32767) return "arrow state";
+        rest.in_ground = false;
+        rest.life = 0;
+        rest.fire = 0;
+        break;
+    case EntityKind::boat:
+        if (e.variant >= boat_types.size() || e.status > 5 || !std::isfinite(e.last_dy) || std::abs(e.last_dy) > 64.0) return "boat state";
+        rest.variant = 0;
+        rest.status = 0;
+        rest.last_dy = 0.0;
+        break;
+    case EntityKind::experience_orb:
+        // 1.21.4 saves an orb's health as 0.
+        if (e.experience < -32768 || e.orbs < 1 || e.age < -32768 || e.age > 32767 || e.health < 0 || e.health > 32767)
+            return "experience orb state";
+        rest.experience = 0;
+        rest.orbs = 1;
+        rest.age = 0;
+        rest.health = item_health;
+        break;
+    case EntityKind::minecart:
+        if (!std::isfinite(e.yaw) || std::abs(e.yaw) >= 360.0f) return "minecart yaw";
+        rest.in_water = false;
+        rest.yaw = 0.0f;
+        rest.flipped = false;
+        break;
+    default: break;
+    }
+    if (!rest.stack.empty() || rest.age != 0 || rest.pickup_delay != 0 || rest.health != item_health || rest.carried != BlockState{}
+        || rest.fall_time != 0 || rest.fuse != 0 || rest.in_ground || rest.life != 0 || rest.fire != 0 || rest.variant != 0 || rest.status != 0
+        || rest.last_dy != 0.0 || rest.in_water || rest.yaw != 0.0f || rest.flipped || rest.experience != 0 || rest.orbs != 1)
+        return "entity state of another kind";
+    return std::nullopt;
 }
 
 } // namespace circuit::gameplay

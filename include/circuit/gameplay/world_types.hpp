@@ -2,6 +2,7 @@
 #pragma once
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <string_view>
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/ids.hpp>
@@ -113,7 +114,11 @@ inline constexpr std::int32_t item_health = 5;
 // Experience orbs go at age 6000 too, and have 5 health as items do.
 inline constexpr std::int32_t orb_despawn_age = 6000;
 
-struct Entity {
+// What every entity has, whatever its kind. Transitional: Entity below adds
+// the fields of every kind side by side; the entity model replaces them with
+// one payload per kind, and entity_payload_fault is where the per-kind fields
+// are checked until then. Rules read the fields of both through Entity.
+struct EntityHeader {
     EntityId id;
     EntityKind kind{EntityKind::item};
     Vec3 position;
@@ -126,6 +131,27 @@ struct Entity {
     // How far it has fallen since it was last on the ground (what landing on
     // farmland reads).
     double fall_distance{};
+    // The entity's own random (a java.util.Random state, LevelRandom), which
+    // an experience orb's first motion and its jumps in lava, an anvil's wear
+    // and the way items and orbs move out of blocks draw from; seeded with
+    // the entity's id when first used (`seeded`), as the reference harness
+    // seeds it (the official servers seed it from the clock), an item's after
+    // the two floats it drew when it was made.
+    bool seeded{};
+    std::uint64_t own_random{};
+    // How far pistons have pushed it in the tick `piston_tick` (at most 0.51
+    // on each axis in one tick).
+    Tick piston_tick{};
+    Vec3 piston_push{};
+    // Saved with a chunk that loaded again: the tick it comes back, under a
+    // new id (0: it is in the level).
+    Tick returns{};
+    bool operator==(const EntityHeader&) const = default;
+};
+
+// The header and the fields of every kind. Only the fields of the entity's
+// own kind may differ from their defaults (entity_payload_fault).
+struct Entity : EntityHeader {
     // Items: the stack, its age (a merge keeps the younger one's) and the
     // ticks until players may pick it up. Experience orbs: their age too.
     ItemStack stack;
@@ -136,14 +162,6 @@ struct Entity {
     // into it (it holds `orbs` times `experience`).
     std::int32_t experience{};
     std::int32_t orbs{1};
-    // The entity's own random (a java.util.Random state, LevelRandom), which
-    // an experience orb's first motion and its jumps in lava, an anvil's wear
-    // and the way items and orbs move out of blocks draw from; seeded with
-    // the entity's id when first used (`seeded`), as the reference harness
-    // seeds it (the official servers seed it from the clock), an item's after
-    // the two floats it drew when it was made.
-    bool seeded{};
-    std::uint64_t own_random{};
     // An experience orb given outside the command phase, whose first motion
     // waits for its final id (the commit gives it; never saved).
     bool launch{};
@@ -170,15 +188,14 @@ struct Entity {
     bool in_water{};
     float yaw{};
     bool flipped{};
-    // How far pistons have pushed it in the tick `piston_tick` (at most 0.51
-    // on each axis in one tick).
-    Tick piston_tick{};
-    Vec3 piston_push{};
-    // Saved with a chunk that loaded again: the tick it comes back, under a
-    // new id (0: it is in the level).
-    Tick returns{};
     bool operator==(const Entity&) const = default;
 };
+
+// What is wrong with an entity's kind-specific fields: those of its own kind
+// out of the ranges the rules keep and saves hold, or those of another kind
+// away from their defaults; nullopt when nothing is. The header (kind,
+// position, velocity, ids) is checked by whoever restores the entity.
+[[nodiscard]] std::optional<std::string_view> entity_payload_fault(const Entity& e);
 // The boats both target versions have, by Entity::variant.
 inline constexpr std::array<std::string_view, 10> boat_types{"minecraft:oak_boat", "minecraft:spruce_boat", "minecraft:birch_boat",
                                                               "minecraft:jungle_boat", "minecraft:acacia_boat", "minecraft:cherry_boat",
