@@ -7,6 +7,7 @@
 | [Compatibility](COMPATIBILITY.md) | Protocol, content and behavior compatibility, stated separately |
 | [Vanilla completion](VANILLA_COMPLETION.md) | Full 1.21.4/1.21.8 target, measured gaps and version differences |
 | [Vanilla ledger](VANILLA_LEDGER.md) | Generated per-version status and evidence of every family, mechanic and enumerated resource |
+| [Baselines](BASELINES.md) | Tick times of the official server, Paper and Folia on Circuit's workloads, measured from outside |
 | [Persistence](PERSISTENCE.md) | World directories, the durability and recovery protocol, and Anvil import and export |
 | [Protocol data](PROTOCOL_DATA.md) | Sources of packet ids, content tables, registries and layouts, their checks, and 1.21.4 differences |
 | [Data packs](DATA_PACKS.md) | Loading the official jar's built-in pack and other data packs: precedence, tags, enchantments and block tools |

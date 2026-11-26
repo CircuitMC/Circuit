@@ -9,8 +9,8 @@ Phases 1 to 3 run side by side in separate worktrees. Phases 4 and 5 build on th
 - [x] Tag the first generation and keep it reachable (`pre-refactor`).
 - [x] Remove the region-parallel engine, the network server, the host-side player code, the extension system and the scaffolds; keep the contracts, rules, oracle, evidence, protocol, content data and storage.
 - [x] Run every kept test program side by side, with the official jars required by the gate.
-- [ ] A committed performance baseline: the oracle and the official server on the recorded workloads.
-- [ ] A black-box harness that measures the official server, Paper and Folia on the same workloads.
+- [x] A black-box harness that measures the official server, Paper and Folia on the same workloads, and their committed baselines ([baselines](docs/BASELINES.md)).
+- [x] The compatibility ledger re-based on the kept code, with work packages for the restructuring.
 
 ## Phase 1 — Single-threaded runtime
 
