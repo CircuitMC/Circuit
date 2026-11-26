@@ -749,6 +749,12 @@ def summary(ledger, manifests):
       "Its families and milestones are those of the [vanilla completion roadmap](VANILLA_COMPLETION.md). "
       "The mechanics that are not implemented are grouped into [work packages](../compatibility/PACKAGES.md).")
     w("")
+    w("**Restructuring.** The states below were recorded against the first generation (tag `pre-refactor`). Its runtime, network server, "
+      "player code and extensions were removed in November 2026: behavior that lived only there (connections, player survival, combat, "
+      "effects, windows driven by players, extensions) is not available in the current tree until the corresponding phase of the "
+      "[roadmap](../TODO.md) brings it back, and the ledger is being re-based on the kept code. The reference rules, their traces, the protocol "
+      "tables, content data and storage are kept.")
+    w("")
     w("**Implementation states:** `implemented` (complete for the feature as described), `partial` (some behavior, with listed gaps), "
       "`data_only` (named in registries or storage, with no behavior), `missing`, and `not_applicable` (absent from that version, with the reason). "
       "**Evidence states:** `compared` (Circuit compared with the official server for named cases), `reference_only` (official observations, "

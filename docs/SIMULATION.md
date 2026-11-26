@@ -1,8 +1,8 @@
-# Headless simulation core
+# Reference rules and oracle
 
 ## Status
 
-The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
+This guide describes what the restructuring keeps of the simulation: shared contracts, a set of reference rules, and the oracle, a sequential executor that runs them in the vanilla order. The first generation's region-parallel runtime was removed (tag `pre-refactor`); the new runtime must match the oracle on every trace and scenario. The oracle shares the rule functions with any runtime, so it checks scheduling; external reference observations and hand-derived expectations check the rules themselves. [Persistence](PERSISTENCE.md) stores the state the oracle dumps.
 
 The rules are **circuit-reference-rules-v12**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
@@ -10,9 +10,9 @@ Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 225 tr
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers (the 1.21.8 fire traces turn on allowFireTicksAwayFromPlayer, which 1.21.4 lacks, so that fire acts away from players as on 1.21.4), but `entities_in_lava` (lava reaches entities at the start of their ticks on 1.21.4 and after their moves on 1.21.8, `LavaContact`) the fourteen random-tick traces (1.21.4 runs random ticks only near players, `RandomTickRange`) `anvils_falling_far` (a falling anvil wears by its fall before the landing move on 1.21.4, `FallDistance`) and those of experience orbs (they bounce and drag otherwise on 1.21.4, and fall and move out of blocks as items do there, `OrbMotion`), differences the bundles declare (`tests/fixtures/version-differences.txt`). All 445 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers (the 1.21.8 fire traces turn on allowFireTicksAwayFromPlayer, which 1.21.4 lacks, so that fire acts away from players as on 1.21.4), but `entities_in_lava` (lava reaches entities at the start of their ticks on 1.21.4 and after their moves on 1.21.8, `LavaContact`) the fourteen random-tick traces (1.21.4 runs random ticks only near players, `RandomTickRange`) `anvils_falling_far` (a falling anvil wears by its fall before the landing move on 1.21.4, `FallDistance`) and those of experience orbs (they bounce and drag otherwise on 1.21.4, and fall and move out of blocks as items do there, `OrbMotion`), differences the bundles declare (`tests/fixtures/version-differences.txt`). All 445 pass on the oracle.
 
-The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
+The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-fixture --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
 - **L0 exact**: a row claims L0 only when target-version traces pass and no gap is known. "Not covered" lists aspects that no trace exercises.
 - **L2**: every other row claims L2 and lists its gaps, including behavior not yet compared with the target version.
@@ -91,15 +91,14 @@ An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for 
 | --- | --- |
 | `include/circuit/contracts/` | Coordinates and identities, generations, logical time and order keys, stable error codes, commands, trace records, version bundles and the compatibility table, replay records |
 | `include/circuit/gameplay/`, `src/gameplay/` | Block registry, `RuleContext`, the update queue, and the reference rules |
-| `include/circuit/runtime/`, `src/runtime/` | `Engine`, region contexts, job runners, tick clock |
 | `include/circuit/evidence/`, `src/evidence/` | circuit-trace fixtures, content mapping, recording and evaluation |
-| `tests/oracle/` | Separate sequential executor using shared gameplay rules, never linked into the server |
+| `tests/oracle/` | Sequential executor in the vanilla order using the shared rules; the specification of the runtime |
 | `tests/rules/` | Rule fixtures with hand-derived expectations |
-| `tests/sim/` | Differential scenarios: runtime against oracle |
+| `tests/support/scenarios.hpp` | Scenarios shared by the storage and Anvil tests, and by the runtime's differential tests when it returns |
 | `tests/fixtures/` | Skeletons, reference recordings, target-version traces, documented fixtures and profiling workloads |
-| `tests/control/`, `tests/contracts/`, `tests/evidence/` | Runner, clock, digest, contract and fixture tests |
+| `tests/contracts/`, `tests/evidence/` | Contract and fixture tests |
 
-Dependencies point one way: `contracts` ← `gameplay` ← `runtime` ← `app`. Rules see the world only through `RuleContext`, so the oracle and the runtime execute the same rule functions over different storage and ordering machinery.
+Dependencies point one way: `contracts` ← `gameplay` ← executors. Rules see the world only through `RuleContext`, so the oracle and the runtime execute the same rule functions over different storage and ordering machinery.
 
 ## Tick structure
 
@@ -385,7 +384,7 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
   - **Rules that read it:** a rule reads the most of a cell's block and sky light as of the start of the tick, in any phase: the command, random-tick and block-entity phases bring the light up to date before they run when they may read it; another phase brings it up to date the first time one of its roots reads it (serially; the light depends only on the blocks at the start of the tick, so it does not matter which root asks). Wheat grows only with light 9 or more at its own cell (minecraft.wiki "Wheat Crops"). Daylight detectors read the sky light, in the block-entity phase and when used by a command. Mushrooms read the light when an update checks them (mushrooms: a roof removed, glowstone set or a piston pushing beside them; an update in the tick a light source arrives still sees the light before it).
 - **Game rules** (minecraft.wiki "Game rule"; both official servers):
   - **World state:** a `SetGameRule` command sets one of the version's rules, but not an experimental one. A boolean rule takes 0 or 1, spawnChunkRadius 0–32, and every other integer rule any value, as on the official servers; other values are refused. The state holds the rules away from their defaults; it is saved in checkpoints, and the commands are logged.
-  - **Read by the rules:** randomTickSpeed is the number of random positions each section of a random-ticking chunk gets per tick; none at 0 or below. tntExplodes primes TNT (below), doDaylightCycle and doWeatherCycle advance the day and the weather, waterSourceConversion and lavaSourceConversion make sources, and doFireTick and allowFireTicksAwayFromPlayer let fire act (below). The server reads spawnChunkRadius for the spawn chunks and sets rules with `/gamerule` ([server guide](SERVER.md#survival-and-inventories)). The other rules are kept but change nothing yet.
+  - **Read by the rules:** randomTickSpeed is the number of random positions each section of a random-ticking chunk gets per tick; none at 0 or below. tntExplodes primes TNT (below), doDaylightCycle and doWeatherCycle advance the day and the weather, waterSourceConversion and lavaSourceConversion make sources, and doFireTick and allowFireTicksAwayFromPlayer let fire act (below). The first generation's server read spawnChunkRadius for the spawn chunks and set rules with `/gamerule`. The other rules are kept but change nothing yet.
 - **Difficulty:** the world has one difficulty, peaceful (0) to hard (3); a new world is peaceful. A `SetDifficulty` command sets it; the server sets its configured difficulty at every start. It is saved in checkpoints and Anvil worlds. Fire spreads more readily the harder it is; nothing else reads it yet.
 - **Day time** (minecraft.wiki "Daylight cycle"; both official servers): the world has one day time, in ticks (24,000 a day), as only the overworld has a daylight cycle. A new world starts at 0. A `SetDayTime` command sets it (never negative); after the commands of each tick it advances by one while doDaylightCycle is on, so a change in a tick shows one more at its end. It is saved in checkpoints.
 - **The sky** (minecraft.wiki "Daylight cycle", "Light"; checked with daylight detectors on both official servers): the time of day runs from 0 at noon to 1 over a day, slower around noon and midnight: with d the fraction of the day since day time 6,000, (2d + (1 − cos πd) / 2) / 3 in single precision; the sun's angle is that fraction of a full turn. Before the day time advances in a tick, the sky's darkening (0 to 11) is computed from the weather after it advanced and the day time: with c the cosine of the sun's angle held to −0.25..0.25, ⌊11 × (1 − (0.5 + 2c) × (1 − 5r / 16) × (1 − 5tr / 16))⌋ for rain level r and thunder level t. The cosines come from a table of 65,536 single-precision sines, as on the official servers. The darkening holds until the next tick computes it again; a restored world derives it. Nothing in the rules reads it yet.
@@ -396,9 +395,9 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
   - **Order:** in each tick, after the commands, the weather, then the day time.
   - **Randomness:** the official servers draw durations from the level's random sequence; Circuit draws them from its own stream for each tick, so durations differ while their ranges are the same. Everything else matched the official servers exactly, level values included. Lightning, snow and ice, filling cauldrons and other effects of rain are not modeled.
 
-## Part I mechanism contracts
+## Mechanism footprints
 
-Every supported mechanism runs in the region-parallel runtime under the same rule.
+The first generation's region-parallel runtime ran every mechanism under the rules below. The footprints and ordering contracts in the table hold for any executor and are the input to the island design; the fallback column describes the removed runtime.
 
 - **Execution:** a root may touch only the columns its region owns.
 - **Conflict fallback:** touching another region's column aborts the attempt. The affected regions roll back, merge, and run again in serial order. Repeated conflicts end in one region, which is serial execution through the same machinery.
@@ -422,7 +421,7 @@ The table lists what is specific to each mechanism.
 | Maps | The world's maps and its last map id | Command order; in a level's other phases the order of their roots | rules tests (map extending at a table and in crafters) | crafters in separate regions extending maps (`simulation_tests`) | Outside the command phase only a root whose region holds the level's random reads and adds maps (a crafter extending one): roots that use them in one level merge their regions, levels run one after another, and rollback takes back the maps an attempt added |
 | Player inventories and menus | The player's inventory, the open container's halves, item entities thrown or picked up | Admission order; the command phase runs serially; in a level's other phases the order of their roots | Rules tests (every click mode, random clicks conserving items; dispensers putting armor on); server tests; a 48-step window scenario and a 26-step furnace window scenario compared with the official 1.21.8 and 1.21.4 servers | Command phase; dispensers putting armor on players in separate regions (`simulation_tests`) | The command phase runs on the coordinator; outside it only a root whose region holds the level's random reads and changes inventories (a dispenser putting armor on): roots that use them in one level merge their regions, and rollback restores the inventories an attempt changed |
 
-### Coverage of the Part I cases
+### Coverage of the first generation's parallel cases
 
 | Case | Covered by |
 | --- | --- |
@@ -442,34 +441,6 @@ The table lists what is specific to each mechanism.
 - **Not compared with the target version:** random-tick outcomes and wheat growth. Item-entity physics and entity order are compared in two traces only.
 - **L2 behavior:** every row claimed L2 is Circuit's own definition. The gaps listed in the compatibility table apply.
 
-## Region-parallel runtime
-
-**Ownership.** Every loaded chunk column belongs to exactly one region. A region's columns are all of one level. A region task runs its roots in the phase's serial order and may touch only its own columns. A read or write of a column owned by another region throws before touching it.
-
-**Conflicts.** The coordinator rolls back an aborted attempt using copy-on-first-write snapshots of the written columns. It then merges the two regions, discards any staged results of the merged regions, and runs the merged region again. Regions that never touched each other keep their results. Each conflict reduces the number of regions, so a phase always finishes; in the worst case everything becomes one region and runs serially.
-
-**Level-wide counters.** These are not drawn from shared counters during a phase:
-- scheduled-tick sub-orders;
-- block-event queue positions;
-- the creation order of block entities created during a phase (moving pistons);
-- the ids of entities spawned during a phase (drops).
-
-Each region context keeps a creation ledger per counter. Every creation adds a (root, sequence) entry, and the staged object points at its entry.
-
-- **Commit:** the coordinator sorts the entries of all regions and assigns counter values in serial order. Then it applies the values to the objects that still exist.
-- **Removed objects:** creations whose objects were removed again within the phase still consume their values, as they do in the serial order. A moving piston's head that is created and removed in the same block-event phase is one example.
-- **Rollback:** an aborted attempt discards its ledger along with its writes.
-
-Entities spawned in parallel roots hold provisional ids until commit. Commit rewrites them in storage, the entity index and the trace, including the ids of entities that were removed again.
-
-**Block-event order.** Each region drains its own FIFO. At commit, the global FIFO order is rebuilt from the initial queue and the children each event appended. Trace records are renumbered to their global positions.
-
-**Why layout cannot change results.** Within a phase, regions that finished without conflict accessed disjoint columns. Their roots therefore commute with each other's roots and see exactly the column states they would see in the serial order. Region layout decides only what runs concurrently.
-
-**Layouts.** `adaptive` merges on conflict and, every 20 ticks, splits regions whose columns have not interacted for 40 ticks. `single_region` runs everything through one region. `perturbed` applies seeded random merges and splits for testing.
-
-**Threads.** `PoolRunner` runs the region tasks of a phase on its own worker threads and the calling thread, which take tasks from a shared index; workers never wait for other jobs, a runner of one worker starts no thread, and `run()` returns or rethrows a task's exception only after every thread has left its task. `SeededRunner` interleaves task steps deterministically on one thread from a seed, optionally injecting aborts, so any failure replays exactly.
-
 ## Verification
 
 - `rules_tests` checks hand-derived expectations for every mechanism, including:
@@ -480,18 +451,12 @@ Entities spawned in parallel roots hold provisional ids until commit. Commit rew
   - conservation in hopper races, water timing and stream locality;
   - generation checks, command validation and capacity failure;
   - ticket and spawn bounds at their endpoints and at extreme or aliasing coordinates.
-- `simulation_tests` compares fourteen scenarios with the oracle, trace by trace every tick and state by state at checkpoints.
-  - **Configurations:** 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts.
-  - **Transient objects:** the `transient_heads` scenario and a hand-derived case check that block entities created and removed within one phase still consume their creation order.
-  - **Bounded exploration:** 64 seeds of random placements of redstone components, pistons, slime, hoppers, chests and stone around a chunk corner, for 60 ticks each, under seeded interleavings and perturbed layouts. Every tick is compared with the oracle.
-  - **Input rejection:** out-of-range spawns and tickets are rejected on both executors without effect.
-  - **Negative check:** a deliberately unsafe mode without ownership checks must produce a detected divergence.
-- `control_tests` checks seeded-schedule reproducibility, tick-clock catch-up and the state digest.
+- The first generation's `simulation_tests` compared its runtime with the oracle on fourteen scenarios and 64 seeds of random machines, under several worker counts, interleavings, injected aborts and layouts. The new runtime's differential tests restore them (tag `pre-refactor`, `tests/sim/`) against the same oracle.
 - `evidence_tests` covers:
   - the [trace fixture format](TRACE_FORMAT.md) and the content mapping;
-  - recording and evaluation on both the engine and the oracle;
+  - recording and evaluation on the oracle;
   - the committed reference recordings;
-  - every target-version trace in `tests/fixtures/harness/`, on a 4-worker engine and on the oracle.
+  - every target-version trace in `tests/fixtures/harness/` and `harness-1.21.4/`, on the oracle.
 - `contract_tests` checks the compatibility table:
   - every row claims a tier;
   - L0 claims need target-version traces and list no gap;
@@ -499,7 +464,7 @@ Entities spawned in parallel roots hold provisional ids until commit. Commit rew
 
 GCC AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer runs of the test programs are part of milestone checks. The `ubsan` mode stops at the first diagnostic. ThreadSanitizer needs ASLR disabled for the test process (`setarch "$(uname -m)" -R`). See the [development guide](DEVELOPMENT.md).
 
-## Workload profile
+## Workload baseline
 
 The profile measures five generated workloads (`tests/fixtures/workloads/`, from `tools/generate_workloads.py`) for 600 ticks after their setup settles. The target version was measured by the external harness, and Circuit by `--profile-fixture` on a release build.
 
@@ -507,7 +472,7 @@ The profile measures five generated workloads (`tests/fixtures/workloads/`, from
 - **Target version:** OpenJDK 21.0.12.
 - **Circuit:** GCC 13.3.
 
-| Workload | Target version: mean tick, largest phases | Circuit, 1 worker | Circuit, 8 workers |
+| Workload | Target version: mean tick, largest phases | First generation, 1 worker | First generation, 8 workers |
 | --- | --- | --- | --- |
 | 256 observer clocks | 0.48 ms: block ticks 74%, random ticks 22% | 0.54 ms | 0.69 ms |
 | 64 dust clocks | 3.97 ms: block ticks 97% | 2.49 ms | 2.61 ms |
@@ -517,49 +482,17 @@ The profile measures five generated workloads (`tests/fixtures/workloads/`, from
 
 In these workloads the ordered phases dominate the target version's tick: block ticks, fluid ticks, block events and block entities. Their roots belong to independent machines. The claimed tiers therefore do not force serial execution: regions that do not interact may run concurrently, because commit restores the level-wide order.
 
-Circuit does not yet gain from this. With 8 workers it is 5–55% slower than with one, because coordination, snapshots and serial commit cost more than the parallel work saves on ticks of this size.
-
-These numbers are not a performance claim:
-- the semantics differ (L2 rows, no lighting, no networking or chunk sending);
-- only means were recorded;
-- tail latency is not measured.
-
-Optimization belongs to M8.
+The first generation did not gain from this: with 8 workers it was 5–55% slower than with one, because coordination, snapshots and serial commit cost more than the parallel work saved on ticks of this size. These numbers are not a performance claim: the semantics differ (L2 rows, no lighting, no networking or chunk sending), only means were recorded, and tail latency was not measured. They are the reference the new runtime is measured against.
 
 ## Running
 
 ```bash
-xmake run circuit-server --simulate --ticks 300 --workers 4 --record "$PWD/demo.crpl"
-xmake run circuit-server --simulate --replay "$PWD/demo.crpl" --workers 16
-xmake run circuit-server --simulate --ticks 200 --realtime
-xmake run circuit-server --compatibility
-xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observer_clocks.ctrace" --workers 8
+xmake run circuit-fixture --compatibility --game-version java-1.21.8
+xmake run circuit-fixture --check-fixture "$PWD/tests/fixtures/harness/observer_clock.ctrace"
+xmake run circuit-fixture --record-fixture "$PWD/tests/fixtures/skeletons/observer_clock.ctrace" --output /tmp/observer_clock.ctrace
 ```
 
-`--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
-
-- **Replay records:** records (format version 20) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
-  - version 19: the same commands, without slot toggles;
-  - version 18: also without window buttons;
-  - version 17: also without closed windows whose items drop;
-  - version 16: also without the difficulty;
-  - version 15: also without uses of items along the player's view;
-  - version 14: also with player uses that do not give the player's yaw (read from their horizontal facing);
-  - version 13: also with player uses that do not say where they clicked (read as the middle of the block);
-  - version 12: also without summoned entities;
-  - version 11: also without the pickup delay and age of spawned items;
-  - version 10: also with positions and velocities in 1/4096-block units, read exactly as doubles;
-  - version 9: also without weather;
-  - version 8: also without day times;
-  - version 7: also without game rules;
-  - version 6: tickets are read as forced ones of level 31 over their radius;
-  - version 5: also, every command is the overworld's;
-  - version 4: also, stacks have no components;
-  - version 3: also, the record predates the registry and is read as `circuit-blocks-1`.
-- **Digest:** the output includes a 64-bit state digest. Equal digests across worker counts are a quick check, not proof.
-- **`--realtime`:** paces ticks at 20 Hz. When it falls more than 40 ticks behind, it drops the wall-clock backlog; logical ticks are never skipped.
-
-Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check-fixture <file>`, or recorded with `--record-fixture <skeleton> --output <file>`.
+Replay records (`src/contracts/replay.cpp`, format version 20) store the bundle, the rule-set id, the block registry id and every command with its level; older versions down to 3 are read. Fixtures in [circuit-trace format](TRACE_FORMAT.md) are described in their guide.
 
 ## Limitations
 
@@ -571,6 +504,5 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - loot tables: weighted choices between entries drop nothing, tables that copy components or block states or name dynamic entries are not used (their blocks drop nothing), and fortune's binomial bonus above level 0 is not compared; the modeled blocks have fixed drops.
 - Blocks without rules of their own (but those that fall and TNT, above), among them coral blocks and coral plants, are inert: solid when they have a collision shape, conductors as the official servers report, pushed by pistons without the shape changes their new neighbors would give them (fences, walls, panes, note blocks), and drop only from deterministic loot tables (without data packs, nothing, also when an explosion breaks them). Redstone, explosions and burning arrows prime TNT blocks, and dispensers prime TNT items; fire and flint and steel do not. Dispensers do not shoot, place fire, boats or blocks, use shears, bottles or honeycomb, or equip players. Explosions do not hurt or push players, and entities of one chunk section are hurt in id order rather than the order they entered it. Of the TNT duplication machines, only the Mytteri push duper is established (below); other designs are untested. See [technical machines](COMPATIBILITY.md#technical-machines).
 - Light at the edge of the loaded area is not compared with the target versions. There is no world generation or mob spawning, and players cannot reach the Nether or the End.
-- Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
 - Commands validate their inputs before using them; for example, a spawn position must be finite and inside the world border and the world's height, and a velocity at most 64 blocks per tick on each axis (a Circuit capacity). Out-of-range input is rejected with no effect.
-- A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.
+- A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the executor unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.

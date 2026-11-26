@@ -7,99 +7,85 @@ Run commands from the Circuit repository root. Source, tests, build files, and p
 ```text
 Circuit/
   xmake.lua                 Build entry point
-  app/                      Application startup and composition
-  include/circuit/          Module interfaces and runtime contracts
+  include/circuit/          Module interfaces and contracts
   src/contracts/            Version bundles, compatibility table, trace and replay records
-  src/gameplay/             Reference rules (circuit-reference-rules-v12)
-  src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
+  src/gameplay/             Reference rules (circuit-reference-rules-v12) behind RuleContext
   src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
   src/protocol/             Wire codec: data types, NBT, framing, packet and content tables
-  src/auth/                 Identity: offline identities, encryption, session verification
+  src/auth/                 Login cryptography, offline identities, the JSON reader
+  src/data/                 Data packs: the official jar's built-in pack, directories and archives
   src/storage/              Checkpoints, the input log and world directories
-  src/server/               Network server: sessions, version adapter, the authoritative game loop,
-                            Anvil import and export
-  src/plugin/               Native shared-library loader and load order
-  examples/technical_tools/ Technical tools as a native plugin
-  modules/java-bridge/      Java SPI, bridge runtime and example plugin
-  src/exploration/          Standalone reasoning models, not linked into the server
-  tests/                    Framework, rule, differential and parallel-reasoning checks
-  tests/oracle/             Independent sequential executor; never linked into the server
+  src/server/               Kept parts of the first generation's server: data compilers, registries,
+                            packet layouts, block palette, Anvil import and export
+  tests/                    Test programs, one directory each
+  tests/oracle/             Sequential executor in vanilla order; the specification of the runtime
   tests/fixtures/           circuit-trace skeletons, reference recordings, target-version traces,
                             documented fixtures and profiling workloads
-  tools/                    Local build/check, snapshot, publication guard and workload generator
+  tools/                    Checks, gates, worktree slots, generators, the fixture tool, the ledger
+  compatibility/            Ledger sources and work packages
   docs/                     Public guides and explicitly ignored internal notes
   LICENSE                   Unmodified AGPLv3 text
-  README.md, TODO.md         Public overview and roadmap
+  README.md, TODO.md        Public overview and roadmap
   .local/                   Local archives and publication hook
 ```
 
-Empty directories are not implementation milestones. The simulation core is described in [the simulation guide](SIMULATION.md), persistence in [its guide](PERSISTENCE.md).
+The first generation's runtime, network server, player code and extensions were removed in the restructuring of November 2026; they remain reachable at the tag `pre-refactor`. The rules and the oracle are described in [the simulation guide](SIMULATION.md), persistence in [its guide](PERSISTENCE.md).
 
 ## Requirements
 
-- Linux x86_64 for the current native plugin loader.
+- Linux x86_64.
 - xmake 3.0 or later and a C++23 compiler with `std::expected`; GCC 13 is verified. Clang 18 with libstdc++ 13 does not provide `std::expected`; use GCC, Clang 19 or later, or libc++.
-- Standalone Asio 1.34.2; Boost.Asio is not used.
+- zlib and OpenSSL 3 development files.
 - Bash, Python 3 and standard POSIX utilities for local maintenance.
-- JDK 17 or later for the optional Java SPI compilation check.
 
-## Build and run
+Networking returns on PACE, consumed as an xmake package at an exact version; until then the build has no network dependency.
+
+## Build
 
 ```bash
 export XMAKE_GLOBALDIR="$PWD/.xmake-global"
 xmake f -m debug -y
 xmake build -y --all
-xmake run circuit-server --simulate --ticks 300 --workers 4
-xmake run circuit-server --demo --workers 4 --ticks 20
 ```
 
-`--simulate` runs the headless core; `--demo` runs the earlier synthetic scheduler fixture. The default dependency path resolves the pinned Asio package through xmake. For offline builds, provide an existing standalone Asio include directory:
+There is no server binary in this state. `circuit-fixture` records, checks and compares trace fixtures on the oracle:
 
 ```bash
-export CIRCUIT_ASIO_INCLUDE=/path/to/asio/include
-bash tools/check.sh
+xmake run circuit-fixture --check-fixture "$PWD/tests/fixtures/harness/hopper_chain.ctrace"
+xmake run circuit-fixture --record-fixture "$PWD/tests/fixtures/skeletons/hopper_chain.ctrace" --output /tmp/hopper.ctrace
+xmake run circuit-fixture --compatibility --game-version java-1.21.4
 ```
 
-After configuration, run the plugin demo:
-
-```bash
-export XMAKE_GLOBALDIR="$PWD/.xmake-global"
-xmake run circuit-server --demo --game-version java-1.21.8 --workers 4 --ticks 20 \
-  --plugin "$PWD/build/linux/x86_64/debug/libtechnical_tools.so"
-```
-
-`--list-versions` lists the version candidates with their protocol and play support; `--version` returns the public build identity. Neither mode opens a network listener. `--serve` runs the network server; see [the network server](SERVER.md).
+`--vanilla-jar <jar>` (and `--data-pack <dir>`) runs the rules with the data packs, as scenarios of loot tables need.
 
 ## Validation
 
-`bash tools/check.sh` configures debug mode, builds all targets, and runs the framework, contract, rule, differential simulation, control and parallel-model test programs one after another. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). It also compiles the Java SPI/example when `javac` is installed; a missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete:
+`bash tools/check.sh` configures debug mode, builds all targets and runs the test programs one after another. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). The programs:
 
 ```bash
 xmake run contract_tests    # identities, coordinates, bundles, compatibility claims, replay limits
-xmake run rules_tests       # reference rules against hand-derived expectations
-xmake run simulation_tests  # runtime against the oracle across workers, layouts and seeds
-xmake run control_tests     # seeded schedules, tick clock, digest
+xmake run rules_tests       # reference rules on the oracle against hand-derived expectations
 xmake run evidence_tests    # trace fixtures, content mapping, recordings, target-version traces
 xmake run protocol_tests    # wire codec, NBT, framing limits, packet and content tables
+xmake run data_tests        # data pack loading, precedence and archives
+xmake run content_tests     # data compilers, registries, block palette, login cryptography
 xmake run storage_tests     # checkpoints, the input log, crash and I/O-error injection
 xmake run anvil_tests       # Anvil import and export, unsupported-content policies
-xmake run server_tests      # in-process server: login, encryption, limits, player actions, saving
-xmake run extension_tests   # native modules, permissions, technical tools, the Java bridge (needs a JDK)
 ```
 
-`evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `--record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).
+`storage_tests` and `anvil_tests` run their worlds on the oracle until the new runtime can restore and continue a world. Cases that read the official jars skip without them, unless `CIRCUIT_REQUIRE_JARS=1` makes them fail.
 
-The xmake modes include `debug`, `release`, `asan`, `ubsan`, and `tsan`. The `ubsan` mode stops at the first diagnostic, so a completed test program had no undefined-behavior report. Run `plugin_tests` with the paths of `libtechnical_tools.so` and `libplugin_fixture.so` from the same build directory; `xmake run` passes them automatically. On kernels with high mmap randomization, ThreadSanitizer stops before tests run with an unexpected-memory-mapping error. Disable ASLR for the test process only; do not change host settings:
+`evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `circuit-fixture --record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).
+
+The xmake modes include `debug`, `release`, `asan`, `ubsan`, and `tsan`. The `ubsan` mode stops at the first diagnostic, so a completed test program had no undefined-behavior report. On kernels with high mmap randomization, ThreadSanitizer stops before tests run with an unexpected-memory-mapping error. Disable ASLR for the test process only; do not change host settings:
 
 ```bash
-export XMAKE_GLOBALDIR="$PWD/.xmake-global"
 xmake f -m tsan --toolchain=gcc -y
-xmake build runtime_tests simulation_tests
-setarch "$(uname -m)" -R ./build/linux/x86_64/tsan/runtime_tests
-setarch "$(uname -m)" -R ./build/linux/x86_64/tsan/simulation_tests
+xmake build storage_tests
+setarch "$(uname -m)" -R ./build/linux/x86_64/tsan/storage_tests
 ```
 
-GCC warns that ThreadSanitizer does not model the `std::atomic_thread_fence` that Asio uses. A clean run is evidence about the engine's own accesses, not a proof that Asio internals are race-free. Add `--asio_include=/path/to/asio/include` to the configure step for offline builds, and run `bash tools/check.sh` afterwards to restore the debug configuration. Neither sanitizer runs nor differential tests prove vanilla gameplay compatibility.
+Run `bash tools/check.sh` afterwards to restore the debug configuration. Neither sanitizer runs nor differential tests prove vanilla gameplay compatibility.
 
 ### Gates
 
@@ -107,16 +93,16 @@ GCC warns that ThreadSanitizer does not model the `std::atomic_thread_fence` tha
 
 ```bash
 bash tools/check.sh --lane   # incremental debug build with zero warnings, every test program side by side
-bash tools/check.sh --full   # the same plus the ledger checks and the Java SPI compilation
+bash tools/check.sh --full   # the same plus the ledger checks
 ```
 
-Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. The four programs that take minutes run as several shards each when they are built with shard support (`CIRCUIT_TEST_SHARD`). On the development machine the programs took 37 minutes one after another, 15 minutes side by side as whole programs, where the longest one bounds the run, and 8 minutes with shards.
+Both require the official server jars (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`), so the cases that read them fail instead of being skipped. `--jobs` and `--test-jobs` set the compile jobs and the number of test programs run at a time (6 each by default); `--rebuild` compiles every file again so that every file can warn. `evidence_tests` and `storage_tests`, which take minutes, run as several shards each (`CIRCUIT_TEST_SHARD`).
 
 The tiers built on this are in `tools/gate/` and described in [its guide](../tools/gate/README.md):
 
 | Tier | When | Command |
 | --- | --- | --- |
-| T1 | every step, in a lane's worktree | `tools/gate/t1.sh [scenario...]`: the lane check plus the named client scenarios |
+| T1 | every step, in a lane's worktree | `tools/gate/t1.sh [scenario...]`: the lane check plus the named client scenarios (once a server exists again) |
 | T2 | every merge into `main` | `tools/gate/t2.sh --tree <checkout> --work <directory>`: copies of one commit built clean in debug with zero warnings and under ASan, UBSan and TSan, every program in each |
 | T3 | nightly on `main` | T2 plus every client scenario |
 | T4 | end of a stage | T3 plus the stage's exit conditions |
@@ -144,7 +130,7 @@ bash tools/worktree.sh remove 2         # refused when the slot is dirty or has 
 | `CIRCUIT_PORT_BASE` | `25600 + 20 * slot`; the slot owns twenty ports from there |
 | `CIRCUIT_WORK` | the slot's work directory for worlds, copied binaries and gate output |
 | `XMAKE_GLOBALDIR` | one xmake global directory shared by all slots; install packages into it one at a time, before lanes build |
-| `CIRCUIT_ASIO_INCLUDE`, `CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4` | taken from the environment, or found from the main checkout's configuration and its sibling directories |
+| `CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4` | taken from the environment, or found next to the main checkout |
 
 Each worktree has its own `build/`, so configurations and binaries never collide. Use at most six compile jobs per worktree when several build at once.
 
@@ -156,7 +142,7 @@ bash tools/worktree.sh install-hooks --set-path   # --set-path points core.hooks
 
 ## Behavior sources
 
-Implement Minecraft behavior from specifications, observed traces, and test fixtures. Do not copy, translate, or paraphrase decompiled, deobfuscated, or mapped game source into this repository. Reference traces come from an instrumented target-version server maintained outside this repository. Committed fixtures record their source and target version and are reviewed for third-party content. This is a project contribution rule, not legal advice.
+Implement Minecraft behavior from specifications, observed traces, and test fixtures. Do not copy, translate, or paraphrase decompiled, deobfuscated, or mapped game source into this repository, and do not read game, Paper or Folia source in sessions that write Circuit code. Numeric parameters may come from game source only as data files with provenance prepared in the separate specification room. Reference traces come from an instrumented target-version server maintained outside this repository. Committed fixtures record their source and target version and are reviewed for third-party content. This is a project contribution rule, not legal advice.
 
 ### Target-version harness
 
@@ -168,7 +154,7 @@ The harness is a separate project. Running it requires accepting the Minecraft E
 - record every block state change inside the area at the moment it is written, including intermediate states, and read probes after the tick ends;
 - write a `harness_trace` fixture with its own build identity in the `harness` key.
 
-Copy only the resulting trace files into `tests/fixtures/harness/` (1.21.8), or into `tests/fixtures/harness-1.21.4/` for a 1.21.4 build of the harness, under the name of the skeleton they came from. Review them before committing. Each trace names the game version of the server that recorded it. `evidence_tests` then requires every trace to pass on the engine and the oracle, under the bundle of its version.
+Copy only the resulting trace files into `tests/fixtures/harness/` (1.21.8), or into `tests/fixtures/harness-1.21.4/` for a 1.21.4 build of the harness, under the name of the skeleton they came from. Review them before committing. Each trace names the game version of the server that recorded it. `evidence_tests` then requires every trace to pass on the oracle, under the bundle of its version; the runtime must match the oracle.
 
 Version-2 traces (entities, stages, random draws) are recorded the same way. Record each one twice on fresh worlds and keep it only when both recordings are identical (the harness's `run_repeat.sh`). A trace Circuit does not match yet goes into `tests/fixtures/open/` or `open-1.21.4/`, with its outcome and first mismatch added to that directory's `EXPECTED.txt`, and its status into the [compatibility ledger](../compatibility/README.md). It moves to the harness directory once Circuit passes it. A skeleton whose content does not exist in a version (such as a game rule added later) is refused by that version's harness; note the refusal in that directory's `NOT_APPLICABLE.txt`.
 
@@ -178,24 +164,15 @@ To see every comparison for one scenario at once, run it everywhere:
 tools/scenario.py tests/fixtures/skeletons/item_drop_piston.ctrace --harness ../circuit-harness --harness ../circuit-harness-1.21.4
 ```
 
-The report states whether Circuit's sequential and parallel recordings agree, whether each official recording repeats, Circuit's outcome and first difference against each version, and whether the versions differ. It is written to `.local/scenarios/<name>/report.md`.
+The report states whether each official recording repeats, Circuit's outcome and first difference against each version, and whether the versions differ. It is written to `.local/scenarios/<name>/report.md`.
 
-The harness can also time the target version's tick phases for a workload. Compare that profile with Circuit's own on a release build:
+The harness can also time the target version's tick phases for a workload (`python3 tools/generate_workloads.py` writes the workloads). The runtime's own profile and benchmark driver return with the new runtime; see [the benchmark notes](../tools/bench/README.md).
 
-```bash
-python3 tools/generate_workloads.py
-xmake f -m release -y
-xmake build circuit-server
-xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/dust_clocks.ctrace" --ticks 600 --workers 8
-```
-
-The profile reports tick-time percentiles, rule work, the critical path and coordination costs; [performance](PERFORMANCE.md) explains them. `storage_bench` and `chunk_bench` (`tools/bench/`) measure checkpoint costs and chunk-packet encoding on a release build.
-
-Run `bash tools/check.sh` afterwards to restore the debug configuration. `xmake run circuit-server --compatibility` prints the compatibility table that these traces support. Change a claimed tier only with the evidence that `contract_tests` requires: an L0 claim needs target-version traces and no known gap, and an L2 claim lists its gaps.
+Change a claimed tier only with the evidence that `contract_tests` requires: an L0 claim needs target-version traces and no known gap, and an L2 claim lists its gaps. `circuit-fixture --compatibility` prints the table.
 
 ## Client testing
 
-The server is also checked with two clients that live outside this repository. Neither is a build dependency.
+The first generation's server was checked with two clients that live outside this repository, and the new server will be checked with them again once it exists. Neither is a build dependency.
 
 **Protocol library.** Mineflayer scripts (Node.js) cover:
 - creative placement and breaking, dust powering a lamp, a piston push and a piston destroying dust into an item entity, player visibility and chat (`suite.js`, two bots);
@@ -204,11 +181,6 @@ The server is also checked with two clients that live outside this repository. N
 - vitals (`vitals.js`) and collision (`collision.js`): scripted moves with mineflayer's physics off, printing the corrections, health, hunger, deaths and kicks the server sends.
 
 Calibrate each script against an offline-mode vanilla server of the same version with a fresh flat world, with the bots listed as operators. Then run it against Circuit (set `MC_VERSION=1.21.4` and `game-version=java-1.21.4` for the second version) and compare the outputs:
-
-```bash
-xmake run circuit-server --serve --offline --port 25580 &
-node suite.js 25580 -61
-```
 
 **Real client.** A Fabric client mod for the 1.21.8 client, with a 1.21.4 build of the same mod, runs a step script through Loom's development launch. The client joins the server with quick play, and the script places blocks, uses them, and checks the block states and entities the client shows. It also takes screenshots and writes a report. Scripts are plain text:
 
@@ -228,9 +200,9 @@ Both clients use the official server and client under the Minecraft EULA. Like t
 
 ## Source and documentation boundaries
 
-Commit ordinary source, tests, examples, build files, license material, and public guides normally. Part I (M1, M2, M3, M7) has priority; Part II covers networking, persistence, extensions, and optimization.
+Commit ordinary source, tests, build files, license material, and public guides normally. The [roadmap](../TODO.md) gives the order of the restructuring.
 
-The ignore file names the internal documents kept local: agent instructions, execution plan, architecture, verification log, `docs/internal/`, and the incomplete commercial agreement. Normal build output, local tool state, archives, runtime worlds, logs, and credentials are also excluded. This does not prevent publishing source or normal documentation.
+The ignore file names the internal documents kept local: agent instructions, execution plans, architecture, verification log, `docs/internal/`, and the incomplete commercial agreement. Normal build output, local tool state, archives, runtime worlds, logs, and credentials are also excluded. This does not prevent publishing source or normal documentation.
 
 Before a source commit or push, inspect the actual file list and diff:
 
@@ -253,4 +225,4 @@ python3 tools/snapshot.py
 
 Snapshots include a SHA-256 manifest and are stored under `.local/snapshots/`. They may contain internal documents, so keep them private. They are not off-machine backups and must not be committed or pushed.
 
-All project documentation and source comments use English. Public documents describe project behavior, scope, and usage; private execution notes are not required to build or run the repository.
+Project documentation and source comments use English; core documents may also have a Chinese version. Public documents describe project behavior, scope, and usage; private execution notes are not required to build or run the repository.

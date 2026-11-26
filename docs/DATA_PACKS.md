@@ -1,5 +1,7 @@
 # Data packs
 
+The loaders and compilers described here are kept through the core restructuring (`src/data`, `src/server`) and are tested by `data_tests` and `content_tests`. The server configuration keys and the `--data-report` command belonged to the first generation's server (tag `pre-refactor`) and return with the new one; `circuit-fixture --vanilla-jar` runs the rules with the data packs today.
+
 Circuit ships no game data. An operator may give a server the official server jar of its version, whose built-in data pack then provides tags and the definitions of data-driven registries. Data-pack directories and archives may follow it.
 
 ## Configuration
@@ -10,7 +12,7 @@ Circuit ships no game data. An operator may give a server the official server ja
 | `data-pack` | A data-pack directory or `.zip` archive; repeatable, lowest precedence first, after the built-in pack |
 
 ```bash
-circuit-server --data-report --game-version java-1.21.8 --vanilla-jar /path/to/server.jar
+circuit-server --data-report --game-version java-1.21.8 --vanilla-jar /path/to/server.jar   # first generation; returns with the server
 ```
 
 `--data-report` loads the packs as a server would. It prints:

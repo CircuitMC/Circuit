@@ -1,58 +1,49 @@
 # Circuit
 
-Circuit is an experimental Minecraft Java Edition server written in C++23, built with xmake and standalone Asio. It explores chunk-level parallel simulation with explicit ownership and cross-chunk coordination.
+Circuit is an experimental Minecraft Java Edition server written in C++23 and built with xmake. Its goal is a server that is faster than the official one on a single thread and that scales across cores: first as independent islands of the world, like Folia, and then with several threads inside one island.
 
-## Development priorities
+## Status: core restructuring
 
-**Part I: simulation and technical gameplay.** M1, M2, M3, and M7 establish contracts, a sequential reference executor, parallel execution, and version-specific technical behavior. This first deliverable is headless; networking and storage are not prerequisites for validating its simulation.
+The project is being restructured around a new runtime. The first generation (tagged `pre-refactor`) reached a playable creative and survival server for 1.21.8 and 1.21.4, but its region-parallel engine did not scale with threads and its host-side player code could not grow into mobs, islands or large player counts. That runtime, the network server, the player code and the extension system have been removed; the parts below were kept because tests pin their behavior.
 
-**Part II: integration and additional capabilities.** M4, M5, M6, and M8 add client access, persistence, native and Java extensions, technical tools, optimization, and additional versions.
+What the tree contains now:
 
-See [the roadmap](TODO.md) for milestones and [the executable reasoning models](docs/PARALLEL_MODELS.md) for the concurrency cases guiding Part I.
+- **Contracts** (`src/contracts`): identities, logical time, version bundles, normalized commands, traces and replay records.
+- **Reference rules** (`src/gameplay`): redstone, pistons and moving blocks, containers, hoppers, dispensers and droppers, crafters, furnaces, brewing, fluids, fire, plants and random ticks, light, falling blocks, TNT and explosions, items, experience orbs, arrows, minecarts and boats, chunk tickets, player inventories and menus. The rules are plain functions over `RuleContext` and know nothing about threads or storage.
+- **The oracle** (`tests/oracle`): a sequential executor that applies the rules in the vanilla order. It is the specification of the single-threaded runtime.
+- **Evidence** (`src/evidence`, `tests/fixtures`): the circuit-trace format and runner. The rules match 225 traces recorded on unmodified 1.21.8 servers and 220 on 1.21.4 servers; 31 of them need the official data packs.
+- **Protocol** (`src/protocol`): codec, NBT, framing with limits, item components and packet tables for protocols 772 (1.21.8) and 769 (1.21.4).
+- **Content data** (`src/data`, `src/server`): data packs from the official jar, loot tables, recipes, the recipe book, synchronized registries, packet layouts and the block palette.
+- **Storage** (`src/storage`, `src/server/anvil.cpp`): crash-safe world directories with checkpoints and a write-ahead log, and 1.21.8 Anvil import and export.
+- **Tooling**: the compatibility ledger, data generators, worktree slots and fail-closed gates.
 
-## Status
+There is no runnable server in this state. See [the roadmap](TODO.md) for the order in which the runtime, networking and player view return.
 
-The headless Part I core is complete for its declared scope. It provides:
+## Direction
 
-- shared contracts;
-- reference rules for redstone (including redstone torches, buttons, pressure plates, target blocks, daylight detectors, note blocks, rails, coral fans, doors, trapdoors, fence gates, comparators and observers), pistons with slime and honey, flying engines, a named TNT duplicator, hoppers, double chests, dispensers and droppers, crafters, furnaces, smokers and blast furnaces, brewing stands, water, crops, fire, snow and ice, item entities, experience orbs, falling blocks, TNT and explosions, arrows, minecarts and boats, chunk tickets, light, and player inventories with survival use and container menus;
-- a sequential scheduling oracle that shares the gameplay rules;
-- a region-parallel runtime that matches the oracle across tested worker counts, region layouts and seeded schedules.
+1. **A single-threaded runtime in vanilla order.** The rules run on a new world store built for speed (hashed column index, paletted sections, active sets, time-ordered tick queues) and must match the oracle exactly. Target: faster than Paper on one thread.
+2. **Islands.** Groups of chunks that cannot affect each other tick independently on their own clocks, on all cores, without a global tick barrier. Target: faster than Folia.
+3. **Threads inside an island.** Each chunk is a unit of work with an estimated cost. An island whose estimated work does not fit in a tick is divided into connected sub-islands, each with its own execution order, and a thread that falls behind hands the outer chunks of its share to idle threads.
+4. **Networking on PACE**, the project owner's networking library, with coroutine sessions, batched writes and several reactors for large player counts.
+5. **Entities and players in the engine**, with a living-entity base shared by players and mobs, then the player view and gameplay breadth.
 
-The rules are checked against traces recorded on unmodified Java Edition servers: 225 on 1.21.8 and 220 on 1.21.4 (every scenario but three that need a 1.21.8 game rule and one of 1.21.8's fire, which acts only near players; thirty-one of them need the official data packs, for random loot, recipes, brewing, experience or books), with identical results. Seventeen mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, power through solid blocks, dust, repeaters, comparators, observers, hoppers, double chests, water and lava. The others declare their deviations, such as the random parts of piston drops. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
-
-Full vanilla compatibility remains a separate deliverable. The [completion roadmap](docs/VANILLA_COMPLETION.md) inventories the missing systems and version differences, including TNT/technical machines, full content, world generation, mobs, data packs and complete world interchange. Parts I and II describe the implemented foundation; Part III tracks completion against both versions.
-
-The network server runs a playable creative and survival world for the Java Edition 1.21.8 or 1.21.4 client on top of the same engine, one version per server. It supports offline identities and online mode (encrypted, verified by the session service, refused when verification fails), and the real client is tested against it. In survival, blocks take their dig time and drop what the tool harvests, items are used up, thrown and picked up, chests (trapped chests powering by their viewers), ender chests, shulker boxes keeping their contents, barrels, composters, chiseled bookshelves, hoppers, furnaces, crafters, crafting tables, stonecutters, smithing tables, grindstones, looms, anvils, enchanting tables, cartography tables, lecterns and beacons open with every click mode, empty maps become filled maps that draw the terrain while held, movement, falls, hunger, eating and drinking (food, milk, potions), armor worn and what players hold shown to others, death (with the experience it drops, and keepInventory) and respawning follow the target version, `/effect` and beacons on their pyramids give players status effects as the official servers show them, with the attributes they change (health boost, absorption, jump boost and the effects on digging apply) and the effects that heal, hurt or feed; players burn in fire and lava, are hurt on magma blocks, drown, suffocate (crawling where the space forces it), freeze in powder snow and are hurt by cacti and sweet berry bushes, with armor, resistance and fire resistance reducing damage, armor wearing out, water breathing, the turtle shell, leather armor and slow falling protecting them, and the damage game rules; players fight each other with fists and weapons (the attack's charge, critical hits, sweeps, sprint knockback, weapon wear) and block attacks with shields, which axes disable (of enchantments, the attribute modifiers they give reach the client, and efficiency, aqua affinity, respiration, protection, fire protection (with its shorter burning), feather falling, frost walker's immunity to magma, sharpness, knockback, fire aspect, sweeping edge, thorns, unbreaking, mending and the curses of binding and vanishing act so far); these were compared with the official servers of both versions. With the official server jar's data pack, the 2x2 grid and crafting tables craft, furnaces cook, the recipe book shows, unlocks and places recipes, and blocks drop from their loot tables, random rolls and fortune included. Mobs are not supported; see [the network server](docs/SERVER.md).
-
-Worlds are saved as checkpoints plus a write-ahead input log and recover every synced change after a crash. Java Edition 1.21.8 worlds can be imported and exported with every block state; blocks without rules of their own are inert, and other unsupported content is refused unless an explicit substitution policy is chosen. See [persistence](docs/PERSISTENCE.md).
-
-Extensions see the world through controlled services: queries of the published state, commands admitted like player input, tick reports and permissions per module. There are two kinds:
-- **Native modules:** mods and plugins, loaded in dependency order.
-- **Java plugins:** these run in a separate JVM behind an authenticated socket. A JVM that crashes, stalls or floods the server is stopped while the server keeps ticking.
-
-The technical tools (tick freeze and step, inspection, redstone traces, item counters) are themselves a native plugin. Circuit does not implement the Bukkit API; see [the evaluation](docs/BUKKIT_EVALUATION.md).
-
-Checkpoints are encoded and written in the background from copy-on-write snapshots, and chunk packets are encoded in parallel. [Performance](docs/PERFORMANCE.md) reports tick-time percentiles, critical paths and coordination costs with the hardware and inputs used. [Releases and operation](docs/RELEASE.md) gives the supported scope, operating limits and recovery procedures.
-
-The framework also provides numerical validation helpers, interface scaffolds and 13 abstract concurrency models.
+Every mode keeps the vanilla order where it can. Visible differences of island mode are documented, never silent.
 
 ## Build
 
-Requires Linux, xmake 3.0+, a C++23 compiler with `std::expected` (GCC 13 verified), and standalone Asio 1.34.2. JDK 17+ is optional for the Java SPI check.
+Requires Linux, xmake 3.0+ and a C++23 compiler with `std::expected` (GCC 13 verified), zlib and OpenSSL.
 
 ```bash
 xmake f -m debug -y
 xmake build -y --all
-xmake run circuit-server --simulate --ticks 300 --workers 4
-xmake run circuit-server --serve --offline --port 25565 --world "$PWD/worlds/main"
-xmake run simulation_tests
+xmake run rules_tests
+tools/check.sh --lane
 ```
 
-For offline dependency configuration and all validation commands, see [the development guide](docs/DEVELOPMENT.md). API and usage documents are indexed in [docs](docs/README.md).
+[The development guide](docs/DEVELOPMENT.md) lists the test programs, the gates and the official jars some cases need.
 
 ## License
 
-Source is licensed under [AGPL-3.0-only](LICENSE). AGPL-compliant commercial use is permitted. Authorized rights holders may offer an alternative commercial agreement; see [the licensing policy](LICENSING.md).
+Source is licensed under [AGPL-3.0-only](LICENSE). AGPL-compliant commercial use is permitted. A separate commercial license is available from the rights holders; see [the licensing policy](LICENSING.md).
 
 Circuit is an independent project and is not affiliated with Mojang or Microsoft.

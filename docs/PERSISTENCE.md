@@ -2,7 +2,9 @@
 
 ## Status
 
-The network server saves its world in a world directory: checkpoints of the engine state plus a write-ahead log of the inputs admitted after them. After a crash, the server restarts from the latest durable checkpoint and replays the logged inputs, so it continues exactly where the durable history ends.
+The storage code is kept through the restructuring; the server that drove it was removed (tag `pre-refactor`). This guide describes the formats, the world directory and the durability protocol as the first generation's server used them. The command lines below belong to that server and return with the new one. Until the new runtime can restore and continue a world, `storage_tests` and `anvil_tests` run their worlds on the oracle. The chunk-granular store that replaces the single-file checkpoint is planned with the runtime work.
+
+The first generation's server saved its world in a world directory: checkpoints of the engine state plus a write-ahead log of the inputs admitted after them. After a crash, the server restarts from the latest durable checkpoint and replays the logged inputs, so it continues exactly where the durable history ends.
 
 Java Edition 1.21.8 worlds in the Anvil format can be imported into a world directory and exported from one; a `java-1.21.4` server refuses Anvil interchange. Import and export cover every block state, and the block entities, entities and items Circuit models. Other content is rejected unless the substitution policy is chosen explicitly; see [Anvil import and export](#anvil-import-and-export).
 
@@ -253,7 +255,7 @@ Unsupported compression schemes (LZ4 and custom) are refused with an error.
 | Java Edition level format | 3110638 |
 | Data component format | 3135677 |
 
-Block data sections come from the Chest (3135926), Hopper (3131269), Redstone Comparator (3132038) and Piston/Technical components (3102833) pages. The coarse block shapes used for substitution come from the minecraft-data block table, like the protocol content tables; see [the network server](SERVER.md#protocol-data).
+Block data sections come from the Chest (3135926), Hopper (3131269), Redstone Comparator (3132038) and Piston/Technical components (3102833) pages. The coarse block shapes used for substitution come from the minecraft-data block table, like the protocol content tables; see [protocol data](PROTOCOL_DATA.md).
 
 ## Testing
 
@@ -261,8 +263,7 @@ Block data sections come from the Chest (3135926), Hopper (3131269), Redstone Co
 | --- | --- |
 | `storage_tests` | Includes crash-injection checks: <ul><li>checkpoint round trips of every scenario state, rejection of every flipped byte and truncation, and fuzzed bodies with valid digests;</li><li>the world directory: recovery, previous-checkpoint fallback, torn and damaged log tails;</li><li>a crash at every file operation of three logging policies, with and without torn unsynced data, each recovered and continued;</li><li>a failure at every operation, including short writes.</li></ul> |
 | `anvil_tests` | <ul><li>export and import of the scenario states, with scheduled ticks, item entities and moving pistons, and a falling block in the air; primed TNT exported mid-fuse, imported, exploding on time;</li><li>both policies on hand-made worlds;</li><li>malformed and damaged region files;</li><li>the world tools.</li></ul> |
-| `server_tests` | <ul><li>a world saved and restored with a player's position;</li><li>the real server binary killed with `SIGKILL` while a player acts, recovered with every synced change;</li><li>a world of other rules refused.</li></ul> |
-| `simulation_tests` | Engines restored from a dump continue exactly, for every scenario at four split points |
+| First generation (`pre-refactor`) | `server_tests`: a world saved and restored with a player's position, the server binary killed with `SIGKILL` while a player acts and recovered with every synced change, a world of other rules refused; `simulation_tests`: engines restored from a dump continued exactly. Both return with the new runtime and server. |
 
 The official 1.21.8 server also serves as a black-box check of the Anvil code. It runs outside this repository:
 - **Export:** it loads exported worlds with ticking frozen and re-saves them, and the saved blocks, block entities, scheduled ticks and item entities are compared with the export.
