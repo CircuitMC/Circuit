@@ -12,19 +12,6 @@ end
 set_warnings("allextra")
 set_policy("build.fence", true)
 
-option("asio_include")
-    set_default("")
-    set_showmenu(true)
-    set_description("Standalone Asio include directory for offline builds; empty uses pinned xmake package")
-option_end()
-
-if get_config("asio_include") ~= "" then
-    add_includedirs(get_config("asio_include"), {system = true})
-else
-    add_requires("asio 1.34.2")
-    add_packages("asio")
-end
-add_defines("ASIO_STANDALONE", "ASIO_NO_DEPRECATED")
 add_includedirs("include")
 if is_plat("linux") then add_syslinks("pthread") end
 
@@ -40,18 +27,6 @@ target("circuit_gameplay")
     add_deps("circuit_contracts")
 target_end()
 
-target("circuit_runtime")
-    set_kind("static")
-    add_files("src/runtime/*.cpp")
-    add_deps("circuit_gameplay")
-target_end()
-
-target("circuit_plugins")
-    set_kind("static")
-    add_files("src/plugin/*.cpp")
-    if is_plat("linux") then add_syslinks("dl", {public = true}) end
-target_end()
-
 -- Java Edition wire protocol: data types, NBT, framing and packet ids.
 target("circuit_protocol")
     set_kind("static")
@@ -60,7 +35,8 @@ target("circuit_protocol")
     add_syslinks("z", {public = true})
 target_end()
 
--- Identity providers: offline identities now, session verification later.
+-- Login cryptography, offline identities and the JSON reader. Session
+-- verification returns with the network work on PACE.
 target("circuit_auth")
     set_kind("static")
     add_files("src/auth/*.cpp")
@@ -87,54 +63,7 @@ target_end()
 target("circuit_evidence")
     set_kind("static")
     add_files("src/evidence/*.cpp")
-    add_deps("circuit_runtime")
-target_end()
-
-target("circuit-server")
-    set_kind("binary")
-    add_files("app/*.cpp")
-    add_deps("circuit_runtime", "circuit_plugins", "circuit_evidence", "circuit_server")
-target_end()
-
-target("technical_tools")
-    set_kind("shared")
-    add_files("examples/technical_tools/*.cpp")
-target_end()
-
-target("plugin_fixture")
-    set_kind("shared")
-    set_default(false)
-    add_defines("CIRCUIT_PLUGIN_TEST_FIXTURE")
-    add_files("tests/plugin_tests.cpp")
-target_end()
-
-target("plugin_tests")
-    set_kind("binary")
-    set_default(false)
-    add_files("tests/plugin_tests.cpp")
-    add_deps("circuit_plugins", "technical_tools", "plugin_fixture")
-    on_run(function (target)
-        os.execv(target:targetfile(), {target:dep("technical_tools"):targetfile(), target:dep("plugin_fixture"):targetfile()})
-    end)
-target_end()
-
-target("runtime_tests")
-    set_kind("binary")
-    set_default(false)
-    add_files("tests/runtime/*.cpp")
-    add_deps("circuit_runtime")
-target_end()
-
-target("interface_tests")
-    set_kind("binary")
-    set_default(false)
-    add_files("tests/interface_tests.cpp")
-target_end()
-
-target("validation_tests")
-    set_kind("binary")
-    set_default(false)
-    add_files("tests/validation_tests.cpp")
+    add_deps("circuit_gameplay")
 target_end()
 
 -- A test program is every source file of its directory: a new file adds
@@ -150,7 +79,8 @@ target("contract_tests")
     end)
 target_end()
 
--- Independent sequential reference executor; never linked into the server.
+-- Independent sequential reference executor in the vanilla order; the
+-- specification of the strict single-threaded runtime. Never linked into a server.
 target("circuit_oracle")
     set_kind("static")
     set_default(false)
@@ -163,16 +93,6 @@ target("rules_tests")
     set_default(false)
     add_files("tests/rules/*.cpp")
     add_deps("circuit_oracle")
-    on_config(function (target)
-        target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
-    end)
-target_end()
-
-target("simulation_tests")
-    set_kind("binary")
-    set_default(false)
-    add_files("tests/sim/*.cpp")
-    add_deps("circuit_oracle", "circuit_runtime")
     on_config(function (target)
         target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
     end)
@@ -191,85 +111,24 @@ target("evidence_tests")
     end)
 target_end()
 
--- Network server: sessions, version adapter and the authoritative game loop.
+-- What the restructuring keeps of the old server: the data compilers that turn
+-- the official jar and data packs into GameData, the synchronized registries,
+-- the packet layouts (wire), the block palette and section encoding, and Anvil
+-- import and export. The lanes split it by owner.
 target("circuit_server")
     set_kind("static")
     add_files("src/server/*.cpp")
-    add_deps("circuit_protocol", "circuit_auth", "circuit_evidence", "circuit_storage", "circuit_plugins", "circuit_data")
-target_end()
-
-target("server_tests")
-    set_kind("binary")
-    set_default(false)
-    add_files("tests/server/*.cpp")
-    add_deps("circuit_server", "circuit-server")
-    -- The crash test runs the server binary as a separate process.
-    on_config(function (target)
-        target:add("defines", format('CIRCUIT_SERVER_BINARY="%s"', path.absolute(target:dep("circuit-server"):targetfile())))
-        target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
-    end)
+    add_deps("circuit_protocol", "circuit_auth", "circuit_evidence", "circuit_storage", "circuit_data")
 target_end()
 
 target("anvil_tests")
     set_kind("binary")
     set_default(false)
     add_files("tests/anvil/*.cpp")
-    add_deps("circuit_server", "circuit_runtime")
+    add_deps("circuit_server", "circuit_oracle")
     on_load(function (target)
         target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
     end)
-target_end()
-
-target("sdk_probe")
-    set_kind("shared")
-    set_default(false)
-    add_files("tests/extensions/sdk_probe.cpp")
-target_end()
-
-target("sdk_probe_mod")
-    set_kind("shared")
-    set_default(false)
-    add_defines("CIRCUIT_PROBE_MOD")
-    add_files("tests/extensions/sdk_probe.cpp")
-target_end()
-
-target("extension_tests")
-    set_kind("binary")
-    set_default(false)
-    -- Every source file of the directory but the probe libraries' own.
-    add_files("tests/extensions/*.cpp|sdk_probe.cpp")
-    add_deps("circuit_server", "technical_tools", "sdk_probe", "sdk_probe_mod")
-    on_config(function (target)
-        local function quoted(name, value) target:add("defines", format('%s="%s"', name, value)) end
-        quoted("CIRCUIT_TECHNICAL_TOOLS", path.absolute(target:dep("technical_tools"):targetfile()))
-        quoted("CIRCUIT_PROBE", path.absolute(target:dep("sdk_probe"):targetfile()))
-        quoted("CIRCUIT_PROBE_MOD", path.absolute(target:dep("sdk_probe_mod"):targetfile()))
-        quoted("CIRCUIT_SOURCE_DIR", os.projectdir())
-    end)
-target_end()
-
--- Storage measurements (docs/STORAGE_EVALUATION.md); run on a release build.
-target("storage_bench")
-    set_kind("binary")
-    set_default(false)
-    add_files("tools/bench/storage_bench.cpp")
-    add_deps("circuit_server", "circuit_runtime")
-target_end()
-
-target("chunk_bench")
-    set_kind("binary")
-    set_default(false)
-    add_files("tools/bench/chunk_bench.cpp")
-    add_deps("circuit_server", "circuit_runtime")
-target_end()
-
--- Engine tick times on recorded and constructed workloads
--- (docs/PERFORMANCE.md); tools/bench/run.sh runs a release build of it.
-target("engine_bench")
-    set_kind("binary")
-    set_default(false)
-    add_files("tools/bench/engine_bench.cpp")
-    add_deps("circuit_evidence")
 target_end()
 
 target("protocol_tests")
@@ -296,32 +155,26 @@ target("storage_tests")
     set_kind("binary")
     set_default(false)
     add_files("tests/storage/*.cpp")
-    add_deps("circuit_storage", "circuit_runtime")
+    add_deps("circuit_storage", "circuit_oracle")
     on_config(function (target)
         target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
     end)
 target_end()
 
-target("control_tests")
+target("content_tests")
     set_kind("binary")
     set_default(false)
-    add_files("tests/control/*.cpp")
-    add_deps("circuit_runtime")
+    add_files("tests/content/*.cpp")
+    add_deps("circuit_server", "circuit_oracle")
     on_config(function (target)
         target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
     end)
 target_end()
 
--- Exploration code is isolated from the server and does not define game rules.
-target("circuit_models")
-    set_kind("static")
-    set_default(false)
-    add_files("src/exploration/*.cpp")
-target_end()
-
-target("parallel_models")
+-- Records, checks and compares circuit-trace fixtures on the oracle
+-- (tools/scenario.py, re-recording tests/fixtures/reference).
+target("circuit-fixture")
     set_kind("binary")
-    set_default(false)
-    add_files("tests/exploration/*.cpp")
-    add_deps("circuit_models", "circuit_runtime")
+    add_files("tools/fixture/*.cpp")
+    add_deps("circuit_server", "circuit_oracle")
 target_end()

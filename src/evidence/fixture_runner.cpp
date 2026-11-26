@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/evidence/content.hpp>
 #include <circuit/evidence/fixture_runner.hpp>
-#include <circuit/runtime/engine.hpp>
 #include <algorithm>
 #include <charconv>
 #include <array>
@@ -19,40 +18,6 @@ using gameplay::BlockState;
 using Outcome = FixtureReport::Outcome;
 
 namespace {
-class EngineExecutor final : public FixtureExecutor {
-public:
-    EngineExecutor(const contracts::VersionBundle& bundle, std::uint64_t seed, unsigned workers, std::shared_ptr<const gameplay::GameData> data)
-        : data_(std::move(data)), engine_(bundle, seed, [&] {
-              runtime::EngineOptions o;
-              o.workers = workers;
-              o.level_random_seed = 0; // as the reference harness seeds the overworld's
-              o.sequence_seed = 0;     // the harness's worlds have the seed 0
-              o.data = data_;
-              return o;
-          }()) {}
-    const gameplay::GameData* data() const override { return data_.get(); }
-    void advance(const std::vector<Command>& commands) override { engine_.advance(commands); }
-    const std::vector<contracts::TraceRecord>& trace() const override { return engine_.trace(); }
-    // Fixtures run in the overworld (the runner refuses other dimensions).
-    BlockState block(BlockPos pos) const override {
-        const auto s = engine_.view().block(contracts::DimensionId::overworld, pos);
-        return s ? *s : BlockState::unloaded_sentinel();
-    }
-    std::optional<contracts::ItemStack> slot(BlockPos pos, std::uint8_t slot) const override {
-        const auto be = engine_.view().block_entity(contracts::DimensionId::overworld, pos);
-        if (!be || !*be || slot >= (*be)->slots.size()) return std::nullopt;
-        return (*be)->slots[slot];
-    }
-    std::vector<gameplay::Entity> entities() const override { return engine_.dump().overworld().entities; }
-    std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos pos) const override {
-        return engine_.light(contracts::DimensionId::overworld, pos);
-    }
-
-private:
-    std::shared_ptr<const gameplay::GameData> data_;
-    runtime::Engine engine_;
-};
-
 struct MappedChange {
     BlockPos pos;
     BlockState before, after;
@@ -805,12 +770,6 @@ std::size_t stream_line(const StreamEvent& e) {
     return std::visit([](const auto& v) { return v.line; }, e);
 }
 } // namespace
-
-ExecutorFactory engine_executor(unsigned workers, DataSource data) {
-    return [workers, data](const contracts::VersionBundle& bundle, std::uint64_t seed) -> std::unique_ptr<FixtureExecutor> {
-        return std::make_unique<EngineExecutor>(bundle, seed, workers, data ? data(bundle) : nullptr);
-    };
-}
 
 std::string_view outcome_name(Outcome outcome) noexcept {
     switch (outcome) {

@@ -18,8 +18,7 @@
 // block changes inside the area and end-of-tick probes.
 namespace circuit::evidence {
 
-// Minimal executor surface, so the same fixture can run on the runtime engine
-// or on a test-only reference executor.
+// Minimal executor surface: a fixture runs on any executor that implements it.
 class FixtureExecutor {
 public:
     virtual ~FixtureExecutor() = default;
@@ -42,8 +41,6 @@ using ExecutorFactory =
     std::function<std::unique_ptr<FixtureExecutor>(const contracts::VersionBundle& bundle, std::uint64_t seed)>;
 // The data packs' data for a bundle (null: none).
 using DataSource = std::function<std::shared_ptr<const gameplay::GameData>(const contracts::VersionBundle& bundle)>;
-
-ExecutorFactory engine_executor(unsigned workers = 1, DataSource data = {});
 
 struct FixtureReport {
     enum class Outcome : std::uint8_t {

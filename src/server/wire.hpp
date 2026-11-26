@@ -272,7 +272,7 @@ public:
     Bytes chunk_center(std::int32_t x, std::int32_t z) const;
     Bytes chunk_batch_start() const;
     Bytes chunk_batch_finished(std::int32_t count) const;
-    Bytes chunk(Bytes fields) const; // fields from encode_chunk
+    Bytes chunk(Bytes fields) const; // the level_chunk_with_light fields after the id
     Bytes light_update(std::int32_t x, std::int32_t z, Bytes light) const; // light from write_light
     Bytes forget_chunk(std::int32_t x, std::int32_t z) const;
     Bytes block_update(WirePosition pos, std::int32_t state) const;

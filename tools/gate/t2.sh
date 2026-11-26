@@ -15,7 +15,7 @@
 #   --side-by-side N   trees at a time (default 1)
 #
 # The debug copy is built from nothing with the compiler cache off and must have zero warnings;
-# it also runs the ledger checks and the Java SPI compilation. Every copy runs every test
+# it also runs the ledger checks. Every copy runs every test
 # program with the official jars required. The gate scripts are the ones next to this file,
 # not the candidate's. One line per step; exit status 0 only when every step passed.
 set -u
@@ -92,7 +92,6 @@ expected_steps() {
     if [[ $kind == debug ]]; then
         echo "$kind/ledger"
         echo "$kind/ledger-tools"
-        echo "$kind/java-spi"
     fi
 }
 

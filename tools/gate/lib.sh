@@ -4,7 +4,6 @@
 # when every step it planned is PASS. A step that could not start is NOT-RUN, never a pass.
 #
 # Environment read here:
-#   CIRCUIT_ASIO_INCLUDE          standalone Asio include directory (empty: the xmake package)
 #   CIRCUIT_VANILLA_JAR_1_21_8    official server jars for the cases that need them
 #   CIRCUIT_VANILLA_JAR_1_21_4
 #   CIRCUIT_GATE_BUILD_TIMEOUT    seconds for configure plus build (default 3600)
@@ -14,12 +13,11 @@
 #                                 Unset: GATE_DEFAULT_SHARDS. Empty: no shards
 
 # Longest first, so the side-by-side run is bounded by the longest program.
-GATE_PROGRAMS=(evidence_tests storage_tests simulation_tests server_tests rules_tests anvil_tests
-               protocol_tests data_tests extension_tests contract_tests control_tests runtime_tests
-               interface_tests validation_tests plugin_tests parallel_models)
+GATE_PROGRAMS=(evidence_tests storage_tests rules_tests anvil_tests content_tests protocol_tests data_tests
+               contract_tests)
 
-# The four programs that take minutes, split so that no shard bounds the side-by-side run.
-GATE_DEFAULT_SHARDS="evidence_tests=4 storage_tests=3 simulation_tests=4 server_tests=3"
+# The programs that take minutes, split so that no shard bounds the side-by-side run.
+GATE_DEFAULT_SHARDS="evidence_tests=4 storage_tests=3"
 
 GATE_JAR_VARIABLES=(CIRCUIT_VANILLA_JAR_1_21_8 CIRCUIT_VANILLA_JAR_1_21_4)
 
@@ -85,9 +83,6 @@ gate_build() {
     local prefix=$1 tree=$2 mode=$3 jobs=$4 logs=$5 clean=$6 zero_warnings=$7
     local log=$logs/build-$mode.log start rc compiled warnings crashes=0 note=
     local configure=(-m "$mode" -y) build=(-y -j "$jobs" --all)
-    if [[ -n ${CIRCUIT_ASIO_INCLUDE:-} ]]; then
-        configure+=("--asio_include=$CIRCUIT_ASIO_INCLUDE")
-    fi
     if ((clean)); then
         configure+=(--policies=build.ccache:n)
         build+=(-r)
@@ -162,7 +157,6 @@ gate_launch() {
     local tree=$1 mode=$2 bin=$3 program=$4 log=$5 jars=$6 shard=$7
     local command=() environment=() arguments=() start rc child
     case $program in
-        plugin_tests) arguments=("$bin/libtechnical_tools.so" "$bin/libplugin_fixture.so") ;;
         evidence_tests) arguments=("$tree/tests/fixtures") ;;
     esac
     case $mode in
@@ -351,20 +345,9 @@ gate_command_in() {
 }
 
 # gate_tree_checks <prefix> <tree> <log directory>: the checks of a tree besides its programs:
-# the compatibility ledger, the ledger tool's tests and the Java SPI compilation.
+# the compatibility ledger and the ledger tool's tests.
 gate_tree_checks() {
-    local prefix=$1 tree=$2 logs=$3 sources=()
+    local prefix=$1 tree=$2 logs=$3
     gate_command_in "$tree" "${prefix}ledger" "$logs/ledger.log" python3 tools/compat_ledger.py check
     gate_command_in "$tree" "${prefix}ledger-tools" "$logs/ledger-tools.log" python3 tests/tools/compat_ledger_tests.py
-    if ! command -v javac >/dev/null; then
-        gate_record NOT-RUN "${prefix}java-spi" 0 "javac 17+ is not available"
-        return 1
-    fi
-    mapfile -t sources < <(cd "$tree" && find modules/java-bridge -name '*.java' | sort)
-    if ((${#sources[@]} == 0)); then
-        gate_record NOT-RUN "${prefix}java-spi" 0 "no Java source under modules/java-bridge"
-        return 1
-    fi
-    mkdir -p "$tree/build/java-spi"
-    gate_command_in "$tree" "${prefix}java-spi" "$logs/java-spi.log" javac --release 17 -d build/java-spi "${sources[@]}"
 }

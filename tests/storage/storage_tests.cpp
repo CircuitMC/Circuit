@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Durable storage: checkpoint encoding, the world directory, and recovery
 // after a crash or an I/O error at every file operation.
-#include "../sim/scenarios.hpp"
+#include "../support/scenarios.hpp"
 #include "../support/check.hpp"
 #include "memory_fs.hpp"
 #include <cmath>
@@ -9,7 +9,7 @@
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/protocol/framing.hpp>
-#include <circuit/runtime/engine.hpp>
+#include "../oracle/oracle.hpp"
 #include <circuit/storage/world_directory.hpp>
 #include <climits>
 #include <filesystem>
@@ -24,7 +24,8 @@
 #include <zlib.h>
 
 using namespace circuit::test;
-using circuit::runtime::Engine;
+// The sequential reference executor stands in for the runtime.
+using Engine = circuit::oracle::Oracle;
 using circuit::storage::Checkpoint;
 using circuit::storage::Recovery;
 using circuit::storage::WorldDirectory;
@@ -350,29 +351,6 @@ int main() {
         auto beyond = c;
         beyond.state.difficulty = 4;
         require(!circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(beyond)), "a difficulty above hard is rejected");
-    });
-
-    suite.run("snapshots encode like dumps and stay fixed while the engine runs", [&] {
-        circuit::storage::SectionCache cache;
-        for (const auto& s : all_scenarios()) {
-            Engine engine(bundle(), s.seed);
-            Admissions admit;
-            for (Tick t = 1; t <= s.ticks; ++t) {
-                engine.advance(admitted(admit, s, t));
-                if (t % std::max<Tick>(1, s.ticks / 3) != 0) continue;
-                const auto expected = circuit::storage::encode_checkpoint({bundle_id, rules_id(), s.seed, engine.dump(), {}});
-                auto snap = engine.snapshot();
-                // The engine keeps running; copy-on-write keeps the snapshot as it was.
-                for (Tick k = 1; k <= 5 && t + k <= s.ticks; ++k) engine.advance(admit(s.inputs(t + k)));
-                Checkpoint c{bundle_id, rules_id(), s.seed, std::move(snap.state), {}};
-                const auto plain = circuit::storage::encode_checkpoint(c, snap.sections, bundle(), nullptr);
-                const auto cached = circuit::storage::encode_checkpoint(c, snap.sections, bundle(), &cache);
-                const auto again = circuit::storage::encode_checkpoint(c, snap.sections, bundle(), &cache);
-                require(plain == expected && cached == expected && again == expected, std::format("{} at {}: snapshot encoding", s.name, t));
-                t = std::min(s.ticks, t + 5); // those ticks already ran
-            }
-        }
-        require(cache.size() > 0, "the cache keeps the last world's sections");
     });
 
     suite.run("damaged checkpoints are rejected", [&] {
@@ -937,7 +915,7 @@ int main() {
         std::filesystem::remove_all(made);
     });
 
-    suite.run("levels survive checkpoints, snapshots, logs and recovery", [&] {
+    suite.run("levels survive checkpoints, logs and recovery", [&] {
         // The same machines in the overworld and the Nether, raised into both
         // levels' height (tests/sim/scenarios.hpp).
         const auto drops = raised(drops_scenario(), 8);
@@ -950,10 +928,6 @@ int main() {
             require(decoded && *decoded == c, std::format("checkpoint at {} round-trips both levels", t));
             Engine engine(bundle(), h.seed, c.state);
             require(engine.dump() == c.state, std::format("restored at {}", t));
-            auto snap = engine.snapshot();
-            const Checkpoint from_snapshot{bundle_id, rules_id(), h.seed, std::move(snap.state), c.extras};
-            const auto via_snapshot = circuit::storage::encode_checkpoint(from_snapshot, snap.sections, bundle(), nullptr);
-            require(via_snapshot == encoded, std::format("snapshot at {} encodes like the dump", t));
         }
         // Log records keep each command's level: recovery replays to the same state.
         MemoryFilesystem fs;

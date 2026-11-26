@@ -26,7 +26,7 @@
 #   CIRCUIT_WORK_ROOT          parent of the slots' work directories (default ~/circuit-work)
 #   CIRCUIT_XMAKE_GLOBALDIR    the xmake global directory shared by all slots (default
 #                              <main>/.xmake-global); install packages there one at a time
-#   CIRCUIT_ASIO_INCLUDE, CIRCUIT_VANILLA_JAR_1_21_8, CIRCUIT_VANILLA_JAR_1_21_4
+#   CIRCUIT_VANILLA_JAR_1_21_8, CIRCUIT_VANILLA_JAR_1_21_4
 #                              used when set; otherwise discovered from the main checkout
 set -euo pipefail
 
@@ -78,26 +78,6 @@ need_existing_slot() {
 # Clean means no change and no untracked file; the slot's own settings file does not count.
 is_clean() { [[ -z $(git -C "$1" status --porcelain -- . ":(exclude)$ENV_FILE") ]]; }
 
-find_asio() {
-    local found candidate
-    if [[ -n ${CIRCUIT_ASIO_INCLUDE:-} ]]; then
-        printf '%s\n' "$CIRCUIT_ASIO_INCLUDE"
-        return
-    fi
-    found=$(sed -n 's/^ *asio_include = "\(.*\)",\{0,1\}$/\1/p' "$main"/.xmake/*/*/xmake.conf 2>/dev/null | head -1)
-    if [[ -n $found && -f $found/asio.hpp ]]; then
-        printf '%s\n' "$found"
-        return
-    fi
-    for candidate in "$HOME"/.xmake/packages/a/asio/1.34.2/*/include; do
-        if [[ -f $candidate/asio.hpp ]]; then
-            printf '%s\n' "$candidate"
-            return
-        fi
-    done
-    echo
-}
-
 # find_jar <variable> <directory of the calibration server next to the main checkout>
 find_jar() {
     local value=${!1:-} sibling
@@ -113,11 +93,10 @@ find_jar() {
 
 # env_text <slot> <path>: the exports of a slot.
 env_text() {
-    local slot=$1 path=$2 branch lane work asio jar8 jar4
+    local slot=$1 path=$2 branch lane work jar8 jar4
     branch=$(git -C "$path" symbolic-ref --quiet --short HEAD 2>/dev/null || echo detached)
     lane=${branch#lane/}
     work=${CIRCUIT_WORK_ROOT:-$HOME/circuit-work}/wt-$slot
-    asio=$(find_asio)
     jar8=$(find_jar CIRCUIT_VANILLA_JAR_1_21_8 vanilla-chests)
     jar4=$(find_jar CIRCUIT_VANILLA_JAR_1_21_4 vanilla-suite-1.21.4)
     echo "# Written by tools/worktree.sh for slot $slot; git-ignored. Use: source ./$ENV_FILE"
@@ -128,7 +107,6 @@ env_text() {
     printf 'export CIRCUIT_PORT_BASE=%q\n' $((PORT_ORIGIN + PORT_SPAN * slot))
     printf 'export CIRCUIT_WORK=%q\n' "$work"
     printf 'export XMAKE_GLOBALDIR=%q\n' "${CIRCUIT_XMAKE_GLOBALDIR:-$main/.xmake-global}"
-    printf 'export CIRCUIT_ASIO_INCLUDE=%q\n' "$asio"
     printf 'export CIRCUIT_VANILLA_JAR_1_21_8=%q\n' "$jar8"
     printf 'export CIRCUIT_VANILLA_JAR_1_21_4=%q\n' "$jar4"
     printf 'export CIRCUIT_BUILD_JOBS=%q\n' "${CIRCUIT_BUILD_JOBS:-6}"
@@ -145,7 +123,6 @@ write_env() {
         # shellcheck disable=SC1090
         source "$path/$ENV_FILE"
         mkdir -p "$CIRCUIT_WORK"
-        [[ -n $CIRCUIT_ASIO_INCLUDE ]] || echo "worktree.sh: no Asio include directory found; xmake will fetch the package" >&2
         [[ -n $CIRCUIT_VANILLA_JAR_1_21_8 && -n $CIRCUIT_VANILLA_JAR_1_21_4 ]] ||
             echo "worktree.sh: an official jar was not found; gates that require the jars will fail" >&2
     )
@@ -158,7 +135,6 @@ configure() {
         source "$path/$ENV_FILE"
         cd "$path"
         local arguments=(-m debug -y)
-        if [[ -n $CIRCUIT_ASIO_INCLUDE ]]; then arguments+=("--asio_include=$CIRCUIT_ASIO_INCLUDE"); fi
         timeout 600 xmake f "${arguments[@]}"
     ) || die "xmake configuration failed in $path"
 }

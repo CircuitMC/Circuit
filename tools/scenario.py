@@ -3,8 +3,8 @@
 
 For a skeleton, the script:
 
-  1. records it with Circuit sequentially (1 worker) and in parallel
-     (`--workers`, default 8), and compares the two recordings;
+  1. records it with Circuit's reference rules on the oracle
+     (build/.../circuit-fixture);
   2. records it on each reference harness given with `--harness` (an external
      checkout with tools/run_repeat.sh), twice on fresh worlds, and checks
      that the runs repeat; a harness may refuse a skeleton that does not apply
@@ -19,7 +19,7 @@ they are not driven from trace skeletons.
 
 Usage:
   tools/scenario.py tests/fixtures/skeletons/item_drop_piston.ctrace \\
-      --harness ../circuit-harness --harness ../circuit-harness-1.21.4 [--out DIR] [--workers 8]
+      --harness ../circuit-harness --harness ../circuit-harness-1.21.4 [--out DIR]
 """
 import argparse
 import os
@@ -47,8 +47,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("skeleton")
     parser.add_argument("--harness", action="append", default=[], help="reference harness checkout (repeatable)")
-    parser.add_argument("--server", default=os.path.join(ROOT, "build", "linux", "x86_64", "debug", "circuit-server"))
-    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--server", default=os.path.join(ROOT, "build", "linux", "x86_64", "debug", "circuit-fixture"),
+                        help="the circuit-fixture binary")
     parser.add_argument("--out")
     args = parser.parse_args()
 
@@ -60,18 +60,13 @@ def main():
     report = [f"# Scenario `{name}`", "", f"Skeleton: `{os.path.relpath(skeleton, ROOT)}`", ""]
     failures = 0
 
-    # 1. Circuit, sequential and parallel.
+    # 1. Circuit: the reference rules on the oracle.
     report += ["## Circuit", ""]
     circuit = {}
-    for workers in (1, args.workers):
-        path = os.path.join(out, f"circuit-{workers}.ctrace")
-        code, text = run([args.server, "--record-fixture", skeleton, "--output", path, "--workers", str(workers)])
-        circuit[workers] = path if code == 0 else None
-        report.append(f"- {workers} worker{'s' if workers > 1 else ''}: " + ("recorded" if code == 0 else f"not recorded: {text.splitlines()[-1]}"))
-    if circuit[1] and circuit[args.workers]:
-        code, text = run([args.server, "--diff-fixtures", circuit[1], circuit[args.workers]])
-        report.append(f"- sequential against parallel: {'identical' if code == 0 else text}")
-        failures += code != 0
+    path = os.path.join(out, "circuit.ctrace")
+    code, text = run([args.server, "--record-fixture", skeleton, "--output", path])
+    circuit[1] = path if code == 0 else None
+    report.append("- " + ("recorded" if code == 0 else f"not recorded: {text.splitlines()[-1]}"))
     report.append("")
 
     # 2. Official servers through the reference harnesses.

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // circuit-trace fixtures: format, content mapping, recording and evaluation
-// on both the runtime engine and the independent oracle.
+// on the sequential reference executor (the oracle).
+#include "../oracle/fixture_executor.hpp"
 #include "../oracle/oracle.hpp"
 #include "../support/check.hpp"
 #include "../support/fixture_parts.hpp"
@@ -41,64 +42,7 @@ using circuit::evidence::Vec3d;
 namespace fs = std::filesystem;
 
 namespace {
-class OracleExecutor final : public FixtureExecutor {
-public:
-    // The overworld's level random starts from 0, as the reference harness seeds it.
-    OracleExecutor(const circuit::contracts::VersionBundle& bundle, std::uint64_t seed)
-        : oracle_(bundle, seed, {}, std::int64_t{0}), shape_(bundle.world) {}
-    void advance(const std::vector<circuit::contracts::Command>& commands) override {
-        before_ = std::move(dump_);
-        oracle_.advance(commands);
-        dump_ = oracle_.dump();
-        light_.clear();
-        world_.reset();
-    }
-    const std::vector<circuit::contracts::TraceRecord>& trace() const override { return oracle_.trace(); }
-    circuit::gameplay::BlockState block(BlockPos pos) const override { return circuit::test::state_at(dump_, pos); }
-    std::optional<circuit::contracts::ItemStack> slot(BlockPos pos, std::uint8_t slot) const override {
-        const auto* be = circuit::test::block_entity_at(dump_, pos);
-        if (!be || slot >= be->slots.size()) return std::nullopt;
-        return be->slots[slot];
-    }
-    std::vector<circuit::gameplay::Entity> entities() const override { return dump_.overworld().entities; }
-    // Light during a tick follows the blocks at the end of the one before: it
-    // is computed from scratch from that dump.
-    std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos pos) const override {
-        if (!world_) {
-            world_.emplace(before_, circuit::contracts::DimensionId::overworld);
-            top_ = std::min(shape_.min_y + shape_.height - 1, std::max(world_->highest(), shape_.min_y) + 16);
-        }
-        const auto chunk = circuit::contracts::chunk_of(pos);
-        if (!world_->loaded(chunk)) return std::pair<std::uint8_t, std::uint8_t>{0, 0};
-        if (pos.y > top_) return std::pair<std::uint8_t, std::uint8_t>{0, 15};
-        // A column's light depends only on cells within 15 blocks: the
-        // loaded columns around it.
-        auto it = light_.find(chunk);
-        if (it == light_.end()) {
-            std::set<circuit::contracts::ChunkPos> around;
-            for (int dx = -1; dx <= 1; ++dx)
-                for (int dz = -1; dz <= 1; ++dz)
-                    if (world_->loaded({chunk.x + dx, chunk.z + dz})) around.insert({chunk.x + dx, chunk.z + dz});
-            it = light_.try_emplace(chunk, *world_, around, shape_.min_y, top_).first;
-        }
-        using circuit::gameplay::LightKind;
-        return std::pair{it->second.get(LightKind::block, pos), it->second.get(LightKind::sky, pos)};
-    }
-
-private:
-    Oracle oracle_;
-    circuit::contracts::WorldShape shape_;
-    circuit::gameplay::WorldDump dump_, before_;
-    mutable std::optional<circuit::test::DumpLightWorld> world_;
-    mutable std::int32_t top_{};
-    mutable std::map<circuit::contracts::ChunkPos, circuit::test::ReferenceLight> light_;
-};
-
-ExecutorFactory oracle_executor() {
-    return [](const circuit::contracts::VersionBundle& b, std::uint64_t seed) -> std::unique_ptr<FixtureExecutor> {
-        return std::make_unique<OracleExecutor>(b, seed);
-    };
-}
+using circuit::oracle::oracle_executor;
 
 std::string read_text(const fs::path& p) {
     std::ifstream in(p, std::ios::binary);
@@ -283,7 +227,7 @@ int main(int argc, char** argv) {
                 "commands need version 2");
         // Circuit records the chunks it loads: the forced chunk and its two
         // rings, all within the observed window.
-        auto recorded = record_fixture(f, engine_executor(1));
+        auto recorded = record_fixture(f, oracle_executor());
         require(recorded.has_value(), recorded ? std::string() : recorded.error());
         std::map<std::pair<std::int32_t, std::int32_t>, std::string> status;
         for (const auto& c : recorded->chunk_events)
@@ -291,12 +235,12 @@ int main(int argc, char** argv) {
         require(status.size() == 25 && status.at({0, 0}) == "entity_ticking" && status.at({1, 1}) == "block_ticking"
                     && status.at({2, -2}) == "border",
                 std::format("{} chunks at tick 1", status.size()));
-        require(evaluate_fixture(*recorded, engine_executor(2)).outcome == Outcome::passed, "its own recording passes");
+        require(evaluate_fixture(*recorded, oracle_executor()).outcome == Outcome::passed, "its own recording passes");
         // Other commands are not modeled.
         const auto other = parse(head + "at 1 command gamerule spawnChunkRadius 3\n");
-        require(evaluate_fixture(other, engine_executor(1)).outcome == Outcome::unsupported, "other commands");
+        require(evaluate_fixture(other, oracle_executor()).outcome == Outcome::unsupported, "other commands");
         const auto big = parse(head + "at 1 command forceload add 0 0 300 300\n");
-        require(evaluate_fixture(big, engine_executor(1)).outcome == Outcome::unsupported, "more than 256 chunks");
+        require(evaluate_fixture(big, oracle_executor()).outcome == Outcome::unsupported, "more than 256 chunks");
     });
 
     suite.run("players break blocks with tools in fixtures", [&] {
@@ -315,13 +259,13 @@ int main(int argc, char** argv) {
         // An empty hand breaks stone without a drop; an enchanted tool needs
         // the data packs' enchantments.
         const auto plain = parse(head + "at 0 set 1 0 1 minecraft:stone\nat 2 break 1 0 1 minecraft:air\n");
-        auto recorded = record_fixture(plain, engine_executor(1));
+        auto recorded = record_fixture(plain, oracle_executor());
         require(recorded.has_value(), recorded ? std::string() : recorded.error());
         require(std::ranges::any_of(recorded->recorded_changes, [](const auto& c) { return c.tick == 2 && c.after == "minecraft:air"; })
                     && recorded->entity_events.empty(),
                 "broken without a drop");
-        require(evaluate_fixture(*recorded, engine_executor(1)).outcome == Outcome::passed, "its own recording passes");
-        const auto enchanted = record_fixture(f, engine_executor(1));
+        require(evaluate_fixture(*recorded, oracle_executor()).outcome == Outcome::passed, "its own recording passes");
+        const auto enchanted = record_fixture(f, oracle_executor());
         require(!enchanted && enchanted.error().find("enchanted tools need the official data packs") != std::string::npos,
                 enchanted ? "recorded without data packs" : enchanted.error());
     });
@@ -1634,20 +1578,18 @@ int main(int argc, char** argv) {
         require(!m->item("examplemod:gizmo").has_value(), "unknown item");
     });
 
-    suite.run("record and evaluate on engine and oracle", [] {
+    suite.run("record and evaluate on the oracle", [] {
         const auto skeleton = parse(skeleton_text);
         require(skeleton.is_skeleton(), "placeholders");
-        require(evaluate_fixture(skeleton, engine_executor()).outcome == Outcome::invalid, "skeletons are not evaluated");
-        const auto by_engine = record_fixture(skeleton, engine_executor(4));
+        require(evaluate_fixture(skeleton, oracle_executor()).outcome == Outcome::invalid, "skeletons are not evaluated");
         const auto by_oracle = record_fixture(skeleton, oracle_executor());
-        require(by_engine && by_oracle, "recorded");
-        const auto text = write_fixture(*by_engine);
-        require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
+        require(by_oracle.has_value(), "recorded");
+        const auto text = write_fixture(*by_oracle);
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
                     && recorded.harness == "circuit-reference-rules-v12", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
-        for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
+        for (const auto& exec : {oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);
             require(r.outcome == Outcome::passed && r.changes_compared > 0 && r.probes_compared == 4, r.detail);
         }
@@ -1655,11 +1597,9 @@ int main(int argc, char** argv) {
 
     suite.run("version 2 records entity lifecycles and states", [] {
         const auto skeleton = parse(items_text);
-        const auto by_engine = record_fixture(skeleton, engine_executor(4));
         const auto by_oracle = record_fixture(skeleton, oracle_executor());
-        require(by_engine && by_oracle, by_engine ? "" : by_engine.error());
-        const auto text = write_fixture(*by_engine);
-        require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
+        require(by_oracle.has_value(), by_oracle ? "" : by_oracle.error());
+        const auto text = write_fixture(*by_oracle);
         const auto recorded = parse(text);
         require(write_fixture(recorded) == text, "the recording round-trips");
         // Both items are added in the command stage of tick 1 at their exact positions.
@@ -1675,49 +1615,49 @@ int main(int argc, char** argv) {
                     && removal->reason == "discarded", "the hopper takes e1");
         require(recorded.slot_probes[0].item.value == "minecraft:redstone" && recorded.slot_probes[0].count == 3, "into its slot");
         require(!recorded.entity_probes.empty() && !recorded.entity_orders.empty(), "probes and orders recorded");
-        for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
+        for (const auto& exec : {oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);
             require(r.outcome == Outcome::passed && r.events_compared > 0 && r.probes_compared > 0, r.detail);
         }
         // A position 1/8192 block off fails exactly and passes within a declared tolerance.
         auto moved = recorded;
         moved.entity_probes[0].position[1] += 1.0 / 8192.0;
-        auto r = evaluate_fixture(moved, engine_executor());
+        auto r = evaluate_fixture(moved, oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("entity probe") != std::string::npos, r.detail);
         moved.tolerance = 0.001;
-        require(evaluate_fixture(moved, engine_executor()).outcome == Outcome::passed, "within the tolerance");
+        require(evaluate_fixture(moved, oracle_executor()).outcome == Outcome::passed, "within the tolerance");
         // Removal reasons, stages and tick order are compared.
         auto reason = recorded;
         std::ranges::find_if(reason.entity_events, [](const EntityEvent& e) { return e.kind == EntityEvent::Kind::removed; })->reason = "killed";
-        r = evaluate_fixture(reason, engine_executor());
+        r = evaluate_fixture(reason, oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("removed (killed)") != std::string::npos, r.detail);
         auto stage = recorded;
         stage.entity_events[0].stage = "entities";
-        require(evaluate_fixture(stage, engine_executor()).outcome == Outcome::failed, "stages are compared");
+        require(evaluate_fixture(stage, oracle_executor()).outcome == Outcome::failed, "stages are compared");
         auto order = recorded;
         const auto two = std::ranges::find_if(order.entity_orders, [](const EntityOrder& o) { return o.handles.size() == 2; });
         require(two != order.entity_orders.end(), "both items tick");
         std::ranges::reverse(two->handles);
-        r = evaluate_fixture(order, engine_executor());
+        r = evaluate_fixture(order, oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("entity order") != std::string::npos, r.detail);
         // Draws from the level random are counted per stage: these items draw nothing.
         auto rng = recorded;
         rng.observe_rng = true;
         rng.rng.push_back({1, "random_ticks", "level", 3, 0});
-        r = evaluate_fixture(rng, engine_executor());
+        r = evaluate_fixture(rng, oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("expected 3 draws from `level` in random_ticks, observed 0") != std::string::npos,
                 r.detail);
         // Any position is exact: doubles as the target versions keep them.
         auto odd = skeleton;
         odd.actions[2].position[0] = 1.1;
-        const auto odd_recorded = record_fixture(odd, engine_executor());
-        require(odd_recorded && evaluate_fixture(*odd_recorded, engine_executor()).outcome == Outcome::passed
+        const auto odd_recorded = record_fixture(odd, oracle_executor());
+        require(odd_recorded && evaluate_fixture(*odd_recorded, oracle_executor()).outcome == Outcome::passed
                     && odd_recorded->entity_events[0].position[0] == 1.1,
                 "positions are exact");
     });
 
     suite.run("mismatches name the fixture line", [] {
-        const auto text = write_fixture(*record_fixture(parse(skeleton_text), engine_executor()));
+        const auto text = write_fixture(*record_fixture(parse(skeleton_text), oracle_executor()));
         // A wrong probe value.
         auto wrong = text;
         const auto probe = wrong.find("block 5 -1 0 1 minecraft:redstone_lamp[lit=");
@@ -1725,7 +1665,7 @@ int main(int argc, char** argv) {
         const auto value = probe + std::string_view("block 5 -1 0 1 minecraft:redstone_lamp[lit=").size();
         if (wrong.compare(value, 4, "true") == 0) wrong.replace(value, 4, "false");
         else wrong.replace(value, 5, "true");
-        auto r = evaluate_fixture(parse(wrong), engine_executor());
+        auto r = evaluate_fixture(parse(wrong), oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("block probe (line") != std::string::npos, r.detail);
         // Two adjacent changes swapped: ordered fails, unordered passes.
         auto lines = std::vector<std::string>{};
@@ -1740,32 +1680,32 @@ int main(int argc, char** argv) {
         std::swap(lines[first], lines[first + 1]);
         std::string swapped;
         for (const auto& l : lines) swapped += l + "\n";
-        r = evaluate_fixture(parse(swapped), engine_executor());
+        r = evaluate_fixture(parse(swapped), oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("change 0") != std::string::npos, r.detail);
         auto unordered = swapped;
         unordered.replace(unordered.find("changes ordered"), 15, "changes unordered");
-        require(evaluate_fixture(parse(unordered), engine_executor()).outcome == Outcome::passed, "unordered");
+        require(evaluate_fixture(parse(unordered), oracle_executor()).outcome == Outcome::passed, "unordered");
         // A missing change.
         lines.erase(lines.begin() + static_cast<std::ptrdiff_t>(first));
         std::string missing;
         for (const auto& l : lines) missing += l + "\n";
-        r = evaluate_fixture(parse(missing), engine_executor());
+        r = evaluate_fixture(parse(missing), oracle_executor());
         require(r.outcome == Outcome::failed && r.detail.find("expected") != std::string::npos, r.detail);
     });
 
     suite.run("unsupported and invalid fixtures", [] {
         const std::string h = header;
         auto r = evaluate_fixture(parse(h + "changes ordered\nchange 1 0 0 0 minecraft:air examplemod:gadget\n"),
-                                  engine_executor());
+                                  oracle_executor());
         require(r.outcome == Outcome::unsupported && r.detail.find("line 10") != std::string::npos, r.detail);
-        r = evaluate_fixture(parse(h + "at 0 set 0 0 0 minecraft:piston[extended=true,facing=up]\n"), engine_executor());
+        r = evaluate_fixture(parse(h + "at 0 set 0 0 0 minecraft:piston[extended=true,facing=up]\n"), oracle_executor());
         require(r.outcome == Outcome::unsupported && r.detail.find("rejected") != std::string::npos, r.detail);
         auto other = h;
         other.replace(other.find("mechanisms piston"), 17, "mechanisms teleport");
-        require(evaluate_fixture(parse(other), engine_executor()).outcome == Outcome::invalid, "unknown mechanism");
+        require(evaluate_fixture(parse(other), oracle_executor()).outcome == Outcome::invalid, "unknown mechanism");
         other = h;
         other.replace(other.find("1.21.8"), 6, "1.20.4");
-        require(evaluate_fixture(parse(other), engine_executor()).outcome == Outcome::unsupported, "no mapping");
+        require(evaluate_fixture(parse(other), oracle_executor()).outcome == Outcome::unsupported, "no mapping");
     });
 
     // The repository's own fixtures pass on both executors, and its skeletons
@@ -1777,7 +1717,7 @@ int main(int argc, char** argv) {
             const auto all = sorted_entries({fixtures / "documented", fixtures / "reference"});
             for (const auto& entry : part_of(all, part, fixture_parts)) {
                 const auto f = parse(read_text(entry.path()));
-                for (const auto& exec : {engine_executor(4), oracle_executor()}) {
+                for (const auto& exec : {oracle_executor()}) {
                     const auto r = evaluate_fixture(f, exec);
                     require(r.outcome == (needs_data_packs(f) ? Outcome::unsupported : Outcome::passed),
                             std::format("{}: {}", entry.path().string(), r.detail));
@@ -1791,7 +1731,7 @@ int main(int argc, char** argv) {
             for (const auto& entry : part_of(all, part, fixture_parts)) {
                 // Scenarios of loot tables record only with the data packs (server_tests, with the operator's jars).
                 if (needs_data_packs(parse(read_text(entry.path())))) continue;
-                const auto recorded = record_fixture(parse(read_text(entry.path())), engine_executor());
+                const auto recorded = record_fixture(parse(read_text(entry.path())), oracle_executor());
                 require(recorded.has_value(), entry.path().string());
                 const auto committed = fixtures / "reference" / entry.path().filename();
                 require(write_fixture(*recorded) == read_text(committed),
@@ -1828,7 +1768,7 @@ int main(int argc, char** argv) {
         for (const auto& entry : part_of(all, part, fixture_parts)) {
             const auto trace = parse(read_text(entry.path()));
             require_recorded_from_skeleton(fixtures, entry.path(), trace, version);
-            for (const auto& exec : {engine_executor(4), oracle_executor()}) {
+            for (const auto& exec : {oracle_executor()}) {
                 const auto r = evaluate_fixture(trace, exec);
                 // Without the data packs, scenarios of loot tables wait for them
                 // (server_tests checks them with the operator's jars).
@@ -1858,7 +1798,7 @@ int main(int argc, char** argv) {
                 require_recorded_from_skeleton(fixtures, entry.path(), trace, version);
                 const auto name = entry.path().filename().string();
                 require(expected.contains(name), std::format("{}: not listed in EXPECTED.txt", entry.path().string()));
-                for (const auto& exec : {engine_executor(4), oracle_executor()}) {
+                for (const auto& exec : {oracle_executor()}) {
                     const auto r = evaluate_fixture(trace, exec);
                     require(r.outcome != Outcome::passed,
                             std::format("{} passes now: move it to the harness directory and update the ledger", entry.path().string()));
@@ -1920,7 +1860,7 @@ int main(int argc, char** argv) {
         require(write_fixture(parse(write_fixture(with_rule))) == write_fixture(with_rule), "game rules round-trip");
         require(first_difference(with_rule, parse(read_text(fixtures / "harness" / "tnt_redstone_ignition.ctrace")))
                     == std::optional<std::string>("different scenarios: observation headers"), "a game rule changes the scenario");
-        require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::passed, "tntExplodes is modeled");
+        require(evaluate_fixture(with_rule, oracle_executor()).outcome == Outcome::passed, "tntExplodes is modeled");
         require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
         require(!parse_fixture(std::string(header2) + "gamerule a true\ngamerule a false\n"), "duplicate game rule");
         // A rule at its default changes nothing; randomTickSpeed and
@@ -1930,22 +1870,22 @@ int main(int argc, char** argv) {
         // version lacks makes the scenario invalid there.
         auto text = read_text(fixtures / "reference" / "item_drop_piston.ctrace");
         text.insert(text.find("entities observed"), "gamerule tntExplodes true\ngamerule randomTickSpeed 0\n");
-        require(evaluate_fixture(parse(text), engine_executor()).outcome == Outcome::passed, "rules at their defaults");
+        require(evaluate_fixture(parse(text), oracle_executor()).outcome == Outcome::passed, "rules at their defaults");
         auto faster = text;
         faster.replace(faster.find("randomTickSpeed 0"), 17, "randomTickSpeed 5");
-        const auto ticking = evaluate_fixture(parse(faster), engine_executor());
+        const auto ticking = evaluate_fixture(parse(faster), oracle_executor());
         require(ticking.outcome == Outcome::failed && ticking.detail.find("rng") != std::string::npos,
                 std::format("randomTickSpeed draws from the level random: {}", ticking.detail));
         auto off = text;
         off.replace(off.find("tntExplodes true"), 16, "tntExplodes false");
-        require(evaluate_fixture(parse(off), engine_executor()).outcome == Outcome::passed, "tntExplodes off");
+        require(evaluate_fixture(parse(off), oracle_executor()).outcome == Outcome::passed, "tntExplodes off");
         auto changed = text;
         changed.replace(changed.find("tntExplodes true"), 16, "mobGriefing false");
-        const auto r = evaluate_fixture(parse(changed), engine_executor());
+        const auto r = evaluate_fixture(parse(changed), oracle_executor());
         require(r.outcome == Outcome::unsupported && r.detail.find("mobGriefing") != std::string::npos, r.detail);
         auto old = text;
         old.replace(old.find("game-version 1.21.8"), 19, "game-version 1.21.4");
-        const auto o = evaluate_fixture(parse(old), engine_executor());
+        const auto o = evaluate_fixture(parse(old), oracle_executor());
         require(o.outcome == Outcome::invalid && o.detail.find("tntExplodes does not exist in 1.21.4") != std::string::npos, o.detail);
     });
 

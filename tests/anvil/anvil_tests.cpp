@@ -4,16 +4,14 @@
 //
 // Set CIRCUIT_ANVIL_EXPORT_DIR to keep the exported scenario and random
 // sequence worlds, for loading them in the game.
-#include "../sim/scenarios.hpp"
+#include "../support/scenarios.hpp"
 #include "../support/check.hpp"
 #include <circuit/gameplay/effects.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
-#include <circuit/runtime/engine.hpp>
+#include "../oracle/oracle.hpp"
 #include <circuit/server/anvil.hpp>
-#include <circuit/server/server.hpp>
-#include <circuit/storage/world_directory.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <set>
@@ -31,7 +29,8 @@ using namespace circuit::test;
 namespace anvil = circuit::server::anvil;
 namespace nbt = circuit::protocol::nbt;
 namespace fs = std::filesystem;
-using circuit::runtime::Engine;
+// The sequential reference executor stands in for the runtime.
+using Engine = circuit::oracle::Oracle;
 using nbt::Tag;
 using nbt::TagType;
 
@@ -1308,36 +1307,6 @@ int main() {
         pending.level(circuit::contracts::DimensionId::overworld).block_events.push_back({{0, 0, 0}, BlockType::piston, 0, 0});
         require(!anvil::export_world(pending, bundle(), root / "pending"), "pending block events refused");
         require(!fs::exists(root / "pending") && !fs::exists(root / "pending.partial"), "no partial world");
-    });
-
-    suite.run("world tools import into and export from world directories", [&] {
-        Engine engine(bundle(), 7);
-        engine.advance({{1, AddTicket{1, {0, 0}, 1}}});
-        engine.advance({{2, SetBlock{{0, -61, 0}, blocks::stone().raw(), std::nullopt}},
-                        {3, SetBlock{{1, -61, 0}, blocks::stone().raw(), std::nullopt}},
-                        {4, SetBlock{{0, -60, 0}, blocks::lever(true, Direction::north, blocks::LeverFace::floor).raw(), std::nullopt}},
-                        {5, SetBlock{{1, -60, 0}, blocks::wire().raw(), std::nullopt}}});
-        const auto source = root / "tool-source";
-        require(anvil::export_world(engine.dump(), bundle(), source, {.seed = 7}).has_value(), "source world");
-        circuit::server::ServerConfig config;
-        config.world_directory = root / "tool-world";
-        const auto imported = circuit::server::import_anvil_world(source, config);
-        require(imported.has_value(), std::format("import: {}", imported ? "" : imported.error()));
-        require(!circuit::server::import_anvil_world(source, config), "an existing world is not overwritten");
-        const auto exported = circuit::server::export_anvil_world(config, root / "tool-export");
-        require(exported.has_value(), std::format("export: {}", exported ? "" : exported.error()));
-        const auto again = anvil::import_world(root / "tool-export", bundle());
-        require(again.has_value(), std::format("re-import: {}", again ? "" : again.error()));
-        require(state_at(again->state, {0, -60, 0}).is(BlockType::lever) && state_at(again->state, {1, -60, 0}).is(BlockType::redstone_wire),
-                std::format("blocks survive both tools: {} blocks, {} {}", again->state.overworld().blocks.size(),
-                            state_at(again->state, {0, -60, 0}).raw(), state_at(again->state, {1, -60, 0}).raw()));
-        // A server opens the imported world.
-        config.port = 0;
-        config.bind_address = "127.0.0.1";
-        config.online_mode = false;
-        circuit::server::Server server(config);
-        server.start();
-        server.stop();
     });
 
     // The cases run in finish(); the directory goes after them.
