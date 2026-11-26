@@ -12,6 +12,8 @@ Circuit/
   src/gameplay/             Reference rules (circuit-reference-rules-v12) behind RuleContext
   src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
   src/protocol/             Wire codec: data types, NBT, framing, packet and content tables
+  include/circuit/net/      The boundary between the network layer and the game side: Peer, Outbox, joins
+  src/runtime/              The engine facade's change feed; the strict runtime as it is built
   src/auth/                 Login cryptography, offline identities, the JSON reader
   src/data/                 Data packs: the official jar's built-in pack, directories and archives
   src/storage/              Checkpoints, the input log and world directories
