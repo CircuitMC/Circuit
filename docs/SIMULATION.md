@@ -98,7 +98,7 @@ An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for 
 | `tests/fixtures/` | Skeletons, reference recordings, target-version traces, documented fixtures and profiling workloads |
 | `tests/contracts/`, `tests/evidence/` | Contract and fixture tests |
 
-Dependencies point one way: `contracts` ← `gameplay` ← executors. Rules see the world only through `RuleContext`, so the oracle and the runtime execute the same rule functions over different storage and ordering machinery.
+Dependencies point one way: `contracts` ← `gameplay` ← executors. Rules see the world only through `RuleContext`, so the oracle and the runtime execute the same rule functions over different storage and ordering machinery. `RuleContext::block()` reads one section, the one the executor last pointed its cursor at, without a virtual call, from a paletted view of the executor's storage (`SectionView`, the layout of the protocol's chunk data); every other read goes to the executor's `load_block`. The oracle never points the cursor.
 
 ## Tick structure
 

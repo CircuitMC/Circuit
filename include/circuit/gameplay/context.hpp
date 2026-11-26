@@ -5,6 +5,7 @@
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/world_types.hpp>
+#include <cstdint>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -54,6 +55,32 @@ struct NeighborUpdater {
     }
 };
 
+// One 16x16x16 section of blocks in the paletted layout of the protocol's
+// chunk data: each block is an index into `palette`, packed `bits` to a value
+// in 64-bit words from the lowest bits up, `per_word` values to a word, none
+// spanning two words, in section_local_index order (y, then z, then x). With
+// `bits` 0 every block is palette[0] and `words` is unused. The view borrows
+// the executor's storage; the executor keeps it valid while a cursor holds it.
+struct SectionView {
+    const BlockState* palette{};
+    const std::uint64_t* words{};
+    std::uint8_t bits{};
+    std::uint8_t per_word{}; // 64 / bits; set by make()
+
+    // A view of packed values (bits 1 to 32), or of one state for the whole
+    // section (bits 0).
+    static constexpr SectionView make(const BlockState* palette, const std::uint64_t* words, std::uint8_t bits) noexcept {
+        return {palette, words, bits, bits == 0 ? std::uint8_t{0} : static_cast<std::uint8_t>(64 / bits)};
+    }
+    [[nodiscard]] BlockState at(std::uint32_t index) const noexcept {
+        if (bits == 0) return palette[0];
+        const auto word = words[index / per_word];
+        const auto shift = (index % per_word) * bits;
+        const auto mask = (std::uint64_t{1} << bits) - 1;
+        return palette[(word >> shift) & mask];
+    }
+};
+
 // Everything a rule may do to the world. An executor implements it over its
 // own storage and ordering machinery: the sequential oracle applies effects
 // immediately; the parallel runtime restricts access to one region and stages
@@ -80,8 +107,13 @@ public:
     NeighborUpdater& updater() noexcept { return updater_; }
 
     [[nodiscard]] virtual Tick now() const = 0;
-    // Unloaded chunks and positions outside the world height read as the sentinel.
-    virtual BlockState block(BlockPos pos) = 0;
+    // Unloaded chunks and positions outside the world height read as the
+    // sentinel. A read inside the section the cursor holds is served inline
+    // from the executor's storage; any other goes to load_block.
+    BlockState block(BlockPos pos) {
+        if (cursor_holds(pos)) return cursor_.view.at(contracts::section_local_index(pos));
+        return load_block(pos);
+    }
     // Raw write without reactions. Precondition: block(pos) is not the sentinel.
     virtual void write_block(BlockPos pos, BlockState state) = 0;
     // A game rule's value (gameplay::game_rule_value).
@@ -215,6 +247,28 @@ public:
     virtual RandomSequence& random_sequence(const std::string& id, const SequenceIdHash& hash) = 0;
 
 protected:
+    // The block at a position, as block() returns it, for every read the
+    // cursor does not serve. An executor that uses the cursor checks access
+    // here and may point the cursor at the position's section.
+    virtual BlockState load_block(BlockPos pos) = 0;
+
+    // The cursor: one section of the current level that block() reads
+    // without a virtual call. An executor points it at a section it may read
+    // and that is loaded and inside the world height, and drops it before the
+    // section's view stops describing the section: when a write changes the
+    // palette, the bit width or the storage the view borrows, when the column
+    // unloads, or when the context's access changes. A write that only
+    // changes a packed value in place keeps it valid. Changing the level
+    // (enter) drops it. Executors that never point it (the oracle) read every
+    // block through load_block.
+    void point_cursor(BlockPos in_section, SectionView view) noexcept {
+        cursor_ = {in_section.x >> 4, in_section.y >> 4, in_section.z >> 4, view, true};
+    }
+    void drop_cursor() noexcept { cursor_.valid = false; }
+    [[nodiscard]] bool cursor_holds(BlockPos pos) const noexcept {
+        return cursor_.valid && (pos.x >> 4) == cursor_.x && (pos.y >> 4) == cursor_.y && (pos.z >> 4) == cursor_.z;
+    }
+
     // The current level's random sequence and random-tick position state.
     virtual LevelRandom& level_random() = 0;
     virtual std::uint32_t& random_tick_state() = 0;
@@ -222,6 +276,7 @@ protected:
     void enter(contracts::DimensionId dimension) noexcept {
         dimension_ = dimension;
         shape_ = &bundle_->shape(dimension);
+        drop_cursor();
     }
 
 private:
@@ -234,6 +289,13 @@ private:
         return value;
     }
 
+    struct Cursor {
+        std::int32_t x{}, y{}, z{}; // section coordinates (block coordinates >> 4)
+        SectionView view;
+        bool valid{};
+    };
+
+    Cursor cursor_;
     const contracts::VersionBundle* bundle_;
     const GameData* data_;
     const contracts::WorldShape* shape_;

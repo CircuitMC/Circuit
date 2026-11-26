@@ -34,7 +34,8 @@ public:
     // Commands are inputs between ticks: they observe the previous tick's time.
     Tick now() const override { return phase_ == Phase::commands ? o_.time_ - 1 : o_.time_; }
 
-    BlockState block(BlockPos pos) override {
+    // The oracle never points the cursor: every read comes here.
+    BlockState load_block(BlockPos pos) override {
         if (!in_world(world(), pos) || lv().level(contracts::chunk_of(pos)) == ChunkLevel::unloaded)
             return BlockState::unloaded_sentinel();
         const auto it = lv().blocks.find(pos);
