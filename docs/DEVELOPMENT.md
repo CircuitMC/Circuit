@@ -60,7 +60,7 @@ xmake run circuit-fixture --compatibility --game-version java-1.21.4
 
 ## Validation
 
-`bash tools/check.sh` configures debug mode, builds all targets and runs the test programs one after another. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). The programs:
+`bash tools/check.sh` configures debug mode, builds all targets and runs the test programs one after another. The test programs are the xmake targets whose names end in `_tests`; every one of them must be listed in `GATE_PROGRAMS` (`tools/gate/lib.sh`), and every check and gate fails when the two differ. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). The programs:
 
 ```bash
 xmake run contract_tests    # identities, coordinates, bundles, compatibility claims, replay limits

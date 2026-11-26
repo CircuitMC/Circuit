@@ -41,16 +41,15 @@ if [[ -z $gate ]]; then
     export XMAKE_GLOBALDIR="${XMAKE_GLOBALDIR:-$PWD/.xmake-global}"
     xmake f -m debug -y
     xmake build -y --all
-    xmake run contract_tests
-    xmake run rules_tests
-    xmake run evidence_tests
-    xmake run protocol_tests
-    xmake run data_tests
-    xmake run content_tests
-    xmake run storage_tests
-    xmake run anvil_tests
+    # shellcheck source=tools/gate/lib.sh
+    source tools/gate/lib.sh
+    gate_program_list "" "$PWD"
+    for program in "${GATE_PROGRAMS[@]}"; do
+        xmake run "$program"
+    done
     python3 tools/compat_ledger.py check
     python3 tests/tools/compat_ledger_tests.py
+    bash tests/tools/gate_program_list_tests.sh
     exit 0
 fi
 

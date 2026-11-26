@@ -15,6 +15,7 @@ T3 and T4 are combinations of the commands below; they have no script of their o
 
 - **Official jars required.** `CIRCUIT_VANILLA_JAR_1_21_8` and `CIRCUIT_VANILLA_JAR_1_21_4` must name readable files, and the test programs run with `CIRCUIT_REQUIRE_JARS=1`, so a case that needs a jar fails instead of being skipped.
 - **Zero warnings.** A line with `warning:` in the debug build log fails the gate. An incremental build shows only the warnings of the files it compiled; `--rebuild` compiles all of them again, and T2 always builds its debug tree from nothing with the compiler cache off.
+- **Every test program, and only those.** The `program-list` step compares the test targets of the tree's `xmake.lua` (every target whose name ends in `_tests`) with `GATE_PROGRAMS` in `tools/gate/lib.sh` and fails on any difference, so a test program cannot drop out of the gates, and a new one must be added to the list in the same change. `tests/tools/gate_program_list_tests.sh` checks that the step fails when it should.
 - **Every test program, side by side.** At most `--test-jobs` programs run at a time (default 6), longest first. A program passes when it exits 0, its log has a completion line (`N passed, 0 failed` with N above zero, or a line with `passed` for the programs without cases), no case reports `SKIPPED`, the count of cases `skipped for a missing jar` is zero, and no sanitizer report is in the log. A sanitizer that stops before the tests run has no completion line and a non-zero exit status, so it fails; when the fault is inside the sanitizer's own runtime, the step says so. A program that hangs is ended by the timeout and fails.
 - **Compiler crashes.** When a build stops with an internal compiler error, it is continued from where it stopped, at most twice, and the build step says how often that happened. The log keeps every attempt, so the warning count still covers every file. No other failure is retried: a test program that dies is a failed step.
 - **Timing.** Every step line carries its seconds; the programs line gives the side-by-side time and the sum of the single times. The longest program bounds the side-by-side time, so more than a few programs at a time gain little until that program is split into shards.
@@ -33,7 +34,7 @@ Exports one commit of a checkout (default `HEAD`; `--working-files` takes the fi
 
 | Tree | Build | Extra |
 | --- | --- | --- |
-| `debug` | from nothing, compiler cache off, zero warnings | compatibility ledger, ledger tool tests |
+| `debug` | from nothing, compiler cache off, zero warnings | compatibility ledger, ledger tool tests, gate tool tests |
 | `asan` | incremental in the kept copy | `ASAN_OPTIONS=detect_leaks=1` |
 | `ubsan` | incremental in the kept copy | `UBSAN_OPTIONS=print_stacktrace=1`; the mode stops at the first report |
 | `tsan` | incremental in the kept copy | `TSAN_OPTIONS=halt_on_error=1`, run under `setarch -R` |

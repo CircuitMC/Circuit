@@ -12,6 +12,9 @@
 #                                 when the program supports sharding; otherwise it runs whole.
 #                                 Unset: GATE_DEFAULT_SHARDS. Empty: no shards
 
+# Every test program of the build: every xmake target whose name ends in `_tests`.
+# gate_program_list fails a gate whose tree has a test target missing here, or a name here
+# that is not a target of the tree, so a program cannot drop out of the gates unnoticed.
 # Longest first, so the side-by-side run is bounded by the longest program.
 GATE_PROGRAMS=(evidence_tests storage_tests rules_tests anvil_tests content_tests protocol_tests data_tests
                contract_tests)
@@ -252,6 +255,39 @@ gate_judge() {
     gate_record PASS "$step" "$seconds" "${line:0:70}"
 }
 
+# gate_program_list <prefix> <tree>: one step that passes when the tree's test targets (the
+# targets of its xmake.lua whose names end in `_tests`) are exactly GATE_PROGRAMS.
+gate_program_list() {
+    local prefix=$1 tree=$2 targets=() missing=() extra=() target program found detail
+    if [[ ! -r $tree/xmake.lua ]]; then
+        gate_record NOT-RUN "${prefix}program-list" 0 "no xmake.lua in $tree"
+        return 1
+    fi
+    mapfile -t targets < <(sed -n 's/^[[:space:]]*target("\([A-Za-z0-9_]*_tests\)").*/\1/p' "$tree/xmake.lua" | sort -u)
+    if ((${#targets[@]} == 0)); then
+        gate_record FAIL "${prefix}program-list" 0 "no test target in $tree/xmake.lua"
+        return 1
+    fi
+    for target in "${targets[@]}"; do
+        found=0
+        for program in "${GATE_PROGRAMS[@]}"; do [[ $program == "$target" ]] && found=1; done
+        ((found)) || missing+=("$target")
+    done
+    for program in "${GATE_PROGRAMS[@]}"; do
+        found=0
+        for target in "${targets[@]}"; do [[ $program == "$target" ]] && found=1; done
+        ((found)) || extra+=("$program")
+    done
+    if ((${#missing[@]} || ${#extra[@]})); then
+        detail=
+        ((${#missing[@]})) && detail+="not in GATE_PROGRAMS: ${missing[*]}; "
+        ((${#extra[@]})) && detail+="not a target of the tree: ${extra[*]}; "
+        gate_record FAIL "${prefix}program-list" 0 "${detail%; } (tools/gate/lib.sh)"
+        return 1
+    fi
+    gate_record PASS "${prefix}program-list" 0 "${#targets[@]} test programs, all in the gate"
+}
+
 # gate_run_programs <prefix> <tree> <mode> <test jobs> <log directory> <require jars: 0|1> [program...]
 # Runs the programs side by side, at most <test jobs> at a time, and records one step each.
 gate_run_programs() {
@@ -260,7 +296,10 @@ gate_run_programs() {
     local programs=("$@") program bin shards shard index running=0 start wall sum=0 failed=0
     local queue=() item step log rc seconds sharded=
     local -A shard_cases=()
-    ((${#programs[@]})) || programs=("${GATE_PROGRAMS[@]}")
+    if ((${#programs[@]} == 0)); then
+        programs=("${GATE_PROGRAMS[@]}")
+        gate_program_list "$prefix" "$tree" || failed=1
+    fi
     if ! bin=$(gate_binary_directory "$tree" "$mode"); then
         for program in "${programs[@]}"; do
             gate_record NOT-RUN "${prefix}$program" 0 "no single build directory for mode $mode in $tree"
@@ -345,9 +384,10 @@ gate_command_in() {
 }
 
 # gate_tree_checks <prefix> <tree> <log directory>: the checks of a tree besides its programs:
-# the compatibility ledger and the ledger tool's tests.
+# the compatibility ledger, the ledger tool's tests and the gate library's own tests.
 gate_tree_checks() {
     local prefix=$1 tree=$2 logs=$3
     gate_command_in "$tree" "${prefix}ledger" "$logs/ledger.log" python3 tools/compat_ledger.py check
     gate_command_in "$tree" "${prefix}ledger-tools" "$logs/ledger-tools.log" python3 tests/tools/compat_ledger_tests.py
+    gate_command_in "$tree" "${prefix}gate-tools" "$logs/gate-tools.log" bash tests/tools/gate_program_list_tests.sh
 }

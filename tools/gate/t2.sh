@@ -88,10 +88,12 @@ expected_steps() {
     echo "$kind/copy"
     echo "$kind/build"
     if [[ $kind == debug ]]; then echo "$kind/warnings"; fi
+    echo "$kind/program-list"
     for program in "${GATE_PROGRAMS[@]}"; do echo "$kind/$program"; done
     if [[ $kind == debug ]]; then
         echo "$kind/ledger"
         echo "$kind/ledger-tools"
+        echo "$kind/gate-tools"
     fi
 }
 
