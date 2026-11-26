@@ -31,7 +31,7 @@ Every mode keeps the vanilla order where it can. Visible differences of island m
 
 ## Build
 
-Requires Linux, xmake 3.0+ and a C++23 compiler with `std::expected` (GCC 13 verified), zlib and OpenSSL.
+Requires Linux, xmake 3.0+ and a C++23 compiler with `std::expected` (GCC 13 verified), zlib and OpenSSL. xmake fetches PACE, the network library, at the release `xmake.lua` pins.
 
 ```bash
 xmake f -m debug -y

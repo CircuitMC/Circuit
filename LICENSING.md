@@ -4,7 +4,7 @@ Circuit implementation source is provided under **GNU Affero General Public Lice
 
 A separate commercial license is available: authorized rights holders may offer an alternative license through a separately executed commercial agreement. An unsigned or incomplete commercial draft grants no exception by itself. Alternative licensing does not revoke rights already received under AGPLv3.
 
-Before release or commercial signing, confirm copyright ownership and sufficient contributor permission for alternative licensing. Third-party code retains its own terms; a Circuit agreement cannot waive third-party AGPL, GPL, or other obligations. `THIRD_PARTY_NOTICES.md` lists every third-party component and data source with its license.
+Before release or commercial signing, confirm copyright ownership and sufficient contributor permission for alternative licensing. Third-party code retains its own terms; a Circuit agreement cannot waive third-party AGPL, GPL, or other obligations. PACE (MIT) is linked statically into binaries that use the network layer; retain its notice. `THIRD_PARTY_NOTICES.md` lists every third-party component and data source with its license.
 
 The public repository distributes implementation source, tests, build files, and general documentation. Internal planning notes are excluded. Applicable source-availability obligations still apply when implementation is distributed or modified software is operated as a network service.
 

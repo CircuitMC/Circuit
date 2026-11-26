@@ -17,7 +17,7 @@
 # that is not a target of the tree, so a program cannot drop out of the gates unnoticed.
 # Longest first, so the side-by-side run is bounded by the longest program.
 GATE_PROGRAMS=(evidence_tests simulation_tests storage_tests rules_tests anvil_tests content_tests protocol_tests
-               data_tests contract_tests)
+               data_tests contract_tests net_tests)
 
 # The programs that take minutes, split so that no shard bounds the side-by-side run.
 GATE_DEFAULT_SHARDS="evidence_tests=4 simulation_tests=4 storage_tests=3"

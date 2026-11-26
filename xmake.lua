@@ -12,6 +12,24 @@ end
 set_warnings("allextra")
 set_policy("build.fence", true)
 
+-- PACE, the network library (networking only; the compute scheduler is
+-- Circuit's own). An exact release: only the integrator moves it.
+local pace_version = "0.6.0"
+local pace_configs = {tls = true, http1 = false, websocket = false}
+-- The recipe builds release objects whatever the consumer's mode is; the
+-- current mode's sanitizer is passed to PACE so that its objects are
+-- instrumented like Circuit's.
+local pace_sanitizer = ({asan = "address", tsan = "thread", ubsan = "undefined"})[get_config("mode") or ""]
+if pace_sanitizer then
+    pace_configs.cxflags = "-fsanitize=" .. pace_sanitizer .. " -fno-omit-frame-pointer"
+        .. (pace_sanitizer == "undefined" and " -fno-sanitize-recover=all" or "")
+    pace_configs.ldflags = "-fsanitize=" .. pace_sanitizer
+end
+add_requires("pace " .. pace_version, {configs = pace_configs})
+-- One OpenSSL in the process: the recipe's openssl3 dependency is the system
+-- library that circuit_auth, circuit_data and circuit_storage link.
+add_requireconfs("pace.openssl3", {system = true, version = "3.x", override = true})
+
 add_includedirs("include")
 if is_plat("linux") then add_syslinks("pthread") end
 
@@ -196,4 +214,13 @@ target("circuit-fixture")
     set_kind("binary")
     add_files("tools/fixture/*.cpp")
     add_deps("circuit_server", "circuit_oracle")
+target_end()
+
+-- The network layer's tests; the first check the PACE package as consumed.
+target("net_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/net/*.cpp")
+    add_packages("pace")
+    add_syslinks("ssl", "crypto")
 target_end()

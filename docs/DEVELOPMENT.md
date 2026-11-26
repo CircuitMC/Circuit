@@ -37,8 +37,7 @@ The first generation's runtime, network server, player code and extensions were 
 - xmake 3.0 or later and a C++23 compiler with `std::expected`; GCC 13 is verified. Clang 18 with libstdc++ 13 does not provide `std::expected`; use GCC, Clang 19 or later, or libc++.
 - zlib and OpenSSL 3 development files.
 - Bash, Python 3 and standard POSIX utilities for local maintenance.
-
-Networking returns on PACE, consumed as an xmake package at an exact version; until then the build has no network dependency.
+- PACE, the network library, comes as the xmake package `pace` at the exact release `xmake.lua` names (0.6.0), with TLS on and HTTP and WebSocket off. Its OpenSSL dependency is resolved to the system library, so the process has one OpenSSL. In the `asan`, `ubsan` and `tsan` modes PACE is built with the same sanitizer, as a separate package build. Several worktrees share one package cache (`XMAKE_GLOBALDIR`); configure each mode once, one at a time, before lanes build in parallel.
 
 ## Build
 
@@ -64,6 +63,7 @@ xmake run circuit-fixture --compatibility --game-version java-1.21.4
 
 ```bash
 xmake run contract_tests    # identities, coordinates, bundles, compatibility claims, replay limits
+xmake run net_tests         # the network layer; first, the PACE package as Circuit consumes it
 xmake run rules_tests       # reference rules on the oracle against hand-derived expectations
 xmake run simulation_tests  # the engine under test against the oracle: 41 scenarios, restores, 64 random seeds
 xmake run evidence_tests    # trace fixtures, content mapping, recordings, target-version traces
