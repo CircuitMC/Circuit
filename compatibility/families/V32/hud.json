@@ -2,9 +2,11 @@
   "name": "Boss bars, titles, scoreboards, world border and tab list",
   "milestone": "C10",
   "packages": [
+    "VIEW1",
+    "PORT1",
     "CD4"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "Tab list"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1, PORT1. First generation: Tab list"
 }

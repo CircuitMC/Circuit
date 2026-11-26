@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_attributes",
     "client/ench_fire"
   ],
-  "note": "Its burning time modifier on each armor piece, shortening the burning lava sets, and its protection (2 a level) against the is_fire types only (none against magic), as both official servers do"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its burning time modifier on each armor piece, shortening the burning lava sets, and its protection (2 a level) against the is_fire types only (none against magic), as both official servers do"
 }

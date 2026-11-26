@@ -1,12 +1,15 @@
 {
   "name": "Movement checks against block shapes, step-up and corrections",
   "milestone": "C6",
-  "impl": "implemented",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/collision",
     "client/vitals",
     "realclient/survival"
   ],
-  "note": "Walking, jumping and sprinting"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Walking, jumping and sprinting",
+  "packages": [
+    "PORT1"
+  ]
 }

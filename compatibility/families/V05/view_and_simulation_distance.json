@@ -2,15 +2,13 @@
   "name": "View distance and simulation distance",
   "milestone": "C2",
   "packages": [
+    "VIEW1",
     "UNASSIGNED"
   ],
-  "impl": "partial",
-  "evidence": "reference_only",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "observation/chunk_levels"
   ],
-  "note": "Per player, a loading ticket of level 31 over the view distance (two rings beyond it loaded but not simulated) and a simulation ticket of level 31 - simulation distance; chunks loaded only by the view simulate nothing, as both official servers showed (ticking.js)",
-  "deviations": [
-    "the view is not compared tick by tick with the official servers, whose chunk loading timing varies"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: Per player, a loading ticket of level 31 over the view distance (two rings beyond it loaded but not simulated) and a simulation ticket of level 31 - simulation distance; chunks loaded only by the view simulate nothing, as both official servers showed (ticking.js); its deviations: the view is not compared tick by tick with the official servers, whose chunk loading timing varies"
 }

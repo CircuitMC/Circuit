@@ -1,12 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_attributes",
     "client/ench_fire"
   ],
-  "note": "Fire protection's modifier on each armor piece, sent as both official servers send it; scales the fire ticks lava sets, giving the burning hurts both official servers give",
-  "deviations": [
-    "rounded down by Circuit's choice (the recorded counts are the same rounded to the nearest), and fire's 160 ticks scaled alike were not recorded"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Fire protection's modifier on each armor piece, sent as both official servers send it; scales the fire ticks lava sets, giving the burning hurts both official servers give; its deviations: rounded down by Circuit's choice (the recorded counts are the same rounded to the nearest), and fire's 160 ticks scaled alike were not recorded"
 }

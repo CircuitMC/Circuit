@@ -1,13 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_combat",
     "client/ench_thorns"
   ],
-  "note": "Its post-attack ignite (4 seconds a level, from a direct attack) on the target and each player swept, also on a weak hit and on a hit within the target's hurt cooldown (client/ench_thorns), times their burning time, a longer burning kept, its flag after the next tick's wear and health, as both official servers",
-  "deviations": [
-    "the scaled ticks are rounded down by Circuit's choice (the recorded hurt counts are the same rounded to the nearest)",
-    "a swept player is set burning only when hurt (Circuit's choice: every recorded one was hurt)"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its post-attack ignite (4 seconds a level, from a direct attack) on the target and each player swept, also on a weak hit and on a hit within the target's hurt cooldown (client/ench_thorns), times their burning time, a longer burning kept, its flag after the next tick's wear and health, as both official servers; its deviations: the scaled ticks are rounded down by Circuit's choice (the recorded hurt counts are the same rounded to the nearest); a swept player is set burning only when hurt (Circuit's choice: every recorded one was hurt)"
 }

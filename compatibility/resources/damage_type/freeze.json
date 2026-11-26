@@ -1,8 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "data_only",
+  "evidence": "none",
   "cases": [
     "client/drown"
   ],
-  "note": "Fully frozen in powder snow: 1 each 40th tick of the player's age"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: The damage-type registry entries remain (src/server/registries.cpp). Fully frozen in powder snow: 1 each 40th tick of the player's age"
 }

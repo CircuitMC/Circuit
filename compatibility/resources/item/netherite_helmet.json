@@ -1,8 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/armor"
   ],
-  "note": "As both official servers wear it: put on by clicks into the empty head slot after the worn helmet was taken off, a shift-click while a helmet is worn moving it to the hotbar instead (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: As both official servers wear it: put on by clicks into the empty head slot after the worn helmet was taken off, a shift-click while a helmet is worn moving it to the hotbar instead (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces"
 }

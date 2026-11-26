@@ -1,9 +1,5 @@
 {
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "add, remove, remove all and query with the official feedback keys; at most 256 chunks",
-  "deviations": [
-    "no permissions; the overworld only",
-    "query lists chunks in coordinate order"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: add, remove, remove all and query with the official feedback keys; at most 256 chunks; its deviations: no permissions; the overworld only; query lists chunks in coordinate order"
 }

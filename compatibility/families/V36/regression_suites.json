@@ -1,6 +1,10 @@
 {
   "name": "Debug and sanitizer regression suites",
   "milestone": "C12",
-  "impl": "implemented",
-  "evidence": "none"
+  "impl": "partial",
+  "evidence": "none",
+  "note": "The kept suites (rules, evidence, simulation against the oracle, storage, Anvil, content, protocol, data, contracts, net) run in the gates; server_tests and the client sweeps went with the first generation's server (tag pre-refactor) and return with VIEW1. First generation: ",
+  "packages": [
+    "VIEW1"
+  ]
 }

@@ -1,10 +1,10 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/attributes",
     "client/attribute_rules",
     "client/falls"
   ],
-  "note": "Sent with jump boost's modifier; fall damage uses it"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Sent with jump boost's modifier; fall damage uses it"
 }

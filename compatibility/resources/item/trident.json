@@ -1,8 +1,5 @@
 {
-  "impl": "partial",
-  "evidence": "documented",
-  "note": "Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 1 a hit (minecraft.wiki)",
-  "deviations": [
-    "the trident's throw and the mace's smash are not modeled"
-  ]
+  "impl": "missing",
+  "evidence": "none",
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Held, the attack speed and damage of minecraft.wiki, as the recorded weapons give theirs (client/armor); it attacks with its damage, wearing 1 a hit (minecraft.wiki); its deviations: the trident's throw and the mace's smash are not modeled"
 }

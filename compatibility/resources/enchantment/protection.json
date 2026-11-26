@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_protect",
     "client/ench_fire"
   ],
-  "note": "Its protection (1 a level) against all but the bypasses_invulnerability types, in armor slots only, after armor and resistance, as both official servers; not against starvation"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its protection (1 a level) against all but the bypasses_invulnerability types, in armor slots only, after armor and resistance, as both official servers; not against starvation"
 }

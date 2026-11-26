@@ -2,12 +2,14 @@
   "name": "Chunks, block updates and acknowledgements",
   "milestone": "C10",
   "packages": [
+    "VIEW1",
     "UNASSIGNED"
   ],
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/redstone",
     "realclient/redstone"
-  ]
+  ],
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1."
 }

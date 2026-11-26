@@ -2,10 +2,11 @@
   "name": "Operators, whitelist, bans, server properties, console, RCON and query",
   "milestone": "C9",
   "packages": [
+    "VIEW1",
     "CD1",
     "CD5"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "Circuit's own configuration file; no vanilla files"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: Circuit's own configuration file; no vanilla files"
 }

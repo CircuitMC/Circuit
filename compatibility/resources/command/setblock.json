@@ -1,8 +1,5 @@
 {
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "A block state with every property at whole or ~ coordinates, placed with normal updates and an empty block entity, with the official feedback keys",
-  "deviations": [
-    "no permissions, modes (destroy, keep, strict) or block entity data"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: A block state with every property at whole or ~ coordinates, placed with normal updates and an empty block entity, with the official feedback keys; its deviations: no permissions, modes (destroy, keep, strict) or block entity data"
 }

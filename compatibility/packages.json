@@ -603,6 +603,83 @@
       "note": "Named, not sized: later work. It follows the packages listed as hard prerequisites; which of them are needed only for its evidence is not determined yet."
     },
     {
+      "id": "RT1",
+      "title": "Strict single-threaded runtime",
+      "content": "A world store built for speed (hashed column index, paletted sections behind the RuleContext cursor, active sets, time-ordered scheduled ticks, incremental chunk levels and light), a strict executor in vanilla order behind runtime::Engine, equal to the oracle on every trace, scenario and seed; storage and Anvil on it.",
+      "size": "XL",
+      "hard": [],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
+      "id": "NET1",
+      "title": "Network layer on PACE",
+      "content": "Listener and connection coroutines, handshake, status, login with encryption and compression, session verification on PACE, the outbox with batched writes and shared frames, several reactors, limits and failure cases, behind include/circuit/net/link.hpp.",
+      "size": "L",
+      "hard": [],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
+      "id": "VIEW1",
+      "title": "Player view and server assembly",
+      "content": "A deterministic packet-stream corpus of the first generation's server; the chunk-to-viewer index, chunk and light encoding, entity tracking; joins, inbound packets to commands, per-tick publication; the server binary; a playable server on both versions checked by the real client.",
+      "size": "XL",
+      "hard": [
+        "RT1",
+        "NET1"
+      ],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
+      "id": "PORT1",
+      "title": "First-generation player behavior as rules",
+      "content": "The survival behavior the first generation's server ran for players (movement checks, digging, damage, effects, attributes, food, equipment, combat, death and respawn, the HUD), ported family by family into the rule tick on the living-entity base, each family checked against its recorded client scenarios.",
+      "size": "XL",
+      "hard": [
+        "EF5",
+        "EF9",
+        "VIEW1"
+      ],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
+      "id": "STORE1",
+      "title": "Chunk-granular storage",
+      "content": "Per-column records with a tagged self-describing body written when dirty, a small world record, the world directory generalised to a set of store generations, crash coverage after every file operation, the single-file checkpoint read once as an importer.",
+      "size": "L",
+      "hard": [
+        "RT1"
+      ],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
+      "id": "ISL1",
+      "title": "Islands",
+      "content": "Islands of chunks that cannot affect each other within the next ticks, each with its own clock, random sequences, queues, inbox and change feed; merging and splitting; Circuit's compute scheduler over all cores; cross-island effects and per-island saves; measured against Folia.",
+      "size": "XL",
+      "hard": [
+        "RT1",
+        "STORE1"
+      ],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
+      "id": "WL1",
+      "title": "Threads inside an island",
+      "content": "Chunk workloads with calibrated cost estimates, sub-islands for islands that do not fit a tick, a declared treatment of dependencies between neighbouring sub-islands with a replayable order, help from idle threads on the outer chunks of a share.",
+      "size": "XL",
+      "hard": [
+        "ISL1"
+      ],
+      "evidence": [],
+      "state": "planned"
+    },
+    {
       "id": "UNASSIGNED",
       "title": "Not assigned to a work package",
       "content": "Open mechanics whose remaining gaps no work package covers: experimental profiles, release qualification, machine designs not yet established, timing the official servers vary between runs, and rows that are partial without a listed gap. Each needs a package or a recorded decision.",

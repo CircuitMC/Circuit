@@ -1,11 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_protect"
   ],
-  "note": "Its protection (2 a level) against the is_projectile types; no protection against falls or magic, as both official servers",
-  "deviations": [
-    "Circuit deals no projectile damage to players yet"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its protection (2 a level) against the is_projectile types; no protection against falls or magic, as both official servers; its deviations: Circuit deals no projectile damage to players yet"
 }

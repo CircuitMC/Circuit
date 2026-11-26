@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/eat",
     "client/shield"
   ],
-  "note": "The chorus fruit's and a disabled shield's cooldowns and their ends"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1 and VIEW1. First generation: Its layout stays in src/server/wire.cpp or the protocol tables. The chorus fruit's and a disabled shield's cooldowns and their ends"
 }

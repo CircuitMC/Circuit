@@ -2,10 +2,11 @@
   "name": "Death, drops and respawning",
   "milestone": "C6",
   "packages": [
+    "PORT1",
     "PL7"
   ],
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/vitals",
     "realclient/survival",
@@ -15,11 +16,5 @@
     "client/ench_curses",
     "client/ench_curses_table"
   ],
-  "deviations": [
-    "death drops spread in a fixed pattern",
-    "a dead player's orbs are given at their feet and the slots before the health for every death (recorded only the orbs' values and /kill's order)",
-    "a dead player's open workstation inputs and beacon payment are thrown with the grids when the body goes, an open container's window (other than a crafting table's) and its viewing last until then too, and a close the dead player's client sends, or the window's container going or changing, throws them at once (not recorded); a departed player's carried stack is thrown before the grids, as a dead player's (not recorded)",
-    "where a player appears around the spawn is drawn from Circuit's own random (the official servers draw it from theirs), in at most 16 columns"
-  ],
-  "note": "The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view (its health 0 and velocity told) until it goes after the death animation (entity event 60; Circuit takes 20 ticks) or the player respawns; the respawn's packets Circuit sends in the official order, with the operator level and the experience (after the first spawn position and after the health); the experience dropped after the items (7 points a level, at most 100, as orbs; none from points alone) and lost, told at the respawn; the inventory and the experience kept with keepInventory; the stacks with the curse of vanishing gone instead of dropped; the open window kept, the death's slots told in it, until the body goes, its grids' items and the carried stack then thrown, the carried stack first, keepInventory or not; the slots a death's drops empty before its health; the dead pick nothing up; new and respawning players placed in a random column within the spawnRadius game rule"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: The death screen and the death message with the player's name as both official servers write it, the death animation (entity event 3), the body kept in the others' view (its health 0 and velocity told) until it goes after the death animation (entity event 60; Circuit takes 20 ticks) or the player respawns; the respawn's packets Circuit sends in the official order, with the operator level and the experience (after the first spawn position and after the health); the experience dropped after the items (7 points a level, at most 100, as orbs; none from points alone) and lost, told at the respawn; the inventory and the experience kept with keepInventory; the stacks with the curse of vanishing gone instead of dropped; the open window kept, the death's slots told in it, until the body goes, its grids' items and the carried stack then thrown, the carried stack first, keepInventory or not; the slots a death's drops empty before its health; the dead pick nothing up; new and respawning players placed in a random column within the spawnRadius game rule; its deviations: death drops spread in a fixed pattern; a dead player's orbs are given at their feet and the slots before the health for every death (recorded only the orbs' values and /kill's order); a dead player's open workstation inputs and beacon payment are thrown with the grids when the body goes, an open container's window (other than a crafting table's) and its viewing last until then too, and a close the dead player's client sends, or the window's container going or changing, throws them at once (not recorded); a departed player's carried stack is thrown before the grids, as a dead player's (not recorded); where a player appears around the spawn is drawn from Circuit's own random (the official servers draw it from theirs), in at most 16 columns"
 }

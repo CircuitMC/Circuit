@@ -1,7 +1,7 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
-  "note": "Worn with its armor 1, toughness 0 and equip_leather sound as both official servers show them (client/drown, from the creative inventory), and keeps its wearer from freezing in powder snow as they do; the other leather pieces against freezing by the same rule",
+  "impl": "missing",
+  "evidence": "none",
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Worn with its armor 1, toughness 0 and equip_leather sound as both official servers show them (client/drown, from the creative inventory), and keeps its wearer from freezing in powder snow as they do; the other leather pieces against freezing by the same rule",
   "cases": [
     "client/drown"
   ]

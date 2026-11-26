@@ -1,10 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/recipes_place"
   ],
-  "deviations": [
-    "among several kinds of items for one ingredient, the kinds are taken in the order the inventory first holds them; the official servers' choice varies"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1 and VIEW1. First generation: Its layout stays in src/server/wire.cpp or the protocol tables. its deviations: among several kinds of items for one ingredient, the kinds are taken in the order the inventory first holds them; the official servers' choice varies"
 }

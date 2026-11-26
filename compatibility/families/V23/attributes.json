@@ -2,17 +2,12 @@
   "name": "Attributes and modifiers",
   "milestone": "C6",
   "packages": [
+    "PORT1",
     "PL2",
     "PL7"
   ],
-  "impl": "partial",
-  "evidence": "compared",
-  "deviations": [
-    "only players have attributes, and only those Circuit models: the armor and its toughness, the movement and attack speed, the attack damage, both reaches, knockback resistance, luck, the maximum health and absorption, the safe fall distance, the oxygen bonus, and those enchantments give (burning time, explosion knockback resistance, mining efficiency, sneaking speed, submerged mining speed, sweeping damage ratio, water movement efficiency)",
-    "the movement speed and luck only reach the client, and Circuit's movement checks do not use the block reach (attacks use the attack damage and speed, the entity reach and the sweeping damage ratio: client/combat, client/ench_combat)",
-    "a packet's attributes come in id order; the official servers' order varies from run to run",
-    "players' health and skin entity data (indexes 9 and 17), which the official servers send around the attributes on joining, to those who see a player and when the health changes, are not sent"
-  ],
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/attributes",
     "client/attribute_rules",
@@ -21,5 +16,5 @@
     "client/combat",
     "client/ench_attributes"
   ],
-  "note": "A player's attributes as both official servers keep and send them: the armor slots' armor, toughness and knockback resistance and the main hand weapon's or tool's attack damage and speed (client/armor; added again, last, whenever the slot's stack changes, its wear included); the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage, which the official servers do not send: seen in attacks' damage, client/combat) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied; the enchantments' modifiers in their slots (client/ench_attributes), which a join or respawn sends after the attributes the player arrives and appears with"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: A player's attributes as both official servers keep and send them: the armor slots' armor, toughness and knockback resistance and the main hand weapon's or tool's attack damage and speed (client/armor; added again, last, whenever the slot's stack changes, its wear included); the movement speed and both reaches from the first join, those effects change from then on, kept across respawns and saved; creative mode's reach, sprinting and the effects' modifiers (speed, slowness, haste, mining fatigue, jump boost, health boost, absorption, luck, bad luck; strength and weakness on the attack damage, which the official servers do not send: seen in attacks' damage, client/combat) by amplifier, added again at the end of the list whenever an effect's shown level is given, changed, lengthened or comes back; sent after the next tick's entity data to the player and to whoever sees them, with a player who appears, before the health on a rejoin or respawn (those who see them get them twice) and after it on a first join; the maximum health (regeneration, rejoins, the health cut when it falls), absorption and the safe fall distance applied; the enchantments' modifiers in their slots (client/ench_attributes), which a join or respawn sends after the attributes the player arrives and appears with; its deviations: only players have attributes, and only those Circuit models: the armor and its toughness, the movement and attack speed, the attack damage, both reaches, knockback resistance, luck, the maximum health and absorption, the safe fall distance, the oxygen bonus, and those enchantments give (burning time, explosion knockback resistance, mining efficiency, sneaking speed, submerged mining speed, sweeping damage ratio, water movement efficiency); the movement speed and luck only reach the client, and Circuit's movement checks do not use the block reach (attacks use the attack damage and speed, the entity reach and the sweeping damage ratio: client/combat, client/ench_combat); a packet's attributes come in id order; the official servers' order varies from run to run; players' health and skin entity data (indexes 9 and 17), which the official servers send around the attributes on joining, to those who see a player and when the health changes, are not sent"
 }

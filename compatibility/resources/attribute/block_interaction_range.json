@@ -1,8 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/attributes"
   ],
-  "note": "Sent with creative mode's modifier; the server's reach checks use their own distances"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Sent with creative mode's modifier; the server's reach checks use their own distances"
 }

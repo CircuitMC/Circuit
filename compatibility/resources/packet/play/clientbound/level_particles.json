@@ -1,8 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/combat"
   ],
-  "note": "The damage indicator and sweep particles of attacks only"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1 and VIEW1. First generation: Its layout stays in src/server/wire.cpp or the protocol tables. The damage indicator and sweep particles of attacks only"
 }

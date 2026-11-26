@@ -1,11 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "data_only",
+  "evidence": "none",
   "cases": [
     "client/ench_thorns"
   ],
-  "note": "Thorns' hurt of an attacker: caused and dealt by the enchanted player, its damage event, hurt animation and 0.4 knockback away from them; armor, resistance and protection reduce it and the attacker's armor wears; exhaustion 0.1; death.attack.thorns with the enchanted player; 1.21.8 the hurt (or death) sound then enchant.thorns.hit for everyone, 1.21.4 enchant.thorns.hit for the others in the hurt sound's place, as both official servers",
-  "deviations": [
-    "the thorns sound's pitch is Circuit's own draw (not recorded)"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: The damage-type registry entries remain (src/server/registries.cpp). Thorns' hurt of an attacker: caused and dealt by the enchanted player, its damage event, hurt animation and 0.4 knockback away from them; armor, resistance and protection reduce it and the attacker's armor wears; exhaustion 0.1; death.attack.thorns with the enchanted player; 1.21.8 the hurt (or death) sound then enchant.thorns.hit for everyone, 1.21.4 enchant.thorns.hit for the others in the hurt sound's place, as both official servers; its deviations: the thorns sound's pitch is Circuit's own draw (not recorded)"
 }

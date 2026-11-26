@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/attributes",
     "client/drown"
   ],
-  "note": "Sent with sprinting's, the effects' and powder snow's (powder_snow, -0.05 times the share frozen) modifiers; only the client uses it"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Sent with sprinting's, the effects' and powder snow's (powder_snow, -0.05 times the share frozen) modifiers; only the client uses it"
 }

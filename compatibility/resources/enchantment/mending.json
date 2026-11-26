@@ -1,12 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_mending",
     "client/ench_mending_pack"
   ],
-  "note": "Its repair with experience effect (a factor 2; its slots: any): an orb's points repair a damaged item with it in the main hand, the off hand or the armor, picked with equal chances, by the lesser of twice the points and the damage, using the repair times the points over twice them (rounded down); the rest to another such item in the same pickup, then to the player; whole items and other hotbar slots never; also in creative mode and with unbreaking; with a data pack's other repair effects (factors by level, added, set, all of, remove_binomial) as both official servers",
-  "deviations": [
-    "the item is picked by a draw of the level random"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its repair with experience effect (a factor 2; its slots: any): an orb's points repair a damaged item with it in the main hand, the off hand or the armor, picked with equal chances, by the lesser of twice the points and the damage, using the repair times the points over twice them (rounded down); the rest to another such item in the same pickup, then to the player; whole items and other hotbar slots never; also in creative mode and with unbreaking; with a data pack's other repair effects (factors by level, added, set, all of, remove_binomial) as both official servers; its deviations: the item is picked by a draw of the level random"
 }

@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/armor",
     "client/drown"
   ],
-  "note": "As both official servers wear it: put on by use, swapped for a leather helmet, and taken off by clicks (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces; worn, water breathing for 10 seconds each tick the eyes are out of water (client/drown)"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: As both official servers wear it: put on by use, swapped for a leather helmet, and taken off by clicks (client/armor), with its sound and its attribute modifiers, shown to others; the other ways of wearing it as the recorded pieces; worn, water breathing for 10 seconds each tick the eyes are out of water (client/drown)"
 }

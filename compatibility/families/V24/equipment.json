@@ -2,11 +2,12 @@
   "name": "Equipment slots and wearing armor",
   "milestone": "C6",
   "packages": [
+    "PORT1",
     "EF3",
     "PL2"
   ],
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/windows",
     "client/armor",
@@ -17,9 +18,5 @@
     "client/shield",
     "client/ench_curses"
   ],
-  "note": "Armor slots accept armor; armor and elytras put on by use from either hand (swapping with what is worn, in creative mode too, where with nothing worn a copy goes on; not a carved pumpkin or a zombie head), by clicks and by dispensers, with their equip sounds (also from the creative inventory; not when taken off; a pumpkin's or head's worn by clicks not recorded); what a player holds and wears shown to others when it changes (the hands swapped as entity event 55) and when the player appears; the attributes armor and held weapons give; the turtle shell's water breathing and leather armor keeping a player from freezing",
-  "deviations": [
-    "the elytra's gliding and golden armor with piglins are not modeled",
-    "armor's attributes go at the next tick, where the official servers send them at the next tick or the one after (their tracker's alternate tick)"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Armor slots accept armor; armor and elytras put on by use from either hand (swapping with what is worn, in creative mode too, where with nothing worn a copy goes on; not a carved pumpkin or a zombie head), by clicks and by dispensers, with their equip sounds (also from the creative inventory; not when taken off; a pumpkin's or head's worn by clicks not recorded); what a player holds and wears shown to others when it changes (the hands swapped as entity event 55) and when the player appears; the attributes armor and held weapons give; the turtle shell's water breathing and leather armor keeping a player from freezing; its deviations: the elytra's gliding and golden armor with piglins are not modeled; armor's attributes go at the next tick, where the official servers send them at the next tick or the one after (their tracker's alternate tick)"
 }

@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_attributes",
     "client/ench_combat"
   ],
-  "note": "Its sweeping damage ratio modifier in the main hand (L/(L+1)), sent as both official servers send it and adding the ratio of the charged attack damage to sweeps, as both official servers"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its sweeping damage ratio modifier in the main hand (L/(L+1)), sent as both official servers send it and adding the ratio of the charged attack damage to sweeps, as both official servers"
 }

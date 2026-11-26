@@ -1,13 +1,16 @@
 {
   "name": "Health, hunger, saturation, exhaustion and regeneration",
   "milestone": "C6",
-  "impl": "implemented",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/vitals",
     "client/join_order",
     "client/attribute_rules",
     "client/eat"
   ],
-  "note": "Food from eating and drinking (eating_and_drinking); regeneration up to the maximum health while the naturalRegeneration game rule allows; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Food from eating and drinking (eating_and_drinking); regeneration up to the maximum health while the naturalRegeneration game rule allows; on joining, health and then experience follow the inventory, the position and the first tick's recipe unlocks as on both official servers",
+  "packages": [
+    "PORT1"
+  ]
 }

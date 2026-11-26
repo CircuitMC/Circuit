@@ -1,6 +1,6 @@
 # Compatibility ledger data
 
-This directory holds the machine-readable status of Circuit against the full server-side game of Java Edition 1.21.4 and 1.21.8. Its states were recorded against the first generation (tag `pre-refactor`); after the restructuring of November 2026 they are being re-based on the code that was kept (see the note in the [ledger summary](../docs/VANILLA_LEDGER.md)). The [vanilla completion roadmap](../docs/VANILLA_COMPLETION.md) defines the target; the generated [ledger summary](../docs/VANILLA_LEDGER.md) presents this data.
+This directory holds the machine-readable status of Circuit against the full server-side game of Java Edition 1.21.4 and 1.21.8. After the restructuring of November 2026 its states describe the code that was kept; what lived only in the first generation's server (tag `pre-refactor`) is `missing` or `data_only` and names the packages that bring it back (see the note in the [ledger summary](../docs/VANILLA_LEDGER.md)). The [vanilla completion roadmap](../docs/VANILLA_COMPLETION.md) defines the target; the generated [ledger summary](../docs/VANILLA_LEDGER.md) presents this data.
 
 | File | Kind | Contents |
 | --- | --- | --- |

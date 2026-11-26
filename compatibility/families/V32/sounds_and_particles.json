@@ -2,10 +2,11 @@
   "name": "Sounds and particles",
   "milestone": "C10",
   "packages": [
+    "VIEW1",
     "CI1"
   ],
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/effects_heal",
     "client/eat",
@@ -15,8 +16,5 @@
     "client/drown",
     "client/combat"
   ],
-  "note": "The sounds of the recorded scenarios as both official servers play them: players' hurt, death and fall sounds by damage type, eating, drinking and burping, equipping armor, burning and being put out, beacons', and the attack sounds; and the attacks' damage indicator and sweep particles",
-  "deviations": [
-    "other sounds and particles are not played or sent; sound pitches and seeds are Circuit's own draws"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: The sounds of the recorded scenarios as both official servers play them: players' hurt, death and fall sounds by damage type, eating, drinking and burping, equipping armor, burning and being put out, beacons', and the attack sounds; and the attacks' damage indicator and sweep particles; its deviations: other sounds and particles are not played or sent; sound pitches and seeds are Circuit's own draws"
 }

@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/combat",
     "client/spectators"
   ],
-  "note": "Attacks on players (client/combat) and a spectator's camera (client/spectators); other interactions are not modeled"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1 and VIEW1. First generation: Its layout stays in src/server/wire.cpp or the protocol tables. Attacks on players (client/combat) and a spectator's camera (client/spectators); other interactions are not modeled"
 }

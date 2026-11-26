@@ -1,8 +1,8 @@
 {
   "defaults": {
-    "impl": "partial",
-    "evidence": "compared",
-    "note": "Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, haste's, conduit power's and mining fatigue's in digging, and those of the effects that heal, hurt or feed (instant health and damage, regeneration, poison, wither, hunger, saturation); given by foods, potions and ominous bottles; absorption ending when used up and the omens' sounds; the effects' other consequences are not modeled yet",
+    "impl": "missing",
+    "evidence": "none",
+    "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Given to players by /effect, combined, counted down and shown with its particle and flags as on both official servers, with its attribute modifiers sent; health boost's, absorption's and jump boost's applied, haste's, conduit power's and mining fatigue's in digging, and those of the effects that heal, hurt or feed (instant health and damage, regeneration, poison, wither, hunger, saturation); given by foods, potions and ominous bottles; absorption ending when used up and the omens' sounds; the effects' other consequences are not modeled yet",
     "cases": [
       "client/effect_particles",
       "client/effects_heal",

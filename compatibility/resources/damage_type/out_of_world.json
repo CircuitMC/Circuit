@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "data_only",
+  "evidence": "none",
   "cases": [
     "client/vitals",
     "client/ench_protect"
   ],
-  "note": "Its sounds and the velocity told were not recorded"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: The damage-type registry entries remain (src/server/registries.cpp). Its sounds and the velocity told were not recorded"
 }

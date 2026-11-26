@@ -21,7 +21,9 @@ Circuit implements and what evidence supports each claim. Its inputs:
                                          at the pinned commit and from Circuit's
                                          packet and registry tables)
   tests/fixtures/harness*/               reference traces (cases trace/<name>)
-  src/server/                            packets the server references
+  src/server/                            packets whose layouts the code references
+                                         (data_only: no server sends or reads them
+                                         until the player view returns)
 
 Commands:
 
@@ -443,8 +445,12 @@ def build(inputs):
                     continue
                 spec = {**defaults, **override}
                 if kind == "packet":
+                    # Since the restructuring src/server holds packet layouts
+                    # but no server: a referenced packet has its layout and
+                    # no behavior. The player view (package VIEW1) brings the
+                    # sending and reading back, and with it "partial".
                     if name in REFERENCED and "impl" not in override:
-                        spec["impl"] = "partial"
+                        spec["impl"] = "data_only"
                 rec = {"impl": per_version(spec["impl"], bundles)[b], "evidence": per_version(spec.get("evidence", "none"), bundles)[b]}
                 linked = list(spec.get("cases", []))
                 if kind == "block":
@@ -749,11 +755,11 @@ def summary(ledger, manifests):
       "Its families and milestones are those of the [vanilla completion roadmap](VANILLA_COMPLETION.md). "
       "The mechanics that are not implemented are grouped into [work packages](../compatibility/PACKAGES.md).")
     w("")
-    w("**Restructuring.** The states below were recorded against the first generation (tag `pre-refactor`). Its runtime, network server, "
-      "player code and extensions were removed in November 2026: behavior that lived only there (connections, player survival, combat, "
-      "effects, windows driven by players, extensions) is not available in the current tree until the corresponding phase of the "
-      "[roadmap](../TODO.md) brings it back, and the ledger is being re-based on the kept code. The reference rules, their traces, the protocol "
-      "tables, content data and storage are kept.")
+    w("**Restructuring.** The first generation (tag `pre-refactor`) had a network server, host-side player code and extensions, removed in "
+      "November 2026. The ledger is re-based on the code that was kept: mechanics and resources whose behavior lived only in the removed code "
+      "are `missing` (or `data_only` where their data or wire layout remains), keep their cases and the first generation's note as history, "
+      "and name the work packages of the [roadmap](../TODO.md) that bring them back (RT1, NET1, VIEW1, PORT1, STORE1, ISL1, WL1). Client cases "
+      "record the first generation's results; they run again once the server returns.")
     w("")
     w("**Implementation states:** `implemented` (complete for the feature as described), `partial` (some behavior, with listed gaps), "
       "`data_only` (named in registries or storage, with no behavior), `missing`, and `not_applicable` (absent from that version, with the reason). "

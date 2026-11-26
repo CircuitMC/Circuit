@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "data_only",
+  "evidence": "none",
   "cases": [
     "client/fire",
     "client/ench_fire"
   ],
-  "note": "Lava: 4, armor reducing it, with the burn sound; 15 seconds of burning"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: The damage-type registry entries remain (src/server/registries.cpp). Lava: 4, armor reducing it, with the burn sound; 15 seconds of burning"
 }

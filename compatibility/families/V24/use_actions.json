@@ -2,14 +2,15 @@
   "name": "Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books",
   "milestone": "C5",
   "packages": [
+    "PORT1",
     "PL6",
     "BL5",
     "MB2",
     "MB4",
     "CI1"
   ],
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/fire_items",
     "trace/flint_and_steel_use",
@@ -22,10 +23,5 @@
     "client/knowledge_books",
     "client/ench_unbreaking"
   ],
-  "note": "Flint and steel and fire charges: fire beside the face used where it can stay, campfires, candles and candle cakes lit, TNT primed, the level random's sound draws, flint and steel's sound to the others near (client/ench_unbreaking), flint and steel worn by one (and gone at its durability) and fire charges used up outside creative mode, flint and steel in dispensers. Shears: pumpkins carved (facing the face used or the player, four seeds out of it, the carving's sound to everyone near: client/ench_unbreaking), full beehives and bee nests emptied of three honeycomb (also by dispensers), cobwebs, leaves, wool, vines and glow lichen cut at their tool component's speeds, tripwire disarmed when broken, every block broken wearing them. Knowledge books: the recipes they name given when every one is a recipe (none otherwise), the book used up outside creative mode. As both official servers do",
-  "deviations": [
-    "spawn eggs, fishing and books are not modeled here; buckets, bone meal and maps are covered by their own families",
-    "shears on sheep, mooshrooms, snow golems and bogged (C8), and the bees an emptied hive angers, are not modeled",
-    "of the use sounds only flint and steel's and a pumpkin's carving are sent (flint and steel's pitch from Circuit's draw, the carving's 1 by minecraft.wiki, neither recorded; flint and steel's place when it lights a campfire, candles or a candle cake is Circuit's choice, and the 16 blocks they carry are minecraft.wiki's (recorded within 3); a fire charge's, a hive's shearing and the others not)"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Flint and steel and fire charges: fire beside the face used where it can stay, campfires, candles and candle cakes lit, TNT primed, the level random's sound draws, flint and steel's sound to the others near (client/ench_unbreaking), flint and steel worn by one (and gone at its durability) and fire charges used up outside creative mode, flint and steel in dispensers. Shears: pumpkins carved (facing the face used or the player, four seeds out of it, the carving's sound to everyone near: client/ench_unbreaking), full beehives and bee nests emptied of three honeycomb (also by dispensers), cobwebs, leaves, wool, vines and glow lichen cut at their tool component's speeds, tripwire disarmed when broken, every block broken wearing them. Knowledge books: the recipes they name given when every one is a recipe (none otherwise), the book used up outside creative mode. As both official servers do; its deviations: spawn eggs, fishing and books are not modeled here; buckets, bone meal and maps are covered by their own families; shears on sheep, mooshrooms, snow golems and bogged (C8), and the bees an emptied hive angers, are not modeled; of the use sounds only flint and steel's and a pumpkin's carving are sent (flint and steel's pitch from Circuit's draw, the carving's 1 by minecraft.wiki, neither recorded; flint and steel's place when it lights a campfire, candles or a candle cake is Circuit's choice, and the 16 blocks they carry are minecraft.wiki's (recorded within 3); a fire charge's, a hive's shearing and the others not)"
 }

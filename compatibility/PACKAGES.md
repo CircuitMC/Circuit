@@ -57,6 +57,13 @@ Sizes are relative: S is up to 3 sub-tasks, M 4 to 8, L 9 to 20, XL more or a ne
 | CI4 Real-client verbs and tick-stepped scenarios | M | planned | — | CD1 | 3 | 3 |
 | MB5 Villagers, trading, raids, bosses, trials | — | planned | MB1, WG4, CD2, CD4 | — | 14 | 14 |
 | CD5 Command blocks, structure blocks, server operation | — | planned | CD1, CD3, BL6 | — | 3 | 3 |
+| RT1 Strict single-threaded runtime | XL | planned | — | — | 1 | 1 |
+| NET1 Network layer on PACE | L | planned | — | — | 5 | 5 |
+| VIEW1 Player view and server assembly | XL | planned | RT1, NET1 | — | 16 | 16 |
+| PORT1 First-generation player behavior as rules | XL | planned | EF5, EF9, VIEW1 | — | 18 | 18 |
+| STORE1 Chunk-granular storage | L | planned | RT1 | — | 0 | 0 |
+| ISL1 Islands | XL | planned | RT1, STORE1 | — | 1 | 1 |
+| WL1 Threads inside an island | XL | planned | ISL1 | — | 1 | 1 |
 | UNASSIGNED Not assigned to a work package | — | planned | — | — | 23 | 25 |
 
 ## Milestones
@@ -66,18 +73,18 @@ Mechanics by milestone label, how many are open, and the packages the open ones 
 | Milestone | Mechanics | Open 1.21.4 | Open 1.21.8 | Packages named by its open mechanics |
 | --- | ---: | ---: | ---: | --- |
 | C0 | 8 | 3 | 3 | CI4 |
-| C1 | 10 | 7 | 8 | EF3, PL1, PL7, BL2, BL4, BL7, CD3, WG1, WG4, CI1, CI2, UNASSIGNED |
-| C2 | 12 | 12 | 12 | EF7, PL3, PL7, BL3, BL7, WG1, WG3, WG4, WG5, WG6, WG7, MB5, UNASSIGNED |
+| C1 | 10 | 7 | 8 | EF3, PL1, PL7, BL2, BL4, BL7, CD3, WG1, WG4, CI1, CI2, NET1, VIEW1, UNASSIGNED |
+| C2 | 12 | 12 | 12 | EF7, PL3, PL7, BL3, BL7, WG1, WG3, WG4, WG5, WG6, WG7, MB5, VIEW1, UNASSIGNED |
 | C3 | 22 | 19 | 19 | EF1, EF2, EF3, EF4, EF5, EF6, EF7, EF8, PL4, PL5, PL7, BL1, BL3, BL5, BL7, MB4, UNASSIGNED |
 | C4 | 29 | 15 | 15 | EF5, EF8, EF9, PL2, BL1, BL2, BL3, BL4, BL5, WG4, CI1, UNASSIGNED |
-| C5 | 46 | 41 | 41 | EF5, EF8, EF9, PL6, PL7, BL2, BL3, BL4, BL5, BL6, BL7, CD2, WG2, WG3, WG4, WG9, MB2, MB4, CI1, CI3, MB5 |
-| C6 | 23 | 19 | 19 | EF3, EF4, EF5, EF6, PL1, PL2, PL3, PL4, PL5, PL7, BL7, MB2, MB3, CI1, MB5 |
+| C5 | 46 | 41 | 41 | EF5, EF8, EF9, PL6, PL7, BL2, BL3, BL4, BL5, BL6, BL7, CD2, WG2, WG3, WG4, WG9, MB2, MB4, CI1, CI3, MB5, PORT1 |
+| C6 | 23 | 23 | 23 | EF3, EF4, EF5, EF6, PL1, PL2, PL3, PL4, PL5, PL7, BL7, MB2, MB3, CI1, MB5, PORT1 |
 | C7 | 13 | 13 | 13 | BL4, WG1, WG2, WG3, WG4, WG5, WG6, WG7, WG8, WG9 |
 | C8 | 21 | 18 | 21 | EF7, EF8, PL3, BL4, WG4, MB1, MB2, MB3, MB4, MB5 |
-| C9 | 12 | 11 | 12 | PL7, BL4, CD1, CD2, CD3, CD4, WG9, CD5, UNASSIGNED |
-| C10 | 17 | 12 | 14 | EF3, EF8, PL3, BL6, CD4, CI1, CI2, UNASSIGNED |
+| C9 | 12 | 11 | 12 | PL7, BL4, CD1, CD2, CD3, CD4, WG9, CD5, VIEW1, UNASSIGNED |
+| C10 | 17 | 14 | 16 | EF3, EF8, PL3, BL6, CD4, CI1, CI2, NET1, VIEW1, PORT1, UNASSIGNED |
 | C11 | 6 | 4 | 4 | CI3, UNASSIGNED |
-| C12 | 8 | 7 | 7 | UNASSIGNED |
+| C12 | 8 | 8 | 8 | RT1, VIEW1, ISL1, WL1, UNASSIGNED |
 
 ## Open mechanics by package
 
@@ -112,11 +119,11 @@ Evidence prerequisites: CD1 for tick-stepped scenarios.
 | --- | --- | --- | --- | --- |
 | `V03.component_schema_1_21_5` Component and entity-data schema changes of 1.21.5 | C1 | not_applicable | partial | — |
 | `V03.entity_data_components` Entity data and components (variants, custom names, equipment) | C3 | missing | missing | EF2 |
-| `V19.tracking` Entity tracking ranges, metadata and visibility for clients | C10 | partial | partial | — |
-| `V22.game_modes` Survival, creative and spectator modes | C6 | partial | partial | BL7 |
-| `V23.effects` Status effects | C6 | partial | partial | PL7, MB5 |
-| `V24.equipment` Equipment slots and wearing armor | C6 | partial | partial | PL2 |
-| `V32.entity_presentation` Entity metadata, equipment, animations and events | C10 | partial | partial | — |
+| `V19.tracking` Entity tracking ranges, metadata and visibility for clients | C10 | missing | missing | VIEW1 |
+| `V22.game_modes` Survival, creative and spectator modes | C6 | missing | missing | PORT1, BL7 |
+| `V23.effects` Status effects | C6 | missing | missing | PORT1, PL7, MB5 |
+| `V24.equipment` Equipment slots and wearing armor | C6 | missing | missing | PORT1, PL2 |
+| `V32.entity_presentation` Entity metadata, equipment, animations and events | C10 | missing | missing | VIEW1 |
 | `V33.waypoints` Locator bar waypoints | C10 | not_applicable | missing | PL3 |
 
 ### EF4 Hit and contact queries
@@ -128,7 +135,7 @@ Projectiles hitting entities; melee on items, boats, minecarts, arrows; entity p
 | `V15.entity_pushing` Moving blocks pushing entities and players | C3 | partial | partial | — |
 | `V20.item_physics` Item entity motion and collision | C3 | partial | partial | EF2 |
 | `V21.projectiles` Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers | C3 | partial | partial | EF7, PL4 |
-| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | partial | partial | PL7, MB3 |
+| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | missing | missing | PORT1, PL7, MB3 |
 
 ### EF5 Players visible to the rules
 
@@ -173,7 +180,7 @@ Armor stands, item frames, paintings, displays, markers, loaded and TNT minecart
 | `V14.rails` Rails, powered, detector and activator rails | C4 | partial | partial | BL3 |
 | `V17.other_explosions` Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing | missing | EF7, PL3, MB3, MB5 |
 | `V21.minecarts` Minecarts of every kind | C3 | partial | partial | EF6, PL5 |
-| `V32.maps_books_signs` Maps, books, signs and displays | C10 | partial | partial | BL6 |
+| `V32.maps_books_signs` Maps, books, signs and displays | C10 | missing | missing | VIEW1, BL6 |
 
 ### EF9 Living-entity base
 
@@ -196,9 +203,9 @@ Evidence prerequisites: CD1 (/give, /item).
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
 | `V03.item_components` Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest | C1 | partial | partial | PL7 |
-| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | partial | partial | PL4, PL7 |
-| `V23.enchantment_effects` Enchantment effects | C6 | partial | partial | PL7, MB3 |
-| `V24.eating_and_drinking` Eating and drinking | C6 | partial | partial | PL7 |
+| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | missing | missing | PORT1, PL4, PL7 |
+| `V23.enchantment_effects` Enchantment effects | C6 | missing | missing | PORT1, PL7, MB3 |
+| `V24.eating_and_drinking` Eating and drinking | C6 | missing | missing | PORT1, PL7 |
 | `V24.item_cooldowns` Item cooldowns | C6 | missing | missing | — |
 
 ### PL2 Movement states
@@ -211,9 +218,9 @@ Evidence prerequisites: CI4, BL3 (blocks), EF7 (boost).
 | --- | --- | --- | --- | --- |
 | `V15.honey` Honey blocks and slime-honey separation | C4 | partial | partial | EF9 |
 | `V22.poses` Swimming, crawling, climbing, elytra flight and sleeping | C6 | missing | missing | — |
-| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | partial | partial | PL7, CI1 |
-| `V23.attributes` Attributes and modifiers | C6 | partial | partial | PL7 |
-| `V24.equipment` Equipment slots and wearing armor | C6 | partial | partial | EF3 |
+| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | missing | missing | PORT1, PL7, CI1 |
+| `V23.attributes` Attributes and modifiers | C6 | missing | missing | PORT1, PL7 |
+| `V24.equipment` Equipment slots and wearing armor | C6 | missing | missing | PORT1, EF3 |
 
 ### PL3 Beds, respawn, modes
 
@@ -225,7 +232,7 @@ Evidence prerequisites: CD1 (/difficulty, /tick), WG3 (other dimensions).
 | --- | --- | --- | --- | --- |
 | `V06.time_of_day` Day-night cycle and time advancement | C2 | partial | partial | — |
 | `V06.weather` Rain, thunder, snow and their effects | C2 | partial | partial | PL7, BL3 |
-| `V10.respawn_points` Beds, respawn anchors and spawn points | C6 | partial | partial | — |
+| `V10.respawn_points` Beds, respawn anchors and spawn points | C6 | missing | missing | PORT1 |
 | `V17.other_explosions` Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing | missing | EF7, EF8, MB3, MB5 |
 | `V22.adventure_and_hardcore` Adventure mode and hardcore worlds | C6 | missing | missing | — |
 | `V33.waypoints` Locator bar waypoints | C10 | not_applicable | missing | EF3 |
@@ -237,7 +244,7 @@ Bows, crossbows, tridents, thrown items; projectile damage to players; shields, 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
 | `V21.projectiles` Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers | C3 | partial | partial | EF4, EF7 |
-| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | partial | partial | PL1, PL7 |
+| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | missing | missing | PORT1, PL1, PL7 |
 | `V24.ranged_weapons` Bows, crossbows and tridents | C6 | missing | missing | — |
 
 ### PL5 Riding boats and minecarts
@@ -255,7 +262,7 @@ Casting, bite timing, loot, lure and luck, experience, hooked entities.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial | partial | BL5, MB2, MB4, CI1 |
+| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | missing | missing | PORT1, BL5, MB2, MB4, CI1 |
 
 ### PL7 C6 evidence and decisions
 
@@ -267,14 +274,14 @@ Official recordings for the roughly 40 player and survival clauses of C6 that ha
 | `V06.weather` Rain, thunder, snow and their effects | C2 | partial | partial | PL3, BL3 |
 | `V07.level_random` The level random source and its draw order | C3 | partial | partial | MB4 |
 | `V20.experience_orbs` Experience orbs | C6 | partial | partial | MB2 |
-| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | partial | partial | PL2, CI1 |
-| `V23.death_and_respawn` Death, drops and respawning | C6 | partial | partial | — |
-| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | partial | partial | EF4, MB3 |
-| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | partial | partial | PL1, PL4 |
-| `V23.effects` Status effects | C6 | partial | partial | EF3, MB5 |
-| `V23.enchantment_effects` Enchantment effects | C6 | partial | partial | PL1, MB3 |
-| `V23.attributes` Attributes and modifiers | C6 | partial | partial | PL2 |
-| `V24.eating_and_drinking` Eating and drinking | C6 | partial | partial | PL1 |
+| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | missing | missing | PORT1, PL2, CI1 |
+| `V23.death_and_respawn` Death, drops and respawning | C6 | missing | missing | PORT1 |
+| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | missing | missing | PORT1, EF4, MB3 |
+| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | missing | missing | PORT1, PL1, PL4 |
+| `V23.effects` Status effects | C6 | missing | missing | PORT1, EF3, MB5 |
+| `V23.enchantment_effects` Enchantment effects | C6 | missing | missing | PORT1, PL1, MB3 |
+| `V23.attributes` Attributes and modifiers | C6 | missing | missing | PORT1, PL2 |
+| `V24.eating_and_drinking` Eating and drinking | C6 | missing | missing | PORT1, PL1 |
 | `V25.crafting` Crafting (2x2 and table) and the recipe book | C5 | partial | partial | BL4 |
 | `V25.smelting` Furnaces, smokers, blast furnaces and campfires | C5 | partial | partial | BL3 |
 | `V25.grindstone` Grindstones | C5 | partial | partial | — |
@@ -311,7 +318,7 @@ Evidence prerequisites: EF5 for player vibrations.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V04.tags` Tag synchronization and evaluation | C1 | partial | partial | CD3, WG4 |
+| `V04.tags` Tag synchronization and evaluation | C1 | missing | missing | VIEW1, NET1, CD3, WG4 |
 | `V14.sensors` Daylight detectors, sculk sensors, lightning rods and other sources | C4 | partial | partial | BL1 |
 | `V16.trapped_chests` Trapped chests and chest openers | C5 | partial | partial | CI1 |
 | `V16.barrels` Barrels | C5 | partial | partial | CI1 |
@@ -363,7 +370,7 @@ Evidence prerequisites: CD2 for archaeology loot.
 | `V13.spreading` Grass, mycelium, nylium, moss and sculk spread | C5 | partial | partial | BL7 |
 | `V13.coral` Coral dying without water | C4 | partial | partial | BL3 |
 | `V14.torches` Redstone torches and burnout | C4 | partial | partial | CI1 |
-| `V24.tools` Tools, durability and harvest rules | C5 | partial | partial | BL7 |
+| `V24.tools` Tools, durability and harvest rules | C5 | missing | missing | PORT1, BL7 |
 | `V25.crafting` Crafting (2x2 and table) and the recipe book | C5 | partial | partial | PL7 |
 | `V25.smithing` Smithing tables | C5 | partial | partial | — |
 | `V25.anvil` Anvils | C5 | partial | partial | PL7 |
@@ -382,7 +389,7 @@ Evidence prerequisites: EF7, EF8 (stage 2); EF9, MB2 (stage 3).
 | --- | --- | --- | --- | --- |
 | `V16.dispensers_droppers` Dispensers and droppers with dispense behaviors | C4 | partial | partial | — |
 | `V17.ignition` Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | partial | partial | EF7 |
-| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial | partial | PL6, MB2, MB4, CI1 |
+| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | missing | missing | PORT1, PL6, MB2, MB4, CI1 |
 
 ### BL6 Block-entity data to clients
 
@@ -393,7 +400,7 @@ The data packet and its timing for every block entity; sign editing, dyes and wa
 | `V11.block_entity_data` Signs, banners, heads, pots and other block-entity data | C5 | partial | partial | — |
 | `V14.lectern` Lecterns | C5 | partial | partial | — |
 | `V32.block_entity_data` Block-entity data and block events (piston animation, chests opening) | C10 | missing | missing | — |
-| `V32.maps_books_signs` Maps, books, signs and displays | C10 | partial | partial | EF8 |
+| `V32.maps_books_signs` Maps, books, signs and displays | C10 | missing | missing | VIEW1, EF8 |
 
 ### BL7 C5 evidence, ledger derivation, C5 checkpoint
 
@@ -413,9 +420,9 @@ Evidence prerequisites: EF1 for 1.21.4.
 | `V13.spreading` Grass, mycelium, nylium, moss and sculk spread | C5 | partial | partial | BL4 |
 | `V13.bone_meal` Bone meal | C5 | partial | partial | WG2 |
 | `V16.crafter` The Crafter | C5 | partial | partial | — |
-| `V22.game_modes` Survival, creative and spectator modes | C6 | partial | partial | EF3 |
+| `V22.game_modes` Survival, creative and spectator modes | C6 | missing | missing | PORT1, EF3 |
 | `V24.placement` Placing blocks from items | C5 | partial | partial | — |
-| `V24.tools` Tools, durability and harvest rules | C5 | partial | partial | BL4 |
+| `V24.tools` Tools, durability and harvest rules | C5 | missing | missing | PORT1, BL4 |
 | `V25.brewing` Brewing stands | C5 | partial | partial | — |
 | `V25.beacons` Beacons | C5 | partial | partial | — |
 
@@ -425,9 +432,9 @@ Grammar, command tree to clients, parse errors, argument types with defaults, ba
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V31.grammar` Command grammar, suggestions and the command tree | C9 | partial | partial | — |
+| `V31.grammar` Command grammar, suggestions and the command tree | C9 | missing | missing | VIEW1 |
 | `V31.selectors_and_permissions` Selectors and permission levels | C9 | missing | missing | — |
-| `V31.server_operation` Operators, whitelist, bans, server properties, console, RCON and query | C9 | partial | partial | CD5 |
+| `V31.server_operation` Operators, whitelist, bans, server properties, console, RCON and query | C9 | missing | missing | VIEW1, CD5 |
 
 ### CD2 Predicates, item modifiers, full loot
 
@@ -444,7 +451,7 @@ Weighted pools, every loot function and condition, entity, chest, fishing, archa
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V04.tags` Tag synchronization and evaluation | C1 | partial | partial | BL2, WG4 |
+| `V04.tags` Tag synchronization and evaluation | C1 | missing | missing | VIEW1, NET1, BL2, WG4 |
 | `V04.pack_stack` Data-pack stack, selection, ordering and reload | C9 | partial | partial | — |
 | `V30.functions` Functions and macros | C9 | missing | missing | — |
 
@@ -456,7 +463,7 @@ Objectives, teams, statistics, advancement criteria and rewards with their packe
 | --- | --- | --- | --- | --- |
 | `V30.advancements` Advancements and criteria | C9 | missing | missing | — |
 | `V31.scoreboard_and_teams` Scoreboards, teams and statistics | C9 | missing | missing | — |
-| `V32.hud` Boss bars, titles, scoreboards, world border and tab list | C10 | partial | partial | — |
+| `V32.hud` Boss bars, titles, scoreboards, world border and tab list | C10 | missing | missing | VIEW1, PORT1 |
 
 ### WG1 Worldgen data, biome storage, presets
 
@@ -504,7 +511,7 @@ Evidence prerequisites: EF2 (entities), EF6 (riders), WG1.
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V04.tags` Tag synchronization and evaluation | C1 | partial | partial | BL2, CD3 |
+| `V04.tags` Tag synchronization and evaluation | C1 | missing | missing | VIEW1, NET1, BL2, CD3 |
 | `V05.ticket_types` Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial | partial | EF7, WG3, MB5 |
 | `V10.nether_portals` Nether portal creation, search, scaling and arrival | C7 | missing | missing | — |
 | `V10.end_portals` End portals, strongholds and End gateways | C7 | missing | missing | WG9 |
@@ -582,7 +589,7 @@ Passive animals, breeding, taming, tempting, shearing, milking, leads, mounts an
 | `V20.experience_orbs` Experience orbs | C6 | partial | partial | PL7 |
 | `V21.riding` Riding and mount controls | C6 | missing | missing | PL5 |
 | `V21.happy_ghast_harness` Happy Ghast harnesses and leash changes | C8 | not_applicable | missing | — |
-| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial | partial | PL6, BL5, MB4, CI1 |
+| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | missing | missing | PORT1, PL6, BL5, MB4, CI1 |
 | `V25.other_menus` Merchants and mount inventories | C5 | missing | missing | MB5 |
 | `V26.breeding_and_taming` Breeding, taming and conversions | C8 | missing | missing | — |
 | `V26.species` Species-specific behavior | C8 | missing | missing | MB3, MB5 |
@@ -596,8 +603,8 @@ Zombie and skeleton families, creepers, spiders, slimes, endermen, witches; sunl
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
 | `V17.other_explosions` Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing | missing | EF7, EF8, PL3, MB5 |
-| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | partial | partial | EF4, PL7 |
-| `V23.enchantment_effects` Enchantment effects | C6 | partial | partial | PL1, PL7 |
+| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | missing | missing | PORT1, EF4, PL7 |
+| `V23.enchantment_effects` Enchantment effects | C6 | missing | missing | PORT1, PL1, PL7 |
 | `V26.species` Species-specific behavior | C8 | missing | missing | MB2, MB5 |
 | `V26.creaking` The Creaking and creaking hearts | C8 | missing | missing | — |
 
@@ -608,7 +615,7 @@ Natural spawning, caps, despawning, local difficulty, spawners, spawn eggs; spaw
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
 | `V07.level_random` The level random source and its draw order | C3 | partial | partial | PL7 |
-| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial | partial | PL6, BL5, MB2, CI1 |
+| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | missing | missing | PORT1, PL6, BL5, MB2, CI1 |
 | `V27.natural_spawning` Natural spawning, caps and distances | C8 | missing | missing | — |
 | `V27.despawning` Mob despawning | C8 | missing | missing | — |
 | `V27.spawners` Spawners and trial spawners | C8 | missing | missing | MB5 |
@@ -627,9 +634,9 @@ Block sound types, use sounds, particles and level events from the rules; pitche
 | `V16.composters` Composters | C5 | partial | partial | BL2, MB5 |
 | `V16.ender_chests` Ender chests | C5 | partial | partial | BL2, CI3 |
 | `V16.chiseled_bookshelves` Chiseled bookshelves | C5 | partial | partial | BL2 |
-| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | partial | partial | PL2, PL7 |
-| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial | partial | PL6, BL5, MB2, MB4 |
-| `V32.sounds_and_particles` Sounds and particles | C10 | partial | partial | — |
+| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | missing | missing | PORT1, PL2, PL7 |
+| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | missing | missing | PORT1, PL6, BL5, MB2, MB4 |
+| `V32.sounds_and_particles` Sounds and particles | C10 | missing | missing | VIEW1 |
 
 ### CI2 Chat, configuration, packs
 
@@ -637,10 +644,10 @@ Signed chat and chat sessions, reconfiguration, resource-pack offers, cookies an
 
 | Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
 | --- | --- | --- | --- | --- |
-| `V04.known_packs` Known-pack exchange and registry data by name | C10 | partial | partial | — |
-| `V04.registry_sync` Synchronized registries with data for clients without the vanilla pack | C1 | partial | partial | — |
+| `V04.known_packs` Known-pack exchange and registry data by name | C10 | missing | missing | VIEW1, NET1 |
+| `V04.registry_sync` Synchronized registries with data for clients without the vanilla pack | C1 | missing | missing | VIEW1, NET1 |
 | `V04.resource_packs` Server resource-pack offers and responses | C10 | missing | missing | — |
-| `V33.configuration` Configuration phase and reconfiguration | C10 | partial | partial | — |
+| `V33.configuration` Configuration phase and reconfiguration | C10 | missing | missing | NET1, VIEW1 |
 | `V33.signed_chat` Signed chat and chat sessions | C10 | missing | missing | — |
 | `V33.cookies_transfer_links` Cookies, transfers, server links and custom payloads | C10 | missing | missing | — |
 
@@ -680,7 +687,7 @@ Named, not sized: later work. It follows the packages listed as hard prerequisit
 | `V05.ticket_types` Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial | partial | EF7, WG3, WG4 |
 | `V16.composters` Composters | C5 | partial | partial | BL2, CI1 |
 | `V17.other_explosions` Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing | missing | EF7, EF8, PL3, MB3 |
-| `V23.effects` Status effects | C6 | partial | partial | EF3, PL7 |
+| `V23.effects` Status effects | C6 | missing | missing | PORT1, EF3, PL7 |
 | `V25.other_menus` Merchants and mount inventories | C5 | missing | missing | MB2 |
 | `V26.species` Species-specific behavior | C8 | missing | missing | MB2, MB3 |
 | `V27.spawners` Spawners and trial spawners | C8 | missing | missing | MB4 |
@@ -702,7 +709,97 @@ Named, not sized: later work. It follows the packages listed as hard prerequisit
 | --- | --- | --- | --- | --- |
 | `V09.structure_templates` Structure templates and structure blocks | C9 | missing | missing | WG9 |
 | `V31.command_blocks` Command blocks | C9 | missing | missing | — |
-| `V31.server_operation` Operators, whitelist, bans, server properties, console, RCON and query | C9 | partial | partial | CD1 |
+| `V31.server_operation` Operators, whitelist, bans, server properties, console, RCON and query | C9 | missing | missing | VIEW1, CD1 |
+
+### RT1 Strict single-threaded runtime
+
+A world store built for speed (hashed column index, paletted sections behind the RuleContext cursor, active sets, time-ordered scheduled ticks, incremental chunk levels and light), a strict executor in vanilla order behind runtime::Engine, equal to the oracle on every trace, scenario and seed; storage and Anvil on it.
+
+| Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
+| --- | --- | --- | --- | --- |
+| `V36.performance` Performance under accepted semantics | C12 | missing | missing | ISL1, WL1, UNASSIGNED |
+
+### NET1 Network layer on PACE
+
+Listener and connection coroutines, handshake, status, login with encryption and compression, session verification on PACE, the outbox with batched writes and shared frames, several reactors, limits and failure cases, behind include/circuit/net/link.hpp.
+
+| Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
+| --- | --- | --- | --- | --- |
+| `V04.known_packs` Known-pack exchange and registry data by name | C10 | missing | missing | VIEW1, CI2 |
+| `V04.registry_sync` Synchronized registries with data for clients without the vanilla pack | C1 | missing | missing | VIEW1, CI2 |
+| `V04.tags` Tag synchronization and evaluation | C1 | missing | missing | VIEW1, BL2, CD3, WG4 |
+| `V33.handshake_status_login` Handshake, status, login, compression, encryption and session verification | C10 | missing | missing | VIEW1 |
+| `V33.configuration` Configuration phase and reconfiguration | C10 | missing | missing | VIEW1, CI2 |
+
+### VIEW1 Player view and server assembly
+
+A deterministic packet-stream corpus of the first generation's server; the chunk-to-viewer index, chunk and light encoding, entity tracking; joins, inbound packets to commands, per-tick publication; the server binary; a playable server on both versions checked by the real client.
+
+| Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
+| --- | --- | --- | --- | --- |
+| `V04.known_packs` Known-pack exchange and registry data by name | C10 | missing | missing | NET1, CI2 |
+| `V04.registry_sync` Synchronized registries with data for clients without the vanilla pack | C1 | missing | missing | NET1, CI2 |
+| `V04.tags` Tag synchronization and evaluation | C1 | missing | missing | NET1, BL2, CD3, WG4 |
+| `V05.view_and_simulation_distance` View distance and simulation distance | C2 | missing | missing | UNASSIGNED |
+| `V19.tracking` Entity tracking ranges, metadata and visibility for clients | C10 | missing | missing | EF3 |
+| `V31.grammar` Command grammar, suggestions and the command tree | C9 | missing | missing | CD1 |
+| `V31.server_operation` Operators, whitelist, bans, server properties, console, RCON and query | C9 | missing | missing | CD1, CD5 |
+| `V32.chunks_and_blocks` Chunks, block updates and acknowledgements | C10 | missing | missing | UNASSIGNED |
+| `V32.entity_presentation` Entity metadata, equipment, animations and events | C10 | missing | missing | EF3 |
+| `V32.sounds_and_particles` Sounds and particles | C10 | missing | missing | CI1 |
+| `V32.hud` Boss bars, titles, scoreboards, world border and tab list | C10 | missing | missing | PORT1, CD4 |
+| `V32.maps_books_signs` Maps, books, signs and displays | C10 | missing | missing | EF8, BL6 |
+| `V32.inventories` Inventory and window synchronization | C10 | missing | missing | — |
+| `V33.handshake_status_login` Handshake, status, login, compression, encryption and session verification | C10 | missing | missing | NET1 |
+| `V33.configuration` Configuration phase and reconfiguration | C10 | missing | missing | NET1, CI2 |
+| `V36.regression_suites` Debug and sanitizer regression suites | C12 | partial | partial | — |
+
+### PORT1 First-generation player behavior as rules
+
+The survival behavior the first generation's server ran for players (movement checks, digging, damage, effects, attributes, food, equipment, combat, death and respawn, the HUD), ported family by family into the rule tick on the living-entity base, each family checked against its recorded client scenarios.
+
+| Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
+| --- | --- | --- | --- | --- |
+| `V10.respawn_points` Beds, respawn anchors and spawn points | C6 | missing | missing | PL3 |
+| `V22.game_modes` Survival, creative and spectator modes | C6 | missing | missing | EF3, BL7 |
+| `V22.collision_movement` Movement checks against block shapes, step-up and corrections | C6 | missing | missing | — |
+| `V22.floating_kick` Floating detection and allow-flight | C6 | missing | missing | — |
+| `V22.reach_and_digging` Interaction reach and dig timing | C6 | missing | missing | — |
+| `V23.health_and_hunger` Health, hunger, saturation, exhaustion and regeneration | C6 | missing | missing | — |
+| `V23.damage_sources` Damage sources and the hurt cooldown | C6 | missing | missing | PL2, PL7, CI1 |
+| `V23.death_and_respawn` Death, drops and respawning | C6 | missing | missing | PL7 |
+| `V23.melee_combat` Melee attacks between players: the attack's charge, critical hits, sweeping and knockback | C6 | missing | missing | EF4, PL7, MB3 |
+| `V23.armor_and_shields` Armor protection, toughness and shields | C6 | missing | missing | PL1, PL4, PL7 |
+| `V23.effects` Status effects | C6 | missing | missing | EF3, PL7, MB5 |
+| `V23.enchantment_effects` Enchantment effects | C6 | missing | missing | PL1, PL7, MB3 |
+| `V23.attributes` Attributes and modifiers | C6 | missing | missing | PL2, PL7 |
+| `V24.tools` Tools, durability and harvest rules | C5 | missing | missing | BL4, BL7 |
+| `V24.eating_and_drinking` Eating and drinking | C6 | missing | missing | PL1, PL7 |
+| `V24.use_actions` Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | missing | missing | PL6, BL5, MB2, MB4, CI1 |
+| `V24.equipment` Equipment slots and wearing armor | C6 | missing | missing | EF3, PL2 |
+| `V32.hud` Boss bars, titles, scoreboards, world border and tab list | C10 | missing | missing | VIEW1, CD4 |
+
+### STORE1 Chunk-granular storage
+
+Per-column records with a tagged self-describing body written when dirty, a small world record, the world directory generalised to a set of store generations, crash coverage after every file operation, the single-file checkpoint read once as an importer.
+
+No open mechanic names this package.
+
+### ISL1 Islands
+
+Islands of chunks that cannot affect each other within the next ticks, each with its own clock, random sequences, queues, inbox and change feed; merging and splitting; Circuit's compute scheduler over all cores; cross-island effects and per-island saves; measured against Folia.
+
+| Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
+| --- | --- | --- | --- | --- |
+| `V36.performance` Performance under accepted semantics | C12 | missing | missing | RT1, WL1, UNASSIGNED |
+
+### WL1 Threads inside an island
+
+Chunk workloads with calibrated cost estimates, sub-islands for islands that do not fit a tick, a declared treatment of dependencies between neighbouring sub-islands with a replayable order, help from idle threads on the outer chunks of a share.
+
+| Mechanic | Milestone | 1.21.4 | 1.21.8 | Other packages |
+| --- | --- | --- | --- | --- |
+| `V36.performance` Performance under accepted semantics | C12 | missing | missing | RT1, ISL1, UNASSIGNED |
 
 ### UNASSIGNED Not assigned to a work package
 
@@ -716,7 +813,7 @@ A holding entry, not planned work. It takes no mechanic besides those listed in 
 | `V04.experimental_profiles` Experimental feature flags and built-in experimental packs | C12 | missing | missing | — |
 | `V05.ticket_levels` Ticket level propagation and entity-ticking versus block-ticking chunks | C2 | partial | partial | — |
 | `V05.unload_reload` Unload and reload of chunks with pending ticks, block events and entities | C2 | partial | partial | — |
-| `V05.view_and_simulation_distance` View distance and simulation distance | C2 | partial | partial | — |
+| `V05.view_and_simulation_distance` View distance and simulation distance | C2 | missing | missing | VIEW1 |
 | `V06.sky_light` Sky light propagation | C2 | partial | partial | — |
 | `V06.block_light` Block light emission and propagation | C2 | partial | partial | — |
 | `V15.push_pull` Pushing, pulling and quasi-connectivity | C4 | partial | partial | — |
@@ -728,7 +825,7 @@ A holding entry, not planned work. It takes no mechanic besides those listed in 
 | `V18.item_sorters_and_clocks` Item sorters, clocks and pulse circuits | C4 | partial | partial | — |
 | `V20.pickup` Pickup by players and hoppers, pickup delays | C3 | partial | partial | — |
 | `V30.game_tests` Data-driven game tests | C9 | not_applicable | missing | — |
-| `V32.chunks_and_blocks` Chunks, block updates and acknowledgements | C10 | partial | partial | — |
+| `V32.chunks_and_blocks` Chunks, block updates and acknowledgements | C10 | missing | missing | VIEW1 |
 | `V33.dialogs` Server dialogs | C10 | not_applicable | missing | — |
 | `V34.upgrades` Upgrades from older DataVersions | C11 | missing | missing | — |
 | `V35.experiment_minecart_improvements` Experimental profile: minecart improvements | C12 | missing | missing | — |
@@ -736,4 +833,4 @@ A holding entry, not planned work. It takes no mechanic besides those listed in 
 | `V35.experiment_trade_rebalance` Experimental profile: villager trade rebalance | C12 | missing | missing | — |
 | `V36.campaigns` Survival, machine and farm campaigns | C12 | missing | missing | — |
 | `V36.endurance` Endurance and multiplayer load runs | C12 | missing | missing | — |
-| `V36.performance` Performance under accepted semantics | C12 | partial | partial | — |
+| `V36.performance` Performance under accepted semantics | C12 | missing | missing | RT1, ISL1, WL1 |

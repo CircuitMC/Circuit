@@ -1,7 +1,7 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
-  "note": "Hosted by the server: movement, vitals, inventory",
+  "impl": "missing",
+  "evidence": "none",
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1 and VIEW1. First generation: Hosted by the server: movement, vitals, inventory",
   "cases": [
     "client/vitals",
     "client/collision",

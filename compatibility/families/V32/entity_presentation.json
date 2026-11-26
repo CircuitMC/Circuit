@@ -2,11 +2,12 @@
   "name": "Entity metadata, equipment, animations and events",
   "milestone": "C10",
   "packages": [
+    "VIEW1",
     "EF3"
   ],
-  "impl": "partial",
-  "evidence": "compared",
-  "note": "Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility; the living flags of an item in use (8); players' equipment (when it changes and with a player who appears), arm swings (animations 0 and 3; one only from halfway through the last), the hands swapped (entity event 55), the sprint flag, the hurt animation and the critical hit animation (4) of attacks, and a player's velocity after a knockback or a jump",
+  "impl": "missing",
+  "evidence": "none",
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: Items, players and damage events; players' health, skin parts and main hand (entity data 9, 17 and 18) as both official servers send them: when they change, with a player who appears, and a new entity's first data again for those who see it appear; the shift key's flag and the crouching pose, a spectator's invisibility; the living flags of an item in use (8); players' equipment (when it changes and with a player who appears), arm swings (animations 0 and 3; one only from halfway through the last), the hands swapped (entity event 55), the sprint flag, the hurt animation and the critical hit animation (4) of attacks, and a player's velocity after a knockback or a jump",
   "cases": [
     "client/player_data",
     "client/effects_heal",

@@ -2,9 +2,11 @@
   "name": "Known-pack exchange and registry data by name",
   "milestone": "C10",
   "packages": [
+    "VIEW1",
+    "NET1",
     "CI2"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "Vanilla pack only"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1, NET1. First generation: Vanilla pack only"
 }

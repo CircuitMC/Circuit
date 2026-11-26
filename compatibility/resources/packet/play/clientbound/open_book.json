@@ -1,10 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/books"
   ],
-  "deviations": [
-    "a written book given unresolved is opened without being resolved"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1 and VIEW1. First generation: Its layout stays in src/server/wire.cpp or the protocol tables. its deviations: a written book given unresolved is opened without being resolved"
 }

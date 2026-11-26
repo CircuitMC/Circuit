@@ -2,11 +2,11 @@
   "name": "Configuration phase and reconfiguration",
   "milestone": "C10",
   "packages": [
+    "NET1",
+    "VIEW1",
     "CI2"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "deviations": [
-    "no reconfiguration"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1, VIEW1. First generation: its deviations: no reconfiguration"
 }

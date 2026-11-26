@@ -1,7 +1,5 @@
 {
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "deviations": [
-    "no permissions or selectors"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: its deviations: no permissions or selectors"
 }

@@ -2,11 +2,10 @@
   "name": "Command grammar, suggestions and the command tree",
   "milestone": "C9",
   "packages": [
+    "VIEW1",
     "CD1"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "deviations": [
-    "a few chat commands with an empty command tree"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: its deviations: a few chat commands with an empty command tree"
 }

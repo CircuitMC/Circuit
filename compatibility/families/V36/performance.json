@@ -2,9 +2,12 @@
   "name": "Performance under accepted semantics",
   "milestone": "C12",
   "packages": [
+    "RT1",
+    "ISL1",
+    "WL1",
     "UNASSIGNED"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "Profiles of the declared subset"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with RT1, ISL1, WL1. First generation: Profiles of the declared subset"
 }

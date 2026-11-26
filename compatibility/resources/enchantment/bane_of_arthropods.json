@@ -1,8 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_combat"
   ],
-  "note": "Read: its damage and slowness require an arthropod target, so it adds nothing against players (no slowness), recorded on both official servers; the slowness is not acted on and attacks on other entities are not modeled"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Read: its damage and slowness require an arthropod target, so it adds nothing against players (no slowness), recorded on both official servers; the slowness is not acted on and attacks on other entities are not modeled"
 }

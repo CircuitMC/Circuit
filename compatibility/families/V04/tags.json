@@ -2,18 +2,16 @@
   "name": "Tag synchronization and evaluation",
   "milestone": "C1",
   "packages": [
+    "VIEW1",
+    "NET1",
     "BL2",
     "CD3",
     "WG4"
   ],
-  "impl": "partial",
-  "evidence": "compared",
-  "note": "With the official jar's data pack: every tag of block, item, entity type, fluid and the synchronized registries, as many per registry as the official servers send; without it, the biome tags 1.21.4 needs",
+  "impl": "missing",
+  "evidence": "none",
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1, NET1. First generation: With the official jar's data pack: every tag of block, item, entity type, fluid and the synchronized registries, as many per registry as the official servers send; without it, the biome tags 1.21.4 needs; its deviations: tags of game events, points of interest and 1.21.8 dialogs are not loaded; tags are not reloaded while the server runs",
   "cases": [
     "data/official_packs"
-  ],
-  "deviations": [
-    "tags of game events, points of interest and 1.21.8 dialogs are not loaded",
-    "tags are not reloaded while the server runs"
   ]
 }

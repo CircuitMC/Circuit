@@ -1,12 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/eat"
   ],
-  "note": "Drunk as both official servers run it (client/eat)",
-  "deviations": [
-    "the stack's own food, consumable, use remainder and use cooldown components are not read",
-    "1.21.8's potion duration scale is not read"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Its data (nutrition, effects) stays in src/gameplay/food.cpp. Drunk as both official servers run it (client/eat); its deviations: the stack's own food, consumable, use remainder and use cooldown components are not read; 1.21.8's potion duration scale is not read"
 }

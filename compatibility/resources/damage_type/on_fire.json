@@ -1,10 +1,10 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "data_only",
+  "evidence": "none",
   "cases": [
     "client/fire",
     "client/ench_fire",
     "client/ench_combat"
   ],
-  "note": "Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it; also after fire aspect's hits"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: The damage-type registry entries remain (src/server/registries.cpp). Burning: 1 whenever the fire ticks are a multiple of 20, not in lava; armor does not reduce it; also after fire aspect's hits"
 }

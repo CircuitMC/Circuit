@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_attributes",
     "client/ench_dig"
   ],
-  "note": "Aqua affinity's modifier on a helmet, sent as both official servers send it; digging under water uses it"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Aqua affinity's modifier on a helmet, sent as both official servers send it; digging under water uses it"
 }

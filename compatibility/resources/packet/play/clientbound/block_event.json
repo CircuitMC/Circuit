@@ -1,10 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/openers"
   ],
-  "deviations": [
-    "sent for chests' lids only, not for pistons or note blocks"
-  ]
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with NET1 and VIEW1. First generation: Its layout stays in src/server/wire.cpp or the protocol tables. its deviations: sent for chests' lids only, not for pistons or note blocks"
 }

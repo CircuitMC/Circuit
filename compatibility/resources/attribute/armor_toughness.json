@@ -1,9 +1,9 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/armor",
     "client/fire"
   ],
-  "note": "A player's, from the armor worn, sent as both official servers send it; it lessens the reduction's fall with stronger hits (client/fire: 2 and 5 toughness)"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: A player's, from the armor worn, sent as both official servers send it; it lessens the reduction's fall with stronger hits (client/fire: 2 and 5 toughness)"
 }

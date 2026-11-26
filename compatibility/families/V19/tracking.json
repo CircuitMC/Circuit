@@ -2,9 +2,10 @@
   "name": "Entity tracking ranges, metadata and visibility for clients",
   "milestone": "C10",
   "packages": [
+    "VIEW1",
     "EF3"
   ],
-  "impl": "partial",
+  "impl": "missing",
   "evidence": "none",
-  "note": "Items and players"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with VIEW1. First generation: Items and players"
 }

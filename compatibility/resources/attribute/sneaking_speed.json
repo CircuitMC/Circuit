@@ -1,8 +1,8 @@
 {
-  "impl": "partial",
-  "evidence": "compared",
+  "impl": "missing",
+  "evidence": "none",
   "cases": [
     "client/ench_attributes"
   ],
-  "note": "Swift sneak's modifier on leggings, sent as both official servers send it; the client uses it"
+  "note": "Removed with the first generation's server (tag pre-refactor) in the restructuring of 2026-11; returns with PORT1. First generation: Swift sneak's modifier on leggings, sent as both official servers send it; the client uses it"
 }
